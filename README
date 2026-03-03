@@ -1,7 +1,10 @@
 Pragma is a programming language and operating system.  The below explains the language, then after details the OS.
 Currently both in testing as of this writing, with the OS far behind the language.
 
-LANGUAGE:
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+LANGUAGE
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 - Uses intuitive, Java-like syntax but with more clarity and completeness.
 - Transpiles to C
 - Repository includes the following tools:
@@ -17,9 +20,12 @@ Pragma compromises by having easier-on-the-eyes syntax than either C or Rust, an
 
 How?
 
-Blockchain technology (decentralized signed hash) and Frama-C with the WP Plugin (mathematically-proven safety)
+- Decentralized signed hash (Blockchain technology)
+- Mathematically-proven safety (Frama-C with the WP Plugin, which uses the same mathematical methods Rust uses to prove safety)
 
 Basically the LLM's have made it where the mathematical part is now doable for everyday people - everything else was already there.  
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 It hashes your source file with SHA-256.  When you run the verification pipeline, every tool's full output is collected, hashed, 
 and bundled into JSON alongside the source hash and tool versions.  The output is a CID officially, but it is ultimately the hash.
@@ -45,7 +51,9 @@ I made two modes of signed code: MemResistant and MemProof.  The former has a lo
 So you get 3 options: unsigned, signed as confidence in safety, signed as proven safe.  Gives you the ability to at least in many cases have some confidence that someone didn't bound a buffer somewhere,
 to formally proven using essentially the same math that Rust uses.  
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 OPERATING SYSTEM
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Running ML workloads for my last project, I learned about quantization, formatting/prepping data for the tensor cores, but overall still ran pretty slow on long production runs.
 So I started looking into other ways to speed things up, found I couldn't 100% pin threads to cores (although you can get pretty much all the way there), and that led me into 
