@@ -20,8 +20,11 @@ Pragma compromises by having easier-on-the-eyes syntax than either C or Rust, an
 
 How?
 
-- Decentralized signed hash (Blockchain technology)
 - Mathematically-proven safety (Frama-C with the WP Plugin, which uses the same mathematical methods Rust uses to prove safety)
+- Decentralized signed hash that proves the code you're looking at was mathematically proven (Blockchain technology)
+
+So not only is your code safe, but any packages you download that are signed are also safe.  And there's a level below full safety available
+where only regular sanitizers ran.
 
 Basically the LLM's have made it where the mathematical part is now doable for everyday people - everything else was already there.  
 
