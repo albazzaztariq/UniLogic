@@ -53,36 +53,3 @@ No trust required, same safety as Rust with the option to not fight the compiler
 I made two modes of signed code: MemResistant and MemProof.  The former has a lot of tools perform static analysis (listed at top), while the latter does that and formally proves safety mathematically.
 So you get 3 options: unsigned, signed as confidence in safety, signed as proven safe.  Gives you the ability to at least in many cases have some confidence that someone didn't bound a buffer somewhere,
 to formally proven using the same math that Rust uses.  
-
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-OPERATING SYSTEM
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-Running ML workloads for my last project, I learned about quantization, formatting/prepping data for the tensor cores, but overall still had pretty high runtimes on long runs.
-So I started looking into other ways to speed things up, found I couldn't 100% pin threads to cores (although you can get pretty much all the way there), and that led me into 
-researching lightweight operating systems.  As I learned more about context switches, driver bloat, and other non-configurable settings, I found exokernels, unikernels, and microkernels.
-From there it kept snowballing and then I ran into FaaS where they spin up instances on-demand at CDN PoP's.  I found that the kernel space is heating up a bit, and learned about quite a
-few very interesting and unique kernel designs from ongoing Linux kernel discussions and non-Windows/Linux kernels (single address space, MINIX with far less driver risk, another repo building
-an OS in Nim, etc).  This is a work in progress and as of the time of this writing, I have a virtual FS, disk FS interface (e.g. init the FS objects through traversal), shell with output and a couple FS commands, and a couple drivers. 
-I'm stepping back to work on design more before plunging further.  I tried to write it in Nim because I honestly didn't want to use C despite that being blasphemous.  The more I used Nim,
-the more I didn't like it.  So I stepped back once more and got a programming language that's easier on my eyes and probably a lot of others not as familiar with C.  
-
-GOALS:
-- lightweight (maybe double digit MB) 
-- push a ton of config into userspace
-- allow config at hardware level (think Dasharo, coreboot, Linuxboot, etc.)
-- get rid of IO races and other common safety issues via newer methods (basically legacy code rewritten)
-- make ML workloads and system optimization first-class citizens through both structure and UX features
-- and overall - have fun and learn <- my biggest goal
-
-TARGET USERBASE:
-- self-hosted instances (think homebrew, overclockers, etc.)
-- CDN/edge or cloud provider to take interest on very heavy load metal/DC's (throwing coins into a well for the possibility of this - pray for me)
-
-One interesting detail: 
-Many are forecasting that natural gas prices will rise substantially in the next couple years as it's believed there won't be enough natural gas to go around and meet all the new DC load from AI demand
-40-70% of DC's operating costs are electricity, so they watch PUE (a power efficiency metric) quite a bit.  Approximately 30% are even building natural gas turbines with a smaller portion of that slice being renewables.
-Less memory used = less power.  Lower RAM surface + customized boot sequence = very fast spin-up for FaaS.
-Safety would probably take a backseat just based off it not being battle tested.  Even heavily-backed Rust OS projects are not seeing quick adoption.  
-
-Feel free to create a pull request or discussion thread to contact me.  This will probably be a long one.  The graveyard of OS projects on GitHub that didn't make it past "fiddle-around" I've found is pretty big.
