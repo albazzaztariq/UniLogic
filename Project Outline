@@ -1,6 +1,6 @@
-Pragma is a programming language and operating system.  The below explains the language, then after details the OS.
-Currently both in testing as of this writing, with the OS far behind the language.
-
+Pragma is a project encompassing a programming language, hardware optimization algorithm, and operating system written in the language.
+The below explains the language.  Currently in testing as of this writing, with the OS far behind the language.
+To read more about the Pragma project, go here: 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 LANGUAGE
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -76,12 +76,12 @@ GOALS:
 - and overall - have fun and learn <- my biggest goal
 
 TARGET USERBASE:
-- self-hosted instances
-- throwing coins into a well for the possibility of a CDN/edge or cloud provider to take interest on very heavy load metal/DC's
+- self-hosted instances (think homebrew, overclockers, etc.)
+- CDN/edge or cloud provider to take interest on very heavy load metal/DC's (throwing coins into a well for the possibility of this - pray for me)
 
 One interesting detail: 
 Many are forecasting that natural gas prices will rise substantially in the next couple years as it's believed there won't be enough natural gas to go around and meet all the new DC load from AI demand
-40-70% of DC's operating costs are electricity, so they watch PUE (a power efficiency metric) quite a bit.  They are even building on-site turbines to generate power in some instances.
+40-70% of DC's operating costs are electricity, so they watch PUE (a power efficiency metric) quite a bit.  Approximately 30% are even building natural gas turbines with a smaller portion of that slice being renewables.
 Less memory used = less power.  Lower RAM surface + customized boot sequence = very fast spin-up for FaaS.
 Safety would probably take a backseat just based off it not being battle tested.  Even heavily-backed Rust OS projects are not seeing quick adoption.  
 
