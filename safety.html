@@ -278,14 +278,14 @@ td:first-child { color: #5c2d91; font-family: 'Share Tech Mono', monospace; font
 <h1>Pragma Safety</h1>
 <p class="subtitle">Memory-safe by proof. Functionally correct by contract. Digitally signed by design.</p>
 
-<p class="skip-note">If you're just getting started — this page goes deep into the theory. Nothing here changes how you write Pragma day to day. Close it for now and come back when you're curious about <em>why</em> it's safe, not just that it is.</p>
+<p class="skip-note">If you're just getting started — this page goes deep into the theory. Nothing here changes how you write Pragma day to day. Close it for now and come back when you're curious about <em>why</em> it can be safe.</p>
 
 <div class="hero">
   <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap;">
     <div class="hero-headline" style="flex:1;">Even more than Rust safety — without Rust ergonomics.</div>
     <a href="#how-it-works" style="flex-shrink:0; background:rgba(203,166,247,0.18); border:1px solid #cba6f7; color:#cba6f7; text-decoration:none; padding:8px 20px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:0.1em; white-space:nowrap; align-self:center; transition:background 0.15s;" onmouseover="this.style.background='rgba(203,166,247,0.35)'" onmouseout="this.style.background='rgba(203,166,247,0.18)'">See How ↓</a>
   </div>
-  <p class="hero-sub" style="margin-top:12px;">Faster builds. Mathematically proven memory safety. Functional correctness — the kind Rust can't do. And every proof digitally signed and publicly verifiable on a blockchain.</p>
+  <p class="hero-sub" style="margin-top:12px;">Faster builds. Mathematically proven memory safety. Functional correctness — the kind Rust can't do. Every proof is digitally signed and publicly verifiable on a blockchain.</p>
 </div>
 
 <p style="font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:#585b70; margin-bottom:8px;">Jump To</p>
@@ -307,9 +307,9 @@ td:first-child { color: #5c2d91; font-family: 'Share Tech Mono', monospace; font
 
 <p>Memory bugs are the single largest source of critical vulnerabilities in systems software. Use-after-free, buffer overreads, null dereferences, data races — they don't make your program crash politely. They silently corrupt data, expose secrets, or hand an attacker control of execution. Google has reported that ~70% of serious Chrome security bugs are memory safety issues. Microsoft: the same number for Windows CVEs.</p>
 
-<p>Rust solved this with the borrow checker — a compile-time ownership system that tracks which code holds which memory and prevents you from breaking the rules. It works. But learning lifetimes, ownership, and borrowing as first-class concepts has a real cost, especially when you just want to write a fast, safe program and not a dissertation on memory regions.</p>
+<p>Rust solved this with the borrow checker — a compile-time ownership system that tracks which code holds which memory and prevents you from breaking the rules. It works, but learning lifetimes, ownership, and borrowing as first-class concepts has a real cost, especially when you just want to write a fast, safe program and not a dissertation on memory regions.</p>
 
-<p>Pragma takes a different path: it <strong>proves memory safety mathematically</strong>. You write code. The compiler generates proof obligations. An SMT solver discharges them. If every obligation is satisfied, the program is proven safe for every possible input — not just the ones you tested. No lifetime annotations. No fighting the borrow checker. No runtime overhead.</p>
+<p>Pragma takes a different path: it <strong>proves memory safety mathematically</strong>. You write code. The compiler generates proof obligations and an SMT solver discharges them. If every obligation is satisfied, the program is proven safe for every possible input — not just the ones you tested. <em>No lifetime annotations. No fighting the borrow checker. No runtime overhead.</em></p>
 
 <h3>Buffer overread</h3>
 
@@ -384,11 +384,11 @@ println!(<span class="str">"{}"</span>, p);
      FUNCTIONAL CORRECTNESS
 ════════════════════════════════════════════════════════════ -->
 
-<h2 id="functional-correctness">Functional Correctness</h2>
+<h2 id="functional-correctness">A Further Option: Functional Correctness</h2>
 
 <p>Memory safety means your program doesn't corrupt memory. Functional correctness means your program <em>does what it's supposed to do</em>. These are different things. A memory-safe program can still sort a list in the wrong order, return the wrong value, or silently drop data. No crash. Just wrong.</p>
 
-<p>This is where Pragma goes further than Rust. Rust's type system can prove a function won't crash. It <strong>cannot prove the function returns the right answer</strong>. Pragma can. You write a contract stating what the function promises, and the verifier proves every line of code upholds that promise for every possible input — not by testing, by proof.</p>
+<p>This is where Pragma goes further than Rust. Rust's type system can prove a function won't crash. It <strong>cannot prove the function returns the right answer</strong>. In contrast, Pragma can do this. You write a contract stating what the function promises, and the verifier proves every line of code upholds that promise for every possible input — <em>not by testing, by proof</em>.</p>
 
 <h3>The bug that looks correct</h3>
 
@@ -436,7 +436,7 @@ println!(<span class="str">"{}"</span>, p);
   </div>
 </div>
 
-<p>The contract is three lines. It fully specifies what <code>clamp</code> must do. The verifier doesn't need to know where the bug is — it tries to prove the contract holds and fails. The developer finds the bug before a binary exists. <strong>This is all optional.</strong> Features if you want them, but not features you have to use — unlike Rust's memory safety.</p>
+<p>The contract is three lines. It fully specifies what <code>clamp</code> must do. The verifier doesn't need to know where the bug is — it tries to prove the contract holds and fails. The developer finds the bug before a binary exists. <strong>This is all optional.</strong> They're features if you want them, but not features you have to use — unlike Rust's memory safety.</p>
 
 <h3>What you can put in a contract</h3>
 
@@ -469,7 +469,7 @@ println!(<span class="str">"{}"</span>, p);
 
 <p>WP does the same thing with code. Starting from your postcondition — what the function must guarantee at the end — it walks backwards through every line, asking: <em>what has to be true here for that final guarantee to hold?</em> This generates a set of conditions called <strong>verification conditions</strong>. Each one is a precise mathematical statement. They get handed to an <strong>SMT solver</strong> — software that is very good at deciding whether a mathematical claim is always true, or whether it can be broken. If the solver confirms every condition, the proof is complete. If any condition fails, it produces a concrete counterexample: here is the exact input that breaks your contract.</p>
 
-<p>SMT solvers are the same technology used to verify processor designs at Intel and AMD, ensure safety properties in aircraft control systems, and audit financial contracts. Applying them to everyday compiled programs is what's new.</p>
+<p>SMT solvers are the same technology used to verify processor designs at Intel and AMD, ensure safety properties in aircraft control systems, and audit financial contracts. Shipping a language with this as a built-in default feature is what's new.</p>
 
 <div class="note">
   <strong>No annotation needed for memory safety.</strong>
@@ -488,7 +488,7 @@ println!(<span class="str">"{}"</span>, p);
 
 <h3>MemResistant — hardened, not proven</h3>
 
-<p>If you don't want to go through formal proof — you don't have to. MemResistant is the alternative. It doesn't prove. It arms. The binary is built with a full stack of runtime safety detectors that catch unsafe behavior the moment it occurs, aborting with a precise diagnostic instead of silently corrupting memory.</p>
+<p>If you don't want to go through formal proof, you don't have to. MemResistant is the <strong>still-optional alternative</strong>. It doesn't prove, but it gives confidence. The binary is built with a full stack of runtime safety detectors that catch unsafe behavior the moment it occurs, aborting with a precise diagnostic instead of silently corrupting memory.</p>
 
 <table>
   <tr><th>Detector</th><th>Catches</th></tr>
@@ -503,7 +503,7 @@ println!(<span class="str">"{}"</span>, p);
 
 <div class="note">
   <strong>Use MemResistant during development.</strong>
-  Fast to build, immediate diagnostics on any unsafe behavior. You get a precise crash with a clear message instead of a silent corrupt state. The right tool while iterating.
+  Fast to build, immediate diagnostics on any unsafe behavior. You get a precise crash with a clear message instead of a silent corrupt state. It's the right tool if you don't want to deal with proofing or it's unnecessary.
 </div>
 
 <h3>MemProof — mathematically proven</h3>
@@ -525,17 +525,17 @@ println!(<span class="str">"{}"</span>, p);
 
 <h2 id="signing">Digital Signing</h2>
 
-<p>A proof is only as trustworthy as the chain of custody behind it. Once a program is proven safe, Pragma makes that proof public and lets anyone in the world verify it — without trusting you, without trusting a central authority.</p>
+<p>A proof is only as trustworthy as the chain of custody behind it. Once a program is proven safe, Pragma makes that proof public and lets anyone in the world verify it. There's no need to trust you, trust someone else, or centralize trust with any authority.</p>
 
 <h3>Hashing</h3>
 
-<p>A hash is a mathematical function that converts any input into a fixed-length value — you can feed it a single character or an entire codebase, and it always produces exactly 64 hexadecimal characters. It only goes one way: the hash can be computed from the input, but the input cannot be reconstructed from the hash. Change even one character, and the hash changes completely and unpredictably.</p>
+<p>A hash is a mathematical function that converts any input into a fixed-length value. You can feed it a single character or an entire codebase, and it always produces exactly 64 hexadecimal characters. It only goes one way: the hash can be computed from the input, but the input cannot be reconstructed from the hash. Change even one character, and the hash changes completely and unpredictably.</p>
 
 <p>Pragma uses <strong>SHA-256</strong>, the same algorithm used across TLS certificates, Bitcoin, code signing, and modern encryption infrastructure. No two different inputs have ever been found to produce the same SHA-256 hash. That property is called collision resistance, and it is what makes the hash a trustworthy fingerprint.</p>
 
 <h3>IPFS — content-addressed storage</h3>
 
-<p>The proof certificate produced by MemProof is stored on <strong>IPFS</strong> (InterPlanetary File System), a distributed storage network. IPFS is content-addressed: the address of a file is derived from its contents. Store your certificate, get a hash back. That hash is the permanent address of those exact bytes — on any IPFS node, anywhere in the world, forever. Change one byte and you get a completely different address. The original is immutable.</p>
+<p>The proof certificate produced by MemProof is stored on <strong>IPFS</strong> (InterPlanetary File System), a distributed storage network. IPFS is content-addressed: the address of a file is derived from its contents. Store your certificate, get a hash back. That hash is the permanent address of those exact bytes — on any IPFS node, anywhere in the world, forever. The original is immutable.</p>
 
 <h3>Ethereum smart contract — public timestamp</h3>
 
