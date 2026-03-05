@@ -543,9 +543,9 @@ println!(<span class="str">"{}"</span>, p);
 
 <h3>Verification</h3>
 
-<p>To verify a piece of Pragma code you received, you compile it yourself and run MemProof. You get a hash. You compare it to what is recorded on-chain. If they match, you are looking at the exact code that was formally proven — byte for byte, character for character. If they don't match, the code has been modified since it was certified.</p>
+<p>To verify a piece of Pragma code you received, you just run MemProof and it compiles, takes the hash of what you just compiled, and compares it to what is recorded on-chain. If they match, it says so and you know you are looking at the exact code that was formally proven — byte for byte, character for character. If they don't, it tells you and you know the code has been modified since it was certified.</p>
 
-<p>You don't need to trust the developer. You don't need to trust a registry. The math and the chain do it for you.</p>
+<p>You don't need to trust a developer, a registry, or a central authority. The math and the blockchain do it all for you.</p>
 
 <div class="note">
   <strong>MemResistant runs are recorded too.</strong>
