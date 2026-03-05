@@ -400,6 +400,7 @@ hr { border: none; margin: 48px 0; }
   <a href="#base-uint">uint types</a>
 
   <div class="nav-section">Reference</div>
+  <a href="#why-base-pragma">Why Base Pragma?</a>
   <a href="#base-coming-from-c">Coming from C</a>
 </nav>
 
@@ -788,6 +789,8 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 
 <hr>
 
+<p><a href="#why-base-pragma" style="color:#cba6f7; font-family:'Share Tech Mono','Courier New',monospace; font-size:0.9rem; text-decoration:none;">Why Base Pragma?</a></p>
+
 <h2 id="base-pointers" class="anchor-target">Pointers</h2>
 <p>A pointer holds a memory address. Declared as <code>type pointer name</code>. The type tells the compiler how many bytes to read at that address and how to interpret them.</p>
 
@@ -907,14 +910,14 @@ flags <span class="op">=</span> <span class="kw">bitflip</span> flags          <
 
 <hr>
 
-<h2 id="base-pack" class="anchor-target">pack() — Struct Packing</h2>
-<p>By default the compiler may insert padding between fields to align them in memory. <code>pack()</code> removes all padding — every field follows immediately after the previous one with zero gaps. Required for network packet headers, file format structs, and hardware register maps where byte position must be exact.</p>
+<h2 id="base-pack" class="anchor-target">pack() — Object Packing</h2>
+<p>By default the compiler may insert padding between fields to align them in memory. <code>pack()</code> removes all padding — every field follows immediately after the previous one with zero gaps. Required for network packet headers and file format objects where byte position must be exact.</p>
 
 <pre>pack(PackedHeader)</pre>
 
 <div class="warn">
   <strong>Warning</strong>
-  Packed structs can cause misaligned memory access on some processor architectures, triggering a hardware fault or a silent performance penalty. Only use when exact byte layout is required.
+  Packed objects can cause misaligned memory access on some processor architectures, triggering a hardware fault or a silent performance penalty. Only use when exact byte layout is required.
 </div>
 
 <hr>
@@ -934,6 +937,11 @@ flags <span class="op">=</span> <span class="kw">bitflip</span> flags          <
   <tr><td>uint64</td><td>64-bit unsigned</td><td>0 to 18.4 × 10¹⁸</td></tr>
 </table>
 
+
+<hr>
+
+<h2 id="why-base-pragma" class="anchor-target">Why Base Pragma?</h2>
+<p>Not every program needs to manage memory, work with pointers, or think in bits. Most application code never touches any of this. Separating it into its own file type means beginners and those who don't need these details are never forced to encounter them. A <code>.run</code> file stays clean. A <code>.base</code> file signals immediately that something lower-level is happening here. That separation makes programming more comfortable for people who aren't ready for it, and clearer for those who are.</p>
 
 <hr>
 
