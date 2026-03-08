@@ -589,11 +589,11 @@ body.theme-base .readme-btn:hover {
 
   <div class="nav-section">Memory</div>
   <a href="#base-pointers">Pointers</a>
-  <a href="#base-address">address &amp; jump</a>
+  <a href="#base-address">address &amp; deref</a>
   <a href="#base-mem">mem access</a>
   <a href="#base-arithmetic">Pointer arithmetic</a>
   <a href="#base-size">size</a>
-  <a href="#base-nothing">nothing pointer</a>
+  <a href="#base-nothing">none pointer</a>
 
   <div class="nav-section">Bitwise</div>
   <a href="#base-bitwise">All bitwise ops</a>
@@ -893,7 +893,7 @@ x <span class="op">%</span> <span class="num">2</span>      <span class="cm">// 
 <hr>
 
 <h2 id="objects" class="anchor-target">Objects</h2>
-<pre><span class="kw">object</span> Player
+<pre><span class="kw">type</span> Player
   <span class="ty">string</span> name
   <span class="ty">int</span> age
   <span class="ty">float</span> score <span class="op">=</span> <span class="num">0.0</span>
@@ -901,18 +901,18 @@ x <span class="op">%</span> <span class="num">2</span>      <span class="cm">// 
   <span class="kw">function</span> greet() <span class="kw">returns</span> <span class="ty">void</span>
     <span class="kw">print</span> <span class="str">"Hi, I am "</span> <span class="op">+</span> <span class="kw">self</span>.name
   <span class="kw">end function</span>
-<span class="kw">end object</span>
+<span class="kw">end type</span>
 
-<span class="kw">object</span> ProPlayer <span class="kw">inherits</span> Player <span class="kw">interfaces</span> Ranked
+<span class="kw">type</span> ProPlayer <span class="kw">inherits</span> Player <span class="kw">interfaces</span> Ranked
   <span class="ty">int</span> rank
-<span class="kw">end object</span>
+<span class="kw">end type</span>
 
 Player p <span class="op">=</span> <span class="kw">new</span> Player(<span class="str">"Alex"</span>, <span class="num">25</span>, <span class="num">98.5</span>)
 <span class="kw">print</span> p.name</pre>
 
 <div class="cfc">
   <strong>Coming from C</strong>
-  <code>object</code> is a <code>struct</code>. Plain field declarations compile to an identical memory layout. Methods, inheritance, and interfaces are additive — ignore them and an object is exactly a struct.
+  <code>type</code> is a <code>struct</code>. Plain field declarations compile to an identical memory layout. Methods, inheritance, and interfaces are additive — ignore them and a type is exactly a struct.
 </div>
 
 <hr>
@@ -970,7 +970,7 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 <h3>Syntax structure</h3>
 <table>
   <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
-  <tr><td><code>{ }</code> blocks</td><td><code>end keyword</code></td><td>Every block closes with <code>end if</code>, <code>end function</code>, <code>end object</code>, etc.</td></tr>
+  <tr><td><code>{ }</code> blocks</td><td><code>end keyword</code></td><td>Every block closes with <code>end if</code>, <code>end function</code>, <code>end type</code>, etc.</td></tr>
   <tr><td>Semicolons <code>;</code></td><td>Newlines</td><td>No semicolons. One statement per line.</td></tr>
   <tr><td><code>// comment</code></td><td><code>// comment</code></td><td>Identical.</td></tr>
   <tr><td><code>(int)x</code></td><td><code>change(x)-&gt;int</code></td><td>Explicit cast. Works for <code>float</code>, <code>string</code>, <code>bool</code> too.</td></tr>
@@ -979,7 +979,7 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 <h3>Keywords</h3>
 <table>
   <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
-  <tr><td><code>struct { ... }</code></td><td><code>object ... end object</code></td><td>Same concept. Pragma objects can also have methods, inheritance, and interfaces — but plain field declarations compile identically to a C struct.</td></tr>
+  <tr><td><code>struct { ... }</code></td><td><code>type ... end type</code></td><td>Same concept. Pragma types can also have methods, inheritance, and interfaces — but plain field declarations compile identically to a C struct.</td></tr>
   <tr><td><code>enum { A=1 }</code></td><td><code>fixed ... end fixed</code></td><td>Access members as <code>Name.member</code></td></tr>
   <tr><td><code>#define MAX 100</code></td><td><code>constant int MAX = 100</code></td><td>Typed and scoped — no preprocessor macro</td></tr>
   <tr><td><code>NULL</code></td><td><code>empty</code></td><td>Null literal</td></tr>
@@ -1027,13 +1027,13 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 <hr>
 
 <h2 id="base-pointers" class="anchor-target">Pointers</h2>
-<p>A pointer holds a memory address. Declared as <code>type pointer name</code>. The type tells the compiler how many bytes to read at that address and how to interpret them.</p>
+<p>A pointer holds a memory address. Declared as <code>type &lt;name&gt;</code>. The type tells the compiler how many bytes to read at that address and how to interpret them.</p>
 
 <pre><span class="ty">int</span> x <span class="op">=</span> <span class="num">42</span>
-<span class="ty">int</span> <span class="kw">pointer</span> p <span class="op">=</span> <span class="kw">address</span><span class="ang">&lt;</span>x<span class="ang">&gt;</span>      <span class="cm">// p holds the address of x</span>
+<span class="ty">int</span> <span class="ang">&lt;</span>p<span class="ang">&gt;</span> <span class="op">=</span> <span class="kw">address</span>(x)      <span class="cm">// p holds the address of x</span>
 
 <span class="ty">int8</span> b <span class="op">=</span> <span class="num">7</span>
-<span class="ty">int8</span> <span class="kw">pointer</span> bp <span class="op">=</span> <span class="kw">address</span><span class="ang">&lt;</span>b<span class="ang">&gt;</span>    <span class="cm">// 8-bit pointer</span></pre>
+<span class="ty">int8</span> <span class="ang">&lt;</span>bp<span class="ang">&gt;</span> <span class="op">=</span> <span class="kw">address</span>(b)    <span class="cm">// 8-bit pointer</span></pre>
 
 <div class="note">
   <strong>The angle bracket rule</strong>
@@ -1042,27 +1042,27 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 
 <div class="cfc">
   <strong>Coming from C</strong>
-  <code>int pointer p = address&lt;x&gt;</code> is <code>int *p = &amp;x</code> in C. The type comes first, <code>pointer</code> replaces <code>*</code>, and <code>address&lt;&gt;</code> replaces <code>&amp;</code>.
+  <code>int &lt;p&gt; = address(x)</code> is <code>int *p = &amp;x</code> in C. The type comes first, angle brackets wrap the pointer name, and <code>address()</code> replaces <code>&amp;</code>.
 </div>
 
 <hr>
 
-<h2 id="base-address" class="anchor-target">address and jump</h2>
+<h2 id="base-address" class="anchor-target">address and deref</h2>
 
 <table>
   <tr><th>Pragma</th><th>C equivalent</th><th>Meaning</th></tr>
-  <tr><td>address&lt;x&gt;</td><td>&amp;x</td><td>Take the address of variable x</td></tr>
-  <tr><td>jump&lt;p&gt;</td><td>*p</td><td>Read the value at the address in p</td></tr>
+  <tr><td>address(x)</td><td>&amp;x</td><td>Take the address of variable x</td></tr>
+  <tr><td>deref(&lt;p&gt;)</td><td>*p</td><td>Read the value at the address in p</td></tr>
 </table>
 
 <pre><span class="ty">int</span> val <span class="op">=</span> <span class="num">99</span>
-<span class="ty">int</span> <span class="kw">pointer</span> p <span class="op">=</span> <span class="kw">address</span><span class="ang">&lt;</span>val<span class="ang">&gt;</span>
-<span class="ty">int</span> copy <span class="op">=</span> <span class="kw">jump</span><span class="ang">&lt;</span>p<span class="ang">&gt;</span>             <span class="cm">// copy = 99</span>
-<span class="kw">jump</span><span class="ang">&lt;</span>p<span class="ang">&gt;</span> <span class="op">=</span> <span class="num">100</span>                  <span class="cm">// write through pointer — val is now 100</span></pre>
+<span class="ty">int</span> <span class="ang">&lt;</span>p<span class="ang">&gt;</span> <span class="op">=</span> <span class="kw">address</span>(val)
+<span class="ty">int</span> copy <span class="op">=</span> <span class="kw">deref</span>(<span class="ang">&lt;</span>p<span class="ang">&gt;</span>)             <span class="cm">// copy = 99</span>
+<span class="kw">deref</span>(<span class="ang">&lt;</span>p<span class="ang">&gt;</span>) <span class="op">=</span> <span class="num">100</span>                  <span class="cm">// write through pointer — val is now 100</span></pre>
 
 <div class="cfc">
   <strong>Coming from C</strong>
-  <code>jump&lt;p&gt;</code> is <code>*p</code> in C. Reading: <code>int copy = jump&lt;p&gt;</code> is <code>int copy = *p</code>. Writing: <code>jump&lt;p&gt; = 100</code> is <code>*p = 100</code>.
+  <code>deref(&lt;p&gt;)</code> is <code>*p</code> in C. Reading: <code>int copy = deref(&lt;p&gt;)</code> is <code>int copy = *p</code>. Writing: <code>deref(&lt;p&gt;) = 100</code> is <code>*p = 100</code>.
 </div>
 
 <hr>
@@ -1070,40 +1070,40 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 <h2 id="base-mem" class="anchor-target">mem — Raw Address Access</h2>
 <p>Read or write at any numeric address. Used for memory-mapped hardware registers.</p>
 
-<pre><span class="ty">uint32</span> <span class="kw">pointer</span> reg <span class="op">=</span> <span class="kw">address</span><span class="ang">&lt;</span>someVar<span class="ang">&gt;</span>
-<span class="kw">mem</span><span class="ang">&lt;</span>reg<span class="ang">&gt;</span>                          <span class="cm">// read at address reg</span>
-<span class="kw">mem</span><span class="ang">&lt;</span><span class="num">0xDEAD0000</span><span class="ang">&gt;</span>                  <span class="cm">// read at hard-coded address</span>
-<span class="kw">mem</span><span class="ang">&lt;</span><span class="num">0xDEAD0000</span><span class="ang">&gt;</span> <span class="op">=</span> <span class="num">1</span>              <span class="cm">// write to that address</span></pre>
+<pre><span class="ty">uint32</span> <span class="ang">&lt;</span>reg<span class="ang">&gt;</span> <span class="op">=</span> <span class="kw">address</span>(someVar)
+<span class="kw">mem</span>(reg)                          <span class="cm">// read at address reg</span>
+<span class="kw">mem</span>(<span class="num">0xDEAD0000</span>)                  <span class="cm">// read at hard-coded address</span>
+<span class="kw">mem</span>(<span class="num">0xDEAD0000</span>) <span class="op">=</span> <span class="num">1</span>              <span class="cm">// write to that address</span></pre>
 
 <hr>
 
 <h2 id="base-arithmetic" class="anchor-target">Pointer Arithmetic</h2>
-<p>Offset into a pointer using angle brackets. Offset units are the pointer's element type — not raw bytes.</p>
+<p>Offset into a pointer using addition. Offset units are the pointer's element type — not raw bytes.</p>
 
-<pre><span class="ty">int</span> <span class="kw">pointer</span> p <span class="op">=</span> <span class="kw">address</span><span class="ang">&lt;</span>arr<span class="ang">&gt;</span>
-p<span class="ang">&lt;</span><span class="num">0</span><span class="ang">&gt;</span>          <span class="cm">// element 0 — same as jump&lt;p&gt;</span>
-p<span class="ang">&lt;</span><span class="num">5</span><span class="ang">&gt;</span>          <span class="cm">// element 5 — like *(p+5) in C</span>
-p<span class="ang">&lt;</span>i <span class="op">+</span> <span class="num">2</span><span class="ang">&gt;</span>      <span class="cm">// element i+2</span>
-p<span class="ang">&lt;</span><span class="op">+</span><span class="num">3</span><span class="ang">&gt;</span>         <span class="cm">// advance 3 from current position</span></pre>
+<pre><span class="ty">int</span> <span class="ang">&lt;</span>p<span class="ang">&gt;</span> <span class="op">=</span> <span class="kw">address</span>(arr)
+<span class="ang">&lt;</span>p<span class="ang">&gt;</span> <span class="op">+</span> <span class="num">0</span>       <span class="cm">// element 0 — same as deref(&lt;p&gt;)</span>
+<span class="ang">&lt;</span>p<span class="ang">&gt;</span> <span class="op">+</span> <span class="num">5</span>       <span class="cm">// element 5 — like *(p+5) in C</span>
+<span class="ang">&lt;</span>p<span class="ang">&gt;</span> <span class="op">+</span> (i <span class="op">+</span> <span class="num">2</span>) <span class="cm">// element i+2</span>
+<span class="ang">&lt;</span>p<span class="ang">&gt;</span> <span class="op">+</span> <span class="num">3</span>       <span class="cm">// advance 3 from current position</span></pre>
 
 <hr>
 
 <h2 id="base-size" class="anchor-target">size</h2>
 <p>Byte size of a type. Equivalent to <code>sizeof</code> in C.</p>
 
-<pre><span class="ty">int</span> s1 <span class="op">=</span> <span class="kw">size</span><span class="ang">&lt;</span><span class="ty">int64</span><span class="ang">&gt;</span>    <span class="cm">// 8</span>
-<span class="ty">int</span> s2 <span class="op">=</span> <span class="kw">size</span><span class="ang">&lt;</span><span class="ty">float</span><span class="ang">&gt;</span>     <span class="cm">// 4</span>
-<span class="ty">int</span> s3 <span class="op">=</span> <span class="kw">size</span><span class="ang">&lt;</span><span class="ty">uint8</span><span class="ang">&gt;</span>    <span class="cm">// 1</span></pre>
+<pre><span class="ty">int</span> s1 <span class="op">=</span> <span class="kw">size</span>(<span class="ty">int64</span>)    <span class="cm">// 8</span>
+<span class="ty">int</span> s2 <span class="op">=</span> <span class="kw">size</span>(<span class="ty">float</span>)     <span class="cm">// 4</span>
+<span class="ty">int</span> s3 <span class="op">=</span> <span class="kw">size</span>(<span class="ty">uint8</span>)    <span class="cm">// 1</span></pre>
 
 <hr>
 
-<h2 id="base-nothing" class="anchor-target">nothing pointer — Generic Pointer</h2>
-<p>A pointer with no specific type. Points to "nothing in particular." Equivalent to <code>void*</code> in C. Use when a function must accept or return a pointer of any type.</p>
+<h2 id="base-nothing" class="anchor-target">none pointer — Generic Pointer</h2>
+<p>A pointer with no specific type. Points to nothing in particular. Equivalent to <code>void*</code> in C. Use when a function must accept or return a pointer of any type.</p>
 
-<pre>nothing <span class="kw">pointer</span> generic <span class="op">=</span> <span class="kw">address</span><span class="ang">&lt;</span>anyVar<span class="ang">&gt;</span>
+<pre><span class="ty">none</span> <span class="ang">&lt;</span>generic<span class="ang">&gt;</span> <span class="op">=</span> <span class="kw">address</span>(anyVar)
 
 <span class="cm">// Assign to a typed pointer — the declaration carries the type:</span>
-<span class="ty">int</span> <span class="kw">pointer</span> typed <span class="op">=</span> generic</pre>
+<span class="ty">int</span> <span class="ang">&lt;</span>typed<span class="ang">&gt;</span> <span class="op">=</span> generic</pre>
 
 <hr>
 
@@ -1140,13 +1140,13 @@ flags <span class="op">=</span> <span class="kw">bitflip</span> flags          <
 <hr>
 
 <h2 id="base-bitfields" class="anchor-target">Bit Fields</h2>
-<p>Declare a field with a specific number of bits using angle brackets after the name. Fields pack into adjacent bits in declaration order. Group them in an object to control struct layout.</p>
+<p>Declare a field with a specific number of bits using dot notation after the type. Fields pack into adjacent bits in declaration order. Group them in a type to control struct layout.</p>
 
-<pre><span class="kw">object</span> PackedHeader
-  <span class="ty">uint</span> is_valid <span class="ang">&lt;</span><span class="num">1</span><span class="ang">&gt;</span>    <span class="cm">// 1 bit</span>
-  <span class="ty">uint</span> count    <span class="ang">&lt;</span><span class="num">7</span><span class="ang">&gt;</span>    <span class="cm">// 7 bits — total so far: 1 byte</span>
-  <span class="ty">uint32</span> value         <span class="cm">// 4 bytes, no bit constraint</span>
-<span class="kw">end object</span></pre>
+<pre><span class="kw">type</span> PackedHeader
+  <span class="ty">uint</span>.bits=1 is_valid    <span class="cm">// 1 bit</span>
+  <span class="ty">uint</span>.bits=7 count       <span class="cm">// 7 bits — total so far: 1 byte</span>
+  <span class="ty">uint32</span> value            <span class="cm">// 4 bytes, no bit constraint</span>
+<span class="kw">end type</span></pre>
 
 <div class="note">
   <strong>Note</strong>
@@ -1155,14 +1155,14 @@ flags <span class="op">=</span> <span class="kw">bitflip</span> flags          <
 
 <hr>
 
-<h2 id="base-pack" class="anchor-target">pack() — Object Packing</h2>
-<p>By default the compiler may insert padding between fields to align them in memory. <code>pack()</code> removes all padding — every field follows immediately after the previous one with zero gaps. Required for network packet headers and file format objects where byte position must be exact.</p>
+<h2 id="base-pack" class="anchor-target">pack() — Type Packing</h2>
+<p>By default the compiler may insert padding between fields to align them in memory. <code>pack()</code> removes all padding — every field follows immediately after the previous one with zero gaps. Required for network packet headers and file format types where byte position must be exact.</p>
 
 <pre>pack(PackedHeader)</pre>
 
 <div class="warn">
   <strong>Warning</strong>
-  Packed objects can cause misaligned memory access on some processor architectures, triggering a hardware fault or a silent performance penalty. Only use when exact byte layout is required.
+  Packed types can cause misaligned memory access on some processor architectures, triggering a hardware fault or a silent performance penalty. Only use when exact byte layout is required.
 </div>
 
 <div class="cfc">
@@ -1201,10 +1201,10 @@ flags <span class="op">=</span> <span class="kw">bitflip</span> flags          <
 <h3>Types and Declarations</h3>
 <table>
   <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
-  <tr><td><code>struct { ... }</code></td><td><code>object ... end object</code></td><td>Add methods, inheritance, and interfaces — otherwise identical to a struct</td></tr>
+  <tr><td><code>struct { ... }</code></td><td><code>type ... end type</code></td><td>Add methods, inheritance, and interfaces — otherwise identical to a struct</td></tr>
   <tr><td><code>enum { A=1, B=2 }</code></td><td><code>fixed ... end fixed</code></td><td>Access as <code>Name.member</code></td></tr>
   <tr><td><code>#define MAX 100</code></td><td><code>constant int MAX = 100</code></td><td>Typed, scoped constant — no preprocessor</td></tr>
-  <tr><td><code>void *ptr</code></td><td><code>nothing pointer ptr</code></td><td>Generic pointer — cast before reading</td></tr>
+  <tr><td><code>void *ptr</code></td><td><code>none &lt;ptr&gt;</code></td><td>Generic pointer — cast before reading</td></tr>
   <tr><td><code>NULL</code></td><td><code>empty</code></td><td>Null literal</td></tr>
   <tr><td><code>void</code> (return)</td><td><code>nothing</code></td><td>Function returns nothing</td></tr>
   <tr><td><code>__attribute__((packed))</code></td><td><code>pack(TypeName)</code></td><td>Remove struct padding</td></tr>
@@ -1213,11 +1213,11 @@ flags <span class="op">=</span> <span class="kw">bitflip</span> flags          <
 <h3>Memory Operations</h3>
 <table>
   <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
-  <tr><td><code>&amp;x</code></td><td><code>address&lt;x&gt;</code></td><td>Take the address of x</td></tr>
-  <tr><td><code>*ptr</code></td><td><code>jump&lt;ptr&gt;</code></td><td>Read or write through pointer</td></tr>
-  <tr><td><code>*(ptr + n)</code></td><td><code>ptr&lt;n&gt;</code></td><td>Offset access — units are element size, not bytes</td></tr>
-  <tr><td><code>sizeof(T)</code></td><td><code>size&lt;T&gt;</code></td><td>Byte size of type T</td></tr>
-  <tr><td><code>*(uint32*)0xDEAD</code></td><td><code>mem&lt;0xDEAD&gt;</code></td><td>Read/write at hard-coded address</td></tr>
+  <tr><td><code>&amp;x</code></td><td><code>address(x)</code></td><td>Take the address of x</td></tr>
+  <tr><td><code>*ptr</code></td><td><code>deref(&lt;ptr&gt;)</code></td><td>Read or write through pointer</td></tr>
+  <tr><td><code>*(ptr + n)</code></td><td><code>&lt;ptr&gt; + n</code></td><td>Offset access — units are element size, not bytes</td></tr>
+  <tr><td><code>sizeof(T)</code></td><td><code>size(T)</code></td><td>Byte size of type T</td></tr>
+  <tr><td><code>*(uint32*)0xDEAD</code></td><td><code>mem(0xDEAD)</code></td><td>Read/write at hard-coded address</td></tr>
 </table>
 
 <h3>Control Flow</h3>
@@ -1254,8 +1254,8 @@ flags <span class="op">=</span> <span class="kw">bitflip</span> flags          <
 </table>
 
 <div class="note">
-  <strong>object vs struct</strong>
-  In C, a <code>struct</code> is a named group of typed fields — nothing more. A Pragma <code>object</code> is the same thing, with the option to add methods, inheritance, interfaces, default field values, and constructors. If you ignore those features and just declare fields, it compiles to an identical struct. There is no separate <code>struct</code> keyword in Pragma because the only difference is capability, not concept.
+  <strong>type vs struct</strong>
+  In C, a <code>struct</code> is a named group of typed fields — nothing more. A Pragma <code>type</code> is the same thing, with the option to add methods, inheritance, interfaces, default field values, and constructors. If you ignore those features and just declare fields, it compiles to an identical struct. There is no separate <code>struct</code> keyword in Pragma because the only difference is capability, not concept.
 </div>
 
 </div><!-- /content-base -->
