@@ -570,7 +570,7 @@ body.theme-base .readme-btn:hover {
 
   <div class="nav-section">I/O &amp; Errors</div>
   <a href="#print">Print</a>
-  <a href="#try-catch">Try / Catch / Raise</a>
+  <a href="#try-catch">Try / Catch / Error</a>
 
   <div class="nav-section">Reference</div>
   <a href="#coming-from-c">Coming from C</a>
@@ -965,11 +965,11 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 
 <hr>
 
-<h2 id="try-catch" class="anchor-target">Try / Catch / Raise</h2>
-<p>Throw an exception with <code>raise</code>. Catch with one or more <code>catch</code> clauses. Multiple exception types in one catch use <code>or</code>.</p>
+<h2 id="try-catch" class="anchor-target">Try / Catch / Error</h2>
+<p>Throw an exception with <code>error</code>. Catch with one or more <code>catch</code> clauses. Multiple exception types in one catch use <code>or</code>.</p>
 <pre><span class="kw">function</span> divide(<span class="ty">int</span> a, <span class="ty">int</span> b) <span class="kw">returns</span> <span class="ty">int</span>
   <span class="kw">if</span> b == <span class="num">0</span>
-    <span class="kw">raise</span> DivisionByZero <span class="str">"cannot divide by zero"</span>
+    <span class="kw">error</span> DivisionByZero <span class="str">"cannot divide by zero"</span>
   <span class="kw">end if</span>
   <span class="kw">return</span> a / b
 <span class="kw">end function</span>
@@ -1037,7 +1037,7 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 <h3>Exceptions</h3>
 <table>
   <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
-  <tr><td><code>longjmp</code></td><td><code>raise ExcType "msg"</code></td><td>Throw an exception. Any identifier is a valid exception type.</td></tr>
+  <tr><td><code>longjmp</code></td><td><code>error ExcType "msg"</code></td><td>Throw an exception. Any identifier is a valid exception type.</td></tr>
   <tr><td><code>setjmp</code></td><td><code>try ... catch(T e) ... end try</code></td><td>Implemented via setjmp/longjmp under the hood.</td></tr>
 </table>
 
