@@ -570,7 +570,7 @@ body.theme-base .readme-btn:hover {
 
   <div class="nav-section">I/O &amp; Errors</div>
   <a href="#print">Print</a>
-  <a href="#try-catch">Try / Catch</a>
+  <a href="#try-catch">Try / Catch / Raise</a>
 
   <div class="nav-section">Reference</div>
   <a href="#coming-from-c">Coming from C</a>
@@ -602,6 +602,10 @@ body.theme-base .readme-btn:hover {
   <div class="nav-section">Layout</div>
   <a href="#base-pack">pack()</a>
   <a href="#base-uint">uint types</a>
+  <a href="#base-variant">variant (union)</a>
+
+  <div class="nav-section">Code</div>
+  <a href="#base-funcptr">Function Pointers</a>
 
   <div class="nav-section">Reference</div>
   <a href="#why-base-pragma">Why Base Pragma?</a>
@@ -741,9 +745,14 @@ names[<span class="num">1</span>]           <span class="cm">// "Bob"</span>
 <span class="ty">list</span>[<span class="ty">int</span>[]] nums   <span class="cm">// empty list, no capacity hint</span></pre>
 
 <h3>map</h3>
-<p><code>[]</code> for unbounded dynamic. <code>[n]</code> for initial capacity hint.</p>
-<pre><span class="ty">map</span>[<span class="ty">string</span>, <span class="ty">int</span>][] wordCount
-<span class="ty">map</span>[<span class="ty">string</span>, <span class="ty">float</span>][<span class="num">10</span>] scores</pre>
+<p>Fixed capacity declared at definition. Key and value types in brackets, then capacity, then name.</p>
+<pre><span class="ty">map</span> [<span class="ty">string</span>, <span class="ty">int</span>][<span class="num">50</span>] wordCount
+<span class="ty">map</span> [<span class="ty">string</span>, <span class="ty">float</span>][<span class="num">10</span>] scores</pre>
+<p>Access and mutation use index syntax — the compiler generates helper functions:</p>
+<pre>wordCount[<span class="str">"hello"</span>] <span class="op">=</span> <span class="num">1</span>           <span class="cm">// set</span>
+<span class="ty">int</span> n <span class="op">=</span> wordCount[<span class="str">"hello"</span>]       <span class="cm">// get</span>
+wordCount_has(<span class="str">"hello"</span>)           <span class="cm">// 1 if key exists</span>
+wordCount_remove(<span class="str">"hello"</span>)        <span class="cm">// delete key</span></pre>
 
 <hr>
 
@@ -753,7 +762,8 @@ names[<span class="num">1</span>]           <span class="cm">// "Bob"</span>
   <tr><th>Category</th><th>Pragma</th><th>C equivalent</th></tr>
   <tr><td>Logical AND</td><td><code>and</code></td><td><code>&amp;&amp;</code></td></tr>
   <tr><td>Logical OR</td><td><code>or</code></td><td><code>||</code></td></tr>
-  <tr><td>Logical NOT (prefix)</td><td><code>not x</code></td><td><code>!x</code></td></tr>
+  <tr><td>Logical NOT (prefix)</td><td><code>not x</code> or <code>!x</code></td><td><code>!x</code></td></tr>
+  <tr><td>Negation</td><td><code>-x</code> or <code>negate x</code></td><td><code>-x</code></td></tr>
   <tr><td>Equal</td><td><code>==</code>, <code>equals</code></td><td>same</td></tr>
   <tr><td>Not equal</td><td><code>!=</code>, <code>not</code></td><td>same</td></tr>
   <tr><td>Comparison</td><td><code>&lt;  &gt;  &lt;=  &gt;=</code></td><td>same</td></tr>
@@ -852,14 +862,20 @@ x <span class="op">%</span> <span class="num">2</span>      <span class="cm">// 
 <hr>
 
 <h2 id="switch" class="anchor-target">Switch — fall-through</h2>
-<p>Execution continues into the next case unless <code>escape</code> stops it.</p>
+<p>Cases use the <code>when</code> keyword. Execution falls through to the next case unless <code>escape</code> stops it.</p>
 <pre><span class="kw">switch</span> code
-  <span class="num">1</span>: <span class="kw">print</span> <span class="str">"one"</span>
-  <span class="num">2</span>: <span class="kw">print</span> <span class="str">"two"</span>
-     <span class="kw">escape</span>
-  <span class="num">3</span>: <span class="kw">print</span> <span class="str">"three"</span>
-     <span class="kw">escape</span>
+  <span class="kw">when</span> <span class="num">1</span>
+    <span class="kw">print</span> <span class="str">"one"</span>
+  <span class="kw">when</span> <span class="num">2</span>
+    <span class="kw">print</span> <span class="str">"two"</span>
+    <span class="kw">escape</span>
+  <span class="kw">when</span> <span class="num">3</span>
+    <span class="kw">print</span> <span class="str">"three"</span>
+    <span class="kw">escape</span>
+  <span class="kw">default</span>
+    <span class="kw">print</span> <span class="str">"other"</span>
 <span class="kw">end switch</span></pre>
+<p>Fall-through: omit <code>escape</code> between consecutive <code>when</code> clauses and execution continues into the next one — identical to C behaviour.</p>
 
 <hr>
 
@@ -949,17 +965,28 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 
 <hr>
 
-<h2 id="try-catch" class="anchor-target">Try / Catch</h2>
-<p>Multiple exception types in one catch use <code>or</code>.</p>
-<pre><span class="kw">try</span>
-  <span class="cm">// risky code</span>
-<span class="kw">catch</span>(IOException err)
-  <span class="kw">print</span> <span class="str">"IO error"</span>
+<h2 id="try-catch" class="anchor-target">Try / Catch / Raise</h2>
+<p>Throw an exception with <code>raise</code>. Catch with one or more <code>catch</code> clauses. Multiple exception types in one catch use <code>or</code>.</p>
+<pre><span class="kw">function</span> divide(<span class="ty">int</span> a, <span class="ty">int</span> b) <span class="kw">returns</span> <span class="ty">int</span>
+  <span class="kw">if</span> b == <span class="num">0</span>
+    <span class="kw">raise</span> DivisionByZero <span class="str">"cannot divide by zero"</span>
+  <span class="kw">end if</span>
+  <span class="kw">return</span> a / b
+<span class="kw">end function</span>
+
+<span class="kw">try</span>
+  <span class="ty">int</span> result <span class="op">=</span> divide(<span class="num">10</span>, <span class="num">0</span>)
+<span class="kw">catch</span>(DivisionByZero err)
+  <span class="kw">print</span> <span class="str">"caught divide by zero"</span>
 <span class="kw">end catch</span>
 <span class="kw">catch</span>(RuntimeError <span class="kw">or</span> ValueError err)
-  <span class="kw">print</span> <span class="str">"runtime error"</span>
+  <span class="kw">print</span> <span class="str">"other error"</span>
 <span class="kw">end catch</span>
 <span class="kw">end try</span></pre>
+<div class="note">
+  <strong>Note</strong>
+  Exception type names are any identifier — they are defined by use, not declared in advance. An unhandled exception prints to stderr and exits. Implemented via <code>setjmp</code>/<code>longjmp</code> — no heap allocation, no C++ runtime.
+</div>
 
 
 <hr>
@@ -980,6 +1007,7 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 <table>
   <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
   <tr><td><code>struct { ... }</code></td><td><code>type ... end type</code></td><td>Same concept. Pragma types can also have methods, inheritance, and interfaces — but plain field declarations compile identically to a C struct.</td></tr>
+  <tr><td><code>union { ... }</code></td><td><code>variant ... end variant</code></td><td>All fields share the same memory. Available in Base Pragma.</td></tr>
   <tr><td><code>enum { A=1 }</code></td><td><code>fixed ... end fixed</code></td><td>Access members as <code>Name.member</code></td></tr>
   <tr><td><code>#define MAX 100</code></td><td><code>constant int MAX = 100</code></td><td>Typed and scoped — no preprocessor macro</td></tr>
   <tr><td><code>NULL</code></td><td><code>empty</code></td><td>Null literal</td></tr>
@@ -993,7 +1021,8 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
   <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
   <tr><td><code>&amp;&amp;</code></td><td><code>and</code></td><td>Logical AND</td></tr>
   <tr><td><code>||</code></td><td><code>or</code></td><td>Logical OR</td></tr>
-  <tr><td><code>!</code></td><td><code>not</code></td><td>Logical NOT</td></tr>
+  <tr><td><code>!</code></td><td><code>!x</code> or <code>not x</code></td><td>Logical NOT — both accepted</td></tr>
+  <tr><td><code>-x</code></td><td><code>-x</code> or <code>negate x</code></td><td>Arithmetic negation — both accepted</td></tr>
   <tr><td><code>==</code></td><td><code>==</code></td><td>Identical. Also accepts <code>equals</code> as an alternative.</td></tr>
   <tr><td><code>!=</code></td><td><code>!=</code></td><td>Identical. Also accepts <code>not</code> as an alternative (<code>x not y</code>).</td></tr>
 </table>
@@ -1001,8 +1030,15 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 <h3>Switch / match</h3>
 <table>
   <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
-  <tr><td><code>switch</code> (falls through)</td><td><code>switch</code></td><td>Identical fall-through behaviour</td></tr>
+  <tr><td><code>switch</code> (falls through)</td><td><code>switch ... when N</code></td><td>Cases use <code>when</code> keyword. Fall-through identical to C.</td></tr>
   <tr><td>—</td><td><code>match</code></td><td>No fall-through. Stops at first match. Use this by default.</td></tr>
+</table>
+
+<h3>Exceptions</h3>
+<table>
+  <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
+  <tr><td><code>longjmp</code></td><td><code>raise ExcType "msg"</code></td><td>Throw an exception. Any identifier is a valid exception type.</td></tr>
+  <tr><td><code>setjmp</code></td><td><code>try ... catch(T e) ... end try</code></td><td>Implemented via setjmp/longjmp under the hood.</td></tr>
 </table>
 
 <div class="cfc">
@@ -1190,6 +1226,60 @@ flags <span class="op">=</span> <span class="kw">bitflip</span> flags          <
 
 <hr>
 
+<h2 id="base-variant" class="anchor-target">variant — Union Types</h2>
+<p>A <code>variant</code> holds one of several fields at a time in the same memory. All fields share the same bytes — writing one overwrites the others. Compiles directly to a C <code>union</code>.</p>
+
+<pre><span class="kw">variant</span> Packet
+  <span class="ty">int</span> code
+  <span class="ty">double</span> value
+  chararray_4 bytes          <span class="cm">// char bytes[4] — fixed-size char array</span>
+<span class="kw">end variant</span>
+
+<span class="ty">Packet</span> p
+p.code <span class="op">=</span> <span class="num">42</span>
+p.value <span class="op">=</span> <span class="num">3.14</span>             <span class="cm">// overwrites p.code — same memory</span></pre>
+
+<div class="note">
+  <strong>Note</strong>
+  Reading a field you did not most recently write gives undefined results — that is the nature of a union. Use a separate <code>int</code> tag field in a <code>type</code> to track which field is active.
+</div>
+
+<div class="cfc">
+  <strong>Coming from C</strong>
+  <code>variant Name ... end variant</code> is <code>typedef union Name { ... } Name;</code> in C. Identical semantics and memory layout.
+</div>
+
+<hr>
+
+<h2 id="base-funcptr" class="anchor-target">Function Pointers</h2>
+<p>Declared with angle brackets around the name, same as any other pointer. Initialised by assigning a function name (append empty parentheses to trigger pointer detection).</p>
+
+<pre><span class="kw">function</span> square(<span class="ty">int</span> x) <span class="kw">returns</span> <span class="ty">int</span>
+  <span class="kw">return</span> x <span class="op">*</span> x
+<span class="kw">end function</span>
+
+<span class="ty">int</span> <span class="ang">&lt;</span>fp<span class="ang">&gt;</span> <span class="op">=</span> square()           <span class="cm">// fp points to square</span>
+<span class="kw">print</span> fp(<span class="num">7</span>)                   <span class="cm">// 49</span></pre>
+
+<p>Pass a function pointer as a parameter using <code>none &lt;name&gt;</code> (void pointer). The compiler casts it correctly at the call site.</p>
+
+<pre><span class="kw">function</span> apply(<span class="ty">none</span> <span class="ang">&lt;</span>op<span class="ang">&gt;</span>, <span class="ty">int</span> a, <span class="ty">int</span> b) <span class="kw">returns</span> <span class="ty">int</span>
+  <span class="kw">return</span> op(a, b)
+<span class="kw">end function</span>
+
+<span class="kw">function</span> add(<span class="ty">int</span> a, <span class="ty">int</span> b) <span class="kw">returns</span> <span class="ty">int</span>
+  <span class="kw">return</span> a <span class="op">+</span> b
+<span class="kw">end function</span>
+
+<span class="kw">print</span> apply(add, <span class="num">10</span>, <span class="num">3</span>)       <span class="cm">// 13</span></pre>
+
+<div class="cfc">
+  <strong>Coming from C</strong>
+  <code>int &lt;fp&gt; = square()</code> compiles to <code>int (*fp)() = (int(*)())(void*)square;</code>. The <code>none &lt;op&gt;</code> parameter compiles to <code>void* op</code> and call sites emit the appropriate cast automatically.
+</div>
+
+<hr>
+
 <h2 id="why-base-pragma" class="anchor-target">Why Base Pragma?</h2>
 <p>Not every program needs to manage memory, work with pointers, or think in bits. Most application code never touches any of this. Separating it into its own file type means beginners and those who don't need these details are never forced to encounter them. A <code>.run</code> file stays clean. A <code>.base</code> file signals immediately that something lower-level is happening. That separation makes programming more comfortable for people who aren't ready for it, and clearer for those who are.</p>
 
@@ -1202,9 +1292,11 @@ flags <span class="op">=</span> <span class="kw">bitflip</span> flags          <
 <table>
   <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
   <tr><td><code>struct { ... }</code></td><td><code>type ... end type</code></td><td>Add methods, inheritance, and interfaces — otherwise identical to a struct</td></tr>
+  <tr><td><code>union { ... }</code></td><td><code>variant ... end variant</code></td><td>All fields share the same memory. Write one, the others reflect it.</td></tr>
   <tr><td><code>enum { A=1, B=2 }</code></td><td><code>fixed ... end fixed</code></td><td>Access as <code>Name.member</code></td></tr>
   <tr><td><code>#define MAX 100</code></td><td><code>constant int MAX = 100</code></td><td>Typed, scoped constant — no preprocessor</td></tr>
   <tr><td><code>void *ptr</code></td><td><code>none &lt;ptr&gt;</code></td><td>Generic pointer — cast before reading</td></tr>
+  <tr><td><code>int (*fp)()</code></td><td><code>int &lt;fp&gt; = func()</code></td><td>Function pointer. Empty-arg init syntax signals a pointer, not a call.</td></tr>
   <tr><td><code>NULL</code></td><td><code>empty</code></td><td>Null literal</td></tr>
   <tr><td><code>void</code> (return)</td><td><code>nothing</code></td><td>Function returns nothing</td></tr>
   <tr><td><code>__attribute__((packed))</code></td><td><code>pack(TypeName)</code></td><td>Remove struct padding</td></tr>
@@ -1234,14 +1326,14 @@ flags <span class="op">=</span> <span class="kw">bitflip</span> flags          <
   <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
   <tr><td><code>&amp;&amp;</code></td><td><code>and</code></td><td>Logical AND</td></tr>
   <tr><td><code>||</code></td><td><code>or</code></td><td>Logical OR</td></tr>
-  <tr><td><code>!x</code></td><td><code>not x</code></td><td>Logical NOT</td></tr>
+  <tr><td><code>!x</code></td><td><code>!x</code> or <code>not x</code></td><td>Logical NOT — both accepted</td></tr>
   <tr><td><code>==</code></td><td><code>==</code></td><td>Identical. Also accepts <code>equals</code> as an alternative.</td></tr>
   <tr><td><code>!=</code></td><td><code>!=</code></td><td>Identical. Also accepts <code>not</code> as an alternative (<code>x not y</code>).</td></tr>
   <tr><td><code>x &amp; y</code></td><td><code>x both1 y</code></td><td>Bitwise AND</td></tr>
   <tr><td><code>x | y</code></td><td><code>x either1 y</code></td><td>Bitwise OR</td></tr>
   <tr><td><code>x ^ y</code></td><td><code>x delta y</code></td><td>Bitwise XOR</td></tr>
   <tr><td><code>~x</code></td><td><code>bitflip x</code></td><td>Bitwise NOT — invert all bits</td></tr>
-  <tr><td><code>-x</code></td><td><code>negate x</code></td><td>Arithmetic negation</td></tr>
+  <tr><td><code>-x</code></td><td><code>-x</code> or <code>negate x</code></td><td>Arithmetic negation — both accepted</td></tr>
   <tr><td><code>x &lt;&lt; n</code></td><td><code>x left n</code></td><td>Left shift</td></tr>
   <tr><td><code>x &gt;&gt; n</code></td><td><code>x right n</code></td><td>Right shift</td></tr>
 </table>
