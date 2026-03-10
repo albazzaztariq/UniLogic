@@ -6,7 +6,7 @@
 
 | Page | URL |
 |------|-----|
-| Syntax Reference | https://pragma-project.github.io/Pragma-Language/syntax-reference.html |
+| Syntax Reference | https://pragma-project.github.io/Pragma-Language/ |
 | Safety & MemProof | https://pragma-project.github.io/Pragma-Language/safety.html |
 
 ## What is Pragma?
