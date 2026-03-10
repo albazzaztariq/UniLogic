@@ -17,7 +17,7 @@ Standard Pragma reads like natural language. Base Pragma adds memory management,
 
 ## Compiler
 
-Source in . Requires Python 3 and clang or gcc.
+Requires Python 3 and clang or gcc.
 
 
 
