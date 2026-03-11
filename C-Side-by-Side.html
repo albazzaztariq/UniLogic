@@ -258,42 +258,42 @@ pack(desc_ptr)
       <pre class="c-code"><span class="cm">/* copy_pte_range - copy pte entries */</span>
 <span class="kw">static</span> <span class="ty">int</span> <span class="fn">copy_pte_range</span>(<span class="kw">struct</span> vm_area_struct *dst_vma, <span class="kw">struct</span> vm_area_struct *src_vma, pmd_t *dst_pmd, pmd_t *src_pmd, <span class="ty">unsigned long</span> addr, <span class="ty">unsigned long</span> end)
 {
-    <span class="kw">struct</span> mm_struct *dst_mm = dst_vma-&gt;vm_mm;
-    <span class="kw">struct</span> mm_struct *src_mm = src_vma-&gt;vm_mm;
-    pte_t *orig_src_pte, *orig_dst_pte, *src_pte, *dst_pte, ptent; spinlock_t *src_ptl, *dst_ptl; <span class="ty">int</span> progress, nr; <span class="ty">long</span> rss[NR_MM_COUNTERS];
-    <span class="ty">int</span> ret = <span class="num">0</span>;
-    swp_entry_t entry = {<span class="num">0</span>};
-    <span class="kw">struct</span> folio *prealloc = NULL;
+  <span class="kw">struct</span> mm_struct *dst_mm = dst_vma-&gt;vm_mm;
+  <span class="kw">struct</span> mm_struct *src_mm = src_vma-&gt;vm_mm;
+  pte_t *orig_src_pte, *orig_dst_pte, *src_pte, *dst_pte, ptent; spinlock_t *src_ptl, *dst_ptl; <span class="ty">int</span> progress, nr; <span class="ty">long</span> rss[NR_MM_COUNTERS];
+  <span class="ty">int</span> ret = <span class="num">0</span>;
+  swp_entry_t entry = {<span class="num">0</span>};
+  <span class="kw">struct</span> folio *prealloc = NULL;
 
 again:
-    progress = <span class="num">0</span>;
-    <span class="fn">init_rss_vec</span>(rss);
-    src_pte = <span class="fn">pte_offset_map_lock</span>(src_mm, src_pmd, addr, &amp;src_ptl);
-    <span class="kw">if</span> (!src_pte) { <span class="fn">pmd_populate</span>(dst_mm, dst_pmd, <span class="fn">pmd_pgtable</span>(*dst_pmd)); ret = <span class="num">0</span>; <span class="kw">goto</span> out; }
-    dst_pte = <span class="fn">pte_offset_map_nolock</span>(dst_mm, dst_pmd, addr, &amp;dst_ptl);
-    <span class="kw">if</span> (!dst_pte) { <span class="fn">pte_unmap_unlock</span>(src_pte, src_ptl); ret = -ENOMEM; <span class="kw">goto</span> out; }
-    orig_src_pte = src_pte; orig_dst_pte = dst_pte;
-    <span class="fn">arch_enter_lazy_mmu_mode</span>();
+  progress = <span class="num">0</span>;
+  <span class="fn">init_rss_vec</span>(rss);
+  src_pte = <span class="fn">pte_offset_map_lock</span>(src_mm, src_pmd, addr, &amp;src_ptl);
+  <span class="kw">if</span> (!src_pte) { <span class="fn">pmd_populate</span>(dst_mm, dst_pmd, <span class="fn">pmd_pgtable</span>(*dst_pmd)); ret = <span class="num">0</span>; <span class="kw">goto</span> out; }
+  dst_pte = <span class="fn">pte_offset_map_nolock</span>(dst_mm, dst_pmd, addr, &amp;dst_ptl);
+  <span class="kw">if</span> (!dst_pte) { <span class="fn">pte_unmap_unlock</span>(src_pte, src_ptl); ret = -ENOMEM; <span class="kw">goto</span> out; }
+  orig_src_pte = src_pte; orig_dst_pte = dst_pte;
+  <span class="fn">arch_enter_lazy_mmu_mode</span>();
 
-    <span class="kw">do</span> {
-        nr = <span class="num">1</span>;
-        <span class="kw">if</span> (progress &gt;= <span class="num">32</span>) { progress = <span class="num">0</span>; <span class="kw">if</span> (<span class="fn">need_resched</span>() || <span class="fn">spin_needbreak</span>(src_ptl) || <span class="fn">spin_needbreak</span>(dst_ptl)) <span class="kw">break</span>; }
-        ptent = <span class="fn">ptep_get</span>(src_pte);
-        <span class="kw">if</span> (<span class="fn">pte_none</span>(ptent)) { progress++; <span class="kw">continue</span>; }
-        <span class="kw">if</span> (!<span class="fn">pte_present</span>(ptent)) {
-            ret = <span class="fn">copy_nonpresent_pte</span>(dst_mm, src_mm, dst_pte, src_pte, dst_vma, src_vma, addr, rss);
-            <span class="kw">if</span> (ret == -EIO) { entry = <span class="fn">pte_to_swp_entry</span>(<span class="fn">ptep_get</span>(src_pte)); <span class="kw">break</span>; }
-            <span class="kw">else if</span> (ret == -EBUSY) <span class="kw">break</span>; <span class="kw">else if</span> (ret) ret = <span class="num">0</span>;
-            progress += <span class="num">8</span>; <span class="kw">continue</span>;
-        }
-        ret = <span class="fn">copy_present_pte</span>(dst_vma, src_vma, dst_pte, src_pte, ptent, addr, rss, &amp;prealloc);
-        <span class="kw">if</span> (ret == -EAGAIN) <span class="kw">break</span>; <span class="kw">if</span> (prealloc) { <span class="fn">folio_put</span>(prealloc); prealloc = NULL; }
-        progress += <span class="num">8</span>; dst_pte++; src_pte++; addr += (nr &lt;&lt; PAGE_SHIFT);
-    } <span class="kw">while</span> (addr != end);
+  <span class="kw">do</span> {
+    nr = <span class="num">1</span>;
+    <span class="kw">if</span> (progress &gt;= <span class="num">32</span>) { progress = <span class="num">0</span>; <span class="kw">if</span> (<span class="fn">need_resched</span>() || <span class="fn">spin_needbreak</span>(src_ptl) || <span class="fn">spin_needbreak</span>(dst_ptl)) <span class="kw">break</span>; }
+    ptent = <span class="fn">ptep_get</span>(src_pte);
+    <span class="kw">if</span> (<span class="fn">pte_none</span>(ptent)) { progress++; <span class="kw">continue</span>; }
+    <span class="kw">if</span> (!<span class="fn">pte_present</span>(ptent)) {
+      ret = <span class="fn">copy_nonpresent_pte</span>(dst_mm, src_mm, dst_pte, src_pte, dst_vma, src_vma, addr, rss);
+      <span class="kw">if</span> (ret == -EIO) { entry = <span class="fn">pte_to_swp_entry</span>(<span class="fn">ptep_get</span>(src_pte)); <span class="kw">break</span>; }
+      <span class="kw">else if</span> (ret == -EBUSY) <span class="kw">break</span>; <span class="kw">else if</span> (ret) ret = <span class="num">0</span>;
+      progress += <span class="num">8</span>; <span class="kw">continue</span>;
+    }
+    ret = <span class="fn">copy_present_pte</span>(dst_vma, src_vma, dst_pte, src_pte, ptent, addr, rss, &amp;prealloc);
+    <span class="kw">if</span> (ret == -EAGAIN) <span class="kw">break</span>; <span class="kw">if</span> (prealloc) { <span class="fn">folio_put</span>(prealloc); prealloc = NULL; }
+    progress += <span class="num">8</span>; dst_pte++; src_pte++; addr += (nr &lt;&lt; PAGE_SHIFT);
+  } <span class="kw">while</span> (addr != end);
 
-<span class="cm">    /* arch_leave_lazy_mmu_mode, unlock, update_mmu_tlb_range ... */</span>
+<span class="cm">  /* arch_leave_lazy_mmu_mode, unlock, update_mmu_tlb_range ... */</span>
 out:
-    <span class="kw">return</span> ret;
+  <span class="kw">return</span> ret;
 }</pre>
     </div>
     <div>
