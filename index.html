@@ -572,7 +572,7 @@ body.theme-base .glossary-btn:hover {
   <a href="#imports">Imports</a>
 
   <div class="nav-section">Data</div>
-  <a href="#types">Types &amp; Sizes</a>
+  <a href="#coming-from-c">Types &amp; Sizes</a>
   <a href="#variables">Variables</a>
   <a href="#constants">Constants</a>
   <a href="#literals">Literals</a>
@@ -591,8 +591,7 @@ body.theme-base .glossary-btn:hover {
 
   <div class="nav-section">Code</div>
   <a href="#functions">Functions</a>
-  <a href="#types">Types</a>
-  <a href="#interfaces">Interfaces</a>
+  <a href="#coming-from-c">Types</a>
   <a href="#fixeds">Fixed</a>
 
   <div class="nav-section">I/O &amp; Errors</div>
@@ -681,7 +680,7 @@ body.theme-base .glossary-btn:hover {
 </div>
 
 <div style="margin:8px 0 4px;">
-  <a href="#types" style="display:inline-block; background:#1e1e2e; border:1px solid #5c2d91; color:#cba6f7; text-decoration:none; padding:5px 16px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; transition:background 0.15s;" onmouseover="this.style.background='#2a1a5e'" onmouseout="this.style.background='#1e1e2e'">Jump to Syntax Tables ↓</a>
+  <a href="#coming-from-c" style="display:inline-block; background:#1e1e2e; border:1px solid #5c2d91; color:#cba6f7; text-decoration:none; padding:5px 16px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase; transition:background 0.15s;" onmouseover="this.style.background='#2a1a5e'" onmouseout="this.style.background='#1e1e2e'">C Differences ↓</a>
 </div>
 
 <hr>
@@ -850,6 +849,11 @@ wc_remove(<span class="str">&quot;key&quot;</span>)   <span class="cm">// delete
      <span class="kw">escape</span>
 <span class="kw">end iterate</span></pre>
 
+<div class="cfc">
+  <strong>Coming from C</strong>
+  <code>iterate</code> is C's <code>switch</code>. Fall-through by default — identical behaviour. <code>escape</code> is <code>break</code>.
+</div>
+
 <hr>
 
 <h2 id="loop-control" class="anchor-target">Loop Control</h2>
@@ -899,14 +903,6 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player[<span clas
   <strong>Coming from C</strong>
   <code>type</code> is a <code>struct</code>. Plain field declarations compile to an identical memory layout. Methods and inheritance are additive — ignore them and a type is exactly a struct.
 </div>
-
-<hr>
-
-<h2 id="interfaces" class="anchor-target">Interfaces</h2>
-<pre><span class="kw">interface</span> Ranked
-  <span class="kw">function</span> getRank() <span class="kw">returns</span> <span class="ty">int</span>
-  <span class="kw">function</span> promote() <span class="kw">returns</span> <span class="ty">none</span>
-<span class="kw">end interface</span></pre>
 
 <hr>
 
