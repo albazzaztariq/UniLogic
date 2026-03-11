@@ -689,7 +689,7 @@ body.theme-base .glossary-btn:hover {
       <div style="min-width:0;overflow:hidden;"><pre class="p-code" style="font-size:10px;margin:0;overflow:hidden;white-space:pre;"><span class="pp">#</span><span class="kw">function</span> <span class="fn">container_of</span>(<span class="ty">none</span> <span class="ang">&lt;</span>ptr<span class="ang">&gt;</span>,
     <span class="ty">uint64</span> off) <span class="kw">returns</span> <span class="ty">none</span>
   <span class="ty">none</span> <span class="ang">&lt;</span>__mptr<span class="ang">&gt;</span> <span class="op">=</span> <span class="fn">change</span>(<span class="ang">&lt;</span>ptr<span class="ang">&gt;</span>)-&gt;<span class="ty">none</span>
-  <span class="kw">return</span> <span class="fn">change</span>(__mptr <span class="op">-</span> off)-&gt;<span class="ty">none</span>
+  <span class="kw">return</span> <span class="fn">change</span>(<span class="fn">change</span>(__mptr)-&gt;<span class="ty">uint64</span> <span class="op">-</span> off)-&gt;<span class="ty">none</span>
 <span class="pp">#</span><span class="kw">end function</span></pre></div>
     </div>
     <div style="margin-top:10px; text-align:right;"><a href="C-Side-by-Side.html" style="color:#cba6f7; font-family:'Share Tech Mono',monospace; font-size:0.8rem; text-decoration:none; letter-spacing:0.08em;">See More →</a></div>
