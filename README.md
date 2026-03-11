@@ -6,7 +6,9 @@
 
 | Page | URL |
 |------|-----|
-| Home Page | https://pragma-project.github.io/Pragma-Language/index.html |
+| Home Page | https://pragma-project.github.io/Pragma-Language/ |
+| Safety & MemProof | https://pragma-project.github.io/Pragma-Language/safety.html |
+| Runtime Policy | https://pragma-project.github.io/Pragma-Language/runtime-policy.html |
 
 ## What is Pragma?
 
@@ -27,6 +29,10 @@ Requires Python 3 and clang or gcc.
 ## Safety
 
 Pragma targets mathematically proven memory safety and functional correctness via Frama-C with the WP plugin. See the [Safety page](https://pragma-project.github.io/Pragma-Language/safety.html) for the full methodology.
+
+## Dynamic Runtime
+
+Pragma exposes 12 runtime settings — memory model, allocator, overflow behaviour, stack size, bounds checking, float semantics, and more — declared per source file at compile time. No global defaults, no hidden language choices. See the [Runtime Policy page](https://pragma-project.github.io/Pragma-Language/runtime-policy.html) for all settings.
 
 ## Org
 
