@@ -95,6 +95,8 @@ h1 {
 .col-header.lang-pragma { color: #cba6f7; }
 
 pre {
+  overflow-x: auto;
+  min-width: 0;
   background: #181825;
   border-left: 3px solid #313244;
   border-radius: 0 4px 4px 0;
@@ -249,7 +251,7 @@ pack(desc_ptr)
 <!-- ═══════════════════════════════════ EXAMPLE 4 ═══════════════════════════════════ -->
 <div class="example">
   <div class="example-label">Example 4 — copy_pte_range (Linux kernel memory management)</div>
-  <div class="cols" style="grid-template-columns:1fr 1fr 1fr;">
+  <div class="cols" style="grid-template-columns:repeat(3,minmax(0,1fr));">
     <div>
       <div class="col-header lang-c">C</div>
       <pre class="c-code"><span class="cm">/*
