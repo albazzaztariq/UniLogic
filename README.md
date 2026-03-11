@@ -7,8 +7,6 @@
 | Page | URL |
 |------|-----|
 | Home Page | https://pragma-project.github.io/Pragma-Language/ |
-| Safety & MemProof | https://pragma-project.github.io/Pragma-Language/safety.html |
-| Runtime Policy | https://pragma-project.github.io/Pragma-Language/runtime-policy.html |
 
 ## What is Pragma?
 
@@ -23,8 +21,6 @@ Standard Pragma reads like natural language. Base Pragma adds memory management,
 ## Compiler
 
 Requires Python 3 and clang or gcc.
-
-
 
 ## Safety
 
