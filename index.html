@@ -674,7 +674,19 @@ body.theme-base .glossary-btn:hover {
 <div id="c-hover-region" style="display:inline-block; background:#1e1e2e; border:1px solid #5c2d91; border-radius:4px; padding:5px 16px; margin:8px 0 4px; cursor:pointer; position:relative; font-family:'Share Tech Mono','Courier New',monospace; font-size:0.85rem; color:#cba6f7; letter-spacing:0.06em;" onmouseenter="document.getElementById('c-hover-img').style.display='block'" onmouseleave="document.getElementById('c-hover-img').style.display='none'" onclick="window.location='C-Side-by-Side.html'">
   <span style="opacity:0.45; font-size:0.75rem; margin-right:8px;">← Hover</span>..but C works fine
   <div id="c-hover-img" style="display:none; position:absolute; left:0; top:100%; z-index:200; background:#1e1e2e; border:1px solid #313244; border-radius:6px; padding:12px; box-shadow:0 8px 32px rgba(0,0,0,0.5);">
-    <img src="container_of.png" style="max-width:600px; display:block; border-radius:4px;" alt="C vs Pragma comparison">
+    <div style="display:flex; gap:8px; margin-bottom:6px; font-size:0.65rem; font-family:'Jost',sans-serif; letter-spacing:0.12em; text-transform:uppercase;"><span style="color:#89dceb;">C</span><span style="color:#cba6f7;">Pragma</span></div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <div><pre class="c-code" style="font-size:11px;margin:0 0 0;"><span class="cm">/* container_of */</span>
+#define <span class="fn">container_of</span>(ptr, type, member) ({\
+  <span class="ty">void</span> *__mptr = (<span class="ty">void</span> *)(ptr); \
+  ((<span class="ty">type</span> *)(__mptr -          \
+    <span class="fn">offsetof</span>(type, member))); \
+})</pre></div>
+      <div><pre class="p-code" style="font-size:11px;margin:0;"><span class="cm">// container_of</span>
+<span class="kw">function</span> <span class="fn">container_of</span>(<span class="ty">none</span> <span class="ang">&lt;</span>ptr<span class="ang">&gt;</span>, <span class="ty">uint64</span> offset) <span class="kw">returns</span> <span class="ty">none</span>
+  <span class="kw">return</span> (<span class="ty">none</span>)(<span class="ang">&lt;</span>ptr<span class="ang">&gt;</span> - offset)
+<span class="kw">end function</span></pre></div>
+    </div>
     <div style="margin-top:10px; text-align:right;"><a href="C-Side-by-Side.html" style="color:#cba6f7; font-family:'Share Tech Mono',monospace; font-size:0.8rem; text-decoration:none; letter-spacing:0.08em;">See More →</a></div>
   </div>
 </div>
