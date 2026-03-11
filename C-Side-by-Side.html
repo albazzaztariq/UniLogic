@@ -309,7 +309,7 @@ out:
   <span class="ty">none</span> <span class="ang">&lt;</span>orig_src_pte<span class="ang">&gt;</span>, <span class="ang">&lt;</span>orig_dst_pte<span class="ang">&gt;</span>, <span class="ang">&lt;</span>src_pte<span class="ang">&gt;</span>, <span class="ang">&lt;</span>dst_pte<span class="ang">&gt;</span>, pte_t ptent, <span class="ty">none</span> <span class="ang">&lt;</span>src_ptl<span class="ang">&gt;</span>, <span class="ang">&lt;</span>dst_ptl<span class="ang">&gt;</span>, <span class="ty">int</span> progress, nr, <span class="ty">array</span> <span class="ty">int64</span>[NR_MM_COUNTERS] rss
   <span class="ty">int</span> ret <span class="op">=</span> <span class="num">0</span>
   swp_entry_t entry <span class="op">=</span> <span class="num">0</span>
-  <span class="ty">none</span> <span class="ang">&lt;</span>prealloc<span class="ang">&gt;</span> <span class="op">=</span> <span class="kw">none</span>
+  folio <span class="ang">&lt;</span>prealloc<span class="ang">&gt;</span> <span class="op">=</span> <span class="kw">none</span>
 
 again:
   progress <span class="op">=</span> <span class="num">0</span>
@@ -321,7 +321,7 @@ again:
   orig_src_pte <span class="op">=</span> src_pte, orig_dst_pte <span class="op">=</span> dst_pte
   <span class="fn">arch_enter_lazy_mmu_mode</span>()
 
-  <span class="kw">while</span> <span class="kw">true</span>
+  <span class="kw">do</span>
     nr <span class="op">=</span> <span class="num">1</span>
     <span class="kw">if</span> progress <span class="op">&gt;=</span> <span class="num">32</span>, progress <span class="op">=</span> <span class="num">0</span>
     <span class="kw">if</span> <span class="fn">need_resched</span>() <span class="kw">or</span> <span class="fn">spin_needbreak</span>(src_ptl) <span class="kw">or</span> <span class="fn">spin_needbreak</span>(dst_ptl), escape, <span class="kw">end if</span>, <span class="kw">end if</span>
@@ -337,8 +337,8 @@ again:
     ret <span class="op">=</span> <span class="fn">copy_present_pte</span>(dst_vma, src_vma, dst_pte, src_pte, ptent, addr, rss, <span class="kw">address</span>(<span class="ang">&lt;</span>prealloc<span class="ang">&gt;</span>))
     <span class="kw">if</span> ret <span class="op">==</span> -EAGAIN, escape, <span class="kw">end if</span>
     <span class="kw">if</span> prealloc <span class="kw">not</span> <span class="kw">none</span>, <span class="fn">folio_put</span>(prealloc), prealloc <span class="op">=</span> <span class="kw">none</span>, <span class="kw">end if</span>
-    progress <span class="op">+=</span> <span class="num">8</span>, dst_pte<span class="op">++</span>, src_pte<span class="op">++</span>, addr <span class="op">+=</span> (nr <span class="kw">left</span> PAGE_SHIFT), <span class="kw">if</span> addr <span class="op">==</span> end, escape, <span class="kw">end if</span>
-  <span class="kw">end while</span>
+    progress <span class="op">+=</span> <span class="num">8</span>, dst_pte<span class="op">++</span>, src_pte<span class="op">++</span>, addr <span class="op">+=</span> (nr <span class="kw">left</span> PAGE_SHIFT)
+  <span class="kw">while</span> addr != end
 
   <span class="cm">// out: arch_leave_lazy_mmu_mode, unlock, update_mmu_tlb_range...</span>
   <span class="kw">return</span> ret
