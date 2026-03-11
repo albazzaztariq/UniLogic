@@ -95,7 +95,8 @@ hr { border: none; border-top: 1px solid #e8e4f0; margin: 40px 0; }
 pre {
   padding: 18px 22px;
   border-radius: 6px;
-  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
   font-family: 'Share Tech Mono', monospace;
   font-size: 13px;
   line-height: 1.6;
@@ -256,8 +257,27 @@ td:first-child { color: #5c2d91; font-family: 'Share Tech Mono', monospace; font
 .lang-pragma { color: #a6e3a1; }
 
 .lang-compare > div { min-width: 0; }
-.lang-compare pre { margin: 0; font-size: 12px; overflow-x: auto; }
+.lang-compare pre { margin: 0; font-size: 12px; }
 
+/* ── FORMAL REF BOX ──────────────────────────────────────── */
+
+.formal-ref {
+  background: #f5f3fb;
+  border: 1px solid #d8cff0;
+  border-left: 4px solid #cba6f7;
+  border-radius: 0 4px 4px 0;
+  padding: 12px 18px;
+  margin: 20px 0 8px;
+  font-size: 0.93rem;
+  color: #444;
+}
+.formal-ref a {
+  color: #5c2d91;
+  text-decoration: underline;
+}
+.formal-ref a:hover {
+  color: #9b59b6;
+}
 
 </style>
 </head>
@@ -266,7 +286,6 @@ td:first-child { color: #5c2d91; font-family: 'Share Tech Mono', monospace; font
 <nav>
   <a href="index.html" class="nav-logo">← Pragma / Safety</a>
   <div class="nav-section">Sections</div>
-  <a href="#memory-safety">Memory Safety</a>
   <a href="#functional-correctness">Functional Correctness</a>
   <a href="#how-it-works">How It Works</a>
   <a href="#memproof">MemProof &amp; MemResistant</a>
@@ -284,27 +303,24 @@ td:first-child { color: #5c2d91; font-family: 'Share Tech Mono', monospace; font
 <div class="hero">
   <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap;">
     <div class="hero-headline" style="flex:1;">Formally verified, digitally signed — safety as a core feature.</div>
-    <a href="#how-it-works" style="flex-shrink:0; background:rgba(203,166,247,0.18); border:1px solid #cba6f7; color:#cba6f7; text-decoration:none; padding:8px 20px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:0.1em; white-space:nowrap; align-self:center; transition:background 0.15s;" onmouseover="this.style.background='rgba(203,166,247,0.35)'" onmouseout="this.style.background='rgba(203,166,247,0.18)'">See How ↓</a>
+    <a href="#how-it-works" style="flex-shrink:0; background:rgba(203,166,247,0.18); border:1px solid #cba6f7; color:#cba6f7; text-decoration:none; padding:8px 16px; border-radius:4px; font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:0.1em; text-align:center; line-height:1.5; align-self:center; transition:background 0.15s;" onmouseover="this.style.background='rgba(203,166,247,0.35)'" onmouseout="this.style.background='rgba(203,166,247,0.18)'">Process<br>Explanation ↓</a>
   </div>
   <p class="hero-sub" style="margin-top:12px;">For the security-conscious developers and admins, for the RT crowd, and everyone else that needs Rust-style guarantees but doesn't need or want Rust's safety mandates and ergonomics.</p>
 </div>
 
 <p style="font-family:'Share Tech Mono',monospace; font-size:17px; font-weight:bold; letter-spacing:0.15em; text-transform:uppercase; color:#585b70; margin-bottom:8px;">Jump To</p>
 <div class="quick-links">
-  <a href="#memory-safety">Memory Safety</a>
   <a href="#functional-correctness">Functional Correctness</a>
   <a href="#how-it-works">How It Works</a>
   <a href="#memproof">MemProof &amp; MemResistant</a>
   <a href="#signing">Digital Signing</a>
 </div>
 
-<hr>
-
 <!-- ═══════════════════════════════════════════════════════════
      MEMORY SAFETY
 ════════════════════════════════════════════════════════════ -->
 
-<h2 id="memory-safety">Memory Safety</h2>
+<h2 id="memory-safety" style="margin-top: 16px;">Memory Safety</h2>
 
 <p>Memory bugs are the single largest source of critical vulnerabilities in systems software. Use-after-free, buffer overreads, null dereferences, data races — they don't make your program crash politely. They silently corrupt data, expose secrets, or hand an attacker control of execution. Google has reported that ~70% of serious Chrome security bugs are memory safety issues. Microsoft: the same number for Windows CVEs.</p>
 
@@ -334,7 +350,7 @@ println!(<span class="str">"{}"</span>, arr[<span class="num">7</span>]);
     <div class="lang-label lang-pragma">Pragma</div>
     <pre><span class="ty">array</span>[<span class="ty">int</span>] arr <span class="op">=</span> [<span class="num">10</span>,<span class="num">20</span>,<span class="num">30</span>,<span class="num">40</span>,<span class="num">50</span>]
 <span class="kw">print</span> arr[<span class="num">7</span>]
-<span class="cm">// proof obligation: 0 ≤ 7 < 5
+<span class="cm">// proof obligation: 0 ≤ 7 &lt; 5
 // 7 ≥ 5 is always false
 // rejected at compile time
 // no binary is produced</span></pre>
@@ -343,7 +359,7 @@ println!(<span class="str">"{}"</span>, arr[<span class="num">7</span>]);
 
 <div class="note">
   <strong>Pragma catches this at compile time.</strong>
-  The WP proof rejects it before the program compiles. There is no binary to ship and no test run needed.
+  MemProof rejects it before the program compiles. There is no binary to ship and no test run needed.
 </div>
 
 <h3>Use-after-free</h3>
@@ -373,13 +389,11 @@ println!(<span class="str">"{}"</span>, p);
 <span class="ty">int</span> val <span class="op">=</span> <span class="num">99</span>
 <span class="ty">int</span> <span class="kw">pointer</span> p <span class="op">=</span> <span class="kw">address</span><span class="op">&lt;</span>val<span class="op">&gt;</span>
 <span class="kw">print</span> <span class="kw">jump</span><span class="op">&lt;</span>p<span class="op">&gt;</span>
-<span class="cm">// WP tracks \valid(p) through scope
+<span class="cm">// MemProof tracks \valid(p)
 // freed or out-of-scope pointer
 // → proof fails at compile time</span></pre>
   </div>
 </div>
-
-<hr>
 
 <!-- ═══════════════════════════════════════════════════════════
      FUNCTIONAL CORRECTNESS
@@ -454,30 +468,43 @@ println!(<span class="str">"{}"</span>, p);
   Without any annotations, Pragma still automatically verifies basic memory safety — valid pointers, in-bounds array access, no use-after-free. Contracts let you go further and prove what the code <em>does</em>, not just that it doesn't crash.
 </div>
 
-<hr>
-
 <!-- ═══════════════════════════════════════════════════════════
      HOW IT WORKS
 ════════════════════════════════════════════════════════════ -->
 
 <h2 id="how-it-works">How It Works</h2>
 
-<p>The verification engine is <strong>Frama-C</strong> with the <strong>WP (Weakest Precondition) plugin</strong>. Frama-C is an industrial-strength static analysis framework developed by CEA (French Alternative Energies and Atomic Energy Commission) and Inria. It is used in aerospace, automotive, and nuclear software certification. The WP plugin implements deductive verification — the kind that produces actual mathematical proofs, not just test coverage.</p>
+<p>The verification engine is <strong>MemProof</strong> — a static formal verifier built into the Pragma toolchain. Compiling with <code>--memproof</code> runs your source through a pipeline that ends in a machine-checkable mathematical proof: the program cannot cause a memory safety violation for any valid input.</p>
+
+<div class="formal-ref">
+  For the full explanation not in simple terms, please refer to <a href="memproof-formal.html">this formal design document</a>.
+</div>
+
+<div class="formal-ref" style="background:#fff0f0; border-left-color:#cc0000;">
+  For a more detailed but not full-depth explanation, please refer to <a href="memproof-explained.html" style="color:#990000;">this page</a>.
+</div>
 
 <h3>The idea in plain terms</h3>
 
-<p>Say you want to prove a combination lock only opens for the right code. You don't try every combination — that would take years. Instead you reason about the mechanism: given how the tumblers work, show that a wrong code cannot align all three. The proof covers every possible combination at once, by logic, not by exhaustion.</p>
+<p>Your code goes in. First, the tool checks that it follows certain rules — like no unbounded loops — that make it possible to analyze completely. It then builds a picture of every value every variable could ever hold, no matter what input you give it.</p>
 
-<p>WP does the same thing with code. Starting from your postcondition — what the function must guarantee at the end — it walks backwards through every line, asking: <em>what has to be true here for that final guarantee to hold?</em> This generates a set of conditions called <strong>verification conditions</strong>. Each one is a precise mathematical statement. They get handed to an <strong>SMT solver</strong> — software that is very good at deciding whether a mathematical claim is always true, or whether it can be broken. If the solver confirms every condition, the proof is complete. If any condition fails, it produces a concrete counterexample: here is the exact input that breaks your contract.</p>
+<p>For every place that could go wrong — every array read, every pointer follow — it generates one question: is there any input that breaks this? An algorithm then tries to find an input that does. If it can't find one after checking every possible case, that's the proof. If it does find one, it hands you the exact input that causes the problem. That's your bug.</p>
 
-<p>SMT solvers are the same technology used to verify processor designs at Intel and AMD, ensure safety properties in aircraft control systems, and audit financial contracts. Shipping a language with this as a built-in default feature is what's new.</p>
+<p>If everything passes, the proof gets packaged up with some metadata — the hash of your source code, the version of the tool that ran it, the result of every individual check — and published. The actual proof material goes to distributed storage. A small summary record goes onto a blockchain permanently. Anyone, anywhere, at any time can pull that record, retrieve the proof, and confirm it themselves without trusting you or anyone else. The signing process is explained in more depth below.</p>
+
+<h3>The three outcomes</h3>
+
+<table>
+  <tr><th>Outcome</th><th>Meaning</th><th>Ships?</th></tr>
+  <tr><td>PROVED</td><td>Every check passed with formal proof</td><td>Yes</td></tr>
+  <tr><td>UNKNOWN — ANNOTATABLE</td><td>A loop invariant or precondition is missing; developer can supply it and resubmit</td><td>No</td></tr>
+  <tr><td>UNKNOWN — STRUCTURAL</td><td>Program uses a construct MemProof cannot handle automatically (e.g. non-linear index arithmetic)</td><td>No</td></tr>
+</table>
 
 <div class="note">
-  <strong>No annotation needed for memory safety.</strong>
-  Frama-C WP automatically generates the memory validity obligations — <code>\valid(ptr)</code>, array bounds, no overlap — without you writing a single annotation. The <code>@ensures</code> and <code>@requires</code> contracts are for proving what the code <em>does</em>, on top of that baseline.
+  <strong>No annotation needed for basic memory safety.</strong>
+  MemProof automatically generates the memory validity obligations — valid pointers, in-bounds array access, no use-after-free — without any annotation. The <code>@requires</code> and <code>@ensures</code> contracts are for proving what the code <em>does</em>, on top of that baseline.
 </div>
-
-<hr>
 
 <!-- ═══════════════════════════════════════════════════════════
      MEMPROOF & MEMRESISTANT
@@ -486,6 +513,17 @@ println!(<span class="str">"{}"</span>, p);
 <h2 id="memproof">MemProof &amp; MemResistant</h2>
 
 <p>Pragma has two safety modes for different stages of a project's life.</p>
+
+<h3>MemProof — mathematically proven</h3>
+
+<p>Full formal verification. The source is run through the eight-stage MemProof pipeline — safe subset enforcement, SSA IR construction, abstract interpretation, separation logic and shape analysis, verification condition generation, SMT solving via CVC5, LFSC proof witnesses, and certificate publication. Every proof obligation is discharged by the solver and confirmed by an independent kernel. The result is a <strong>proof certificate</strong> — a machine-checkable record that this program, at this exact version of the code, is proven memory safe for all possible valid inputs. This is the mode for deployment, certification, and anywhere a guarantee stronger than testing is required.</p>
+
+<pre>pragma program.run <span class="cm">--memproof       // MemProof build + certificate</span></pre>
+
+<div class="warn">
+  <strong>Slower to build, stronger to ship.</strong>
+  Verification time depends on function complexity and whether the <code>@safe</code> subset is used. An incremental proof cache means only changed functions are reproved — most sessions re-verify a handful of functions, not the whole codebase. Run MemProof before release.
+</div>
 
 <h3>MemResistant — hardened, not proven</h3>
 
@@ -507,26 +545,13 @@ println!(<span class="str">"{}"</span>, p);
   Fast to build, immediate diagnostics on any unsafe behavior. You get a precise crash with a clear message instead of a silent corrupt state. It's the right tool if you don't want to deal with proofing or it's unnecessary.
 </div>
 
-<h3>MemProof — mathematically proven</h3>
-
-<p>Full Frama-C WP verification. Every proof obligation is discharged by an SMT solver. The result is a <strong>proof certificate</strong> — a machine-checkable record that this function, at this exact version of the code, is proven safe and correct for all possible inputs. This is the mode for deployment, certification, and anywhere a guarantee stronger than testing is required.</p>
-
-<pre>pragma program.run <span class="cm">--memproof       // MemProof build + certificate</span></pre>
-
-<div class="warn">
-  <strong>Slower to build, stronger to ship.</strong>
-  WP verification ranges from seconds to minutes depending on function complexity. An incremental proof cache means only changed functions are reproved — most sessions re-verify a handful of functions, not the whole codebase. Run MemProof before release.
-</div>
-
-<hr>
-
 <!-- ═══════════════════════════════════════════════════════════
      DIGITAL SIGNING
 ════════════════════════════════════════════════════════════ -->
 
 <h2 id="signing">Digital Signing</h2>
 
-<p>A proof is only as trustworthy as the chain of custody behind it. Once a program is proven safe, Pragma makes that proof public and lets anyone in the world verify it. There's no need to trust you, trust someone else, or centralize trust with any authority.</p>
+<p>A proof is only as trustworthy as the chain of custody behind it. Once a program is proven safe, Pragma makes that proof public and lets anyone in the world verify it independently — without trusting you, without trusting any authority, without re-running the verification.</p>
 
 <h3>Hashing</h3>
 
@@ -534,19 +559,30 @@ println!(<span class="str">"{}"</span>, p);
 
 <p>Pragma uses <strong>SHA-256</strong>, the same algorithm used across TLS certificates, Bitcoin, code signing, and modern encryption infrastructure. No two different inputs have ever been found to produce the same SHA-256 hash. That property is called collision resistance, and it is what makes the hash a trustworthy fingerprint.</p>
 
-<h3>IPFS — content-addressed storage</h3>
+<h3>IPFS and Arweave — content-addressed storage</h3>
 
-<p>The proof certificate produced by MemProof is stored on <strong>IPFS</strong> (InterPlanetary File System), a distributed storage network. IPFS is content-addressed: the address of a file is derived from its contents. Store your certificate, get a hash back. That hash is the permanent address of those exact bytes — on any IPFS node, anywhere in the world, forever. The original is immutable.</p>
+<p>The proof witnesses produced by MemProof are large. They go to <strong>IPFS</strong> (InterPlanetary File System), a distributed storage network where the address of a file is derived from its contents — store your proof, get a hash back, and that hash is the permanent address of those exact bytes on any IPFS node anywhere in the world. For permanent storage, witnesses are also pinned to <strong>Arweave</strong>, which guarantees perpetual availability.</p>
 
-<h3>Ethereum smart contract — public timestamp</h3>
+<p>The MemProof verifier source — the Coq implementation that defines what it means for a program to be proven safe — is also on IPFS. Its content ID (CID) is recorded in every certificate. Anyone can retrieve it, run <code>coqc</code> against the Coq proof, and confirm that the verifier itself is formally sound — not just that it produced a result.</p>
 
-<p>The IPFS hash gets written to an <strong>Ethereum smart contract</strong>. Smart contracts are programs that run on a public blockchain — they cannot be modified, deleted, or tampered with after deployment. Anyone can read them. Writing your IPFS hash to the contract creates a permanent, timestamped, public record: at this exact moment, this exact proof existed and was submitted by this address.</p>
+<h3>Blockchain — permanent public record</h3>
 
-<h3>Verification</h3>
+<p>The certificate JSON — roughly 1KB — goes to a smart contract on the blockchain. The certificate contains: the program's SHA-256 hash, the verifier's IPFS CID, the result of each verification condition (location, kind, status), and the hashes of the LFSC proof witnesses. Smart contracts are programs that run on a public blockchain — they cannot be modified, deleted, or tampered with after deployment. Anyone can read them. Recording your certificate on-chain creates a permanent, timestamped, public record: at this exact moment, this exact program was proven safe by this exact version of the verifier.</p>
 
-<p>To verify a piece of Pragma code you received, you just run MemProof and it compiles, takes the hash of what you just compiled, and compares it to what is recorded on-chain. If they match, it says so and you know you are looking at the exact code that was formally proven — byte for byte, character for character. If they don't, it tells you and you know the code has been modified since it was certified.</p>
+<h3>Independent verification</h3>
 
-<p>You don't need to trust a developer, a registry, or a central authority. Instead, the math and the blockchain do it all for you.</p>
+<p>To verify a piece of Pragma code you received, you don't run MemProof again. You do this:</p>
+
+<ol style="margin: 14px 0 14px 24px; color: #2a2a2a; line-height: 1.9;">
+  <li>Retrieve the MemProof Coq source from the certificate's verifier CID on IPFS</li>
+  <li>Check the Coq proof with <code>coqc</code> — confirms MemProof is formally sound</li>
+  <li>Look up the certificate on-chain by the program's hash</li>
+  <li>Retrieve the LFSC proof witnesses from IPFS using the hashes in the certificate</li>
+  <li>Run the LFSC kernel against each witness — confirms every VC was actually proved</li>
+  <li>Confirm the program hash in the certificate matches what you have</li>
+</ol>
+
+<p>No trust in the Pragma team, the MemProof team, or any oracle is required. The math and the public record do it.</p>
 
 <div class="note">
   <strong>MemResistant runs are recorded too.</strong>
