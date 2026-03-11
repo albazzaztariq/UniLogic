@@ -832,7 +832,7 @@ wordCount_remove(<span class="str">"hello"</span>)        <span class="cm">// de
   <span class="kw">return</span> a <span class="op">+</span> b
 <span class="kw">end function</span>
 
-<span class="kw">function</span> greet(<span class="ty">string</span> name) <span class="kw">returns</span> <span class="ty">void</span>
+<span class="kw">function</span> greet(<span class="ty">string</span> name) <span class="kw">returns</span> <span class="ty">none</span>
   <span class="kw">print</span> <span class="str">"Hello, "</span> <span class="op">+</span> name
 <span class="kw">end function</span>
 
@@ -853,8 +853,8 @@ wordCount_remove(<span class="str">"hello"</span>)        <span class="cm">// de
   <span class="ty">int</span> age
   <span class="ty">float</span> score <span class="op">=</span> <span class="num">0.0</span>
 
-  <span class="kw">function</span> greet() <span class="kw">returns</span> <span class="ty">void</span>
-    <span class="kw">print</span> <span class="str">"Hi, I am "</span> <span class="op">+</span> <span class="kw">self</span>.name
+  <span class="kw">function</span> greet() <span class="kw">returns</span> <span class="ty">none</span>
+    <span class="kw">print</span> <span class="str">"Hi, I am "</span> <span class="op">+</span> name
   <span class="kw">end function</span>
 <span class="kw">end type</span>
 
@@ -862,7 +862,7 @@ wordCount_remove(<span class="str">"hello"</span>)        <span class="cm">// de
   <span class="ty">int</span> rank
 <span class="kw">end type</span>
 
-Player p <span class="op">=</span> <span class="kw">new</span> Player(<span class="str">"Alex"</span>, <span class="num">25</span>, <span class="num">98.5</span>)
+Player p <span class="op">=</span> <span class="kw">new</span> Player[<span class="str">"Alex"</span>, <span class="num">25</span>, <span class="num">98.5</span>]
 <span class="kw">print</span> p.name</pre>
 
 <div class="cfc">
@@ -875,7 +875,7 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player(<span clas
 <h2 id="interfaces" class="anchor-target">Interfaces</h2>
 <pre><span class="kw">interface</span> Ranked
   <span class="kw">function</span> getRank() <span class="kw">returns</span> <span class="ty">int</span>
-  <span class="kw">function</span> promote() <span class="kw">returns</span> <span class="ty">void</span>
+  <span class="kw">function</span> promote() <span class="kw">returns</span> <span class="ty">none</span>
 <span class="kw">end interface</span></pre>
 
 <hr>
@@ -1278,7 +1278,7 @@ p.value <span class="op">=</span> <span class="num">3.14</span>             <spa
 <p>Pass a function pointer as a parameter using <code>none &lt;name&gt;</code> (void pointer). The compiler casts it correctly at the call site.</p>
 
 <pre><span class="kw">function</span> apply(<span class="ty">none</span> <span class="ang">&lt;</span>op<span class="ang">&gt;</span>, <span class="ty">int</span> a, <span class="ty">int</span> b) <span class="kw">returns</span> <span class="ty">int</span>
-  <span class="kw">return</span> op(a, b)
+  <span class="kw">return</span> <span class="ang">&lt;</span>op<span class="ang">&gt;</span>(a, b)
 <span class="kw">end function</span>
 
 <span class="kw">function</span> add(<span class="ty">int</span> a, <span class="ty">int</span> b) <span class="kw">returns</span> <span class="ty">int</span>
@@ -1312,7 +1312,7 @@ p.value <span class="op">=</span> <span class="num">3.14</span>             <spa
   <tr><td><code>void *ptr</code></td><td><code>none &lt;ptr&gt;</code></td><td>Generic pointer — cast before reading</td></tr>
   <tr><td><code>int (*fp)()</code></td><td><code>int &lt;fp&gt; = func()</code></td><td>Function pointer. Empty-arg init syntax signals a pointer, not a call.</td></tr>
   <tr><td><code>NULL</code></td><td><code>empty</code></td><td>Null literal</td></tr>
-  <tr><td><code>void</code> (return)</td><td><code>nothing</code></td><td>Function returns nothing</td></tr>
+  <tr><td><code>void</code> (return)</td><td><code>none</code></td><td>Function returns nothing</td></tr>
   <tr><td><code>__attribute__((packed))</code></td><td><code>pack(TypeName)</code></td><td>Remove struct padding</td></tr>
 </table>
 
@@ -1331,7 +1331,7 @@ p.value <span class="op">=</span> <span class="num">3.14</span>             <spa
   <tr><th>C</th><th>Pragma</th><th>Notes</th></tr>
   <tr><td><code>break</code></td><td><code>escape</code></td><td>Exit a loop</td></tr>
   <tr><td><code>continue</code></td><td><code>continue</code></td><td>Identical.</td></tr>
-  <tr><td><code>switch</code> (fall-through)</td><td><code>switch</code></td><td>Falls through by default — identical to C</td></tr>
+  <tr><td><code>switch</code> (fall-through)</td><td><code>iterate</code></td><td>Falls through by default — identical to C</td></tr>
   <tr><td><code>switch</code> (no fall-through)</td><td><code>match</code></td><td>Pragma addition — stops at first match</td></tr>
 </table>
 
