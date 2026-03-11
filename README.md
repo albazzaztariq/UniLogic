@@ -28,7 +28,7 @@ Requires Python 3 and clang or gcc.
 
 ## Safety
 
-Pragma targets mathematically proven memory safety and functional correctness via Frama-C with the WP plugin. See the [Safety page](https://pragma-project.github.io/Pragma-Language/safety.html) for the full methodology.
+Pragma targets mathematically proven memory safety and functional correctness via Frama-C with the WP plugin. You can find a [brief here](pragma-project.github.io/Pragma-Language/Safety.md) or see the [Safety page](https://pragma-project.github.io/Pragma-Language/safety.html) for the full methodology.
 
 ## Dynamic Runtime
 
