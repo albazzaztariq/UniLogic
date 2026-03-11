@@ -92,7 +92,7 @@ body.theme-default nav {
 body.theme-default .nav-title { color: #cba6f7; border-bottom: 1px solid #313244; font-family: 'Jost', sans-serif; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 300; }
 body.theme-default nav a { color: #a6adc8; border-left: 3px solid transparent; }
 body.theme-default nav a:hover { background: #313244; color: #cdd6f4; border-left-color: #cba6f7; }
-body.theme-default .nav-section { color: #585b70; }
+body.theme-default .nav-section { color: #7c7f93; }
 
 body.theme-default main h1 { color: #1a1a1a; border-bottom: 2px solid #e0d8f0; }
 body.theme-default main h2 { color: #2d1b69; border-bottom: 1px solid #e0d8f0; }
@@ -181,7 +181,7 @@ body.theme-base nav a { color: #888; border-left: 3px solid transparent; font-fa
 body.theme-default .bounce-arrow { color: #cba6f7; }
 body.theme-base .bounce-arrow { color: #5c2d91; }
 body.theme-base nav a:hover { background: #111; color: #fff; border-left-color: #aaa; }
-body.theme-base .nav-section { color: #444; }
+body.theme-base .nav-section { color: #666; }
 
 body.theme-base main h1 {
   color: #fff;
@@ -255,13 +255,14 @@ nav {
 .nav-title a.nav-title-link {
   text-decoration: none;
   color: inherit;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-weight: normal;
   transition: opacity 0.15s;
 }
 .nav-title a.nav-title-link:hover { opacity: 0.75; }
-.nav-home-word {
+.nav-pragma-word, .nav-home-word {
   font-family: 'Share Tech Mono', 'Courier New', monospace;
   font-weight: normal;
-  letter-spacing: 0.1em;
 }
 
 .mode-tabs {
@@ -515,7 +516,7 @@ hr { border: none; margin: 20px 0; }
      SIDEBAR — STANDARD
 ══════════════════════════════════════════ -->
 <nav id="nav-standard">
-  <div class="nav-title"><a href="index.html" class="nav-title-link">← Pragma<span class="nav-home-word"> Home</span></a></div>
+  <div class="nav-title"><a href="index.html" class="nav-title-link">← Pragma Home</a></div>
   <div class="mode-tabs">
     <button class="tab-btn tab-active" data-mode="standard" onclick="setMode('standard')">Standard</button>
     <button class="tab-btn" data-mode="base" onclick="setMode('base')">Base</button>
@@ -562,7 +563,7 @@ hr { border: none; margin: 20px 0; }
      SIDEBAR — BASE
 ══════════════════════════════════════════ -->
 <nav id="nav-base" style="display:none">
-  <div class="nav-title"><a href="index.html" class="nav-title-link">← Base Pragma</a></div>
+  <div class="nav-title"><a href="index.html" class="nav-title-link">← Pragma Home</a></div>
   <div class="mode-tabs">
     <button class="tab-btn" data-mode="standard" onclick="setMode('standard')">Standard</button>
     <button class="tab-btn tab-active" data-mode="base" onclick="setMode('base')">Base</button>
@@ -628,7 +629,7 @@ hr { border: none; margin: 20px 0; }
 <span class="ty">string</span> greeting <span class="op">=</span> <span class="str">"Hi "</span> <span class="op">+</span> name</pre>
 <div class="note">
   <strong>Note</strong>
-  Memory safety cannot be guaranteed for runtime string inputs (user input, file reads). The compiler will warn when this is the case.
+  Memory safety cannot be guaranteed for runtime string inputs (user input, file reads). The compiler will warn when <code>safety: checked</code> is set.
 </div>
 
 <hr>
@@ -641,7 +642,7 @@ hr { border: none; margin: 20px 0; }
 <span class="ty">complex</span> z <span class="op">=</span> complex(<span class="num">3</span>, <span class="num">4</span>)   <span class="cm">// 3 + 4i</span>
 <span class="ty">int</span> n                       <span class="cm">// defaults to 0</span></pre>
 
-<p style="color:#c0392b; font-size:0.9rem;">Note: types must be declared for variables.</p>
+<p style="color:#c0392b; font-size:0.9rem;">Note: types must be declared for variables unless <code>types: dynamic</code> is set in the Dynamic Runtime configuration.</p>
 
 <p>Assignment:</p>
 <pre>x <span class="op">=</span> <span class="num">42</span>
@@ -781,7 +782,7 @@ wc_remove(<span class="str">&quot;key&quot;</span>)   <span class="cm">// delete
   <span class="kw">return</span> a <span class="op">+</span> b
 <span class="kw">end function</span>
 
-<span class="kw">function</span> greet(<span class="ty">string</span> name) <span class="kw">returns</span> <span class="ty">none</span>
+<span class="kw">function</span> greet(<span class="ty">string</span> name)
   <span class="kw">print</span> <span class="str">"Hello, "</span> <span class="op">+</span> name
 <span class="kw">end function</span>
 
@@ -792,7 +793,7 @@ wc_remove(<span class="str">&quot;key&quot;</span>)   <span class="cm">// delete
   <span class="kw">return</span> n <span class="op">*</span> factorial(n <span class="op">-</span> <span class="num">1</span>)
 <span class="kw">end function</span></pre>
 
-<p style="color:#c0392b; font-size:0.9rem;">Note: return types must be declared just like with variables. Python leaves this open, Pragma makes it clear.</p>
+<p style="color:#c0392b; font-size:0.9rem;">Note: if a return type is anything other than nothing, it must be declared.</p>
 
 <hr>
 
@@ -1312,6 +1313,8 @@ function setMode(mode) {
   document.querySelectorAll('.tab-btn').forEach(function(btn) {
     btn.classList.toggle('tab-active', btn.dataset.mode === mode);
   });
+
+  window.scrollTo(0, 0);
 }
 
 function toggleMode() {
