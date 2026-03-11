@@ -26,16 +26,22 @@ body {
 }
 
 .back-link {
+  position: fixed;
+  top: 16px;
+  left: 20px;
+  z-index: 100;
   display: inline-block;
   color: #cba6f7;
   text-decoration: none;
   font-size: 0.85rem;
   letter-spacing: 0.08em;
-  margin-bottom: 36px;
-  opacity: 0.8;
-  transition: opacity 0.15s;
+  border: 1px solid #5c2d91;
+  padding: 4px 12px;
+  border-radius: 3px;
+  background: #1e1e2e;
+  transition: border-color 0.15s;
 }
-.back-link:hover { opacity: 1; }
+.back-link:hover { border-color: #cba6f7; }
 
 h1 {
   font-family: 'VT323', monospace;
@@ -95,13 +101,12 @@ h1 {
 .col-header.lang-pragma { color: #cba6f7; }
 
 pre {
-  overflow-x: auto;
+  overflow-x: hidden;
   min-width: 0;
   background: #181825;
   border-left: 3px solid #313244;
   border-radius: 0 4px 4px 0;
   padding: 16px 20px;
-  overflow-x: auto;
   font-family: 'Share Tech Mono', 'Courier New', monospace;
   font-size: 13px;
   line-height: 1.65;
@@ -143,7 +148,7 @@ hr {
 <body>
 <div class="page-wrap">
 
-<a href="syntax-reference.html" class="back-link">← Back</a>
+<a href="index.html" class="back-link">← Pragma</a>
 
 <h1>Real Linux Kernel Code</h1>
 <p class="subtitle">Side-by-side: real Linux kernel code and its Pragma equivalent.</p>
