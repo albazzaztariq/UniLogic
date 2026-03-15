@@ -327,7 +327,7 @@ body.theme-base .lang-ref-btn:hover { background: #333; }
       <div style="border:1px solid #e0e0e0; border-top:3px solid #1a1a1a; border-radius:0 0 6px 6px; padding:clamp(10px,1.8vh,20px) clamp(12px,2vw,24px);"><div class="dr-inner">
         <div>
           <div style="font-family:'Playfair Display',Georgia,serif; font-size:clamp(0.8rem,1.2vw,1.05rem); font-style:italic; font-weight:700; color:#1a1a1a; margin-bottom:8px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><em>Dynamic Runtime</em> <span style="font-style:normal; font-size:clamp(0.65rem,0.9vw,0.8rem); font-family:'Share Tech Mono',monospace; font-weight:normal; color:#555;">(DR)</span><a href="runtime-policy.html" style="font-style:normal; font-weight:normal; font-family:'Share Tech Mono',monospace; font-size:clamp(0.68rem,0.95vw,0.8rem); color:#89dceb; text-decoration:none; background:#1a1a1a; border:1px solid #2a4a5a; padding:4px 12px; border-radius:3px; letter-spacing:0.1em; transition:all 0.15s; white-space:nowrap;" onmouseover="this.style.borderColor='#89dceb';this.style.color='#cdd6f4'" onmouseout="this.style.borderColor='#2a4a5a';this.style.color='#89dceb'">Learn More →</a></div>
-          <div style="font-family:'Georgia',serif; font-size:clamp(0.7rem,1.1vw,0.9rem); color:#1a1a1a; line-height:1.5;">Memory model, Garbage Collection, Refcount — the compiler enforces up to 13 directives that <em>you</em> declare.</div>
+          <div style="font-family:'Georgia',serif; font-size:clamp(0.7rem,1.1vw,0.9rem); color:#1a1a1a; line-height:1.5;">Memory model, Garbage Collection, Refcount — the compiler enforces up to 11 directives that <em>you</em> declare.</div>
         </div>
         <div style="background:#1a1a1a; border-radius:4px; padding:clamp(8px,1.2vh,12px) clamp(10px,1.2vw,14px); font-family:'Share Tech Mono',monospace; font-size:clamp(8px,0.9vw,11px); line-height:1.9; color:#cdd6f4;">
           <span style="color:#cba6f7">memory</span>: <span style="color:#a6e3a1">gc</span>           <span style="color:#c8a030">// or manual · refcount · arena</span><br>
@@ -471,18 +471,12 @@ body.theme-base .lang-ref-btn:hover { background: #333; }
 <div id="page-readme">
   <button id="readme-close" onclick="closeReadme()">← back</button>
   <div class="readme-inner">
-    <p class="readme-skip">Those starting their coding journey are free from this section — no need to read.</p>
-    <div class="readme-hero">Pragma was designed with one idea in mind: <em>unity.</em></div>
-    <div class="readme-pillar pillar-unity">
-      <div class="readme-pillar-label">Single Expression, Easily Understood</div>
-      <div class="readme-pillar-text">One language that everyone can understand. Pragma uses natural language to make a program readable as sentences rather than mathematical expression and notation.</div>
-    </div>
-    <div class="readme-pillar pillar-level">
-      <div class="readme-pillar-label">High or Low</div>
-      <div class="readme-pillar-text">Frictionless between modern high-level applications or low-level monolithic systems work.</div>
-    </div>
+    <div class="readme-hero">Pragma is an independent research project. Here is what it is and why it exists.</div>
     <div class="readme-body">
-      <p>The language transpiles to C and vice versa. Future work will interface with Python, Java, C#, and JavaScript. This will allow seamless comprehension across platforms.</p>
+      <p>The starting point was a practical frustration: systems code, web code, and general application code each live in separate languages with separate conventions, separate learning curves, and separate toolchains. Moving between them carries friction that has nothing to do with the underlying problem being solved. It is just the cost of the ecosystem as it exists.</p>
+      <p>At the same time, watching code generation models work — and more importantly watching them fail — made something clear. The failure mode is not that the models are insufficiently powerful. It is that natural language is a noisy, ambiguous input for producing deterministic output. The model interprets, guesses, fills gaps. The result varies. A mechanized approach to code generation — structured input that maps predictably to structured output — would produce something more reliable, more reproducible, and easier for a person to read and verify without needing to understand the full underlying implementation.</p>
+      <p>Those two observations together are what Pragma and its broader conceptual framework, <strong>USAMS — Unified Syntax and Architectural Model for Software</strong>, are an attempt to address. One syntax that covers the range from low-level systems work to high-level application development. Runtime behavior that is declared rather than inherited from whichever language you happened to pick. And a schema-based expression layer that describes what a program does in the same terms you would use to explain it to another person, rather than the terms required to build it in an IDE.</p>
+      <p>This is a hobby project and an ongoing design exercise, not a product. The work is documented as it develops. Feedback and collaboration from people who find this worth thinking about is genuinely welcome.</p>
     </div>
     <hr style="border:none; border-top:1px solid #ddd; margin:48px 0 0;">
     <div class="readme-body" style="margin-top:40px;"><p>Different languages behave differently.</p></div>
@@ -507,8 +501,7 @@ body.theme-base .lang-ref-btn:hover { background: #333; }
       <p>Every function that allocates, every data structure, every IO operation works under all configurations. A linked list under GC doesn't need a destructor. Under manual memory it does. Under refcount it needs weak reference support.</p>
       <p>One standard library with three implementations of everything makes this a reality.</p>
     </div>
-    <div class="readme-conclusion">There's no novel ideas, no reinventing the wheel: it allows anyone to write in C without the more unintuitive syntax of C, as well as understand other C programs directly in their language. If adopted more widely, it means everyone can understand directly each other's programs because syntactical style and rules are either expressed or familiar. And with the new heavier ML and AI workloads, it means hot paths and runtime become first-class citizens.</div>
-    <div class="readme-body" style="margin-top:40px;"><p>Give it a shot. Pragma is better with everyone, but works well with just one.</p></div>
+    <div class="readme-conclusion">No novel ideas, no reinventing the wheel. The syntax decisions borrow from what already exists across C, Python, and others — the goal is to unify and minimize, not to invent. The runtime configuration layer formalizes choices that languages already make implicitly, just without giving you a say. And the schema expression layer applies the same pattern that worked in SQL, HTML, CSS, and JSON to general application programming. The USAMS document linked below covers this in full if you want the complete argument.</div>
   </div>
 </div>
 
