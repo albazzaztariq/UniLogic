@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>C Side-by-Side — Pragma</title>
+<title>C Side-by-Side — UniLogic</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <style>
@@ -32,23 +32,23 @@ body {
   left: 20px;
   z-index: 100;
   display: inline-block;
-  color: #cba6f7;
+  color: #7ab3e0;
   text-decoration: none;
   font-size: 0.85rem;
   letter-spacing: 0.08em;
-  border: 1px solid #5c2d91;
+  border: 1px solid #1a3a7a;
   padding: 4px 12px;
   border-radius: 3px;
   background: #1e1e2e;
   transition: border-color 0.15s;
 }
-.back-link:hover { border-color: #cba6f7; }
+.back-link:hover { border-color: #7ab3e0; }
 
 h1 {
   font-family: 'VT323', monospace;
   font-size: 2.4rem;
   font-weight: normal;
-  color: #cba6f7;
+  color: #7ab3e0;
   letter-spacing: 0.08em;
   margin-bottom: 10px;
 }
@@ -104,7 +104,7 @@ h1 {
 }
 
 .col-header.lang-c { color: #89dceb; }
-.col-header.lang-pragma { color: #cba6f7; }
+.col-header.lang-pragma { color: #7ab3e0; }
 
 pre {
   overflow-x: hidden;
@@ -121,10 +121,10 @@ pre {
 }
 
 pre.c-code   { border-left-color: #89dceb; }
-pre.p-code   { border-left-color: #cba6f7; }
+pre.p-code   { border-left-color: #7ab3e0; }
 
 /* Syntax highlight classes */
-.kw  { color: #cba6f7; }   /* keywords */
+.kw  { color: #7ab3e0; }   /* keywords */
 .ty  { color: #89dceb; }   /* types */
 .cm  { color: #585b70; font-style: italic; }  /* comments */
 .num { color: #fab387; }   /* numbers */
@@ -155,10 +155,10 @@ hr {
 <body>
 <div class="page-wrap">
 
-<a href="index.html" class="back-link">← Pragma</a>
+<a href="index.html" class="back-link">← UniLogic</a>
 
 <h1>Real Linux Kernel Code</h1>
-<p class="subtitle">C source pulled directly from the Linux kernel, translated into Pragma.</p>
+<p class="subtitle">C source pulled directly from the Linux kernel, translated into UL.</p>
 
 <!-- ═══════════════════════════════════ EXAMPLE 1 ═══════════════════════════════════ -->
 <div class="example">
@@ -177,7 +177,7 @@ hr {
         <span class="fn">offsetof</span>(type, member))); })</pre>
     </div>
     <div>
-      <div class="col-header lang-pragma">Pragma</div>
+      <div class="col-header lang-pragma">UL</div>
       <pre class="p-code"><span class="pp">#</span><span class="kw">function</span> <span class="fn">container_of</span>(<span class="ty">none</span> <span class="ang">&lt;</span>ptr<span class="ang">&gt;</span>, <span class="ty">uint64</span> off)
   <span class="ty">none</span> <span class="ang">&lt;</span>__mptr<span class="ang">&gt;</span> <span class="op">=</span> <span class="fn">change</span>(<span class="ang">&lt;</span>ptr<span class="ang">&gt;</span>)-&gt;<span class="ty">none</span>
   <span class="ty">uint64</span> addr <span class="op">=</span> <span class="fn">change</span>(__mptr)-&gt;<span class="ty">uint64</span> <span class="op">-</span> off
@@ -205,7 +205,7 @@ hr {
 <span class="pp">#define</span> SIG_IGN ((__sighandler_t)<span class="num">1</span>)</pre>
     </div>
     <div>
-      <div class="col-header lang-pragma">Pragma</div>
+      <div class="col-header lang-pragma">UL</div>
       <pre class="p-code">
 <span class="ty">none</span> <span class="ang">&lt;</span>handler<span class="ang">&gt;</span> <span class="op">=</span> <span class="fn">sigHandler</span>()
 <span class="ty">none</span> <span class="ang">&lt;</span>restorer<span class="ang">&gt;</span> <span class="op">=</span> <span class="fn">sigRestorer</span>()
@@ -230,7 +230,7 @@ hr {
 } __attribute__((packed));</pre>
     </div>
     <div>
-      <div class="col-header lang-pragma">Pragma</div>
+      <div class="col-header lang-pragma">UL</div>
       <pre class="p-code"><span class="kw">type</span> desc_struct
   <span class="ty">uint16</span> limit0, base0, base1.bits=8, type.bits=4, s.bits=1, dpl.bits=2, p.bits=1, limit1.bits=4, avl.bits=1, l.bits=1, d.bits=1, g.bits=1, base2.bits=8
 <span class="kw">end type</span>
@@ -259,7 +259,7 @@ pack(desc_struct)</pre>
 }</pre>
     </div>
     <div>
-      <div class="col-header lang-pragma">Pragma</div>
+      <div class="col-header lang-pragma">UL</div>
       <pre class="p-code"><span class="kw">type</span> desc_ptr
   <span class="ty">uint16</span> size
   <span class="ty">uint64</span> address
@@ -365,7 +365,7 @@ out:
 }</pre>
     </div>
     <div>
-      <div class="col-header lang-pragma">Pragma</div>
+      <div class="col-header lang-pragma">UL</div>
       <pre class="p-code"><span class="kw">function</span> <span class="fn">copy_pte_range</span>(vm_area_struct <span class="ang">&lt;</span>dst_vma<span class="ang">&gt;</span>, vm_area_struct <span class="ang">&lt;</span>src_vma<span class="ang">&gt;</span>,
                         pmd_t <span class="ang">&lt;</span>dst_pmd<span class="ang">&gt;</span>, pmd_t <span class="ang">&lt;</span>src_pmd<span class="ang">&gt;</span>, <span class="ty">uint64</span> addr,
                         <span class="ty">uint64</span> end) <span class="kw">returns</span> <span class="ty">int</span>
@@ -506,7 +506,7 @@ out:
     </div>
     <div>
       <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
-        <div class="col-header" style="color:#a6e3a1;">Pragma (Condensed via Inlining)</div>
+        <div class="col-header" style="color:#a6e3a1;">UL (Condensed via Inlining)</div>
         <div id="lines-p4" style="font-size:0.65rem; color:#a6e3a1; letter-spacing:0.15em; font-family:'Jost',sans-serif; font-weight:bold; text-align:right;">Lines: ...</div>
       </div>
       <pre class="p-code" style="font-size:11px;"><span class="kw">function</span> <span class="fn">copy_pte_range</span>(vm_area_struct <span class="ang">&lt;</span>dst_vma<span class="ang">&gt;</span>, vm_area_struct <span class="ang">&lt;</span>src_vma<span class="ang">&gt;</span>, pmd_t <span class="ang">&lt;</span>dst_pmd<span class="ang">&gt;</span>, pmd_t <span class="ang">&lt;</span>src_pmd<span class="ang">&gt;</span>, <span class="ty">uint64</span> addr, <span class="ty">uint64</span> end) <span class="kw">returns</span> <span class="ty">int</span>
@@ -552,7 +552,7 @@ again:
 <span class="kw">end function</span></pre>
     </div>
   </div>
-  <div class="note">While messy at first glance, inlining with commas shows that Pragma expresses identical logic in fewer lines than C — every keyword and every statement is present, just compressed.</div>
+  <div class="note">While messy at first glance, inlining with commas shows that UL expresses identical logic in fewer lines than C — every keyword and every statement is present, just compressed.</div>
 </div>
 
 <hr>

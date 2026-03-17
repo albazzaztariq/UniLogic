@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pragma — Dynamic Runtime</title>
+<title>UniLogic — Dynamic Runtime</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -99,9 +99,20 @@ main {
 
 /* ── HEADER ── */
 .page-header {
-  border-bottom: 1px solid #dde1e8;
   padding-bottom: 20px;
   margin-bottom: 40px;
+}
+
+.page-aside {
+  display: inline-block;
+  background: #eef0f3;
+  color: #5a6372;
+  font-size: 0.88em;
+  font-style: italic;
+  padding: 7px 16px;
+  border-radius: 4px;
+  margin-top: 14px;
+  letter-spacing: 0.01em;
 }
 
 .page-label {
@@ -123,10 +134,15 @@ h1 {
 }
 
 .page-intro {
-  font-size: 1rem;
-  color: #4a5568;
-  line-height: 1.7;
+  font-family: 'JetBrains Mono', 'Share Tech Mono', monospace;
+  font-size: 0.82rem;
+  color: #3d5068;
+  line-height: 1.85;
   max-width: 680px;
+  background: #f0f3f7;
+  border-left: 3px solid #5b8fc9;
+  padding: 14px 18px;
+  border-radius: 0 4px 4px 0;
 }
 
 /* ── SECTIONS ── */
@@ -273,7 +289,7 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
 
 <nav>
   <a href="index.html" class="nav-back">← back to home</a>
-  <div class="nav-logo">Pragma / DR</div>
+  <div class="nav-logo">UniLogic / DR</div>
 
   <div class="nav-section">Memory</div>
   <a href="#memory">memory</a>
@@ -292,7 +308,6 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
 
   <div class="nav-section">Execution</div>
   <a href="#concurrency">concurrency</a>
-  <a href="#error_model">error_model</a>
 
   <div class="nav-section">Related</div>
   <a href="translation.html">Translation / XPile</a>
@@ -305,28 +320,24 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
   <div class="page-label">Dynamic Runtime — DR</div>
   <h1>Dynamic Runtime</h1>
   <p class="page-intro">
-    Pragma exposes 11 runtime settings that cover the decisions most languages make once at the language level and never revisit. Each setting is declared at the top of a source file and enforced by the compiler for that file. All settings have defaults — if you don't declare them, the defaults apply silently. Most code will never need to touch any of this.
+    UniLogic exposes 10 runtime settings that cover the decisions most languages make once at the language level and never revisit. Each setting is declared at the top of a source file and enforced by the compiler for that file. All settings have defaults — if you don't declare them, the defaults apply silently.
   </p>
+  <div class="page-aside">Most code will never need to touch any of this.</div>
 </div>
 
-<p>Most languages pick a memory model, a concurrency model, and an error strategy at design time. You inherit them when you choose the language, and working around them — if possible at all — requires unsafe blocks, external libraries, or runtime flags. Pragma treats these as per-file compile-time configuration. The standard library is implemented to work correctly under all combinations.</p>
+<p>Most languages pick a memory model and an error strategy at design time. You inherit them when you choose the language, and working around them — if possible at all — requires unsafe blocks, external libraries, or runtime flags. UL treats these as per-file compile-time configuration. The standard library is implemented to work correctly under all combinations.</p>
 
 <div class="example">
-<span class="ex-key">memory</span>:      <span class="ex-val">gc</span>          <span class="ex-cm">// or: manual · refcount · arena</span><br>
+<span class="ex-key">memory</span>:      <span class="ex-val">gc</span>          <span class="ex-cm">// or: manual · refcount</span><br>
 <span class="ex-key">safety</span>:      <span class="ex-val">checked</span>     <span class="ex-cm">// or: unchecked</span><br>
-<span class="ex-key">concurrency</span>: <span class="ex-val">threads</span>     <span class="ex-cm">// or: async · cooperative</span><br>
 <span class="ex-key">int_width</span>:   <span class="ex-num">32</span>          <span class="ex-cm">// or: 64 · platform</span><br>
 <span class="ex-key">float_model</span>: <span class="ex-val">ieee</span>        <span class="ex-cm">// or: fast</span><br>
 <span class="ex-key">overflow</span>:    <span class="ex-val">trap</span>        <span class="ex-cm">// or: wrap · saturate</span><br>
-<span class="ex-key">error_model</span>: <span class="ex-val">exceptions</span>  <span class="ex-cm">// or: result · abort</span><br>
-&nbsp;&nbsp;<span class="ex-key">exceptions</span>: <span class="ex-val">unchecked</span>   <span class="ex-cm">// sub-option — only when error_model: exceptions  |  or: checked</span><br>
 <span class="ex-key">types</span>:       <span class="ex-val">strict</span>      <span class="ex-cm">// or: dynamic</span><br>
 <span class="ex-key">allocator</span>:   <span class="ex-val">system</span>      <span class="ex-cm">// or: custom · embedded</span><br>
 <span class="ex-key">bounds_check</span>:<span class="ex-val">enabled</span>     <span class="ex-cm">// or: disabled</span><br>
 <span class="ex-key">stack_size</span>:  <span class="ex-val">default</span>     <span class="ex-cm">// or: N (in KB, e.g. 512)</span>
 </div>
-
-<hr>
 
 <h2 id="memory">memory</h2>
 <p>Controls how the program allocates and frees heap memory. This setting affects every allocation in the file. The standard library's collection types, strings, and data structures all work under any model.</p>
@@ -334,13 +345,12 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
 <div class="setting-block">
   <div class="setting-header">
     <span class="setting-key">memory</span>
-    <span class="setting-values">gc &nbsp;|&nbsp; manual &nbsp;|&nbsp; refcount &nbsp;|&nbsp; arena</span>
+    <span class="setting-values">gc &nbsp;|&nbsp; manual &nbsp;|&nbsp; refcount</span>
   </div>
   <div class="setting-body">
     <p class="setting-desc"><strong>gc</strong> — Garbage collected. The runtime tracks live objects and reclaims unreachable memory automatically. Lowest programmer effort; some pause latency.</p>
     <p class="setting-desc"><strong>manual</strong> — Programmer manages allocation and deallocation. Use <code>malloc</code>, <code>free</code>. Full control, zero overhead, full responsibility.</p>
     <p class="setting-desc"><strong>refcount</strong> — Reference counting. Objects are freed when their reference count drops to zero. Deterministic timing; cycles require explicit handling.</p>
-    <p class="setting-desc"><strong>arena</strong> — All allocations are made from a single region. The entire arena is freed at once. Common in request-handling servers and parsers.</p>
     <div class="setting-default">default: <span>gc</span></div>
   </div>
 </div>
@@ -380,7 +390,7 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
 
 <div class="suboption-wrap">
   <div class="suboption-label">Contract note — allocator: custom</div>
-  <p>When <code>allocator: custom</code> is set, the provided struct must implement the Pragma allocator interface: <code>alloc(size, align) → ptr</code>, <code>free(ptr)</code>, and <code>realloc(ptr, new_size) → ptr</code>. This is not a setting — it is a compile-time contract. The compiler will reject a custom allocator that does not satisfy the interface.</p>
+  <p>When <code>allocator: custom</code> is set, the provided struct must implement the UL allocator interface: <code>alloc(size, align) → ptr</code>, <code>free(ptr)</code>, and <code>realloc(ptr, new_size) → ptr</code>. This is not a setting — it is a compile-time contract. The compiler will reject a custom allocator that does not satisfy the interface.</p>
 </div>
 
 <h2 id="overflow">overflow</h2>
@@ -414,8 +424,6 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
   </div>
 </div>
 
-<hr>
-
 <h2 id="safety">safety</h2>
 <p>Controls whether the compiler inserts runtime safety checks. Does not affect formal verification — that is a separate compilation step controlled by the MemProof pipeline.</p>
 
@@ -445,8 +453,6 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
     <div class="setting-default">default: <span>enabled</span></div>
   </div>
 </div>
-
-<hr>
 
 <h2 id="int_width">int_width</h2>
 <p>Sets the width of the unqualified <code>int</code> type. Does not affect explicitly-sized types (<code>int32</code>, <code>int64</code>, etc.).</p>
@@ -480,7 +486,7 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
 </div>
 
 <h2 id="types">types</h2>
-<p>Determines how type mismatches are handled.</p>
+<p>Controls whether the compiler enforces strict static typing or allows dynamic type behaviour. This setting is <strong>not target-independent</strong> — the valid values depend on the compile target. Declaring <code>types: dynamic</code> for a target that cannot support it is a compile error, not silent incorrect output.</p>
 
 <div class="setting-block">
   <div class="setting-header">
@@ -488,77 +494,15 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
     <span class="setting-values">strict &nbsp;|&nbsp; dynamic</span>
   </div>
   <div class="setting-body">
-    <p class="setting-desc"><strong>strict</strong> — All type coercions are explicit. Mixing <code>int</code> and <code>float</code> in an expression is a compile error without a cast.</p>
-    <p class="setting-desc"><strong>dynamic</strong> — Common numeric promotions are inserted automatically (int → float, narrower → wider). Closer to how Python or JavaScript handle arithmetic.</p>
+    <p class="setting-desc"><strong>strict</strong> — All type coercions are explicit. Mixing <code>int</code> and <code>float</code> in an expression is a compile error without a cast. Valid for all targets.</p>
+    <p class="setting-desc"><strong>dynamic</strong> — Common numeric promotions are inserted automatically (int → float, narrower → wider). Closer to how Python or JavaScript handle arithmetic. <em>Not valid when targeting C — compile error.</em></p>
     <div class="setting-default">default: <span>strict</span></div>
   </div>
 </div>
 
-<hr>
-
-<h2 id="concurrency">concurrency</h2>
-<p>Sets the concurrency model for the file. Affects how the standard library handles I/O, timers, and inter-task communication.</p>
-
-<div class="setting-block">
-  <div class="setting-header">
-    <span class="setting-key">concurrency</span>
-    <span class="setting-values">threads &nbsp;|&nbsp; async &nbsp;|&nbsp; cooperative</span>
-  </div>
-  <div class="setting-body">
-    <p class="setting-desc"><strong>threads</strong> — OS threads. Preemptive scheduling. Standard library primitives map to pthreads/Win32 threads. On the Python target, the transpiler selects between <code>threading</code> and <code>multiprocessing</code> based on usage — see sub-option below.</p>
-    <p class="setting-desc"><strong>async</strong> — Asynchronous tasks with an event loop. Functions that block are marked with <code>@await</code>. Maps to JS Promises on the JavaScript target, <code>asyncio</code> on the Python target, and virtual threads on the JVM target.</p>
-    <p class="setting-desc"><strong>cooperative</strong> — Green threads with explicit yield points. Scheduling is application-controlled with no OS involvement. Useful for embedded systems and game loops.</p>
-    <div class="setting-default">default: <span>threads</span></div>
-  </div>
-</div>
-
 <div class="suboption-wrap">
-  <div class="suboption-label">Sub-option — concurrency: threads · Python target only</div>
-  <p>On the Python backend, <code>concurrency: threads</code> produces different code depending on whether the work is I/O-bound or CPU-bound. By default the transpiler infers this from usage — but that decision is currently invisible to the programmer. You can override it explicitly:</p>
-  <div class="setting-block">
-    <div class="setting-header">
-      <span class="setting-key">thread_model</span>
-      <span class="setting-values">auto &nbsp;|&nbsp; io &nbsp;|&nbsp; cpu</span>
-    </div>
-    <div class="setting-body">
-      <p class="setting-desc"><strong>auto</strong> — The transpiler infers the correct backend from usage. Functions that call I/O primitives get <code>threading</code>; functions that perform computation get <code>multiprocessing</code>.</p>
-      <p class="setting-desc"><strong>io</strong> — Forces <code>threading</code> regardless of inferred usage. Use when the transpiler gets it wrong or when you are mixing I/O and CPU work and want predictable output.</p>
-      <p class="setting-desc"><strong>cpu</strong> — Forces <code>multiprocessing</code>. Use for CPU-bound parallel work where you need to bypass the GIL. Each thread becomes a separate process with its own memory space.</p>
-      <div class="setting-default">default: <span>auto</span> &nbsp;·&nbsp; only applies when target is Python and concurrency is threads</div>
-    </div>
-  </div>
-</div>
-
-<h2 id="error_model">error_model</h2>
-<p>Sets how runtime errors and exceptional conditions are reported and propagated.</p>
-
-<div class="setting-block">
-  <div class="setting-header">
-    <span class="setting-key">error_model</span>
-    <span class="setting-values">exceptions &nbsp;|&nbsp; result &nbsp;|&nbsp; abort</span>
-  </div>
-  <div class="setting-body">
-    <p class="setting-desc"><strong>exceptions</strong> — <code>try</code>/<code>catch</code>/<code>error</code> syntax. Implemented via <code>setjmp</code>/<code>longjmp</code> — no heap allocation, no C++ runtime dependency.</p>
-    <p class="setting-desc"><strong>result</strong> — Functions that can fail return a result type. Errors are values; callers must handle them explicitly. Similar to Rust's <code>Result&lt;T, E&gt;</code> or Go's multiple return values.</p>
-    <p class="setting-desc"><strong>abort</strong> — Errors call <code>abort()</code> immediately. For environments where error recovery is not possible or needed.</p>
-    <div class="setting-default">default: <span>exceptions</span></div>
-  </div>
-</div>
-
-<div class="suboption-wrap">
-  <div class="suboption-label">Sub-option — error_model: exceptions · JVM target</div>
-  <p>Controls whether exception types appear in function signatures on the JVM target. Has no effect on any other target.</p>
-  <div class="setting-block">
-    <div class="setting-header">
-      <span class="setting-key">exceptions</span>
-      <span class="setting-values">unchecked &nbsp;|&nbsp; checked</span>
-    </div>
-    <div class="setting-body">
-      <p class="setting-desc"><strong>unchecked</strong> — Exceptions are not declared in function signatures. On the JVM target, the transpiler wraps all exceptions in <code>RuntimeException</code> so callers are never forced to handle them. This is the standard behaviour for Pragma code and all other targets.</p>
-      <p class="setting-desc"><strong>checked</strong> — The transpiler generates explicit <code>throws</code> declarations on the JVM target, propagating exception types up the call stack as Java requires. Use this when integrating with Java libraries that expect checked exceptions to be declared.</p>
-      <div class="setting-default">default: <span>unchecked</span> &nbsp;·&nbsp; only applies when target is JVM and error_model is exceptions</div>
-    </div>
-  </div>
+  <div class="suboption-label">Target constraints</div>
+  <p>The C target has a static type system that does not support dynamic typing. The compiler cannot emit valid C from dynamically typed source. Declaring <code>types: dynamic</code> when targeting C is a compile error. The Python and JavaScript targets support both modes.</p>
 </div>
 
 <div class="note">

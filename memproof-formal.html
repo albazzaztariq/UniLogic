@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pragma MemProof — Formal Specifications</title>
+<title>UniLogic MemProof — Formal Specifications</title>
 <script>
 MathJax = {
   tex: {
@@ -172,14 +172,14 @@ td {
 
 <a href="safety.html" class="back-btn">← Back</a>
 
-<h1>Pragma MemProof — Formal Specifications</h1>
+<h1>UniLogic MemProof — Formal Specifications</h1>
 <p class="doc-meta">Version 0.1</p>
 
 <hr class="thick">
 
 <h2>1. Goals and Scope</h2>
 
-<p>MemProof is Pragma's static formal verification layer. Its purpose is to prove, prior to deployment, that a Pragma program is memory safe — meaning the program cannot, for any valid input within its declared input contracts, exhibit:</p>
+<p>MemProof is UniLogic's static formal verification layer. Its purpose is to prove, prior to deployment, that a UL program is memory safe — meaning the program cannot, for any valid input within its declared input contracts, exhibit:</p>
 
 <ul>
   <li>Buffer overflows or out-of-bounds array access</li>
@@ -189,7 +189,7 @@ td {
   <li>Invalid pointer arithmetic</li>
 </ul>
 
-<p>MemProof operates on the Pragma AST before code generation. It does not verify the generated C — it verifies the Pragma source against Pragma's formal semantics. This distinction matters: a bug in Pragma's C codegen cannot produce a false positive MemProof certificate.</p>
+<p>MemProof operates on the UL AST before code generation. It does not verify the generated C — it verifies the UL source against UL's formal semantics. This distinction matters: a bug in UL's C codegen cannot produce a false positive MemProof certificate.</p>
 
 <p>MemProof produces one of three outcomes:</p>
 
@@ -207,7 +207,7 @@ td {
 
 <h3>2.1 Formal Definition</h3>
 
-<p>Pragma's memory model is adapted from CompCert's block-offset model. Memory is not modelled as a flat address space. Instead:</p>
+<p>UniLogic's memory model is adapted from CompCert's block-offset model. Memory is not modelled as a flat address space. Instead:</p>
 
 <p>A <strong>block</strong> \(b\) is an abstract allocation unit with a unique identifier \(b \in \mathsf{Block}\). Each block has a size \(|b| \in \mathbb{N}\).</p>
 
@@ -449,7 +449,7 @@ b_0 = a_{\mathsf{fixpoint}} \qquad b_{i+1} = b_i \;\triangle\; F_{\mathsf{loop}}
 
 <h3>6.1 IR Construction</h3>
 
-<p>Before VCG, the Pragma AST is lowered to a <strong>typed SSA IR</strong> (Static Single Assignment). In SSA, each variable is assigned exactly once; control flow joins use \(\phi\)-functions: \(x_3 = \phi(x_1, x_2)\) at merge points; all loop variables have explicit induction structure. SSA simplifies the VCG because each use of a variable traces unambiguously to its definition.</p>
+<p>Before VCG, the UL AST is lowered to a <strong>typed SSA IR</strong> (Static Single Assignment). In SSA, each variable is assigned exactly once; control flow joins use \(\phi\)-functions: \(x_3 = \phi(x_1, x_2)\) at merge points; all loop variables have explicit induction structure. SSA simplifies the VCG because each use of a variable traces unambiguously to its definition.</p>
 
 <h3>6.2 Weakest Precondition Calculus</h3>
 
@@ -616,9 +616,9 @@ VC:  0 ≤ i ∧ i &lt; arr_len</pre>
 
 <hr>
 
-<h2>9. Pragma Safe Subset</h2>
+<h2>9. UniLogic Safe Subset</h2>
 
-<p>Inspired by MISRA-C, the <code>@safe</code> decorator on a Pragma module or function enforces a restricted subset that makes verification tractable:</p>
+<p>Inspired by MISRA-C, the <code>@safe</code> decorator on a UL module or function enforces a restricted subset that makes verification tractable:</p>
 
 <table>
   <tr><th>Restriction</th><th>Reason</th></tr>
@@ -641,7 +641,7 @@ VC:  0 ≤ i ∧ i &lt; arr_len</pre>
 
 <table>
   <tr><th>Artifact</th><th>Storage</th><th>Why</th></tr>
-  <tr><td>Pragma source</td><td>IPFS/Arweave</td><td>Content-addressed; permanent if pinned on Arweave</td></tr>
+  <tr><td>UL source</td><td>IPFS/Arweave</td><td>Content-addressed; permanent if pinned on Arweave</td></tr>
   <tr><td>MemProof Coq source + proof</td><td>IPFS/Arweave</td><td>Immutable, auditable verifier</td></tr>
   <tr><td>LFSC proof witnesses</td><td>IPFS</td><td>Large; referenced by hash</td></tr>
   <tr><td>Certificate JSON</td><td>Blockchain</td><td>Small (&lt; 1KB); permanently on-chain</td></tr>
@@ -666,7 +666,7 @@ VC:  0 ≤ i ∧ i &lt; arr_len</pre>
   <li>Confirm <code>program_hash</code> matches the deployed program source</li>
 </ol>
 
-<p>No trust in the Pragma team, MemProof team, or any oracle is required.</p>
+<p>No trust in the UniLogic team, MemProof team, or any oracle is required.</p>
 
 <hr>
 

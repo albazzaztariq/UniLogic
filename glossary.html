@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pragma Glossary</title>
+<title>UniLogic Glossary</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
@@ -62,28 +62,28 @@ a:hover { border-bottom-color: #000; }
 </head>
 <body>
 
-<a href="index.html" class="back">← Pragma / Glossary</a>
-<h1>Pragma Glossary</h1>
+<a href="index.html" class="back">← UniLogic / Glossary</a>
+<h1>UniLogic Glossary</h1>
 
 <h2>Compiler</h2>
 <table>
-  <tr><td>pragma file.run</td><td>compile file.run to binary</td></tr>
-  <tr><td>pragma file.run --run</td><td>compile and immediately run</td></tr>
-  <tr><td>pragma file.run --emit-c</td><td>also save generated C file</td></tr>
-  <tr><td>pragma file.run --emit-py</td><td>also save generated Python file</td></tr>
-  <tr><td>pragma file.run --emit-js</td><td>also save generated JavaScript file</td></tr>
-  <tr><td>pragma file.run --emit-java</td><td>also save generated Java file</td></tr>
-  <tr><td>pragma file.run --ast</td><td>print AST (debug)</td></tr>
-  <tr><td>pragma file.run --tokens</td><td>print token stream (debug)</td></tr>
-  <tr><td>pragma file.run --debug</td><td>emit debug symbols (DWARF/PDB) into the compiled binary — stack traces include file names and line numbers; use --debug-stripped for production builds with no debug info</td></tr>
+  <tr><td>ul file.run</td><td>compile file.run to binary</td></tr>
+  <tr><td>ul file.run --run</td><td>compile and immediately run</td></tr>
+  <tr><td>ul file.run --emit-c</td><td>also save generated C file</td></tr>
+  <tr><td>ul file.run --emit-py</td><td>also save generated Python file</td></tr>
+  <tr><td>ul file.run --emit-js</td><td>also save generated JavaScript file</td></tr>
+  <tr><td>ul file.run --emit-java</td><td>also save generated Java file</td></tr>
+  <tr><td>ul file.run --ast</td><td>print AST (debug)</td></tr>
+  <tr><td>ul file.run --tokens</td><td>print token stream (debug)</td></tr>
+  <tr><td>ul file.run --debug</td><td>emit debug symbols (DWARF/PDB) into the compiled binary — stack traces include file names and line numbers; use --debug-stripped for production builds with no debug info</td></tr>
 </table>
 
-<h2>Transpiler — to Pragma</h2>
+<h2>Transpiler — to UniLogic</h2>
 <table>
-  <tr><td>xpile input.c</td><td>transpile C source to Pragma (prints to stdout)</td></tr>
-  <tr><td>xpile input.py</td><td>transpile Python source to Pragma</td></tr>
-  <tr><td>xpile input.js</td><td>transpile JavaScript source to Pragma</td></tr>
-  <tr><td>xpile input.java</td><td>transpile Java source to Pragma</td></tr>
+  <tr><td>xpile input.c</td><td>transpile C source to UL (prints to stdout)</td></tr>
+  <tr><td>xpile input.py</td><td>transpile Python source to UL</td></tr>
+  <tr><td>xpile input.js</td><td>transpile JavaScript source to UL</td></tr>
+  <tr><td>xpile input.java</td><td>transpile Java source to UL</td></tr>
   <tr><td>xpile input.c -o out.run</td><td>write output to file (works with any source language)</td></tr>
   <tr><td>xpile --c input.c</td><td>explicit C flag (inferred from .c by default)</td></tr>
   <tr><td>xpile --py input.py</td><td>explicit Python flag</td></tr>

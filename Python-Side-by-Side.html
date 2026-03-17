@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Python Side-by-Side — Pragma</title>
+<title>Python Side-by-Side — UniLogic</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Jost:wght@300;400&display=swap" rel="stylesheet">
 <style>
@@ -32,23 +32,23 @@ body {
   left: 20px;
   z-index: 100;
   display: inline-block;
-  color: #cba6f7;
+  color: #7ab3e0;
   text-decoration: none;
   font-size: 0.85rem;
   letter-spacing: 0.08em;
-  border: 1px solid #5c2d91;
+  border: 1px solid #1a3a7a;
   padding: 4px 12px;
   border-radius: 3px;
   background: #1e1e2e;
   transition: border-color 0.15s;
 }
-.back-link:hover { border-color: #cba6f7; }
+.back-link:hover { border-color: #7ab3e0; }
 
 h1 {
   font-family: 'VT323', monospace;
   font-size: 2.4rem;
   font-weight: normal;
-  color: #cba6f7;
+  color: #7ab3e0;
   letter-spacing: 0.08em;
   margin-bottom: 10px;
 }
@@ -104,7 +104,7 @@ h1 {
 }
 
 .col-header.lang-py { color: #a6e3a1; }
-.col-header.lang-pragma { color: #cba6f7; }
+.col-header.lang-pragma { color: #7ab3e0; }
 
 pre {
   overflow-x: hidden;
@@ -121,9 +121,9 @@ pre {
 }
 
 pre.py-code  { border-left-color: #a6e3a1; }
-pre.p-code   { border-left-color: #cba6f7; }
+pre.p-code   { border-left-color: #7ab3e0; }
 
-.kw  { color: #cba6f7; }
+.kw  { color: #7ab3e0; }
 .ty  { color: #89dceb; }
 .cm  { color: #585b70; font-style: italic; }
 .num { color: #fab387; }
@@ -165,10 +165,10 @@ hr {
 <body>
 <div class="page-wrap">
 
-<a href="index.html" class="back-link">← Pragma</a>
+<a href="index.html" class="back-link">← UniLogic</a>
 
 <h1>Python Side-by-Side</h1>
-<p class="subtitle">Python source translated into Pragma, with notes on where the languages diverge.</p>
+<p class="subtitle">Python source translated into UL, with notes on where the languages diverge.</p>
 
 <!-- ═══════════════════════════════════ EXAMPLE 1 ═══════════════════════════════════ -->
 <div class="example">
@@ -183,7 +183,7 @@ hr {
   <span class="kw">return</span> to</pre>
     </div>
     <div>
-      <div class="col-header lang-pragma">Pragma</div>
+      <div class="col-header lang-pragma">UL</div>
       <pre class="p-code"><span class="kw">function</span> <span class="fn">append_to</span>(<span class="ty">int</span> element, <span class="ty">none</span> <span class="ang">&lt;</span>to<span class="ang">&gt;</span>)
   to.<span class="fn">append</span>(element)
   <span class="kw">return</span> to
@@ -193,7 +193,7 @@ hr {
   <div class="explain">
     <p>Python's mutable default argument <code>to=[]</code> is one of the language's most well-known traps. Default values are evaluated <strong>once at function definition time</strong>, not on each call. Every call that doesn't pass <code>to</code> shares the same list object — so appending in one call affects all future calls.</p>
     <p style="margin-top:12px;">The standard workaround is to default to <code>None</code> and assign a new list inside the body. This works, but the intent is hidden behind a conditional that exists only to paper over the language behavior.</p>
-    <p style="margin-top:12px;">In Pragma, default parameter values are evaluated fresh on every call — there is no shared mutable state between invocations. The caller passes what it needs, or the function builds its own fresh state. No hidden shared objects, no defensive <code>if to is None</code> guards.</p>
+    <p style="margin-top:12px;">In UL, default parameter values are evaluated fresh on every call — there is no shared mutable state between invocations. The caller passes what it needs, or the function builds its own fresh state. No hidden shared objects, no defensive <code>if to is None</code> guards.</p>
   </div>
 </div>
 

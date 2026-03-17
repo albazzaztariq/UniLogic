@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pragma — Translation &amp; XPile</title>
+<title>UniLogic — Translation &amp; XPile</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -318,7 +318,7 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
 
 <nav>
   <a href="dynamic-runtime.html" class="nav-back">← dynamic runtime</a>
-  <div class="nav-logo">Pragma / XPile</div>
+  <div class="nav-logo">UniLogic / XPile</div>
 
   <div class="nav-section">Overview</div>
   <a href="#what-is-xpile">What is XPile</a>
@@ -343,41 +343,41 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
   <div class="page-label">XPile — Transpiler</div>
   <h1>Translation</h1>
   <p class="page-intro">
-    XPile is Pragma's transpiler. It converts source code between Pragma and any supported language in both directions. Translation is not just mechanical substitution — it is configurable, so output code reads the way the target codebase expects it to.
+    XPile is UL's transpiler. It converts source code between UL and any supported language in both directions. Translation is not just mechanical substitution — it is configurable, so output code reads the way the target codebase expects it to.
   </p>
 </div>
 
-<p>XPile handles two directions: importing foreign code into Pragma so you can work in it, and exporting Pragma back to a target language for deployment. Both directions are lossless in behaviour. Style is a separate concern, controlled by translation profiles.</p>
+<p>XPile handles two directions: importing foreign code into UL so you can work in it, and exporting UL back to a target language for deployment. Both directions are lossless in behaviour. Style is a separate concern, controlled by translation profiles.</p>
 
 <h2 id="what-is-xpile">What is XPile</h2>
 
-<p>XPile is a standalone tool that ships with Pragma. It reads source code in a supported language and produces equivalent source code in another. It is not a compiler — it does not produce binaries. It produces source that can then be compiled or run by whatever toolchain the target language uses.</p>
+<p>XPile is a standalone tool that ships with UniLogic. It reads source code in a supported language and produces equivalent source code in another. It is not a compiler — it does not produce binaries. It produces source that can then be compiled or run by whatever toolchain the target language uses.</p>
 
 <p>Supported translation directions:</p>
 
 <table class="map-table">
   <tr><th>From</th><th>To</th></tr>
-  <tr><td>C</td><td>Pragma</td></tr>
-  <tr><td>Python</td><td>Pragma</td></tr>
-  <tr><td>JavaScript</td><td>Pragma</td></tr>
-  <tr><td>Java</td><td>Pragma</td></tr>
-  <tr><td>Pragma</td><td>C, Python, JavaScript, Java</td></tr>
+  <tr><td>C</td><td>UL</td></tr>
+  <tr><td>Python</td><td>UL</td></tr>
+  <tr><td>JavaScript</td><td>UL</td></tr>
+  <tr><td>Java</td><td>UL</td></tr>
+  <tr><td>UL</td><td>C, Python, JavaScript, Java</td></tr>
 </table>
 
-<p>The compiler (<code>pragma</code>) handles the Pragma → target direction as part of its normal build pipeline. XPile is the dedicated tool for the reverse — and for round-tripping.</p>
+<p>The compiler (<code>pragma</code>) handles the UL → target direction as part of its normal build pipeline. XPile is the dedicated tool for the reverse — and for round-tripping.</p>
 
 <h2 id="round-trip">Round-trip workflow</h2>
 
-<p>The primary use case for XPile is working in a foreign codebase. You translate the foreign source into Pragma, do your work in Pragma, then translate back to the original language for deployment. The rest of the team never sees Pragma. They see their own language, in their own style.</p>
+<p>The primary use case for XPile is working in a foreign codebase. You translate the foreign source into UL, do your work in UL, then translate back to the original language for deployment. The rest of the team never sees UL. They see their own language, in their own style.</p>
 
 <div class="flow">
   <div class="flow-box">their C</div>
   <div class="flow-arrow">→</div>
-  <div class="flow-box highlight">Pragma</div>
+  <div class="flow-box highlight">UL</div>
   <div class="flow-arrow">→</div>
   <div class="flow-box">your work</div>
   <div class="flow-arrow">→</div>
-  <div class="flow-box highlight">Pragma</div>
+  <div class="flow-box highlight">UL</div>
   <div class="flow-arrow">→</div>
   <div class="flow-box">C they deploy</div>
 </div>
@@ -390,7 +390,7 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
 
 <h2 id="profiles">Translation profiles</h2>
 
-<p>A translation profile is a configuration file that defines how Pragma constructs map to syntax in a specific target language. Profiles are per-target — you write a profile for C, a separate one for Java, and so on. Profiles are optional: if you don't provide one, XPile uses its defaults.</p>
+<p>A translation profile is a configuration file that defines how UL constructs map to syntax in a specific target language. Profiles are per-target — you write a profile for C, a separate one for Java, and so on. Profiles are optional: if you don't provide one, XPile uses its defaults.</p>
 
 <p>A profile does not change what the code does. It only changes how it is written. The output with a custom profile and the output with the default profile must be behaviourally identical.</p>
 
@@ -411,7 +411,7 @@ xpile input.run --to c --profile <span class="ex-str">team-style.xpile</span>
 <h3>Loops</h3>
 <table class="map-table">
   <tr>
-    <th>Pragma</th>
+    <th>UL</th>
     <th>Default C output</th>
     <th>Example custom mapping</th>
   </tr>
@@ -435,7 +435,7 @@ xpile input.run --to c --profile <span class="ex-str">team-style.xpile</span>
 <h3>Variable declarations</h3>
 <table class="map-table">
   <tr>
-    <th>Pragma</th>
+    <th>UL</th>
     <th>Default C output</th>
     <th>Example custom mapping</th>
   </tr>
@@ -454,7 +454,7 @@ xpile input.run --to c --profile <span class="ex-str">team-style.xpile</span>
 <h3>Memory allocation</h3>
 <table class="map-table">
   <tr>
-    <th>Pragma</th>
+    <th>UL</th>
     <th>Default C output</th>
     <th>Mappable alternatives</th>
   </tr>
@@ -473,7 +473,7 @@ xpile input.run --to c --profile <span class="ex-str">team-style.xpile</span>
 <h3>Null checks</h3>
 <table class="map-table">
   <tr>
-    <th>Pragma</th>
+    <th>UL</th>
     <th>Default C output</th>
     <th>Mappable alternatives</th>
   </tr>
@@ -487,7 +487,7 @@ xpile input.run --to c --profile <span class="ex-str">team-style.xpile</span>
 <h3>Boolean literals</h3>
 <table class="map-table">
   <tr>
-    <th>Pragma</th>
+    <th>UL</th>
     <th>Default C output</th>
     <th>Mappable alternatives</th>
   </tr>
@@ -501,7 +501,7 @@ xpile input.run --to c --profile <span class="ex-str">team-style.xpile</span>
 <h3>Function signatures</h3>
 <table class="map-table">
   <tr>
-    <th>Pragma</th>
+    <th>UL</th>
     <th>Default C output</th>
     <th>Mappable alternatives</th>
   </tr>
@@ -514,7 +514,7 @@ xpile input.run --to c --profile <span class="ex-str">team-style.xpile</span>
 
 <h2 id="profile-format">Profile format</h2>
 
-<p>A profile is a plain text file. Each entry maps a Pragma construct to its target-language form. Entries use a simple <code>construct: "template"</code> syntax. Templates use <code>{}</code> placeholders for the parts XPile fills in.</p>
+<p>A profile is a plain text file. Each entry maps a UL construct to its target-language form. Entries use a simple <code>construct: "template"</code> syntax. Templates use <code>{}</code> placeholders for the parts XPile fills in.</p>
 
 <div class="example">
 <span class="ex-cm">// team-style.xpile — target: c</span><br>
@@ -565,8 +565,8 @@ bool_false:   <span class="ex-str">"0"</span>
     <span class="tier-title">Behavioural equivalence</span>
   </div>
   <div class="tier-body">
-    XPile checks whether the custom mapping produces the same behaviour as one of Pragma's defined equivalents for that construct. It does not execute or prove the code — it compares the mapping structurally against the known-equivalent forms. If the mapping does not match any of them, a warning is issued and translation continues.
-    <p style="margin-top:10px; margin-bottom:0; font-size:13px; color:#5a6a7a;">This is not an error because the mapping may still be correct — XPile simply cannot confirm it. If you proceed past this warning, the behaviour of the output relative to the Pragma source is your responsibility.</p>
+    XPile checks whether the custom mapping produces the same behaviour as one of UL's defined equivalents for that construct. It does not execute or prove the code — it compares the mapping structurally against the known-equivalent forms. If the mapping does not match any of them, a warning is issued and translation continues.
+    <p style="margin-top:10px; margin-bottom:0; font-size:13px; color:#5a6a7a;">This is not an error because the mapping may still be correct — XPile simply cannot confirm it. If you proceed past this warning, the behaviour of the output relative to the UL source is your responsibility.</p>
     <div class="example" style="margin-top:12px; margin-bottom:0; line-height:1.8;">
 <span class="ex-warn">warning:</span> profile 'team-style.xpile' — construct 'for_range'<br>
 <span class="ex-warn">         mapping does not match any defined equivalent</span><br>
