@@ -41,7 +41,12 @@ header {
 
 .header-logo-row img {
   height: 48px;
-  width: auto;
+  width: 48px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #c8a030;
+  background: #13130a;
+  padding: 4px;
 }
 
 header h1 {
@@ -197,6 +202,8 @@ main {
   <a class="nav-back" href="index.html">← UniLogic</a>
 
   <span class="compare-label">The same pipeline — Python vs Pragma</span>
+
+  <p style="font-size:0.9rem; color:#7a7a5a; line-height:1.6; max-width:620px; align-self:flex-start;">Pragma describes a data pipeline as a flat sequence of named actions — fetch, convert, save, notify, and others. No boilerplate, no error handling scaffolding, no plumbing. The structure is the program.</p>
 
   <div class="compare">
 
