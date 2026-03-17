@@ -10,7 +10,7 @@
 
 ## What is UniLogic?
 
-A unified systems and application language that transpiles to C, Python, and JavaScript. Runtime behavior such as memory model, stack size, safety checks and others are settings, not just language defaults. Includes a formal memory safety proof system with verifiable certificates.
+A unified systems, application, and web language that transpiles to C, Python, and JavaScript. Runtime behavior such as memory model, stack size, safety checks and others are settings, not just language defaults. Includes a formal memory safety proof system with verifiable certificates.
 
 Standard mode reads like natural language. Base mode adds memory management, pointers, and bitwise operations in the same file — no mode switch, no separate language.
 
