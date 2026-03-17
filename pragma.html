@@ -21,27 +21,64 @@ body {
   align-items: center;
 }
 
-/* ── HEADER ── */
-header {
+/* ── MAIN ── */
+main {
   width: 100%;
-  padding: 52px 24px 40px;
+  max-width: 1080px;
+  padding: 52px 24px 72px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  border-bottom: 1px solid #2a2a14;
+  gap: 0;
+}
+
+/* ── TOP ROW (matches grid columns) ── */
+.top-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+.top-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-bottom: 14px;
+}
+
+.compare-label {
+  font-size: 0.73rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #4a4a2a;
+}
+
+.description {
+  font-size: 0.88rem;
+  color: #6a6a4a;
+  line-height: 1.6;
+  max-width: 420px;
+}
+
+.top-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding: 0 0 14px 20px;
+  gap: 6px;
 }
 
 .header-logo-row {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 14px;
+  gap: 12px;
 }
 
 .logo-circle {
-  width: 56px;
-  height: 56px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 2px solid #c8a030;
   background: #1a1a0a;
@@ -52,58 +89,30 @@ header {
 }
 
 .logo-circle img {
-  height: 34px;
+  height: 27px;
   width: auto;
   object-fit: contain;
 }
 
-header h1 {
+.page-title {
   font-family: 'Playfair Display', serif;
-  font-size: 2.6rem;
+  font-size: 1.8rem;
   font-weight: 700;
   color: #e8dfc8;
   letter-spacing: 0.02em;
 }
 
-header .tagline {
-  font-size: 0.95rem;
-  color: #7a7a5a;
-  font-weight: 300;
-  max-width: 520px;
-  line-height: 1.6;
-  margin-top: 4px;
-}
-
-header .lang-credit {
-  margin-top: 12px;
-  font-size: 0.78rem;
+.lang-credit {
+  font-size: 0.75rem;
   font-style: italic;
-  color: #5a5a3a;
+  color: #4a4a2a;
+  padding-left: 2px;
 }
 
-header .lang-credit a {
+.lang-credit a {
   color: #c8a030;
   text-decoration: none;
   border-bottom: 1px dotted #c8a030;
-}
-
-/* ── MAIN ── */
-main {
-  width: 100%;
-  max-width: 1080px;
-  padding: 56px 24px 80px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 36px;
-}
-
-.compare-label {
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #5a5a3a;
-  align-self: flex-start;
 }
 
 /* ── SIDE-BY-SIDE ── */
@@ -112,21 +121,20 @@ main {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2px;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
   border: 1px solid #2a2a14;
 }
 
 .pane {
   background: #1a1a0e;
-  padding: 0;
   display: flex;
   flex-direction: column;
 }
 
 .pane-header {
-  padding: 10px 18px;
-  font-size: 0.73rem;
+  padding: 9px 18px;
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -140,25 +148,23 @@ main {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.82rem;
   line-height: 1.7;
-  padding: 22px 20px;
+  padding: 20px 20px;
   overflow-x: auto;
   flex: 1;
   color: #b0a88a;
 }
 
-.pane.pragma-pane pre {
-  color: #c8c0a0;
-}
+.pane.pragma-pane pre { color: #c8c0a0; }
 
-/* Python syntax colouring */
-.py-kw   { color: #c792ea; }
-.py-fn   { color: #82aaff; }
-.py-str  { color: #c3e88d; }
-.py-cm   { color: #4a5a3a; font-style: italic; }
-.py-num  { color: #f78c6c; }
-.py-var  { color: #b0a88a; }
+/* Python syntax */
+.py-kw  { color: #c792ea; }
+.py-fn  { color: #82aaff; }
+.py-str { color: #c3e88d; }
+.py-cm  { color: #4a5a3a; font-style: italic; }
+.py-num { color: #f78c6c; }
+.py-var { color: #b0a88a; }
 
-/* Pragma syntax colouring */
+/* Pragma syntax */
 .pr-action { color: #c8a030; font-weight: 500; }
 .pr-key    { color: #82aaff; }
 .pr-val    { color: #c3e88d; }
@@ -166,14 +172,19 @@ main {
 .pr-cm     { color: #4a5a3a; font-style: italic; }
 
 /* ── BUTTON ── */
+.btn-row {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .ref-btn {
   display: inline-block;
-  margin-top: 8px;
-  padding: 13px 36px;
+  padding: 11px 32px;
   background: #c8a030;
   color: #13130a;
   font-family: 'Inter', sans-serif;
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 500;
   letter-spacing: 0.06em;
   text-decoration: none;
@@ -183,33 +194,25 @@ main {
 
 .ref-btn:hover { background: #d4b040; }
 
-.nav-back {
-  align-self: flex-start;
-  font-size: 0.8rem;
-  color: #5a5a3a;
-  text-decoration: none;
-  margin-bottom: -16px;
-}
-.nav-back:hover { color: #c8a030; }
-
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-logo-row">
-    <div class="logo-circle"><img src="logo.png" alt="Pragma"></div>
-    <h1>Pragma</h1>
-  </div>
-  <p class="tagline">A declarative pipeline language for data movement. Replace scripts with structure.</p>
-  <p class="lang-credit">Pragma is part of the <a href="https://lang-language-project.github.io/">LANG Project</a>.</p>
-</header>
-
 <main>
 
-  <span class="compare-label">The same pipeline — Python vs Pragma</span>
-
-  <p style="font-size:0.9rem; color:#7a7a5a; line-height:1.6; max-width:620px; align-self:flex-start;">Pragma describes a data pipeline as a flat sequence of named actions — fetch, convert, save, notify, and others. No boilerplate, no error handling scaffolding, no plumbing. The structure is the program.</p>
+  <div class="top-row">
+    <div class="top-left">
+      <span class="compare-label">The same pipeline — Python vs Pragma</span>
+      <p class="description">Pragma describes a pipeline as a flat sequence of named actions. No boilerplate, no error handling scaffolding, no plumbing. The structure is the program.</p>
+    </div>
+    <div class="top-right">
+      <div class="header-logo-row">
+        <div class="logo-circle"><img src="logo.png" alt="Pragma"></div>
+        <span class="page-title">Pragma</span>
+      </div>
+      <p class="lang-credit">Part of the <a href="https://lang-language-project.github.io/">LANG Project</a>.</p>
+    </div>
+  </div>
 
   <div class="compare">
 
@@ -271,14 +274,12 @@ os.<span class="py-fn">makedirs</span>(<span class="py-str">"output"</span>, exi
       <span class="pr-key">format</span>=<span class="pr-val">json</span>
       <span class="pr-key">structure</span>=<span class="pr-name">openalex.map</span>
       <span class="pr-key">name</span>=<span class="pr-name">records</span>
-
 <span class="pr-cm">// convert to csv</span>
 <span class="pr-action">convert:</span>
       <span class="pr-key">content</span>=<span class="pr-name">records</span>
       <span class="pr-key">from</span>=<span class="pr-val">json</span>
       <span class="pr-key">to</span>=<span class="pr-val">csv</span>
       <span class="pr-key">name</span>=<span class="pr-name">report</span>
-
 <span class="pr-cm">// save to disk</span>
 <span class="pr-action">save:</span>
       <span class="pr-key">to</span>=<span class="pr-val">file</span>
@@ -290,7 +291,9 @@ os.<span class="py-fn">makedirs</span>(<span class="py-str">"output"</span>, exi
 
   </div>
 
-  <a class="ref-btn" href="pragma-reference.html">Language Reference →</a>
+  <div class="btn-row">
+    <a class="ref-btn" href="pragma-reference.html">Language Reference →</a>
+  </div>
 
 </main>
 
