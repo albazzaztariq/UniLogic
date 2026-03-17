@@ -1263,7 +1263,13 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player[<span clas
       <div class="mods-card-desc">Substitutes the function body at every call site at compile time. No call overhead. Enforced — the compiler will not ignore it.</div>
       <pre><span class="ann">@callembed</span>
 <span class="kw">function</span> <span class="fn">clamp</span>(<span class="kw">int</span> v, <span class="kw">int</span> lo, <span class="kw">int</span> hi)
-  <span class="kw">return</span> v <span class="op">&lt;</span> lo <span class="op">?</span> lo : v <span class="op">&gt;</span> hi <span class="op">?</span> hi : v
+  <span class="kw">if</span> v <span class="op">&lt;</span> lo
+    <span class="kw">return</span> lo
+  <span class="kw">else if</span> v <span class="op">&gt;</span> hi
+    <span class="kw">return</span> hi
+  <span class="kw">else</span>
+    <span class="kw">return</span> v
+  <span class="kw">end if</span>
 <span class="kw">end function</span></pre>
     </div>
 
