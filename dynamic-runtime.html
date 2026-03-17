@@ -506,19 +506,25 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
 </div>
 
 <h2 id="concurrency">concurrency</h2>
-<p>Controls which concurrency model the compiler targets when emitting code for runtimes that have more than one option. This setting exists because different targets expose concurrency through different mechanisms — Python exposes both <code>threading</code> and <code>asyncio</code>, and they are not interchangeable at the module level. Declaring this setting tells the compiler which one to emit.</p>
+<p>Controls which concurrency model the compiler targets when emitting code. Different targets expose concurrency through different mechanisms — declaring this setting tells the compiler which model to emit.</p>
 <p>This setting does not gate whether <code>@async</code> and <code>@await</code> are available in source — those decorators work regardless. It controls what the emitted runtime code looks like.</p>
 
 <div class="setting-block">
   <div class="setting-header">
     <span class="setting-key">concurrency</span>
-    <span class="setting-values">threads &nbsp;|&nbsp; async</span>
+    <span class="setting-values">parallel &nbsp;|&nbsp; threaded &nbsp;|&nbsp; async</span>
   </div>
   <div class="setting-body">
-    <p class="setting-desc"><strong>threads</strong> — The compiler emits OS-thread-based concurrency. For Python targets: <code>threading</code> module. For C targets: pthreads.</p>
-    <p class="setting-desc"><strong>async</strong> — The compiler emits event-loop-based concurrency. For Python targets: <code>asyncio</code>. For JavaScript targets: native async/await.</p>
-    <div class="setting-default">default: <span>threads</span></div>
+    <p class="setting-desc"><strong>parallel</strong> — CPU-bound data parallelism with shared memory. Maps to OpenMP or platform thread pools. Not available on the JS/HTML target.</p>
+    <p class="setting-desc"><strong>threaded</strong> — I/O-bound thread concurrency. For Python targets: <code>threading</code> module. For C targets: pthreads. Not available on the JS/HTML target.</p>
+    <p class="setting-desc"><strong>async</strong> — Cooperative single-threaded event loop. For Python targets: <code>asyncio</code>. For JavaScript targets: native async/await. Not available on the C target.</p>
+    <div class="setting-default">default: <span>threaded</span></div>
   </div>
+</div>
+
+<div class="suboption-wrap">
+  <div class="suboption-label">Target constraints</div>
+  <p><code>parallel</code> and <code>threaded</code> are not available on the JS/HTML target — JavaScript is single-threaded; declaring either for that target is a compile error. <code>async</code> is not available on the C target — C has no built-in event loop; declaring it for that target is a compile error.</p>
 </div>
 
 <div class="note">

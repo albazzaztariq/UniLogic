@@ -658,11 +658,13 @@ body.theme-default .mods-section-title { color: #1a1a1a; border-bottom-color: #b
   <a href="#casting">Casting</a>
   <a href="#if">If / Else</a>
   <a href="#while">While</a>
+  <a href="#do-while">Do / While</a>
   <a href="#for">For</a>
   <a href="#foreach">For Each</a>
   <a href="#match">Match</a>
   <a href="#iterate">Iterate</a>
   <a href="#loop-control">Loop Control</a>
+  <a href="#teleport">teleport / portal</a>
 
   <div class="nav-section">Code</div>
   <a href="#functions">Functions</a>
@@ -672,6 +674,7 @@ body.theme-default .mods-section-title { color: #1a1a1a; border-bottom-color: #b
   <div class="nav-section">I/O &amp; Errors</div>
   <a href="#print">Print</a>
   <a href="#result-option">Result / Option</a>
+  <a href="#killswitch">killswitch</a>
 
   <div class="nav-section">Reference</div>
   <a href="#coming-from-c">Coming from C</a>
@@ -692,10 +695,12 @@ body.theme-default .mods-section-title { color: #1a1a1a; border-bottom-color: #b
   <a href="#base-pointers">Pointers</a>
   <a href="#base-address">address &amp; deref</a>
   <a href="#base-mem">mem access</a>
+  <a href="#base-nocache">nocache</a>
   <a href="#base-arithmetic">Pointer arithmetic</a>
   <a href="#base-size">size</a>
   <a href="#base-nothing">none</a>
   <a href="#base-arena">Arena</a>
+  <a href="#base-rawalloc">memtake / memgive</a>
 
   <div class="nav-section">Bitwise</div>
   <a href="#base-bitwise">All bitwise ops</a>
@@ -737,7 +742,7 @@ body.theme-default .mods-section-title { color: #1a1a1a; border-bottom-color: #b
   <a href="#ann-alias">@alias</a>
 
   <div class="nav-section">Functions</div>
-  <a href="#ann-inline">@hotcall</a>
+  <a href="#ann-inline">@callembed</a>
   <a href="#ann-extends">@extends</a>
   <a href="#ann-operator">@operator</a>
   <a href="#ann-receiver">@receiver</a>
@@ -869,6 +874,15 @@ wc_remove(<span class="str">&quot;key&quot;</span>)   <span class="cm">// delete
 
 <hr>
 
+<h2 id="do-while" class="anchor-target">Do / While</h2>
+<p>Executes the body at least once before checking the condition.</p>
+<pre><span class="kw">do</span>
+  <span class="kw">print</span> count
+  count<span class="op">++</span>
+<span class="kw">while</span> count <span class="op">&lt;</span> <span class="num">5</span> <span class="kw">end do</span></pre>
+
+<hr>
+
 <h2 id="for" class="anchor-target">For</h2>
 <p>Two forms — use whichever reads better.</p>
 <pre><span class="cm">// expressive</span>
@@ -928,6 +942,18 @@ wc_remove(<span class="str">&quot;key&quot;</span>)   <span class="cm">// delete
   <tr><td>escape</td><td>break</td><td>Exit the innermost loop immediately</td></tr>
   <tr><td>continue</td><td>continue</td><td>Jump to the next iteration</td></tr>
 </table>
+
+<hr>
+
+<h2 id="teleport" class="anchor-target">teleport / portal</h2>
+<p><code>portal</code> declares a label. <code>teleport</code> jumps to it unconditionally. Both must be in the same function scope.</p>
+<pre><span class="kw">portal</span> retry
+
+<span class="cm">// ... code that may need to restart ...</span>
+
+<span class="kw">if</span> failed
+  <span class="kw">teleport</span> retry
+<span class="kw">end if</span></pre>
 
 <hr>
 
@@ -1033,6 +1059,14 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player[<span clas
 <h3>Transpilation boundary</h3>
 <p>When generating Python or JavaScript, the compiler wraps target-runtime calls in <code>try/except</code> or <code>try/catch</code> at the boundary and converts caught exceptions into <code>error</code> variants before they surface in UL code. The UL developer always sees <code>Result</code>. Exceptions from the target runtime are an implementation detail of the generated code.</p>
 <p>When XPile transpiles foreign code <em>into</em> UL, each source language's error mechanism is normalised: Python exceptions map to <code>error</code> variants with the exception type preserved; C error codes and null returns map to <code>error</code> variants; JavaScript promise rejections map to <code>error</code> in async contexts.</p>
+
+<hr>
+
+<h2 id="killswitch" class="anchor-target">killswitch</h2>
+<p>A runtime assertion that terminates the program immediately if the condition is false. Active when <code>safety: checked</code>. Compiled out entirely when <code>safety: unchecked</code> — zero overhead in production builds.</p>
+<pre><span class="kw">killswitch</span> index <span class="op">&lt;</span> length          <span class="cm">// terminates if index >= length</span>
+<span class="kw">killswitch</span> ptr <span class="op">!=</span> <span class="kw">null</span>             <span class="cm">// terminates if ptr is null</span>
+<span class="kw">killswitch</span> result <span class="op">==</span> <span class="kw">ok</span>            <span class="cm">// terminates if result is not ok</span></pre>
 
 <hr>
 
@@ -1259,9 +1293,9 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player[<span clas
   <div class="mods-grid">
 
     <div class="mods-card" id="ann-inline">
-      <div class="mods-card-name">@hotcall</div>
+      <div class="mods-card-name">@callembed</div>
       <div class="mods-card-desc">Substitutes the function body at every call site at compile time. No call overhead. Enforced — the compiler will not ignore it.</div>
-      <pre><span class="ann">@hotcall</span>
+      <pre><span class="ann">@callembed</span>
 <span class="kw">function</span> <span class="fn">clamp</span>(<span class="kw">int</span> v, <span class="kw">int</span> lo, <span class="kw">int</span> hi)
   <span class="kw">if</span> v <span class="op">&lt;</span> lo
     <span class="kw">return</span> lo
@@ -1386,6 +1420,14 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player[<span clas
 
 <hr>
 
+<h2 id="base-nocache" class="anchor-target">nocache</h2>
+<p>Marks a memory-mapped variable as volatile — every read goes directly to hardware, bypassing the CPU cache. Use for hardware registers whose value changes outside program control.</p>
+
+<pre><span class="kw">nocache</span> <span class="ty">uint32</span> sensor <span class="op">=</span> <span class="ang">&lt;</span><span class="num">0xDEAD0000</span><span class="ang">&gt;</span>   <span class="cm">// read from register, never cached</span>
+<span class="ang">&lt;</span><span class="num">0xDEAD0000</span><span class="ang">&gt;</span> <span class="op">=</span> sensor <span class="op">+</span> <span class="num">1</span>               <span class="cm">// write back</span></pre>
+
+<hr>
+
 <h2 id="base-arithmetic" class="anchor-target">Pointer Arithmetic</h2>
 <p>Use <code>&lt;p&gt; + n</code> to advance a pointer by n elements. Units are the pointer's element type — not raw bytes.</p>
 
@@ -1423,6 +1465,15 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player[<span clas
 <span class="cm">// use buf ...</span>
 a.free()                               <span class="cm">// entire arena released at once</span></pre>
 <p>Arena implementations are in the standard library or can be user-defined. Pass the arena explicitly to any function that needs to allocate from it.</p>
+
+<hr>
+
+<h2 id="base-rawalloc" class="anchor-target">memtake / memgive</h2>
+<p>Raw allocation in manual memory mode. <code>memtake</code> requests a block of bytes from the system allocator. <code>memgive</code> returns it. Use when arena allocation is not appropriate and you need direct control over individual allocations.</p>
+
+<pre><span class="ty">none</span> <span class="ang">&lt;</span>buf<span class="ang">&gt;</span> <span class="op">=</span> <span class="kw">memtake</span>(size(<span class="ty">int</span>) <span class="op">*</span> <span class="num">32</span>)   <span class="cm">// allocate 32 ints</span>
+<span class="cm">// use buf ...</span>
+<span class="kw">memgive</span>(buf)                              <span class="cm">// release the block</span></pre>
 
 <hr>
 
