@@ -505,6 +505,22 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
   <p>The C target has a static type system that does not support dynamic typing. The compiler cannot emit valid C from dynamically typed source. Declaring <code>types: dynamic</code> when targeting C is a compile error. The Python and JavaScript targets support both modes.</p>
 </div>
 
+<h2 id="concurrency">concurrency</h2>
+<p>Controls which concurrency model the compiler targets when emitting code for runtimes that have more than one option. This setting exists because different targets expose concurrency through different mechanisms — Python exposes both <code>threading</code> and <code>asyncio</code>, and they are not interchangeable at the module level. Declaring this setting tells the compiler which one to emit.</p>
+<p>This setting does not gate whether <code>@async</code> and <code>@await</code> are available in source — those decorators work regardless. It controls what the emitted runtime code looks like.</p>
+
+<div class="setting-block">
+  <div class="setting-header">
+    <span class="setting-key">concurrency</span>
+    <span class="setting-values">threads &nbsp;|&nbsp; async</span>
+  </div>
+  <div class="setting-body">
+    <p class="setting-desc"><strong>threads</strong> — The compiler emits OS-thread-based concurrency. For Python targets: <code>threading</code> module. For C targets: pthreads.</p>
+    <p class="setting-desc"><strong>async</strong> — The compiler emits event-loop-based concurrency. For Python targets: <code>asyncio</code>. For JavaScript targets: native async/await.</p>
+    <div class="setting-default">default: <span>threads</span></div>
+  </div>
+</div>
+
 <div class="note">
   Settings are declared in a comment block at the top of each source file. If a setting is omitted, the default listed above is used — no configuration required for standard code. Settings do not propagate across files; each file is compiled according to its own declarations.
 </div>

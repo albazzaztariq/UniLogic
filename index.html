@@ -130,12 +130,6 @@ body.theme-base .landing-desc p { color: #c8c8c8; }
   z-index: 1;
 }
 
-.usams-credit { font-size: clamp(1.1rem, 1.6vw, 1.4rem) !important; margin-top: 4px; opacity: 0.75; font-family: 'Georgia', serif; }
-.usams-link { text-decoration: none; border-bottom: 1px dotted; transition: opacity 0.15s; }
-body.theme-default .usams-link { color: #6c7086; border-color: #6c7086; }
-body.theme-default .usams-link:hover { color: #7ab3e0; border-color: #7ab3e0; opacity: 1; }
-body.theme-base .usams-link { color: #888; border-color: #555; }
-body.theme-base .usams-link:hover { color: #e0e0e0; border-color: #aaa; }
 
 /* ══════ HOVER BUTTONS ══════ */
 .hover-btns-row {
@@ -382,7 +376,9 @@ body.theme-base .industry-btn:hover { background: rgba(92,45,145,0.15); }
         <a href="industry-developments.html" class="industry-btn">Industry Research<br>&amp; Developments</a>
         <button class="why-btn" onclick="showReadme()">Why?</button>
         <a href="glossary.html" class="glossary-btn">Glossary</a>
-        <a href="usams/index.html" class="glossary-btn">USAMS Project</a>
+      </div>
+      <div style="margin-top:10px; font-family:'Georgia',serif; font-size:0.78rem; font-style:italic; color:#6c7a8a;">
+        UniLogic is part of the <a href="https://LANG-language-proj.github.io/" style="color:#5878a8; text-decoration:none; border-bottom:1px dotted #5878a8;">LANG Project</a>.
       </div>
 
     </div><!-- /right-col -->
@@ -602,7 +598,7 @@ body.theme-base .industry-btn:hover { background: rgba(92,45,145,0.15); }
 
     <div class="readme-body">
       <p><strong>Q: What is this called?</strong></p>
-      <p>USAMS — Unified Syntactical and Architectural Model for Software. One syntax that covers the range from low-level systems work to high-level application development. Runtime behavior that is declared rather than inherited from whichever language you happened to pick. And a schema-based expression layer that describes what a program does in the same terms you would use to explain it to another person, rather than the terms required to build it in an IDE.</p>
+      <p>UniLogic. One syntax that covers the range from low-level systems work to high-level application development. Runtime behavior that is declared rather than inherited from whichever language you happened to pick. A schema-based expression layer that describes what a program does in the same terms you would use to explain it to another person, rather than the terms required to build it in an IDE.</p>
       <p>This is a hobby project and an ongoing design exercise, not a product. The work is documented as it develops. Feedback and collaboration from people who find this worth thinking about is genuinely welcome.</p>
 
       <p><strong>Q: What's some differences in runtime behaviors?</strong></p>
@@ -615,7 +611,7 @@ body.theme-base .industry-btn:hover { background: rgba(92,45,145,0.15); }
       <p>Every function, data structure, and IO operation works under all configurations. A linked list under GC doesn't need a destructor. Under manual memory it does. Under refcount it needs weak reference support. These are the sorts of things that are a coverage goal, and is a necessary part of a system of unified syntax.</p>
       <p>One standard library with an implementation of everything is the route to achieving a successful build for this concept. There's no novel ideas and reinventing the wheel, but rather just patching together and recreating past work. However, there is some design of interfacing and other systems that allow for co-existence of these systems.</p>
       <p>The syntax decisions borrow from what already exists across C, Python, Java, and Javascript. The angle of attack in this component is to unify and minimize, not to invent. I want anyone to be able to see it and understand it. Verbosity is chosen over efficiency or what many might see as elegance. It's not something prioritizing functional programming; the entire personality and image being built is one revolving around practicality.</p>
-      <p>The component last mentioned and more towards a novel solution is described in <a href="usams/index.html" style="color:#1a3a7a;">this USAMS document</a>. This is the formal argument and conceptual basis that covers this angle in its entirety.</p>
+      <p>The full design rationale and conceptual basis is documented in the <a href="LANG_Complete_F.pdf" style="color:#1a3a7a;">LANG Project document</a>.</p>
     </div>
   </div>
 </div>
