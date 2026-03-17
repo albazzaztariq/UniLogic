@@ -39,14 +39,22 @@ header {
   margin-bottom: 14px;
 }
 
-.header-logo-row img {
-  height: 48px;
-  width: 48px;
-  object-fit: cover;
+.logo-circle {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   border: 2px solid #c8a030;
-  background: #13130a;
-  padding: 4px;
+  background: #1a1a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-circle img {
+  height: 34px;
+  width: auto;
+  object-fit: contain;
 }
 
 header h1 {
@@ -190,7 +198,7 @@ main {
 
 <header>
   <div class="header-logo-row">
-    <img src="logo.png" alt="Pragma">
+    <div class="logo-circle"><img src="logo.png" alt="Pragma"></div>
     <h1>Pragma</h1>
   </div>
   <p class="tagline">A declarative pipeline language for data movement. Replace scripts with structure.</p>
@@ -198,8 +206,6 @@ main {
 </header>
 
 <main>
-
-  <a class="nav-back" href="index.html">← UniLogic</a>
 
   <span class="compare-label">The same pipeline — Python vs Pragma</span>
 

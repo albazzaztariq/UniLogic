@@ -42,14 +42,22 @@ nav {
   margin-bottom: 8px;
 }
 
-.nav-logo img {
-  height: 32px;
-  width: 32px;
-  object-fit: cover;
+.nav-logo-circle {
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1.5px solid #c8a030;
   background: #1a1a0a;
-  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-logo-circle img {
+  height: 22px;
+  width: auto;
+  object-fit: contain;
 }
 
 .nav-section {
@@ -346,7 +354,7 @@ p {
 <nav>
   <a href="pragma.html" class="nav-back">← Pragma</a>
   <div class="nav-logo">
-    <img src="logo.png" alt="Pragma">
+    <div class="nav-logo-circle"><img src="logo.png" alt="Pragma"></div>
   </div>
 
   <div class="nav-section">Overview</div>
