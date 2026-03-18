@@ -42,7 +42,7 @@ Everything currently implemented in the UniLogic toolchain.
 - Level 1: compound assignment expansion (`x += y` to `x = x + y`), post-increment/decrement expansion
 - Level 2: nested call flattening, chained cast expansion
 - Level 3: boolean expression splitting, array initializer element-by-element expansion
-- Per-file override via `// @norm N` comment in first 20 lines
+- Per-file override via `@norm N` directive in first 20 lines
 
 ### Code Generation — C (codegen_c.py)
 - Targets C99 with `stdio.h`, `stdint.h`, `string.h` auto-included
