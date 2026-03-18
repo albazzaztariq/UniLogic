@@ -396,13 +396,14 @@ main {
       <div class="step-label">Section 3 of 14</div>
       <h1>Runtime Concepts You Need to Know</h1>
       <p><strong>Allocation</strong> &mdash; asking the system for a chunk of memory to store data in. Every variable, object, and array lives in memory that was allocated.</p>
-      <p><strong>Freeing / deallocation</strong> &mdash; giving memory back when you're done with it. If you don't, it stays reserved forever. This is called a <em>memory leak</em>.</p>
-      <p><strong>Garbage collection (GC)</strong> &mdash; an automatic system that finds memory nothing is using anymore and frees it for you. The runtime decides when, not you. The cost is it periodically pauses your program to scan.</p>
-      <p><strong>Manual memory</strong> &mdash; you allocate and free memory yourself, explicitly, in your code. Nothing happens automatically. Faster, but every mistake is yours.</p>
+      <p><strong>Freeing / deallocation</strong> &mdash; giving memory back when you're done with it.</p>
+      <p><strong>Memory leak</strong> &mdash; when allocated memory is never freed. It stays reserved forever, unavailable to anything else, until the program ends.</p>
+      <p><strong>Garbage collection (GC)</strong> &mdash; an automatic system that finds memory nothing is using anymore and frees it for you. The runtime decides when, not you. Automatic also means no control over timing or behavior.</p>
+      <p><strong>Manual memory</strong> &mdash; you allocate and free memory yourself, explicitly, in your code. Faster execution comes with extra work and dangers.</p>
       <p><strong>Reference counting</strong> &mdash; each object has a counter tracking how many things point to it. When the counter hits zero, it frees itself immediately. Fails when two objects point to each other (a <em>cycle</em>).</p>
       <p><strong>Arena</strong> &mdash; one big block of memory reserved up front. Allocations just move a pointer forward. When the scope ends, the entire block is freed at once. Fast, but every pointer into it dies when the scope closes.</p>
       <p><strong>Threads</strong> &mdash; independent paths of execution running at the same time inside one program, potentially on multiple CPU cores.</p>
-      <p><strong>GIL (Global Interpreter Lock)</strong> &mdash; a lock in Python that only allows one thread to run Python code at a time, even on multi-core machines. Prevents true parallel execution.</p>
+      <p><strong>GIL (Global Interpreter Lock)</strong> &mdash; a lock in Python that only lets one thread run Python code at a time, even on multi-core machines. Prevents true parallel execution.</p>
     </div>
 
     <div class="section" data-title="Python">
