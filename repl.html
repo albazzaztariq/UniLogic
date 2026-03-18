@@ -207,6 +207,8 @@ h1 { font-size: 2.2rem; font-weight: normal; margin-bottom: 8px; padding-bottom:
   <a href="#" onclick="replCmd('3 + 4 * 2');return false;">3 + 4 * 2</a>
   <a href="#" onclick="replCmd('int x = 42');return false;">int x = 42</a>
   <a href="#" onclick="replCmd('print &quot;hello&quot;');return false;">print "hello"</a>
+  <div class="nav-section">Try This</div>
+  <a href="#" onclick="replDemo();return false;" style="line-height:1.4;">Define &amp; call a function</a>
   <div class="nav-section">Reference</div>
   <a href="language-main.html">Language Reference</a>
   <a href="syntax-reference.html">Syntax Reference</a>
@@ -1136,6 +1138,28 @@ window.replCmd = function(cmd) {
   field.focus();
 };
 
+// Two-step demo: define a function, then load the call ready to run
+window.replDemo = function() {
+  // Step 1: display the function definition with proper line-by-line prompts, then execute
+  const fnLines = [
+    "function add(int a, int b) returns int",
+    "  return a + b",
+    "end function"
+  ];
+  writeLine('<span class="prompt-color">ul&gt; </span>' + escapeHtml(fnLines[0]), "line-input");
+  writeLine('<span class="prompt-color">...  </span>' + escapeHtml(fnLines[1]), "line-input");
+  writeLine('<span class="prompt-color">...  </span>' + escapeHtml(fnLines[2]), "line-input");
+  execute(fnLines.join("\n"));
+  // Push to history
+  const fullDef = fnLines.join("\n");
+  if (!history.length || history[history.length-1] !== fullDef) history.push(fullDef);
+  histIdx = history.length;
+  // Step 2: load the call into the input, ready for the user to hit Enter
+  field.value = "add(2, 3)";
+  autoGrow();
+  field.focus();
+};
+
 // ═════════════════════════════════════════════════════════════════════════
 //  STARTUP
 // ═════════════════════════════════════════════════════════════════════════
@@ -1144,6 +1168,8 @@ writeLine("", "");
 writeLine('     <span class="line-banner">\u221E  UniLogic</span>', "");
 writeLine('     <span class="line-banner">One Language for Everything</span>', "");
 writeLine('     <span style="color:#585b70;">type </span><span class="prompt-color">help</span><span style="color:#585b70;"> for commands</span>', "");
+writeLine("", "");
+writeLine('     <span style="color:#585b70;font-style:italic;">Tip: define functions first, then call them on a new line.</span>', "");
 writeLine("", "");
 
 field.focus();
