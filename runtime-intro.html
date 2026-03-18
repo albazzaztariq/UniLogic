@@ -271,6 +271,31 @@ main {
   border-color: #d8cff0;
 }
 
+/* ── NAV HINT (first page only) ──────────────────────────── */
+
+.nav-hint {
+  margin-top: 24px;
+  text-align: right;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2d1b69;
+  letter-spacing: 0.06em;
+}
+
+@keyframes bounce-right {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(12px); }
+}
+
+.bounce-right {
+  display: inline-block;
+  font-size: 1.6rem;
+  animation: bounce-right 1s ease-in-out infinite;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
 /* ── PRINT PAGE ──────────────────────────────────────────── */
 
 #print-overlay {
@@ -382,6 +407,7 @@ main {
       <p>Every programming language makes decisions for you. How memory is managed, how types are checked, how threads work &mdash; these are baked into the language before you write a single line. Pick Python and it automatically cleans up your variables from memory whether you want it to or not. Pick C and you're responsible for every byte of memory you touch.</p>
       <p>These aren't just academic details. They determine whether your program leaks memory, crashes under load, runs on a microcontroller, or works in a browser. Most developers never think about them because most languages never let you choose. UL takes these aspects of other languages and makes them features and options.</p>
       <p>This tutorial explains what those choices are, what they mean, and why having control over them changes what you can build.</p>
+      <div class="nav-hint">Use these to navigate <span class="bounce-right">&rarr;</span></div>
     </div>
 
     <div class="section" data-title="What is Runtime">
