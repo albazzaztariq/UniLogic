@@ -1,4 +1,4 @@
-# Pragma Language
+# UniLogic
 
 **Syntax reference, safety documentation, and compiler source.**
 
@@ -6,17 +6,13 @@
 
 | Page | URL |
 |------|-----|
-| Home Page | https://pragma-project.github.io/Pragma-Language/ |
+| Home Page | https://albazzaztariq.github.io/UniLogic/ |
 
-## What is Pragma?
+## What is UniLogic?
 
-Pragma is a statically-typed systems language that transpiles to C. Designed to be readable to anyone who has written code in any modern language, while providing access to the full hardware stack when needed.
+UL is a statically-typed systems language that transpiles to C, Python, JavaScript, and LLVM IR. Designed to be readable to anyone who has written code in any modern language, while providing access to the full hardware stack when needed.
 
-Standard Pragma reads like natural language. Base Pragma adds memory management, pointers, and bitwise operations in the same file — no mode switch, no separate language.
-
-**Example — `container_of`.** Recovering a struct from a pointer to one of its members. A pattern used throughout the Linux kernel.
-
-![container_of side-by-side](container_of.png)
+Standard UL reads like natural language. Base UL adds memory management, pointers, and bitwise operations in the same file — no mode switch, no separate language.
 
 ## Compiler
 
@@ -24,12 +20,15 @@ Requires Python 3 and clang or gcc.
 
 ## Safety
 
-Pragma targets mathematically proven memory safety and functional correctness via Frama-C with the WP plugin. You can find a [brief here](pragma-project.github.io/Pragma-Language/Safety.md) or see the [Safety page](https://pragma-project.github.io/Pragma-Language/safety.html) for the full methodology.
+UL targets mathematically proven memory safety and functional correctness via formal verification with SMT solvers. See the [Safety page](https://albazzaztariq.github.io/UniLogic/safety.html) for the full methodology.
 
 ## Dynamic Runtime
 
-Pragma exposes 12 runtime settings — memory model, allocator, overflow behaviour, stack size, bounds checking, float semantics, and more — declared per source file at compile time. See the [Runtime Policy page](https://pragma-project.github.io/Pragma-Language/runtime-policy.html) for all settings.
+UL exposes 9 runtime settings — memory model, safety level, type system, integer width, concurrency, and more — declared per source file at compile time. See the [Dynamic Runtime page](https://albazzaztariq.github.io/UniLogic/dynamic-runtime.html) for all settings.
 
-## Org
+## Links
 
-Part of the [Pragma Project](https://github.com/Pragma-Project) — Language, Metal (hardware optimization), and OS.
+- [Features & Functionality](https://albazzaztariq.github.io/UniLogic/features.html)
+- [Learning & Resources](https://albazzaztariq.github.io/UniLogic/learning.html)
+- [Tools & Utilities](https://albazzaztariq.github.io/UniLogic/tools.html)
+- [Browser REPL](https://albazzaztariq.github.io/UniLogic/repl.html)
