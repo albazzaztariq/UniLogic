@@ -16,6 +16,8 @@ The UL bytecode uses a **register-based** architecture. Each instruction names i
 
 **Compiler cost:** Register allocation adds complexity to the compiler. UL uses a simple linear-scan allocator — each local variable and temporary maps to a register slot at compile time. Functions with more than 256 live values at any point (the register limit per frame) spill to a frame-local memory area. In practice, this limit is never reached in normal code.
 
+**Stack-based fallback:** Stack-based interpretation remains a viable fallback for cold code paths (functions executed rarely or only once). The VM may maintain a simple stack interpreter for cold functions and only promote to the register-based execution model after a function's block hotness counters (§2.5) exceed a threshold. This avoids paying register allocation cost for code that doesn't justify it.
+
 ---
 
 ## 2. File Format
@@ -24,13 +26,15 @@ A `.ulb` file (UniLogic Bytecode) has the following layout:
 
 ```
 ┌──────────────────────────────────┐
-│  Header              (20 bytes)  │
+│  Header              (24 bytes)  │
 ├──────────────────────────────────┤
 │  Constant Pool       (variable)  │
 ├──────────────────────────────────┤
 │  Function Table      (variable)  │
 ├──────────────────────────────────┤
 │  Block Metadata      (variable)  │
+├──────────────────────────────────┤
+│  Control Flow Table  (variable)  │
 ├──────────────────────────────────┤
 │  Instruction Blocks  (variable)  │
 └──────────────────────────────────┘
@@ -46,6 +50,7 @@ A `.ulb` file (UniLogic Bytecode) has the following layout:
 | 8 | 4 | Constant pool entry count | u32 LE |
 | 12 | 4 | Function table entry count | u32 LE |
 | 16 | 4 | Block metadata entry count | u32 LE |
+| 20 | 4 | Control flow edge count | u32 LE |
 
 All multi-byte integers are **little-endian** throughout the file.
 
@@ -112,16 +117,35 @@ Contains `block_count` entries (one per basic block across all functions). Each 
 
 | Offset | Size | Field |
 |--------|------|-------|
+| Offset | Size | Field |
+|--------|------|-------|
 | 0 | 4 | Start instruction index (u32 LE, within owning function) |
 | 4 | 4 | End instruction index (u32 LE, exclusive) |
 | 8 | 1 | Register pressure at entry (u8, highest live register) |
-| 9 | 1 | Successor count (u8) |
-| 10 | 2 | Reserved / padding (u16, zero) |
-| 12 | 4 | Hotness counter slot (u32 LE, initialized to 0) |
+| 9 | 1 | Successor count (u8, max 2 for conditional branches) |
+| 10 | 1 | Hotness counter (u8, 6-bit lossy — see below) |
+| 11 | 1 | Flags (u8, bit 0 = has full counter, bits 1–7 reserved) |
+| 12 | 4 | Successor block indices, packed (u16 LE × 2, or u32 for single successor) |
 
-The hotness counter is incremented by the VM each time the block is entered. This enables cheap profiling for JIT tiering — when a block's counter exceeds a threshold, the VM can trigger compilation of the owning function. The metadata table is writable at runtime (mapped read-write by the VM, not shared across processes).
+**Hotness counter model (TinyCounters):** Each block carries a 6-bit lossy counter (values 0–63) in the metadata table. The counter increments on each block entry but saturates at 63. A VM-global timer periodically halves all counters (decay), preventing warm-but-not-hot blocks from triggering JIT. When a counter saturates, the VM promotes that block's function: it sets the `has full counter` flag and allocates a full 32-bit counter in a side table for precise profiling. Only the top ~1% hottest blocks ever get a full counter. This keeps the per-block metadata at 16 bytes while enabling cheap profiling for JIT tiering.
 
-Successor blocks are identified implicitly from the terminator instruction of each block (jump targets, fall-through). The VM does not need to recompute control flow on each execution — block boundaries are pre-identified by the compiler.
+### 2.6 Control Flow Table
+
+Stored after the block metadata. One entry per edge in the control flow graph across all functions.
+
+| Offset | Size | Field |
+|--------|------|-------|
+| 0 | 4 | Source block index (u32 LE) |
+| 4 | 4 | Target block index (u32 LE) |
+| 8 | 1 | Edge type (u8: `0x00` = fall-through, `0x01` = branch-taken, `0x02` = branch-not-taken, `0x03` = call, `0x04` = return) |
+| 9 | 3 | Reserved / padding |
+
+The control flow table is separate from the instruction stream. Benefits:
+
+- **Branch prediction.** The VM can prefetch likely successor blocks by reading the CFG edge type without scanning instructions.
+- **JIT gets CFG instantly.** No need to reconstruct the control flow graph from branch instructions — it's pre-computed by the compiler.
+- **Block reordering.** The VM can reorder blocks in memory for hot/cold splitting — hot blocks packed together for I-cache locality, cold blocks pushed to a separate page. The CFG edges remain valid regardless of physical layout.
+- **Similar to WebAssembly structured control flow** — the control flow is explicit in the format, not implicit in the instruction stream.
 
 ---
 
@@ -211,7 +235,45 @@ Note: `JUMP_IF_FALSE` is in the hot path at `0x08`. Jump offsets are in **instru
 | `INDEX_SET` | `0x62` | `rA, rB, rC` | `rA[rB] = rC` |
 | `LENGTH` | `0x63` | `rA, rB, _` | `rA = len(rB)` |
 
-### 4.7 Type Operations — Tier 0 (0x70–0x7F)
+### 4.7 Kill Bit Variants (0x50–0x5F)
+
+Arithmetic instructions encode whether source operands are **last-use** (killed after this instruction). This enables zero-cost move elision, immediate register reuse, and cleaner SSA lowering in the JIT. The kill bit is encoded in the opcode itself — each base arithmetic op has up to 3 variants:
+
+| Suffix | Meaning | Example |
+|--------|---------|---------|
+| (none) | Both operands live after | `ADD r1, r2, r3` — r2 and r3 still needed |
+| `.K` | rC killed after | `ADD.K r1, r2, r3` — r3 is last use, register freed |
+| `.KK` | rB and rC both killed | `ADD.KK r1, r2, r3` — both freed after this instruction |
+
+| Opcode | Hex | Base op | Kills |
+|--------|-----|---------|-------|
+| `ADD.K` | `0x50` | ADD | rC |
+| `ADD.KK` | `0x51` | ADD | rB, rC |
+| `SUB.K` | `0x52` | SUB | rC |
+| `SUB.KK` | `0x53` | SUB | rB, rC |
+| `MUL.K` | `0x54` | MUL | rC |
+| `MUL.KK` | `0x55` | MUL | rB, rC |
+| `DIV.K` | `0x56` | DIV | rC |
+| `DIV.KK` | `0x57` | DIV | rB, rC |
+| `CMP_LT.K` | `0x58` | CMP_LT | rC |
+| `CMP_LT.KK` | `0x59` | CMP_LT | rB, rC |
+
+The compiler emits kill variants based on liveness analysis. The base (non-kill) opcode is always valid — kill variants are an optimization, not a requirement. A VM that ignores kill bits produces correct results; it just misses register reuse opportunities.
+
+### 4.8 Memory Access Classes (0x48–0x4F)
+
+Specialized load instructions for different memory access patterns. Each carries enough information for the VM or JIT to select the optimal access strategy.
+
+| Opcode | Hex | Form | Semantics |
+|--------|-----|------|-----------|
+| `LOAD_STRUCT_FIELD` | `0x48` | `rA, rB, imm8` | `rA = rB.fields[imm8]` — struct field at constant offset. No bounds check needed (offset validated at compile time). |
+| `LOAD_ARRAY_SEQ` | `0x49` | `rA, rB, rC` | `rA = rB[rC]` — sequential array access (hint: rC is incrementing). Enables prefetch of next element. |
+| `LOAD_ARRAY_STRIDE` | `0x4A` | `rA, rB, rC` | `rA = rB[rC]` — strided array access (hint: rC advances by a constant stride). Enables stride-based prefetch. |
+| `STORE_STRUCT_FIELD` | `0x4B` | `rA, rB, imm8` | `rA.fields[imm8] = rB` |
+
+These are hints to the VM/JIT, not semantic requirements. A VM may execute all of them as generic `INDEX_GET`/`INDEX_SET`. The JIT uses the access pattern information to emit prefetch instructions, select vectorized loads, or avoid redundant bounds checks.
+
+### 4.9 Type Operations — Tier 0 (0x70–0x7F)
 
 | Opcode | Hex | Form | Semantics |
 |--------|-----|------|-----------|
@@ -249,7 +311,24 @@ The main enemy of interpreter performance is **indirect branch misprediction**. 
 
 **Never use:** `if/else if` chains. O(n) per dispatch, destroys branch prediction.
 
-### 5.3 Quickening
+**Handler ordering via entropy tuning.** Opcode numbering in this spec places hot instructions at low values for a dense jump table. At runtime, the VM can further optimize by profiling opcode transition frequencies from real workloads and reordering handler code in memory. The metric: sort opcodes by Shannon entropy of their successor distribution (descending) — opcodes with the most predictable successors benefit most from adjacent placement. The load-time rewriting pass (§8) can remap opcode indices to match the optimal handler layout for the specific program being executed.
+
+### 5.3 Versioned Instructions
+
+Each instruction is a **state machine**, not a static operation. The opcode byte encodes both the operation and its current specialization state. Instructions evolve in-place without changing the instruction's structure or position:
+
+```
+ADD[v0]  →  ADD_INT[v1]  →  ADD_INT[v2]  →  ADD[v0]  (deopt)
+ generic     specialized     confirmed       reverted
+```
+
+The version/state is encoded in the opcode value itself (the quickened opcode range `0xC0–0xDF` represents specialized states of the base opcodes `0x01–0x1F`). This enables:
+
+- **Deoptimization without code rewriting** — reverting to generic is a single byte write back to the original opcode. The operand bytes are unchanged.
+- **Polymorphic inline caches inside opcodes** — an instruction that sees two types can settle into a megamorphic state (a different quickened opcode) that checks both types before falling back to generic.
+- **Profiling-driven evolution** — the VM tracks how many times each instruction has been executed at each specialization level. After N stable executions at v1, promote to v2 (confirmed — skip the type guard entirely). If a type guard fails, demote to v0.
+
+### 5.4 Quickening
 
 After the first execution, the VM may **rewrite an instruction's opcode byte in-place** to a specialized variant. The 32-bit fixed-width format makes this a single aligned byte write with no instruction-stream resizing.
 
@@ -385,7 +464,31 @@ After load-time rewriting, the VM may fuse instructions 0–1 into `BULK_ZERO` +
 
 ---
 
-## 10. Reserved Ranges
+## 10. Dataflow Regions (Mini-SSA)
+
+Within each basic block, the bytecode observes **single-assignment discipline**: each register is written at most once per block. No register is reassigned within a block boundary. Each block has a single entry point and a single exit (the terminator instruction).
+
+```
+block_3:
+  r1 = LOAD_CONST #0        ; r1 defined once
+  r2 = LOAD_CONST #1        ; r2 defined once
+  r3 = ADD r1, r2           ; r3 defined once, consumes r1 and r2
+  r4 = MUL r3, r5           ; r4 defined once
+  JUMP_IF_FALSE r4, +3      ; single exit
+```
+
+This is not full SSA (no phi nodes, no dominance frontiers) but provides the key benefits within a region:
+
+- **Interpreter stays simple.** No phi resolution, no register renaming at block boundaries. The interpreter executes instructions sequentially as before.
+- **JIT gets SSA for free.** Within a block, every register write is a definition and every read is a use of that definition. The JIT can build SSA form trivially by treating each block as a single extended basic block.
+- **Constant propagation and dead code elimination** work within blocks without any additional analysis. If `r1 = LOAD_CONST 5` and `r3 = ADD r1, r2`, the JIT can fold `r1` into the ADD without a data-flow pass.
+- **Vectorization hooks.** Consecutive arithmetic on adjacent registers within a single-assignment block can be trivially identified for SIMD lowering.
+
+The compiler enforces single-assignment within blocks. At block boundaries, values flow through registers that persist across the transition (the register file is shared across blocks within a function). The block metadata successor edges (§2.6) provide the connection points.
+
+---
+
+## 11. Reserved Ranges
 
 | Range | Purpose |
 |-------|---------|
@@ -399,6 +502,28 @@ After load-time rewriting, the VM may fuse instructions 0–1 into `BULK_ZERO` +
 
 ---
 
-## 11. Versioning
+## 12. Versioning
 
 The major version increments on breaking changes to the instruction encoding or file format. The minor version increments on backward-compatible additions (new opcodes in unused ranges). A VM must reject files with a major version it does not support. A VM should accept files with a minor version greater than its own, executing unknown Tier 1/2 opcodes via their Tier 0 expansions stored in the block metadata.
+
+---
+
+## 13. Future Directions
+
+Planned investigations for v2.0+. These are not part of the v1.0 spec but influence current design decisions (opcode space reservation, instruction width, metadata tables).
+
+**Register windowing.** SPARC-style sliding register windows per function call. Instead of saving and restoring the entire register file on `CALL`/`RETURN`, each function gets a window of registers that overlaps with its caller's window. Arguments are passed through the overlap region with zero copy. This eliminates register save/restore overhead for non-recursive call chains and reduces call overhead to a window-pointer adjustment.
+
+**Predictive dispatch.** Encode the likely-next-opcode in each instruction's unused bits or in a side table. The handler for instruction N ends with `goto *dispatch_table[predicted_next]` instead of reading the next opcode from the instruction stream. If the prediction is correct (common — `LOAD_CONST` is almost always followed by `STORE_LOCAL` or an arithmetic op), the handler executes immediately with no indirect branch. If wrong, fall back to normal dispatch. This converts the most common dispatch sequences into direct jumps.
+
+**SIMD instruction bundles.** A `BUNDLE` meta-instruction that packs 2–4 independent operations into a single dispatch:
+
+```
+BUNDLE [ADD r1,r2,r3 | ADD r4,r5,r6 | SUB r7,r8,r9 | NOP]
+```
+
+The VM dispatches once and executes all four operations, which the JIT can lower to a single SIMD instruction on architectures that support it (SSE/AVX on x86, NEON on ARM). Useful for vector math, bulk array operations, and struct field initialization.
+
+**Continuation-passing bytecode.** Encode function returns as continuations rather than stack unwinding. Each `CALL` encodes its return continuation explicitly, enabling zero-cost tail calls (the continuation of a tail call is the caller's continuation) and zero-cost async (suspending a coroutine captures the continuation, resuming jumps to it). This eliminates the call stack for tail-recursive functions and makes async/await a control-flow decision rather than a runtime mechanism.
+
+**Side-exit first design.** Encode the hot path as the straight-line instruction sequence with explicit side exits at guard points. Guards check invariants (type checks, bounds checks, overflow) and branch to cold deoptimization stubs only on failure. The hot path executes with no branches — all guards are "fall-through on success." This is the architecture JIT compilers like V8 TurboFan and LuaJIT use internally; encoding it in the bytecode lets the interpreter benefit from the same pattern before JIT is triggered.
