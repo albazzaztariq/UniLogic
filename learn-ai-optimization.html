@@ -97,35 +97,65 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     <div class="section" data-title="How C Compiles">
       <div class="step-label">Section 5 of 23</div>
       <h1>How C Compiles</h1>
-      <p>When you compile C code (or UL targeting C), the process has stages. Click each one:</p>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0;font-family:'Share Tech Mono',monospace;font-size:13px;">
-        <div onclick="cStage(0)" id="cs0" style="padding:12px 18px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.2s;"><div style="color:#7ab3e0;font-weight:700;font-size:15px;">.ul</div><div style="color:#cdd6f4;font-size:11px;">source</div></div>
-        <span style="color:#1a1a1a;font-size:20px;font-weight:700;">&rarr;</span>
-        <div onclick="cStage(1)" id="cs1" style="padding:12px 18px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.2s;"><div style="color:#a6e3a1;font-weight:700;font-size:15px;">.c</div><div style="color:#cdd6f4;font-size:11px;">XPile</div></div>
-        <span style="color:#1a1a1a;font-size:20px;font-weight:700;">&rarr;</span>
-        <div onclick="cStage(2)" id="cs2" style="padding:12px 18px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.2s;"><div style="color:#fab387;font-weight:700;font-size:15px;">.o</div><div style="color:#cdd6f4;font-size:11px;">gcc/clang</div></div>
-        <span style="color:#1a1a1a;font-size:20px;font-weight:700;">&rarr;</span>
-        <div onclick="cStage(3)" id="cs3" style="padding:12px 18px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.2s;"><div style="color:#f38ba8;font-weight:700;font-size:15px;">binary</div><div style="color:#cdd6f4;font-size:11px;">linked</div></div>
+      <p>Click Compile to watch the full pipeline animate, or click any stage for details.</p>
+      <div id="c-anim" style="margin:8px 0;">
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-family:'Share Tech Mono',monospace;font-size:12px;">
+          <div id="ca0" onclick="cStage(0)" style="padding:10px 14px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.3s;min-width:70px;"><div style="color:#7ab3e0;font-weight:700;font-size:14px;">.ul</div><div style="color:#a6adc8;font-size:10px;">3.2 KB</div></div>
+          <span id="ca-a0" style="color:#ccc;font-size:18px;transition:color 0.3s;">&rarr;</span>
+          <div id="ca1" onclick="cStage(1)" style="padding:10px 14px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.3s;min-width:70px;opacity:0.3;"><div style="color:#a6e3a1;font-weight:700;font-size:14px;">.c</div><div style="color:#a6adc8;font-size:10px;">3.2 KB</div></div>
+          <span id="ca-a1" style="color:#ccc;font-size:18px;transition:color 0.3s;">&rarr;</span>
+          <div id="ca2" onclick="cStage(2)" style="padding:10px 14px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.3s;min-width:70px;opacity:0.3;"><div style="color:#fab387;font-weight:700;font-size:14px;">.o</div><div style="color:#a6adc8;font-size:10px;">1.8 KB</div></div>
+          <span id="ca-a2" style="color:#ccc;font-size:18px;transition:color 0.3s;">&rarr;</span>
+          <div id="ca3" onclick="cStage(3)" style="padding:10px 14px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.3s;min-width:70px;opacity:0.3;"><div style="color:#f38ba8;font-weight:700;font-size:14px;">binary</div><div style="color:#a6adc8;font-size:10px;">8.4 KB</div></div>
+          <div id="ca-cpu" style="margin-left:6px;padding:6px 10px;border-radius:4px;background:#0a1f5e;border:1px solid #7ab3e0;color:#7ab3e0;font-size:10px;text-align:center;opacity:0;transition:opacity 0.3s;">CPU<br>direct</div>
+        </div>
+        <div id="c-progress" style="margin:8px 0;height:6px;border-radius:3px;background:#1e1e2e;overflow:hidden;"><div id="c-prog-bar" style="height:100%;width:0%;border-radius:3px;transition:width 0.3s;background:#7ab3e0;"></div></div>
+        <div id="c-prog-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#555;min-height:16px;"></div>
+        <div id="c-stage-info" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:#333;min-height:18px;margin-top:4px;"></div>
+        <div id="c-terminal" style="display:none;background:#1e1e2e;border-radius:4px;padding:8px 12px;font-family:'Share Tech Mono',monospace;font-size:13px;color:#a6e3a1;margin-top:6px;"><span style="color:#7ab3e0;">$</span> ./program<br><span id="c-term-out"></span></div>
+        <div id="c-speed" style="display:none;margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:12px;"><span style="color:#a6e3a1;">Native: 0.3ms</span> &nbsp; <span style="color:#888;">Python equivalent: 2.8ms</span></div>
+        <div style="margin-top:8px;display:flex;gap:6px;">
+          <button onclick="cCompile()" id="c-compile-btn" style="font-size:12px;padding:6px 16px;border:1px solid #7ab3e0;border-radius:4px;background:#1e1e2e;color:#7ab3e0;cursor:pointer;font-family:'Share Tech Mono',monospace;font-weight:700;">Compile</button>
+          <button onclick="cReset()" style="font-size:11px;padding:5px 12px;border:1px solid #555;border-radius:4px;background:#1e1e2e;color:#a6adc8;cursor:pointer;font-family:'Share Tech Mono',monospace;">Reset</button>
+        </div>
       </div>
-      <div id="c-stage-info" style="font-family:'Share Tech Mono',monospace;font-size:13px;color:#333;min-height:20px;padding:6px 0;">Click a stage above to see what happens there.</div>
     </div>
 
     <div class="section" data-title="How Python & JS Run">
       <div class="step-label">Section 6 of 23</div>
       <h1>How Python &amp; JS Run</h1>
-      <p><strong>Python:</strong> Your code is compiled to <strong>bytecode</strong> &mdash; a compact set of instructions for the Python virtual machine (CPython). This happens automatically when you hit run. The bytecode is then interpreted instruction by instruction. You can actually see these opcodes with <code>dis.dis(func)</code> in Python.</p>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0;font-family:'Share Tech Mono',monospace;font-size:13px;">
-        <div onclick="pyStage(0)" id="py0" style="padding:10px 16px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.2s;"><span style="color:#7ab3e0;font-weight:700;">source.py</span></div>
-        <span style="color:#1a1a1a;font-size:20px;font-weight:700;">&rarr;</span>
-        <div onclick="pyStage(1)" id="py1" style="padding:10px 16px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.2s;"><span style="color:#a6e3a1;font-weight:700;">bytecode (.pyc)</span></div>
-        <span style="color:#1a1a1a;font-size:20px;font-weight:700;">&rarr;</span>
-        <div onclick="pyStage(2)" id="py2" style="padding:10px 16px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.2s;"><span style="color:#fab387;font-weight:700;">CPython VM</span></div>
-        <span style="color:#1a1a1a;font-size:20px;font-weight:700;">&rarr;</span>
-        <div onclick="pyStage(3)" id="py3" style="padding:10px 16px;border-radius:6px;background:#1e1e2e;border:2px solid #555;text-align:center;cursor:pointer;transition:all 0.2s;"><span style="color:#f38ba8;font-weight:700;">output</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0;font-family:'Share Tech Mono',monospace;font-size:11px;">
+        <div style="background:#1e1e2e;border-radius:6px;padding:10px 12px;border:1px solid #313244;">
+          <div style="color:#7ab3e0;font-weight:700;font-size:12px;margin-bottom:6px;">PYTHON &mdash; Interpreted</div>
+          <div id="py-bytecode" style="color:#585b70;font-size:10px;line-height:1.5;min-height:50px;margin-bottom:6px;">
+            LOAD_FAST 0 (a)<br>LOAD_FAST 1 (b)<br>BINARY_ADD<br>RETURN_VALUE
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div id="py-gear" style="font-size:16px;color:#fab387;">&#9881;</div>
+            <span style="color:#a6adc8;font-size:10px;">CPython VM &mdash; one opcode at a time</span>
+          </div>
+          <div id="py-timer" style="color:#f38ba8;font-size:12px;font-weight:700;margin-top:4px;"></div>
+          <button onclick="pyRun()" id="py-run-btn" style="margin-top:6px;font-size:10px;padding:4px 12px;border:1px solid #7ab3e0;border-radius:3px;background:#1e1e2e;color:#7ab3e0;cursor:pointer;font-family:'Share Tech Mono',monospace;">Run Python</button>
+        </div>
+        <div style="background:#1e1e2e;border-radius:6px;padding:10px 12px;border:1px solid #313244;">
+          <div style="color:#f9e2af;font-weight:700;font-size:12px;margin-bottom:6px;">JAVASCRIPT &mdash; JIT Compiled</div>
+          <div id="js-phase" style="color:#a6adc8;font-size:10px;min-height:50px;line-height:1.5;">
+            <span style="color:#585b70;">Phase 1:</span> Ignition interprets<br>
+            <span style="color:#585b70;">Phase 2:</span> TurboFan compiles hot paths
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div id="js-gear" style="font-size:16px;color:#585b70;">&#9881;</div>
+            <span id="js-status" style="color:#a6adc8;font-size:10px;">Click Run JS</span>
+          </div>
+          <div id="js-timer" style="color:#a6e3a1;font-size:12px;font-weight:700;margin-top:4px;"></div>
+          <button onclick="jsRun()" id="js-run-btn" style="margin-top:6px;font-size:10px;padding:4px 12px;border:1px solid #f9e2af;border-radius:3px;background:#1e1e2e;color:#f9e2af;cursor:pointer;font-family:'Share Tech Mono',monospace;">Run JS</button>
+        </div>
       </div>
-      <div id="py-stage-info" style="font-family:'Share Tech Mono',monospace;font-size:13px;color:#333;min-height:20px;padding:6px 0;">Click a stage above to see what happens there.</div>
-      <p><strong>JavaScript:</strong> V8/SpiderMonkey parse → AST → bytecode → interpret → JIT-compile hot functions to native code on the fly. Same idea, but with a JIT layer that C and Python lack.</p>
-      <p>The next page shows what happens when UL compiles to LLVM IR &mdash; the layer where your code stops being code and becomes raw operations.</p>
+      <div id="speed-bars" style="display:none;margin:8px 0;font-family:'Share Tech Mono',monospace;font-size:11px;">
+        <div style="display:flex;align-items:center;gap:6px;margin:3px 0;"><span style="color:#a6e3a1;min-width:80px;">Native (C)</span><div style="background:#a6e3a1;height:8px;border-radius:3px;width:30px;"></div><span style="color:#333;">0.3ms</span></div>
+        <div style="display:flex;align-items:center;gap:6px;margin:3px 0;"><span style="color:#f9e2af;min-width:80px;">JS (warm)</span><div style="background:#f9e2af;height:8px;border-radius:3px;width:80px;"></div><span style="color:#333;">0.8ms</span></div>
+        <div style="display:flex;align-items:center;gap:6px;margin:3px 0;"><span style="color:#f38ba8;min-width:80px;">Python</span><div style="background:#f38ba8;height:8px;border-radius:3px;width:280px;"></div><span style="color:#333;">2.8ms</span></div>
+      </div>
     </div>
 
     <div class="section" data-title="From Code to Operations: LLVM">
@@ -162,11 +192,46 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     <div class="section" data-title="Inside the CPU">
       <div class="step-label">Section 8 of 23</div>
       <h1>Inside the CPU</h1>
-      <p>A CPU processes instructions using several major components working together:</p>
-      <p><strong>Registers</strong> &mdash; tiny, extremely fast storage slots directly inside the CPU. A modern x86-64 CPU has 16 general-purpose registers (64 bits each), 16 SSE/AVX vector registers (128&ndash;512 bits each), and several special-purpose registers (instruction pointer, flags, stack pointer). Data must be in a register before the CPU can operate on it.</p>
-      <p><strong>ALU (Arithmetic Logic Unit)</strong> &mdash; performs integer arithmetic and logic operations. Modern CPUs have multiple ALUs that can execute several operations per clock cycle.</p>
-      <p><strong>FPU (Floating Point Unit)</strong> &mdash; handles floating-point math. Separate from the ALU, with its own register file on older architectures.</p>
-      <p><strong>Cache hierarchy</strong> &mdash; L1 (fastest, smallest, ~32KB per core), L2 (larger, ~256KB&ndash;1MB), L3 (shared across cores, ~8&ndash;32MB). Data flows from RAM → L3 → L2 → L1 → registers. Each step closer is ~10x faster.</p>
+      <p>Click any component to see what it does:</p>
+      <div id="cpu-diagram" style="margin:8px 0;font-family:'Share Tech Mono',monospace;font-size:10px;">
+        <div style="display:flex;gap:6px;align-items:stretch;">
+          <div style="border:2px solid #7ab3e0;border-radius:8px;padding:8px;flex:3;background:rgba(26,58,122,0.05);">
+            <div style="color:#1a3a7a;font-weight:700;font-size:11px;margin-bottom:6px;text-align:center;">CPU CHIP</div>
+            <div style="display:flex;gap:6px;">
+              <div style="flex:1;">
+                <div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:3px;">Front End</div>
+                <div onclick="cpuClick('icache')" id="cpu-icache" style="padding:6px;border-radius:4px;background:#1e1e2e;border:1.5px solid #555;color:#7ab3e0;text-align:center;cursor:pointer;transition:all 0.2s;margin-bottom:4px;">I-Cache</div>
+                <div onclick="cpuClick('bp')" id="cpu-bp" style="padding:6px;border-radius:4px;background:#1e1e2e;border:1.5px solid #555;color:#89dceb;text-align:center;cursor:pointer;transition:all 0.2s;">Branch Pred</div>
+              </div>
+              <div style="flex:2;">
+                <div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:3px;">Execution</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:4px;">
+                  <div onclick="cpuClick('alu')" id="cpu-alu" style="padding:5px;border-radius:3px;background:#1e1e2e;border:1.5px solid #555;color:#a6e3a1;text-align:center;cursor:pointer;transition:all 0.2s;font-size:9px;">ALU</div>
+                  <div onclick="cpuClick('alu')" style="padding:5px;border-radius:3px;background:#1e1e2e;border:1.5px solid #555;color:#a6e3a1;text-align:center;cursor:pointer;transition:all 0.2s;font-size:9px;">ALU</div>
+                  <div onclick="cpuClick('alu')" style="padding:5px;border-radius:3px;background:#1e1e2e;border:1.5px solid #555;color:#a6e3a1;text-align:center;cursor:pointer;transition:all 0.2s;font-size:9px;">ALU</div>
+                  <div onclick="cpuClick('fpu')" id="cpu-fpu" style="padding:5px;border-radius:3px;background:#1e1e2e;border:1.5px solid #555;color:#f9e2af;text-align:center;cursor:pointer;transition:all 0.2s;font-size:9px;">FPU</div>
+                </div>
+                <div onclick="cpuClick('regs')" id="cpu-regs" style="padding:4px;border-radius:3px;background:#1e1e2e;border:1.5px solid #555;cursor:pointer;transition:all 0.2s;">
+                  <div style="color:#888;font-size:8px;margin-bottom:2px;">Registers</div>
+                  <div style="display:flex;gap:2px;flex-wrap:wrap;justify-content:center;">
+                    <span style="color:#cdd6f4;font-size:8px;">rax</span><span style="color:#cdd6f4;font-size:8px;">rbx</span><span style="color:#cdd6f4;font-size:8px;">rcx</span><span style="color:#cdd6f4;font-size:8px;">rdx</span><span style="color:#cdd6f4;font-size:8px;">rsi</span><span style="color:#cdd6f4;font-size:8px;">rdi</span><span style="color:#cdd6f4;font-size:8px;">rsp</span><span style="color:#cdd6f4;font-size:8px;">rbp</span>
+                  </div>
+                </div>
+              </div>
+              <div style="flex:1;">
+                <div style="color:#888;font-size:9px;text-transform:uppercase;margin-bottom:3px;">Cache</div>
+                <div onclick="cpuClick('l1')" id="cpu-l1" style="padding:6px;border-radius:4px;background:#1e1e2e;border:1.5px solid #3B6D11;color:#a6e3a1;text-align:center;cursor:pointer;transition:all 0.2s;">L1<br><span style="font-size:8px;">32KB ~1cy</span></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;flex:1;justify-content:center;">
+            <div onclick="cpuClick('l2')" id="cpu-l2" style="padding:8px 6px;border-radius:4px;background:#1e1e2e;border:1.5px solid #BA7517;color:#fab387;text-align:center;cursor:pointer;transition:all 0.2s;">L2<br><span style="font-size:8px;">256KB ~10cy</span></div>
+            <div onclick="cpuClick('l3')" id="cpu-l3" style="padding:8px 6px;border-radius:4px;background:#1e1e2e;border:1.5px solid #BA7517;color:#fab387;text-align:center;cursor:pointer;transition:all 0.2s;">L3<br><span style="font-size:8px;">8MB ~30cy</span></div>
+            <div onclick="cpuClick('ram')" id="cpu-ram" style="padding:8px 6px;border-radius:4px;background:#1e1e2e;border:1.5px solid #E24B4A;color:#f38ba8;text-align:center;cursor:pointer;transition:all 0.2s;">RAM<br><span style="font-size:8px;">16GB ~200cy</span></div>
+          </div>
+        </div>
+        <div id="cpu-info" style="font-family:'Share Tech Mono',monospace;font-size:12px;color:#333;min-height:20px;margin-top:6px;padding:4px 0;">Click any component above.</div>
+      </div>
     </div>
 
     <div class="section" data-title="How Instructions Flow">
@@ -596,35 +661,96 @@ window.llvmLoad = llvmLoad;
 window.llvmCompile = llvmCompile;
 
 // ══════ C compilation pipeline (Section 5) ══════
-var cDescs = [
-  'Your .ul source file. Human-readable code with functions, types, and logic.',
-  'XPile translates UL to C99 source — stdio.h, stdint.h, structs, printf. This is real C code you could edit by hand.',
-  'gcc or clang compiles the C source to an object file — machine code for your specific CPU, but not yet runnable.',
-  'The linker combines object files with system libraries and produces a standalone executable. No interpreter needed. This runs directly on the OS.'
-];
-var cColors = ['#7ab3e0','#a6e3a1','#fab387','#f38ba8'];
-window.cStage = function(idx) {
-  for (var i = 0; i < 4; i++) {
-    var el = document.getElementById('cs' + i);
-    if (el) el.style.borderColor = (i <= idx) ? cColors[i] : '#555';
-  }
-  document.getElementById('c-stage-info').textContent = cDescs[idx];
+// ══════ C compilation animation (Section 5) ══════
+var cDescs=['Your .ul source file.','XPile translates to C99 — real C code.','gcc compiles to machine code object file.','Linker produces standalone executable — runs directly on CPU.'];
+var cColors=['#7ab3e0','#a6e3a1','#fab387','#f38ba8'];
+var cLabels=['XPile transpiling...','gcc compiling...','linking...','done'];
+var cRunning=false;
+window.cStage=function(idx){
+  for(var i=0;i<4;i++){var el=document.getElementById('ca'+i);if(el){el.style.borderColor=(i<=idx)?cColors[i]:'#555';el.style.opacity=(i<=idx)?'1':'0.3';}}
+  document.getElementById('c-stage-info').textContent=cDescs[idx];
+};
+window.cCompile=function(){
+  if(cRunning)return;cRunning=true;
+  cReset();
+  document.getElementById('c-compile-btn').textContent='Compiling...';
+  var steps=[
+    {delay:0,fn:function(){cStage(0);document.getElementById('c-prog-label').textContent='XPile transpiling...';document.getElementById('c-prog-bar').style.width='25%';document.getElementById('c-prog-bar').style.background='#7ab3e0';}},
+    {delay:800,fn:function(){cStage(1);document.getElementById('c-prog-label').textContent='gcc compiling...';document.getElementById('c-prog-bar').style.width='50%';document.getElementById('c-prog-bar').style.background='#a6e3a1';}},
+    {delay:1400,fn:function(){cStage(2);document.getElementById('c-prog-label').textContent='linking...';document.getElementById('c-prog-bar').style.width='75%';document.getElementById('c-prog-bar').style.background='#fab387';}},
+    {delay:1700,fn:function(){cStage(3);document.getElementById('c-prog-bar').style.width='100%';document.getElementById('c-prog-bar').style.background='#f38ba8';document.getElementById('c-prog-label').textContent='';document.getElementById('ca-cpu').style.opacity='1';}},
+    {delay:2100,fn:function(){document.getElementById('c-terminal').style.display='block';var out=document.getElementById('c-term-out');out.textContent='';setTimeout(function(){out.textContent='5';document.getElementById('c-speed').style.display='block';document.getElementById('c-compile-btn').textContent='Compile';cRunning=false;},400);}}
+  ];
+  steps.forEach(function(s){setTimeout(s.fn,s.delay);});
+};
+window.cReset=function(){
+  cRunning=false;
+  for(var i=0;i<4;i++){var el=document.getElementById('ca'+i);if(el){el.style.borderColor='#555';el.style.opacity=i===0?'1':'0.3';}}
+  document.getElementById('c-prog-bar').style.width='0%';
+  document.getElementById('c-prog-label').textContent='';
+  document.getElementById('c-stage-info').textContent='';
+  document.getElementById('c-terminal').style.display='none';
+  document.getElementById('c-speed').style.display='none';
+  document.getElementById('ca-cpu').style.opacity='0';
+  document.getElementById('c-compile-btn').textContent='Compile';
 };
 
-// ══════ Python pipeline (Section 6) ══════
-var pyDescs = [
-  'Your Python source file. Text that the interpreter will read.',
-  'Python compiles source to bytecode — compact opcodes like LOAD_FAST, BINARY_ADD, RETURN_VALUE. Stored in .pyc files. You can see them with dis.dis().',
-  'The CPython virtual machine reads bytecode instructions one at a time and executes them. This is why Python is 10-100x slower than compiled code — every instruction goes through the interpreter loop.',
-  'Your program\'s output. The entire process happens every time you run the script (bytecode is cached in __pycache__ but still interpreted).'
-];
-var pyColors = ['#7ab3e0','#a6e3a1','#fab387','#f38ba8'];
-window.pyStage = function(idx) {
-  for (var i = 0; i < 4; i++) {
-    var el = document.getElementById('py' + i);
-    if (el) el.style.borderColor = (i <= idx) ? pyColors[i] : '#555';
+// ══════ Python & JS animation (Section 6) ══════
+var pyOpcodes=['LOAD_FAST 0 (a)','LOAD_FAST 1 (b)','BINARY_ADD','RETURN_VALUE'];
+window.pyRun=function(){
+  var bc=document.getElementById('py-bytecode');
+  var gear=document.getElementById('py-gear');
+  var timer=document.getElementById('py-timer');
+  bc.innerHTML='';gear.style.color='#fab387';
+  var i=0;
+  function next(){
+    if(i<pyOpcodes.length){
+      var prev=bc.querySelector('.py-active');if(prev)prev.style.color='#585b70';
+      var line=document.createElement('div');line.textContent=pyOpcodes[i];line.className='py-active';line.style.color='#a6e3a1';line.style.fontWeight='700';
+      bc.appendChild(line);i++;setTimeout(next,500);
+    } else {
+      timer.textContent='2.8ms';gear.style.color='#585b70';
+      document.getElementById('speed-bars').style.display='block';
+    }
   }
-  document.getElementById('py-stage-info').textContent = pyDescs[idx];
+  next();
+};
+var jsRunCount=0;
+window.jsRun=function(){
+  jsRunCount++;
+  var phase=document.getElementById('js-phase');
+  var gear=document.getElementById('js-gear');
+  var status=document.getElementById('js-status');
+  var timer=document.getElementById('js-timer');
+  if(jsRunCount===1){
+    phase.innerHTML='<span style="color:#f9e2af;font-weight:700;">Phase 1: Ignition interpreting...</span>';
+    gear.style.color='#f9e2af';status.textContent='Interpreting. Collecting type feedback.';
+    setTimeout(function(){timer.textContent='run #1 — 1.8ms';document.getElementById('speed-bars').style.display='block';},800);
+  } else {
+    phase.innerHTML='<span style="color:#a6e3a1;font-weight:700;">HOT PATH DETECTED</span><br><span style="color:#a6e3a1;">TurboFan compiling to native code...</span>';
+    gear.style.color='#a6e3a1';status.textContent='JIT compiled — machine instructions';
+    var t=Math.max(0.3,(1.8-jsRunCount*0.3)).toFixed(1);
+    setTimeout(function(){timer.textContent='run #'+jsRunCount+' — '+t+'ms';},500);
+  }
+};
+
+// ══════ CPU diagram (Section 8) ══════
+var cpuDescs={
+  icache:'Instruction Cache — holds recently fetched instructions so the CPU doesn\'t wait for main memory on every fetch.',
+  bp:'Branch Predictor — guesses which path a branch will take before the result is known. Wrong guesses cost 10-20 cycles.',
+  alu:'4 ALUs running simultaneously. Can execute 4 integer operations per clock cycle.',
+  fpu:'Dedicated floating-point unit. Handles all decimal math — add, multiply, divide on floats and doubles.',
+  regs:'16 general-purpose registers, 64 bits each. Access time: 0 cycles — data is already inside the CPU. Everything must be in a register before the CPU can operate on it.',
+  l1:'L1 Cache — 32KB per core, ~1 cycle access. Your hot data lives here. Fastest storage outside of registers.',
+  l2:'L2 Cache — 256KB, ~10 cycle access. Holds data that doesn\'t fit in L1.',
+  l3:'L3 Cache — 8-32MB shared across all cores, ~30 cycle access.',
+  ram:'RAM — 16-64GB, ~200 cycle access. 200x slower than L1. Cache misses that hit RAM dominate execution time in tight loops.'
+};
+var cpuHighlight={icache:'cpu-icache',bp:'cpu-bp',alu:'cpu-alu',fpu:'cpu-fpu',regs:'cpu-regs',l1:'cpu-l1',l2:'cpu-l2',l3:'cpu-l3',ram:'cpu-ram'};
+window.cpuClick=function(key){
+  Object.values(cpuHighlight).forEach(function(id){var e=document.getElementById(id);if(e)e.style.borderColor='#555';});
+  var el=document.getElementById(cpuHighlight[key]);if(el)el.style.borderColor='#7ab3e0';
+  document.getElementById('cpu-info').textContent=cpuDescs[key];
 };
 if(document.getElementById('llvm-src')) llvmLoad(0);
 
