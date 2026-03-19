@@ -90,28 +90,28 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
       <h1>From Code to Operations: LLVM</h1>
       <p>LLVM is where your code stops being code and becomes operations. Logic is gone &mdash; just loads, adds, compares, branches. Pick an example below, then hit Compile to watch the transformation.</p>
       <div id="llvm-repl" style="margin:10px 0;">
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-family:'Share Tech Mono',monospace; font-size:11px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; font-family:'Share Tech Mono',monospace;">
           <div>
-            <div style="color:#7ab3e0;font-size:10px;text-transform:uppercase;margin-bottom:4px;font-weight:500;">UL Source</div>
-            <div id="llvm-src" style="background:#1e1e2e;border-radius:4px;padding:8px;color:#cdd6f4;min-height:100px;line-height:1.5;font-size:11px;border:1px solid #313244;"></div>
+            <div style="color:#7ab3e0;font-size:13px;text-transform:uppercase;margin-bottom:6px;font-weight:700;letter-spacing:0.06em;">UL Source</div>
+            <div id="llvm-src" style="background:#1e1e2e;border-radius:6px;padding:14px;color:#cdd6f4;min-height:180px;line-height:1.6;font-size:14px;border:1px solid #313244;"></div>
           </div>
           <div>
-            <div style="color:#a6e3a1;font-size:10px;text-transform:uppercase;margin-bottom:4px;font-weight:500;">LLVM IR</div>
-            <div id="llvm-ir" style="background:#1e1e2e;border-radius:4px;padding:8px;color:#585b70;min-height:100px;line-height:1.5;font-size:11px;border:1px solid #313244;"></div>
+            <div style="color:#a6e3a1;font-size:13px;text-transform:uppercase;margin-bottom:6px;font-weight:700;letter-spacing:0.06em;">LLVM IR</div>
+            <div id="llvm-ir" style="background:#1e1e2e;border-radius:6px;padding:14px;color:#585b70;min-height:180px;line-height:1.6;font-size:14px;border:1px solid #313244;"></div>
           </div>
           <div>
-            <div style="color:#fab387;font-size:10px;text-transform:uppercase;margin-bottom:4px;font-weight:500;">Optimized &rarr; x86</div>
-            <div id="llvm-opt" style="background:#1e1e2e;border-radius:4px;padding:8px;color:#585b70;min-height:100px;line-height:1.5;font-size:11px;border:1px solid #313244;"></div>
+            <div style="color:#fab387;font-size:13px;text-transform:uppercase;margin-bottom:6px;font-weight:700;letter-spacing:0.06em;">Optimized &rarr; x86</div>
+            <div id="llvm-opt" style="background:#1e1e2e;border-radius:6px;padding:14px;color:#585b70;min-height:180px;line-height:1.6;font-size:14px;border:1px solid #313244;"></div>
           </div>
         </div>
-        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-          <button onclick="llvmCompile()" style="font-size:11px;padding:5px 14px;border:1px solid #7ab3e0;border-radius:4px;background:#1e1e2e;color:#7ab3e0;cursor:pointer;font-family:'Share Tech Mono',monospace;">Compile</button>
-          <span style="font-size:10px;color:#585b70;font-family:'Share Tech Mono',monospace;">Examples:</span>
-          <button onclick="llvmLoad(0)" style="font-size:10px;padding:4px 10px;border:1px solid #313244;border-radius:3px;background:transparent;color:#a6adc8;cursor:pointer;font-family:'Share Tech Mono',monospace;">Simple add</button>
-          <button onclick="llvmLoad(1)" style="font-size:10px;padding:4px 10px;border:1px solid #313244;border-radius:3px;background:transparent;color:#a6adc8;cursor:pointer;font-family:'Share Tech Mono',monospace;">Loop</button>
-          <button onclick="llvmLoad(2)" style="font-size:10px;padding:4px 10px;border:1px solid #313244;border-radius:3px;background:transparent;color:#a6adc8;cursor:pointer;font-family:'Share Tech Mono',monospace;">Conditional</button>
-          <button onclick="llvmLoad(3)" style="font-size:10px;padding:4px 10px;border:1px solid #313244;border-radius:3px;background:transparent;color:#a6adc8;cursor:pointer;font-family:'Share Tech Mono',monospace;">String concat</button>
-          <span id="llvm-pass" style="font-size:10px;color:#585b70;margin-left:auto;"></span>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <button onclick="llvmCompile()" style="font-size:13px;padding:8px 20px;border:1px solid #7ab3e0;border-radius:4px;background:#1e1e2e;color:#7ab3e0;cursor:pointer;font-family:'Share Tech Mono',monospace;font-weight:700;">Compile</button>
+          <span style="font-size:12px;color:#888;font-family:'Share Tech Mono',monospace;">Examples:</span>
+          <button onclick="llvmLoad(0)" style="font-size:12px;padding:6px 14px;border:1px solid #7ab3e0;border-radius:4px;background:#1e1e2e;color:#cdd6f4;cursor:pointer;font-family:'Share Tech Mono',monospace;">Simple add</button>
+          <button onclick="llvmLoad(1)" style="font-size:12px;padding:6px 14px;border:1px solid #7ab3e0;border-radius:4px;background:#1e1e2e;color:#cdd6f4;cursor:pointer;font-family:'Share Tech Mono',monospace;">Loop</button>
+          <button onclick="llvmLoad(2)" style="font-size:12px;padding:6px 14px;border:1px solid #7ab3e0;border-radius:4px;background:#1e1e2e;color:#cdd6f4;cursor:pointer;font-family:'Share Tech Mono',monospace;">Conditional</button>
+          <button onclick="llvmLoad(3)" style="font-size:12px;padding:6px 14px;border:1px solid #7ab3e0;border-radius:4px;background:#1e1e2e;color:#cdd6f4;cursor:pointer;font-family:'Share Tech Mono',monospace;">String concat</button>
+          <span id="llvm-pass" style="font-size:12px;color:#888;margin-left:auto;"></span>
         </div>
       </div>
     </div>
