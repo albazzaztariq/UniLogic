@@ -84,24 +84,23 @@ cd UniLogic</pre>
 
 <p>Compile to C (the default target):</p>
 
-<pre><span class="cm"># Windows (PowerShell)</span>
-.\ul.ps1 hello.ul -t c
+<pre><span class="cm"># Compile and run in one step</span>
+ul run hello.ul
 
-<span class="cm"># Windows (Command Prompt)</span>
-ul.bat hello.ul -t c
+<span class="cm"># Or compile to a specific target</span>
+ul hello.ul -t c        <span class="cm"># produces hello.c</span>
+ul hello.ul -t python   <span class="cm"># produces hello.py</span>
+ul hello.ul -t js       <span class="cm"># produces hello.js</span>
+ul hello.ul -t llvm     <span class="cm"># produces hello.ll</span></pre>
 
-<span class="cm"># Or directly with Python</span>
-python Main.py hello.ul -t c</pre>
+<div class="note">
+<strong>Wrappers included</strong>
+The repo includes <code>ul.bat</code> (Command Prompt) and <code>ul.ps1</code> (PowerShell) wrappers that auto-detect your Python installation. On Linux/macOS, use <code>ul.sh</code>. You can also call <code>python Main.py</code> directly.
+</div>
 
-<p>This creates <code>hello.c</code>. Then compile to a native binary:</p>
+<p>To compile C output to a native binary:</p>
 
 <pre>gcc hello.c -o hello</pre>
-
-<p>Other targets:</p>
-
-<pre>python Main.py hello.ul -t python   <span class="cm"># hello.py</span>
-python Main.py hello.ul -t js       <span class="cm"># hello.js</span>
-python Main.py hello.ul -t llvm     <span class="cm"># hello.ll</span></pre>
 
 <!-- ════ STEP 5 ════ -->
 <h2 id="run"><span class="step-num">5</span>Run It</h2>

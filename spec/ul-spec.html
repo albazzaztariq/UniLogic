@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniLogic Language Specification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Georgia', serif; font-size: 16px; line-height: 1.7; color: #1a1a1a; background: #fafaf8; display: flex; }
+nav { position: fixed; top: 0; left: 0; width: 230px; height: 100vh; overflow-y: auto; padding: 24px 0 40px; z-index: 100; background: #1e1e2e; border-right: 1px solid #313244; }
+.nav-logo { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; padding: 0 20px 16px; color: #5b8fc9; border-bottom: 1px solid #313244; margin-bottom: 8px; display: block; text-decoration: none; }
+.nav-section { margin-top: 14px; padding: 3px 20px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-family: sans-serif; font-weight: bold; color: #585b70; }
+nav a { display: block; padding: 4px 20px 4px 23px; text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 12px; color: #a6adc8; border-left: 3px solid transparent; transition: background 0.12s, color 0.12s; }
+nav a:hover { background: #313244; color: #cdd6f4; border-left-color: #7ab3e0; }
+main { margin-left: 230px; padding: 48px 72px 100px; max-width: 900px; width: 100%; }
+h1 { font-size: 2rem; font-weight: normal; margin-bottom: 8px; padding-bottom: 12px; color: #1a1a1a; border-bottom: 2px solid #e0d8f0; }
+.subtitle { font-size: 0.9rem; margin-bottom: 32px; color: #666; font-family: 'Share Tech Mono', monospace; }
+h2 { font-size: 1.4rem; font-weight: normal; margin-top: 48px; margin-bottom: 4px; padding-bottom: 6px; scroll-margin-top: 32px; color: #2d1b69; border-bottom: 1px solid #e0d8f0; }
+h3 { font-size: 1rem; font-weight: bold; margin-top: 24px; margin-bottom: 6px; color: #333; }
+p { margin-bottom: 12px; color: #2a2a2a; }
+pre { padding: 14px 18px; border-radius: 6px; white-space: pre-wrap; word-break: break-word; font-family: 'Share Tech Mono', monospace; font-size: 13px; line-height: 1.5; margin: 10px 0 16px; background: #1e1e2e; color: #cdd6f4; border-left: 3px solid #7ab3e0; }
+code { padding: 1px 5px; border-radius: 3px; font-family: 'Share Tech Mono', monospace; font-size: 13px; background: #ede8f5; color: #1a3a7a; }
+pre code { background: none; color: inherit; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0 20px; font-size: 0.88rem; }
+th { background: #1e1e2e; color: #7ab3e0; padding: 7px 10px; text-align: left; font-weight: 500; font-family: 'Share Tech Mono', monospace; font-size: 12px; }
+td { padding: 6px 10px; border-bottom: 1px solid #eee; color: #2a2a2a; vertical-align: top; }
+tr:nth-child(even) td { background: #f5f3fb; }
+td:first-child { color: #1a3a7a; font-family: 'Share Tech Mono', monospace; font-size: 0.85em; }
+@media (max-width: 700px) { nav { display: none; } main { margin-left: 0; padding: 20px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../language-main.html" class="nav-logo">&larr; Language Reference</a>
+  <div class="nav-section">Specification</div>
+  <a href="#lexical">1. Lexical Structure</a>
+  <a href="#types">2. Types</a>
+  <a href="#declarations">3. Declarations</a>
+  <a href="#expressions">4. Expressions</a>
+  <a href="#statements">5. Statements</a>
+  <a href="#dr">6. DR Directives</a>
+  <a href="#annotations">7. Annotations</a>
+  <a href="#builtins">8. Built-ins</a>
+  <a href="#stdlib">9. Standard Library</a>
+  <a href="#grammar">10. Grammar</a>
+  <a href="#targets">11. Targets</a>
+  <a href="#semantics">12. Semantics</a>
+  <div class="nav-section">Also</div>
+  <a href="../language-main.html">Language Reference</a>
+  <a href="ul-spec.md">Markdown version</a>
+</nav>
+
+<main>
+
+<h1>UniLogic Language Specification</h1>
+<p class="subtitle">Version 1.0-draft &mdash; 2026-03-18</p>
+
+<p>This document is the formal specification of the UniLogic (UL) programming language. It defines the lexical structure, type system, declarations, expressions, statements, runtime directives, annotations, built-in functions, standard library, and formal grammar. A conforming implementation must support all constructs described here.</p>
+
+<p>For the markdown version of this document, see <a href="ul-spec.md" style="color:#1a3a7a;">ul-spec.md</a>.</p>
+
+<h2 id="lexical">1. Lexical Structure</h2>
+<p>UL source files are UTF-8 encoded. All keywords, operators, and identifiers use ASCII. String literals may contain any valid UTF-8.</p>
+<p>Line comments: <code>//</code> to end of line. No block comments. Whitespace is insignificant except inside strings.</p>
+<h3>1.1 Keywords (56)</h3>
+<p><code>function</code> <code>end</code> <code>returns</code> <code>return</code> <code>if</code> <code>else</code> <code>while</code> <code>do</code> <code>for</code> <code>each</code> <code>in</code> <code>match</code> <code>iterate</code> <code>default</code> <code>escape</code> <code>continue</code> <code>type</code> <code>inherits</code> <code>new</code> <code>fixed</code> <code>constant</code> <code>import</code> <code>from</code> <code>export</code> <code>print</code> <code>prompt</code> <code>parallel</code> <code>killswitch</code> <code>teleport</code> <code>portal</code> <code>nocache</code> <code>yield</code> <code>yields</code> <code>inline</code> <code>pack</code> <code>true</code> <code>false</code> <code>empty</code> <code>and</code> <code>or</code> <code>not</code> <code>equals</code> <code>both1</code> <code>both0</code> <code>either1</code> <code>delta</code> <code>bitflip</code> <code>negate</code> <code>left</code> <code>right</code> <code>address</code> <code>deref</code> <code>memmove</code> <code>memcopy</code> <code>memset</code> <code>memtake</code> <code>memgive</code> <code>size</code> <code>change</code> <code>absval</code></p>
+<p>Type keywords: <code>int</code> <code>integer</code> <code>float</code> <code>double</code> <code>string</code> <code>bool</code> <code>none</code> <code>complex</code> <code>int8</code> <code>int16</code> <code>int32</code> <code>int64</code> <code>uint8</code> <code>uint16</code> <code>uint32</code> <code>uint64</code> <code>array</code> <code>list</code> <code>map</code> <code>arena</code> <code>file</code> <code>ok</code> <code>error</code> <code>some</code></p>
+
+<h3>1.2 Operator Precedence</h3>
+<table>
+<tr><th>Prec</th><th>Operators</th><th>Assoc</th></tr>
+<tr><td>1</td><td><code>() [] . -> ++ --</code></td><td>left</td></tr>
+<tr><td>2</td><td><code>- not address deref</code> (unary)</td><td>right</td></tr>
+<tr><td>3</td><td><code>* / %</code></td><td>left</td></tr>
+<tr><td>4</td><td><code>+ -</code></td><td>left</td></tr>
+<tr><td>5</td><td><code>&lt; &gt; &lt;= &gt;=</code></td><td>left</td></tr>
+<tr><td>6</td><td><code>== !=</code></td><td>left</td></tr>
+<tr><td>7</td><td><code>and</code></td><td>left</td></tr>
+<tr><td>8</td><td><code>or</code></td><td>left</td></tr>
+<tr><td>9</td><td><code>= += -= *= /= %= left= right=</code></td><td>right</td></tr>
+</table>
+
+<h2 id="types">2. Types</h2>
+<table>
+<tr><th>Type</th><th>Size</th><th>Description</th></tr>
+<tr><td>int</td><td>4B</td><td>Signed 32-bit integer</td></tr>
+<tr><td>int8..int64</td><td>1-8B</td><td>Sized signed integers</td></tr>
+<tr><td>uint8..uint64</td><td>1-8B</td><td>Sized unsigned integers</td></tr>
+<tr><td>float</td><td>4B</td><td>IEEE 754 32-bit</td></tr>
+<tr><td>double</td><td>8B</td><td>IEEE 754 64-bit</td></tr>
+<tr><td>string</td><td>ptr</td><td>Heap-allocated UTF-8</td></tr>
+<tr><td>bool</td><td>1B</td><td>true / false</td></tr>
+<tr><td>none</td><td>0B</td><td>Void / absent</td></tr>
+<tr><td>array T</td><td>varies</td><td>Fixed-size array of T</td></tr>
+<tr><td>&lt;T&gt;</td><td>ptr</td><td>Pointer to T</td></tr>
+<tr><td>T|error</td><td>varies</td><td>Result type</td></tr>
+</table>
+<p>User types via <code>type Name ... end type</code>. Single inheritance via <code>inherits</code>.</p>
+
+<h2 id="declarations">3. Declarations</h2>
+<pre>function name(type param, ...) [returns type]
+  body
+end function
+
+type Name [inherits Parent]
+  type field
+end type
+
+import "lib" function name(type param, ...) [returns type]
+fixed type name = expr</pre>
+
+<h2 id="expressions">4. Expressions</h2>
+<p>Arithmetic: <code>+ - * / %</code>. Comparison: <code>== != &lt; &gt; &lt;= &gt;=</code>. Logical: <code>and or not</code>. Cast: <code>cast(expr, type)</code>. Index: <code>expr[expr]</code>. Field: <code>expr.field</code>. Call: <code>name(args)</code>. Propagation: <code>expr?</code>. Post-increment: <code>x++</code> <code>x--</code>.</p>
+
+<h2 id="statements">5. Statements</h2>
+<pre>name = expr
+if condition ... [else ...] end if
+while condition ... end while
+for each var in iterable ... end for
+match subject ... default ... end match
+return [expr] | return ok expr | return error "msg"
+print expr
+escape
+continue</pre>
+
+<h2 id="dr">6. DR Directives</h2>
+<table>
+<tr><th>Setting</th><th>Values</th><th>Default</th></tr>
+<tr><td>memory</td><td>gc, manual, refcount, arena</td><td>gc</td></tr>
+<tr><td>safety</td><td>checked, unchecked</td><td>checked</td></tr>
+<tr><td>types</td><td>strict, dynamic</td><td>strict</td></tr>
+<tr><td>int_width</td><td>32, 64, platform</td><td>32</td></tr>
+<tr><td>concurrency</td><td>threaded, parallel, async, cooperative</td><td>threaded</td></tr>
+</table>
+
+<h2 id="annotations">7. Annotations</h2>
+<table>
+<tr><th>Annotation</th><th>Scope</th><th>Description</th></tr>
+<tr><td>@dr key = value</td><td>File</td><td>Runtime directive</td></tr>
+<tr><td>@norm N</td><td>File/function</td><td>Normalization level (0-3)</td></tr>
+<tr><td>@deprecated("msg")</td><td>Function</td><td>Mark as deprecated</td></tr>
+<tr><td>@fuse</td><td>Block</td><td>Hint to fuse operations</td></tr>
+<tr><td>@prefetch(distance=N)</td><td>Loop/data</td><td>Insert prefetch instructions</td></tr>
+<tr><td>@layout = value</td><td>Type</td><td>Control memory layout</td></tr>
+<tr><td>@precision = value</td><td>File/function</td><td>Float precision mode</td></tr>
+<tr><td>@sparsity = value</td><td>Type</td><td>Tensor sparsity pattern</td></tr>
+</table>
+
+<h2 id="builtins">8. Built-in Functions</h2>
+<table>
+<tr><th>Function</th><th>Description</th></tr>
+<tr><td>print expr</td><td>Print to stdout with newline</td></tr>
+<tr><td>prompt(msg)</td><td>Read line from stdin</td></tr>
+<tr><td>absval(x)</td><td>Absolute value</td></tr>
+<tr><td>size(T)</td><td>Size in bytes</td></tr>
+<tr><td>cast(expr, type)</td><td>Type conversion</td></tr>
+<tr><td>exit(code)</td><td>Terminate with exit code</td></tr>
+<tr><td>typeof(expr)</td><td>Runtime type name</td></tr>
+<tr><td>memtake(bytes)</td><td>Allocate heap memory</td></tr>
+<tr><td>memgive(ptr)</td><td>Free heap memory</td></tr>
+<tr><td>memcopy(dst, src, n)</td><td>Copy bytes (no overlap)</td></tr>
+<tr><td>memmove(dst, src, n)</td><td>Copy bytes (overlap safe)</td></tr>
+<tr><td>memset(ptr, val, n)</td><td>Fill bytes</td></tr>
+</table>
+
+<h2 id="stdlib">9. Standard Library</h2>
+<p><strong>Math:</strong> sqrt, pow, exp, log, log2, log10, floor, ceil, round, min, max, clamp, lerp</p>
+<p><strong>String:</strong> length, substring, index_of, replace, split, join, trim, upper, lower, starts_with, ends_with, contains</p>
+<p><strong>Array:</strong> length, push, pop, insert, remove, slice, reverse, sort, find, map, filter, reduce</p>
+<p><strong>Map:</strong> keys, values, has, get, set, delete, size</p>
+<p><strong>File:</strong> open, read, write, close, exists, readlines</p>
+<p><strong>JSON:</strong> json_parse, json_stringify</p>
+
+<h2 id="grammar">10. Formal Grammar (EBNF)</h2>
+<pre>program        = { declaration } ;
+declaration    = dr_directive | function_decl | type_decl | foreign_import ;
+dr_directive   = "@dr" IDENT "=" IDENT ;
+function_decl  = "function" IDENT "(" [ param_list ] ")" [ "returns" type ] body "end" "function" ;
+type_decl      = "type" IDENT [ "inherits" IDENT ] { field } "end" "type" ;
+foreign_import = "import" STRING "function" IDENT "(" [ param_list ] ")" [ "returns" type ] ;
+param_list     = param { "," param } ;
+param          = type IDENT ;
+type           = [ "&lt;" ] type_name [ "&gt;" ] | "array" type_name ;
+body           = { statement } ;
+statement      = var_decl | assignment | if_stmt | while_stmt | for_stmt
+               | match_stmt | return_stmt | print_stmt | "escape" | "continue" | expr_stmt ;
+var_decl       = [ "fixed" ] type IDENT [ "=" expr ] ;
+if_stmt        = "if" expr body [ "else" body ] "end" "if" ;
+while_stmt     = "while" expr body "end" "while" ;
+for_stmt       = "for" "each" IDENT "in" expr body "end" "for" ;
+match_stmt     = "match" expr { match_case } [ "default" body ] "end" "match" ;
+return_stmt    = "return" [ expr ] | "return" "ok" expr | "return" "error" expr ;
+print_stmt     = "print" expr ;
+expr           = or_expr ;
+or_expr        = and_expr { "or" and_expr } ;
+and_expr       = not_expr { "and" not_expr } ;
+not_expr       = "not" not_expr | comparison ;
+comparison     = addition { ("==" | "!=" | "&lt;" | "&gt;" | "&lt;=" | "&gt;=") addition } ;
+addition       = multiplication { ("+" | "-") multiplication } ;
+multiplication = unary { ("*" | "/" | "%") unary } ;
+unary          = ("-" | "address" | "deref") unary | postfix ;
+postfix        = primary { "(" [arg_list] ")" | "[" expr "]" | "." IDENT | "-&gt;" type | "++" | "--" } ;
+primary        = INT | HEX | FLOAT | STRING | "true" | "false" | "empty" | IDENT | "[" [arg_list] "]" | "(" expr ")" ;</pre>
+
+<h2 id="targets">11. Compilation Targets</h2>
+<table>
+<tr><th>Target</th><th>Flag</th><th>Output</th></tr>
+<tr><td>C</td><td>-t c</td><td>.c (C99)</td></tr>
+<tr><td>Python</td><td>-t python</td><td>.py (Python 3.10+)</td></tr>
+<tr><td>JavaScript</td><td>-t js</td><td>.js (ES6)</td></tr>
+<tr><td>LLVM IR</td><td>-t llvm</td><td>.ll</td></tr>
+<tr><td>WebAssembly</td><td>-t wasm</td><td>.wasm</td></tr>
+</table>
+
+<h2 id="semantics">12. Semantics</h2>
+<p>Integer division truncates toward zero. <code>and</code>/<code>or</code> short-circuit. Inner scopes shadow outer. Parameters passed by value. <code>?</code> in non-result functions prints error to stderr and exits with code 1. <code>fixed</code> variables are immutable. <code>empty</code>, <code>0</code>, <code>0.0</code>, <code>""</code>, <code>false</code> are falsy.</p>
+
+</main>
+</body>
+</html>
