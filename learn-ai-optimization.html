@@ -60,7 +60,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
   <div class="content-area" id="content-area">
 
     <div class="section" data-title="Why This Matters">
-      <div class="step-label">Section 1 of 20</div>
+      <div class="step-label">Section 1 of 23</div>
       <h1>AI &amp; ML Workload Optimization</h1>
       <p>This learning module covers the concepts underlying current optimization efforts for AI and ML workloads. Tools exist in C, Python, and other languages, but require specialist knowledge to properly use or involve multiple pieces of software rather than simple installation allowing use.</p>
       <p>Some of the ideas necessary to operate &mdash; or better operate &mdash; tools in this domain are explained in the following sections. These are important to UL specifically, even more than other languages, because UL incorporates many of these optimizations as language-level features rather than library-level workarounds.</p>
@@ -68,7 +68,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="What UL Does Differently">
-      <div class="step-label">Section 2 of 20</div>
+      <div class="step-label">Section 2 of 23</div>
       <h1>What UL Does Differently</h1>
       <p>UL is designed to incorporate modern AI and ML optimization as part of the language itself. This does not mean it bundles libraries you can already download with other languages, nor just standard library functionality. It refers to optimizations which must be explicitly applied &mdash; painstakingly, repeatedly, with much effort &mdash; because of the structure of other languages and their library implementations.</p>
       <p>For example, mixed floating-point precision is offered through libraries in C and Python (PyTorch's <code>.half()</code>, NVIDIA's AMP), but requires function calls inserted at every possible position. This needs code analysis to identify insertion points and then placing those calls repeatedly. UL lets you declare it once as a runtime or compile-time setting and it's applied implicitly.</p>
@@ -76,7 +76,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="What You'll Learn">
-      <div class="step-label">Section 3 of 20</div>
+      <div class="step-label">Section 3 of 23</div>
       <h1>What You'll Learn</h1>
       <p>Each of the following sections explains one problem space in which research and available solutions allow for optimization. First, the way an instruction is processed through the CPU is illustrated. Next, aspects of this process &mdash; branch prediction, SIMD, registers, cache behavior, hot paths &mdash; are explained as they relate to CPU architecture. Then GPU-specific concepts. Finally, we redirect you to UL's syntax and commands for taking advantage of these technologies.</p>
       <div class="warn">
@@ -85,22 +85,63 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
       </div>
     </div>
 
+    <div class="section" data-title="What Compilation Means">
+      <div class="step-label">Section 4 of 23</div>
+      <h1>What Compilation Means</h1>
+      <p>If you've only used Python or JavaScript, you've never compiled anything. You write code, hit run, and it works. What's happening underneath is that an interpreter reads your code line by line and executes it on the fly. This is convenient but slow &mdash; the interpreter does work every time your program runs.</p>
+      <p><strong>Compilation</strong> is different. A compiler reads your entire program once, translates it into something the CPU can execute directly, and produces a file you can run forever without the compiler. That file is a <strong>binary</strong> &mdash; native machine instructions. No interpreter needed. This is what C, C++, Rust, and Go do.</p>
+      <p>UL can do both. Compile to C or LLVM for native binaries. Compile to Python or JavaScript for interpreted targets. The next three pages show what each path looks like.</p>
+    </div>
+
+    <div class="section" data-title="How C Compiles">
+      <div class="step-label">Section 5 of 23</div>
+      <h1>How C Compiles</h1>
+      <p>When you compile C code (or UL targeting C), the process is: source → preprocessor → compiler → assembler → linker → binary. Click through to see each stage.</p>
+      <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:12px 0;font-family:'Share Tech Mono',monospace;font-size:12px;">
+        <div style="padding:10px 14px;border-radius:5px;background:#1e1e2e;color:#1a3a7a;border:1.5px solid #1a3a7a;text-align:center;font-weight:700;"><strong style="color:#cdd6f4;">.ul</strong><br>source</div>
+        <span style="color:#888;font-size:16px;">&rarr;</span>
+        <div style="padding:10px 14px;border-radius:5px;background:#1e1e2e;color:#2d7a3a;border:1.5px solid #2d7a3a;text-align:center;font-weight:700;"><strong style="color:#cdd6f4;">.c</strong><br>XPile</div>
+        <span style="color:#888;font-size:16px;">&rarr;</span>
+        <div style="padding:10px 14px;border-radius:5px;background:#1e1e2e;color:#b05a20;border:1.5px solid #b05a20;text-align:center;font-weight:700;"><strong style="color:#cdd6f4;">.o</strong><br>gcc/clang</div>
+        <span style="color:#888;font-size:16px;">&rarr;</span>
+        <div style="padding:10px 14px;border-radius:5px;background:#1e1e2e;color:#7c4dcc;border:1.5px solid #7c4dcc;text-align:center;font-weight:700;"><strong style="color:#cdd6f4;">binary</strong><br>linked</div>
+      </div>
+      <p>The result is a standalone executable. No Python, no Node, no JVM &mdash; just the binary and the OS. This is why compiled programs run 10&ndash;100x faster than interpreted ones.</p>
+    </div>
+
+    <div class="section" data-title="How Python & JS Run">
+      <div class="step-label">Section 6 of 23</div>
+      <h1>How Python &amp; JS Run</h1>
+      <p><strong>Python:</strong> Your code is compiled to <strong>bytecode</strong> &mdash; a compact set of instructions for the Python virtual machine (CPython). This happens automatically when you hit run. The bytecode is then interpreted instruction by instruction. You can actually see these opcodes with <code>dis.dis(func)</code> in Python.</p>
+      <div style="display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:8px 0;font-family:'Share Tech Mono',monospace;font-size:12px;">
+        <div style="padding:8px 12px;border-radius:5px;background:#1e1e2e;color:#cdd6f4;border:1.5px solid #1a3a7a;">source.py</div>
+        <span style="color:#888;">&rarr;</span>
+        <div style="padding:8px 12px;border-radius:5px;background:#1e1e2e;color:#cdd6f4;border:1.5px solid #2d7a3a;">bytecode (.pyc)</div>
+        <span style="color:#888;">&rarr;</span>
+        <div style="padding:8px 12px;border-radius:5px;background:#1e1e2e;color:#cdd6f4;border:1.5px solid #b05a20;">CPython VM</div>
+        <span style="color:#888;">&rarr;</span>
+        <div style="padding:8px 12px;border-radius:5px;background:#1e1e2e;color:#cdd6f4;border:1.5px solid #7c4dcc;">output</div>
+      </div>
+      <p><strong>JavaScript:</strong> Browser engines (V8, SpiderMonkey) parse your code into an AST, generate bytecode, interpret it, and then JIT-compile hot functions to native code on the fly. You never see any of this &mdash; it just runs.</p>
+      <p>The next page shows what happens when UL compiles to LLVM IR &mdash; the layer where your code stops being code and becomes raw operations.</p>
+    </div>
+
     <div class="section" data-title="From Code to Operations: LLVM">
-      <div class="step-label">Section 4 of 20</div>
+      <div class="step-label">Section 7 of 23</div>
       <h1>From Code to Operations: LLVM</h1>
       <p>LLVM is where your code stops being code and becomes operations. Logic is gone &mdash; just loads, adds, compares, branches. Pick an example below, then hit Compile to watch the transformation.</p>
       <div id="llvm-repl" style="margin:10px 0;">
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; font-family:'Share Tech Mono',monospace;">
           <div>
-            <div style="color:#7ab3e0;font-size:13px;text-transform:uppercase;margin-bottom:6px;font-weight:700;letter-spacing:0.06em;">UL Source</div>
+            <div style="color:#1a3a7a;font-size:13px;text-transform:uppercase;margin-bottom:6px;font-weight:700;letter-spacing:0.06em;">UL Source</div>
             <div id="llvm-src" style="background:#1e1e2e;border-radius:6px;padding:14px;color:#cdd6f4;min-height:180px;line-height:1.6;font-size:14px;border:1px solid #313244;"></div>
           </div>
           <div>
-            <div style="color:#a6e3a1;font-size:13px;text-transform:uppercase;margin-bottom:6px;font-weight:700;letter-spacing:0.06em;">LLVM IR</div>
+            <div style="color:#2d7a3a;font-size:13px;text-transform:uppercase;margin-bottom:6px;font-weight:700;letter-spacing:0.06em;">LLVM IR</div>
             <div id="llvm-ir" style="background:#1e1e2e;border-radius:6px;padding:14px;color:#585b70;min-height:180px;line-height:1.6;font-size:14px;border:1px solid #313244;"></div>
           </div>
           <div>
-            <div style="color:#fab387;font-size:13px;text-transform:uppercase;margin-bottom:6px;font-weight:700;letter-spacing:0.06em;">Optimized &rarr; x86</div>
+            <div style="color:#b05a20;font-size:13px;text-transform:uppercase;margin-bottom:6px;font-weight:700;letter-spacing:0.06em;">Optimized &rarr; x86</div>
             <div id="llvm-opt" style="background:#1e1e2e;border-radius:6px;padding:14px;color:#585b70;min-height:180px;line-height:1.6;font-size:14px;border:1px solid #313244;"></div>
           </div>
         </div>
@@ -117,7 +158,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="Inside the CPU">
-      <div class="step-label">Section 5 of 20</div>
+      <div class="step-label">Section 8 of 23</div>
       <h1>Inside the CPU</h1>
       <p>A CPU processes instructions using several major components working together:</p>
       <p><strong>Registers</strong> &mdash; tiny, extremely fast storage slots directly inside the CPU. A modern x86-64 CPU has 16 general-purpose registers (64 bits each), 16 SSE/AVX vector registers (128&ndash;512 bits each), and several special-purpose registers (instruction pointer, flags, stack pointer). Data must be in a register before the CPU can operate on it.</p>
@@ -127,7 +168,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="How Instructions Flow">
-      <div class="step-label">Section 6 of 20</div>
+      <div class="step-label">Section 9 of 23</div>
       <h1>How Instructions Flow</h1>
       <p>Instructions flow through the pipeline. Hit Play to watch, or trigger a stall/flush.</p>
       <div id="pipe-widget" style="margin:8px 0;">
@@ -156,7 +197,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="Branch Prediction">
-      <div class="step-label">Section 7 of 20</div>
+      <div class="step-label">Section 10 of 23</div>
       <h1>Branch Prediction</h1>
       <p>Every <code>if</code> becomes a branch. The CPU guesses which path before knowing the answer. Click Run &mdash; sorted data is predictable, random isn't.</p>
       <div id="branch-widget" style="margin:8px 0;">
@@ -181,7 +222,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="SIMD & Vector Registers">
-      <div class="step-label">Section 8 of 20</div>
+      <div class="step-label">Section 11 of 23</div>
       <h1>SIMD &amp; Vector Registers</h1>
       <p><strong>SIMD</strong> &mdash; one instruction, multiple data. Click Run to see scalar vs vector processing side by side.</p>
       <div id="simd-widget" style="margin:10px 0;">
@@ -210,7 +251,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="Cache: Hits, Misses, Layout">
-      <div class="step-label">Section 9 of 20</div>
+      <div class="step-label">Section 12 of 23</div>
       <h1>Cache: Hits, Misses, and Memory Layout</h1>
       <p>Data moves through a hierarchy. Each step away is ~10x slower. Select an access pattern and click Run:</p>
       <div id="cache-widget" style="margin:8px 0;">
@@ -232,7 +273,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="The GPU Advantage">
-      <div class="step-label">Section 10 of 20</div>
+      <div class="step-label">Section 13 of 23</div>
       <h1>The GPU Advantage</h1>
       <p>A CPU has 8&ndash;16 powerful cores optimized for sequential, complex work. A GPU has thousands of small cores optimized for doing the same simple operation on many data points simultaneously. Neural network training and inference are almost entirely parallel math &mdash; multiply matrices, add biases, apply activation functions &mdash; the same operation repeated millions of times across different data.</p>
       <p><strong>Tensor cores</strong> (NVIDIA) are specialized hardware units within GPU cores that perform matrix multiply-accumulate operations in a single clock cycle. A single tensor core can compute a 4x4 matrix multiply in one operation &mdash; something that takes dozens of instructions on a regular GPU core. This is purpose-built for deep learning.</p>
@@ -240,7 +281,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="Quantization">
-      <div class="step-label">Section 11 of 20</div>
+      <div class="step-label">Section 14 of 23</div>
       <h1>Quantization</h1>
       <p>Quantization reduces precision &mdash; trading accuracy for speed. Drag the slider to see precision loss and register packing.</p>
       <div id="quant-widget" style="margin:8px 0;font-family:'Share Tech Mono',monospace;">
@@ -270,7 +311,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="Mixed Precision & FMA">
-      <div class="step-label">Section 12 of 20</div>
+      <div class="step-label">Section 15 of 23</div>
       <h1>Mixed Precision &amp; FMA</h1>
       <p><strong>Mixed precision</strong> runs computation in FP16 (fast, fits more in cache and SIMD registers) but accumulates results in FP32 (prevents precision loss from compounding over thousands of operations). This is the standard for modern training &mdash; NVIDIA's Automatic Mixed Precision (AMP) in PyTorch does this, but requires wrapping your training loop in a context manager and calling <code>.half()</code> on tensors selectively.</p>
       <p><strong>FMA (Fused Multiply-Add)</strong> computes <code>a * b + c</code> in a single instruction with a single rounding step instead of two separate operations with two rounding steps. This is faster <em>and</em> more accurate. Modern CPUs and GPUs have dedicated FMA units. The compiler can emit FMA instructions when it recognizes the pattern, but only if the code structure allows it &mdash; if the multiply and add are in separate statements with an intermediate variable, the compiler may not fuse them.</p>
@@ -278,7 +319,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="Vectorization & Prefetch">
-      <div class="step-label">Section 13 of 20</div>
+      <div class="step-label">Section 16 of 23</div>
       <h1>Vectorization &amp; Prefetch</h1>
       <p><strong>Auto-vectorization</strong> is when the compiler transforms a scalar loop (processing one element at a time) into a vector loop (processing 4/8/16 elements at a time using SIMD). This requires: contiguous memory access, no data dependencies between iterations, no branches in the loop body, and aligned data. If any condition isn't met, the compiler falls back to scalar code silently.</p>
       <p><strong>Prefetch</strong> tells the CPU to start loading data from memory before the code actually needs it, hiding the memory latency. In C, this is <code>__builtin_prefetch(addr)</code> &mdash; a compiler intrinsic that must be placed manually at the right distance ahead of the access (too early wastes cache, too late doesn't help). Getting the prefetch distance right requires profiling on the specific hardware.</p>
@@ -286,7 +327,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="Sparsity & Kernel Fusion">
-      <div class="step-label">Section 14 of 20</div>
+      <div class="step-label">Section 17 of 23</div>
       <h1>Sparsity &amp; Kernel Fusion</h1>
       <p><strong>Sparsity</strong> exploits the fact that many neural network tensors are mostly zeros (sometimes 80&ndash;95% zeros after pruning). Instead of multiplying by zero thousands of times, skip those operations entirely. NVIDIA's Ampere and Hopper GPUs have hardware support for 2:4 structured sparsity &mdash; for every 4 elements, at least 2 must be zero, and the hardware skips them automatically.</p>
       <p>In Python/C, exploiting sparsity requires converting dense tensors to sparse formats (CSR, COO), using sparse-specific library functions, and managing the conversion overhead. In UL, sparsity is a type-level construct &mdash; declare a tensor as sparse and the compiler handles format selection and operation dispatch.</p>
@@ -316,7 +357,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="Memory: NUMA & Allocation">
-      <div class="step-label">Section 15 of 20</div>
+      <div class="step-label">Section 18 of 23</div>
       <h1>Memory: NUMA, Arenas, and Huge Pages</h1>
       <p><strong>NUMA (Non-Uniform Memory Access)</strong> is a server memory architecture where each CPU socket has its own local memory. Accessing local memory is fast; accessing another socket's memory crosses an interconnect and is 2&ndash;3x slower. Enterprise servers with 2+ sockets are NUMA by default. If your application's threads are on socket 0 but the data is in socket 1's memory, every access pays the cross-socket penalty. NUMA-aware allocation pins data to the socket that will use it.</p>
       <p><strong>Huge pages</strong> reduce TLB (Translation Lookaside Buffer) misses. Normal memory pages are 4KB; the CPU's TLB can only cache a limited number of page mappings. For workloads with large memory footprints (multi-GB models), 4KB pages mean constant TLB misses. Huge pages (2MB or 1GB) cover more memory per TLB entry, drastically reducing misses. Linux supports this via <code>madvise</code> or transparent huge pages; it's rarely enabled by default.</p>
@@ -324,7 +365,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="Compiler Optimizations">
-      <div class="step-label">Section 16 of 20</div>
+      <div class="step-label">Section 19 of 23</div>
       <h1>Compiler Optimizations</h1>
       <p><strong>PGO (Profile-Guided Optimization)</strong> &mdash; compile the program, run it on representative input, feed the profile data back to the compiler. The compiler uses actual execution frequencies to decide what to inline, how to lay out code in memory, and which branches are hot. Typically 10&ndash;20% speedup for real workloads. Two-phase build process.</p>
       <p><strong>Peephole optimization</strong> &mdash; the compiler scans small windows (2&ndash;5 instructions) and replaces patterns with faster equivalents. Example: <code>x * 2</code> becomes <code>x << 1</code>, or <code>x * 0</code> is eliminated entirely.</p>
@@ -333,7 +374,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="IR Patterns & Scheduling">
-      <div class="step-label">Section 17 of 20</div>
+      <div class="step-label">Section 20 of 23</div>
       <h1>IR Patterns &amp; Scheduling</h1>
       <p><strong>Multi-level IR</strong> &mdash; modern compilers use multiple intermediate representations at different abstraction levels. MLIR (Multi-Level IR, from Google/LLVM) represents operations at the tensor level, the loop level, and the machine level in a single framework. This lets optimizations happen at the right level of abstraction &mdash; kernel fusion at the tensor level, vectorization at the loop level, register allocation at the machine level.</p>
       <p><strong>Equality saturation</strong> &mdash; instead of applying optimization rules one at a time (which can miss the global optimum), equality saturation explores all possible rewrites simultaneously and selects the best. Tools like <code>egg</code> (e-graphs good) use this for compiler optimization. It finds optimizations that sequential rewriting misses.</p>
@@ -342,7 +383,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="Library Landscape">
-      <div class="step-label">Section 18 of 20</div>
+      <div class="step-label">Section 21 of 23</div>
       <h1>Library Landscape</h1>
       <p><strong>PyTorch internals</strong> &mdash; at its core, PyTorch dispatches tensor operations to optimized C++/CUDA kernels. <code>torch.compile</code> (TorchDynamo + TorchInductor) captures the Python-level operation graph, optimizes it, and generates fused CUDA kernels. This is Python compensating for not having these optimizations in the language itself.</p>
       <p><strong>CUDA kernels</strong> &mdash; custom GPU programs written in CUDA C/C++ for operations where library kernels aren't fast enough. Writing a custom CUDA kernel requires understanding GPU thread hierarchy (grids, blocks, warps), shared memory management, and memory coalescing. Libraries like Triton (from OpenAI) simplify this by letting you write GPU kernels in Python-like syntax.</p>
@@ -351,7 +392,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="UL's Built-in Tools">
-      <div class="step-label">Section 19 of 20</div>
+      <div class="step-label">Section 22 of 23</div>
       <h1>UL's Built-in Tools</h1>
       <p>UL incorporates these optimizations as language and compiler features rather than library-level workarounds:</p>
       <p><strong>Mixed precision</strong> &mdash; declare via DR setting. The compiler handles FP16 computation with FP32 accumulation automatically. No <code>.half()</code> calls.</p>
@@ -365,7 +406,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     </div>
 
     <div class="section" data-title="Where to Go Next">
-      <div class="step-label">Section 20 of 20</div>
+      <div class="step-label">Section 23 of 23</div>
       <h1>Where to Go Next</h1>
       <p>You've covered the full stack: from how code becomes operations (LLVM), through CPU pipeline stages, branch prediction, SIMD, cache behavior, GPU tensor cores, quantization, mixed precision, sparsity, memory topology, compiler optimizations, IR patterns, and the library ecosystem.</p>
       <p>From here: the <a href="dynamic-runtime.html" style="color:#1a3a7a;">Dynamic Runtime reference</a> documents the DR settings that control these optimizations per file. The <a href="language-main.html" style="color:#1a3a7a;">Language Reference</a> covers the syntax for type declarations, annotations, and memory builtins. And the <a href="features.html" style="color:#1a3a7a;">Features page</a> lists everything currently implemented in the toolchain.</p>
@@ -519,13 +560,13 @@ function llvmCompile() {
   function showPasses() {
     if(pi < e.passes.length) {
       passEl.textContent = '\u2192 ' + e.passes[pi];
-      passEl.style.color = '#fab387';
+      passEl.style.color = '#b05a20';
       pi++;
       setTimeout(showPasses, 500);
     } else {
       passEl.textContent = '\u2713 optimized';
-      passEl.style.color = '#a6e3a1';
-      optEl.style.color = '#fab387';
+      passEl.style.color = '#2d7a3a';
+      optEl.style.color = '#cdd6f4';
       optEl.textContent = e.asm;
     }
   }
