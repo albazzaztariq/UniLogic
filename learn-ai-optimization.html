@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniLogic — AI &amp; ML Workload Optimization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { font-family: 'Georgia', serif; font-size: 16px; line-height: 1.7; color: #1a1a1a; background: #fafaf8; display: flex; height: 100vh; }
+
+nav { position: fixed; top: 0; left: 0; width: 230px; height: 100vh; overflow-y: auto; padding: 24px 0 24px; z-index: 100; background: #1e1e2e; border-right: 1px solid #313244; display: flex; flex-direction: column; }
+.nav-logo { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; padding: 0 20px 16px; color: #5b8fc9; border-bottom: 1px solid #313244; margin-bottom: 8px; display: block; text-decoration: none; }
+.nav-section { margin-top: 14px; padding: 3px 20px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-family: sans-serif; font-weight: bold; color: #585b70; }
+nav a.nav-link { display: block; padding: 4px 20px 4px 23px; text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 12px; color: #a6adc8; border-left: 3px solid transparent; transition: background 0.12s, color 0.12s; cursor: pointer; }
+nav a.nav-link:hover { background: #313244; color: #cdd6f4; border-left-color: #7ab3e0; }
+nav a.nav-link.active { background: #313244; color: #fff; border-left-color: #7ab3e0; }
+.nav-step-num { display: inline-block; width: 18px; font-size: 10px; color: #585b70; }
+nav a.nav-link.active .nav-step-num { color: #7ab3e0; }
+.nav-spacer { flex: 1; }
+
+main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: flex; flex-direction: column; overflow: hidden; }
+.content-area { flex: 1; padding: 40px 64px 0; max-width: 860px; overflow: hidden; }
+.section { display: none; }
+.section.active { display: block; }
+.section h1 { font-size: 1.9rem; font-weight: normal; margin-bottom: 6px; padding-bottom: 10px; color: #1a1a1a; border-bottom: 2px solid #e0d8f0; }
+.section .step-label { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: #7ab3e0; margin-bottom: 4px; }
+.section p { margin-bottom: 12px; color: #2a2a2a; font-size: 15px; line-height: 1.65; }
+.section h3 { font-size: 1rem; font-weight: bold; margin-top: 14px; margin-bottom: 6px; color: #333; }
+.section code { padding: 1px 5px; border-radius: 3px; font-family: 'Share Tech Mono', monospace; font-size: 13px; background: #ede8f5; color: #1a3a7a; }
+.section pre { padding: 14px 18px; border-radius: 6px; white-space: pre-wrap; font-family: 'Share Tech Mono', monospace; font-size: 12px; line-height: 1.5; margin: 10px 0 14px; background: #1e1e2e; color: #cdd6f4; border-left: 3px solid #7ab3e0; }
+.section .note { padding: 10px 14px; margin: 12px 0; border-radius: 0 4px 4px 0; font-size: 14px; background: #f0f4ff; border-left: 4px solid #6c7ef7; }
+.section .note strong { display: block; margin-bottom: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #4a5fcc; }
+.section .warn { padding: 10px 14px; margin: 12px 0; border-radius: 0 4px 4px 0; font-size: 14px; background: #fff8e8; border-left: 4px solid #f5a623; }
+.section .warn strong { display: block; margin-bottom: 3px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #c07820; }
+.kw { color: #7ab3e0; } .ty { color: #89dceb; } .str { color: #a6e3a1; } .num { color: #fab387; } .cm { color: #585b70; font-style: italic; } .op { color: #89b4fa; }
+
+.nav-bar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 12px 64px 16px; border-top: 1px solid #e8e4f0; flex-shrink: 0; }
+.nav-bar .counter { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: #888; letter-spacing: 0.06em; margin-right: auto; }
+.nav-btn { font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 0.08em; padding: 7px 20px; border: 1px solid #d8cff0; border-radius: 4px; background: #fff; color: #2d1b69; cursor: pointer; transition: all 0.15s; }
+.nav-btn:hover { background: #2d1b69; color: #fff; border-color: #2d1b69; }
+.nav-btn:disabled { opacity: 0.35; cursor: default; background: #fff; color: #2d1b69; border-color: #d8cff0; }
+
+@media (max-width: 700px) { nav { display: none; } main { margin-left: 0; width: 100%; } .content-area { padding: 20px; } .nav-bar { padding: 12px 20px 16px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="javascript:history.back()" class="nav-logo">&larr; Back</a>
+  <div class="nav-section">Sections</div>
+  <div id="nav-links"></div>
+  <div class="nav-spacer"></div>
+</nav>
+
+<main>
+  <div class="content-area" id="content-area">
+
+    <div class="section" data-title="Why This Matters">
+      <div class="step-label">Section 1 of 20</div>
+      <h1>AI &amp; ML Workload Optimization</h1>
+      <p>This learning module covers the concepts underlying current optimization efforts for AI and ML workloads. Tools exist in C, Python, and other languages, but require specialist knowledge to properly use or involve multiple pieces of software rather than simple installation allowing use.</p>
+      <p>Some of the ideas necessary to operate &mdash; or better operate &mdash; tools in this domain are explained in the following sections. These are important to UL specifically, even more than other languages, because UL incorporates many of these optimizations as language-level features rather than library-level workarounds.</p>
+      <p>No prior knowledge of CPU architecture, GPU computing, or compiler internals is assumed. Each concept builds on the previous one.</p>
+    </div>
+
+    <div class="section" data-title="What UL Does Differently">
+      <div class="step-label">Section 2 of 20</div>
+      <h1>What UL Does Differently</h1>
+      <p>UL is designed to incorporate modern AI and ML optimization as part of the language itself. This does not mean it bundles libraries you can already download with other languages, nor just standard library functionality. It refers to optimizations which must be explicitly applied &mdash; painstakingly, repeatedly, with much effort &mdash; because of the structure of other languages and their library implementations.</p>
+      <p>For example, mixed floating-point precision is offered through libraries in C and Python (PyTorch's <code>.half()</code>, NVIDIA's AMP), but requires function calls inserted at every possible position. This needs code analysis to identify insertion points and then placing those calls repeatedly. UL lets you declare it once as a runtime or compile-time setting and it's applied implicitly.</p>
+      <p>Likewise: sparsity as a construction and quantization as a type are language features that no other language offers natively. Prefetch annotation that's painless is built into the language itself. These exist at both the compiler and language level.</p>
+    </div>
+
+    <div class="section" data-title="What You'll Learn">
+      <div class="step-label">Section 3 of 20</div>
+      <h1>What You'll Learn</h1>
+      <p>Each of the following sections explains one problem space in which research and available solutions allow for optimization. First, the way an instruction is processed through the CPU is illustrated. Next, aspects of this process &mdash; branch prediction, SIMD, registers, cache behavior, hot paths &mdash; are explained as they relate to CPU architecture. Then GPU-specific concepts. Finally, we redirect you to UL's syntax and commands for taking advantage of these technologies.</p>
+      <div class="warn">
+        <strong>Worth emphasizing</strong>
+        Making use of these tools produces the best results when the user fundamentally understands these concepts at the surface level. For work that is highly stressful in terms of operation count, small differences create effects orders of magnitude larger.
+      </div>
+    </div>
+
+    <div class="section" data-title="From Code to Operations: LLVM">
+      <div class="step-label">Section 4 of 20</div>
+      <h1>From Code to Operations: LLVM</h1>
+      <p>LLVM is the first layer at which your code is no longer code anymore &mdash; it's operations. The logic you wrote, the if/else branches, the function calls &mdash; these are reduced to a flat sequence of low-level instructions: load a value from memory, add two numbers, compare, branch. The structure and intent of your program is largely gone.</p>
+      <p>LLVM takes the compiler's output (called Intermediate Representation, or IR) and transforms it through dozens of optimization passes: removing dead code, inlining small functions, unrolling loops, reordering instructions for better CPU utilization. It then emits machine code for the specific CPU you're targeting.</p>
+      <p>This is where most performance is won or lost. The code you write is a suggestion. What LLVM produces after optimization is what actually runs. Understanding this layer helps you write code that optimizes well rather than code that fights the optimizer.</p>
+    </div>
+
+    <div class="section" data-title="Inside the CPU">
+      <div class="step-label">Section 5 of 20</div>
+      <h1>Inside the CPU</h1>
+      <p>A CPU processes instructions using several major components working together:</p>
+      <p><strong>Registers</strong> &mdash; tiny, extremely fast storage slots directly inside the CPU. A modern x86-64 CPU has 16 general-purpose registers (64 bits each), 16 SSE/AVX vector registers (128&ndash;512 bits each), and several special-purpose registers (instruction pointer, flags, stack pointer). Data must be in a register before the CPU can operate on it.</p>
+      <p><strong>ALU (Arithmetic Logic Unit)</strong> &mdash; performs integer arithmetic and logic operations. Modern CPUs have multiple ALUs that can execute several operations per clock cycle.</p>
+      <p><strong>FPU (Floating Point Unit)</strong> &mdash; handles floating-point math. Separate from the ALU, with its own register file on older architectures.</p>
+      <p><strong>Cache hierarchy</strong> &mdash; L1 (fastest, smallest, ~32KB per core), L2 (larger, ~256KB&ndash;1MB), L3 (shared across cores, ~8&ndash;32MB). Data flows from RAM → L3 → L2 → L1 → registers. Each step closer is ~10x faster.</p>
+    </div>
+
+    <div class="section" data-title="How Instructions Flow">
+      <div class="step-label">Section 6 of 20</div>
+      <h1>How Instructions Flow</h1>
+      <p>The CPU processes each instruction through a pipeline of stages. Modern CPUs overlap these stages so multiple instructions are in-flight simultaneously:</p>
+      <p><strong>Fetch</strong> &mdash; read the next instruction from memory (ideally from L1 instruction cache).</p>
+      <p><strong>Decode</strong> &mdash; figure out what the instruction does, which registers it needs, what operation to perform.</p>
+      <p><strong>Execute</strong> &mdash; the ALU/FPU performs the operation.</p>
+      <p><strong>Memory access</strong> &mdash; if the instruction loads from or stores to memory, this happens here.</p>
+      <p><strong>Writeback</strong> &mdash; the result is written to the destination register.</p>
+      <p>A modern CPU pipeline is 15&ndash;20 stages deep. When everything flows smoothly, one instruction completes per clock cycle (or more, with superscalar execution). When something disrupts the pipeline &mdash; a branch misprediction, a cache miss &mdash; the CPU stalls and the pipeline drains. This is where performance cliffs come from.</p>
+    </div>
+
+    <div class="section" data-title="Branch Prediction">
+      <div class="step-label">Section 7 of 20</div>
+      <h1>Branch Prediction</h1>
+      <p>Every <code>if</code> statement in your code becomes a branch instruction. The CPU must decide which path to take <em>before it knows the answer</em>, because the pipeline is 15+ stages ahead of execution. It guesses using a branch predictor &mdash; hardware that tracks the history of each branch and predicts the likely direction.</p>
+      <p>When the prediction is correct (95%+ of the time for well-structured code), execution continues at full speed. When it's wrong, the CPU must flush the pipeline &mdash; discard all the speculative work it did on the wrong path and restart from the correct branch. This costs 10&ndash;20 cycles per misprediction.</p>
+      <p>This is why sorted data processes faster than unsorted data for the same algorithm. The branch predictor can learn the pattern of sorted comparisons. Random data means random branches means constant mispredictions. In AI workloads with tight inner loops, a single poorly-predicted branch in the hot path can cost more than the actual computation.</p>
+    </div>
+
+    <div class="section" data-title="SIMD & Vector Registers">
+      <div class="step-label">Section 8 of 20</div>
+      <h1>SIMD &amp; Vector Registers</h1>
+      <p><strong>SIMD</strong> (Single Instruction, Multiple Data) lets one instruction operate on multiple values simultaneously. Instead of adding two numbers, you add 4, 8, or 16 numbers in a single operation using wide vector registers.</p>
+      <p><strong>SSE</strong> &mdash; 128-bit registers. Process 4 floats or 2 doubles at once.</p>
+      <p><strong>AVX/AVX2</strong> &mdash; 256-bit registers. Process 8 floats or 4 doubles at once.</p>
+      <p><strong>AVX-512</strong> &mdash; 512-bit registers. Process 16 floats or 8 doubles at once.</p>
+      <p>This is the hardware foundation of vectorized computation. Neural network inference is almost entirely matrix multiplication &mdash; thousands of multiply-accumulate operations on arrays of floats. SIMD turns what would be N sequential operations into N/8 or N/16 vector operations. The compiler can auto-vectorize some loops, but getting the memory layout right (contiguous, aligned data) is the developer's responsibility.</p>
+    </div>
+
+    <div class="section" data-title="Cache: Hits, Misses, Layout">
+      <div class="step-label">Section 9 of 20</div>
+      <h1>Cache: Hits, Misses, and Memory Layout</h1>
+      <p>When the CPU needs data, it checks L1 first (~1 cycle), then L2 (~4&ndash;10 cycles), then L3 (~20&ndash;40 cycles), then RAM (~100&ndash;300 cycles). A cache miss at L1 that hits RAM costs 100&ndash;300x more than a cache hit. In tight loops, cache misses dominate execution time.</p>
+      <p>Data is loaded in <strong>cache lines</strong> &mdash; 64 bytes at a time. If you access one element of an array, the next 15 elements come free (assuming 4-byte floats). This is why iterating an array sequentially is fast and iterating a linked list is slow &mdash; arrays have spatial locality, linked lists don't.</p>
+      <p><strong>Memory layout matters.</strong> A struct-of-arrays (SoA) layout where all X values are contiguous, then all Y values, then all Z values, vectorizes perfectly. An array-of-structs (AoS) where each point has X,Y,Z interleaved wastes cache lines loading Y and Z when you only need X. For AI workloads processing millions of tensors, this difference is the difference between saturating memory bandwidth and wasting 60% of it.</p>
+    </div>
+
+    <div class="section" data-title="The GPU Advantage">
+      <div class="step-label">Section 10 of 20</div>
+      <h1>The GPU Advantage</h1>
+      <p>A CPU has 8&ndash;16 powerful cores optimized for sequential, complex work. A GPU has thousands of small cores optimized for doing the same simple operation on many data points simultaneously. Neural network training and inference are almost entirely parallel math &mdash; multiply matrices, add biases, apply activation functions &mdash; the same operation repeated millions of times across different data.</p>
+      <p><strong>Tensor cores</strong> (NVIDIA) are specialized hardware units within GPU cores that perform matrix multiply-accumulate operations in a single clock cycle. A single tensor core can compute a 4x4 matrix multiply in one operation &mdash; something that takes dozens of instructions on a regular GPU core. This is purpose-built for deep learning.</p>
+      <p>The cost: data must be transferred from CPU memory to GPU memory over the PCIe bus. This transfer is slow relative to computation. Optimization often focuses on minimizing data movement &mdash; keeping tensors on the GPU, fusing multiple operations into one kernel to avoid round-trips, and overlapping computation with data transfer.</p>
+    </div>
+
+    <div class="section" data-title="Quantization">
+      <div class="step-label">Section 11 of 20</div>
+      <h1>Quantization</h1>
+      <p>Neural network weights and activations are typically stored as 32-bit floating-point numbers (FP32). Quantization reduces this precision &mdash; to FP16 (half precision), BF16 (brain float), INT8, or even INT4 &mdash; trading accuracy for speed and memory savings.</p>
+      <p><strong>Why it works:</strong> neural networks are inherently tolerant of approximation. The difference between a weight of 0.73291016 and 0.73 is irrelevant to the model's output in most cases. Reducing precision by half means twice as many values fit in cache, twice as many can be processed per SIMD instruction, and memory bandwidth requirements are halved.</p>
+      <p><strong>In practice:</strong> INT8 quantization can provide 2&ndash;4x speedup with less than 1% accuracy loss for most inference workloads. The challenge is calibrating the quantization parameters &mdash; figuring out the right scale and zero-point for each layer so the reduced precision doesn't distort the output. In UL, quantization is a type-level declaration, not a per-tensor function call.</p>
+    </div>
+
+    <div class="section" data-title="Mixed Precision & FMA">
+      <div class="step-label">Section 12 of 20</div>
+      <h1>Mixed Precision &amp; FMA</h1>
+      <p><strong>Mixed precision</strong> runs computation in FP16 (fast, fits more in cache and SIMD registers) but accumulates results in FP32 (prevents precision loss from compounding over thousands of operations). This is the standard for modern training &mdash; NVIDIA's Automatic Mixed Precision (AMP) in PyTorch does this, but requires wrapping your training loop in a context manager and calling <code>.half()</code> on tensors selectively.</p>
+      <p><strong>FMA (Fused Multiply-Add)</strong> computes <code>a * b + c</code> in a single instruction with a single rounding step instead of two separate operations with two rounding steps. This is faster <em>and</em> more accurate. Modern CPUs and GPUs have dedicated FMA units. The compiler can emit FMA instructions when it recognizes the pattern, but only if the code structure allows it &mdash; if the multiply and add are in separate statements with an intermediate variable, the compiler may not fuse them.</p>
+      <p>UL declares mixed precision as a compile-time setting. FMA patterns are recognized and fused automatically by the compiler without requiring specific code structure.</p>
+    </div>
+
+    <div class="section" data-title="Vectorization & Prefetch">
+      <div class="step-label">Section 13 of 20</div>
+      <h1>Vectorization &amp; Prefetch</h1>
+      <p><strong>Auto-vectorization</strong> is when the compiler transforms a scalar loop (processing one element at a time) into a vector loop (processing 4/8/16 elements at a time using SIMD). This requires: contiguous memory access, no data dependencies between iterations, no branches in the loop body, and aligned data. If any condition isn't met, the compiler falls back to scalar code silently.</p>
+      <p><strong>Prefetch</strong> tells the CPU to start loading data from memory before the code actually needs it, hiding the memory latency. In C, this is <code>__builtin_prefetch(addr)</code> &mdash; a compiler intrinsic that must be placed manually at the right distance ahead of the access (too early wastes cache, too late doesn't help). Getting the prefetch distance right requires profiling on the specific hardware.</p>
+      <p>UL provides prefetch as a language-level annotation. The compiler calculates the optimal prefetch distance based on the target architecture's cache latency, and inserts prefetch instructions automatically for annotated data structures. No manual tuning, no hardware-specific intrinsics.</p>
+    </div>
+
+    <div class="section" data-title="Sparsity & Kernel Fusion">
+      <div class="step-label">Section 14 of 20</div>
+      <h1>Sparsity &amp; Kernel Fusion</h1>
+      <p><strong>Sparsity</strong> exploits the fact that many neural network tensors are mostly zeros (sometimes 80&ndash;95% zeros after pruning). Instead of multiplying by zero thousands of times, skip those operations entirely. NVIDIA's Ampere and Hopper GPUs have hardware support for 2:4 structured sparsity &mdash; for every 4 elements, at least 2 must be zero, and the hardware skips them automatically.</p>
+      <p>In Python/C, exploiting sparsity requires converting dense tensors to sparse formats (CSR, COO), using sparse-specific library functions, and managing the conversion overhead. In UL, sparsity is a type-level construct &mdash; declare a tensor as sparse and the compiler handles format selection and operation dispatch.</p>
+      <p><strong>Kernel fusion</strong> combines multiple GPU operations into a single kernel launch. Without fusion, each operation (matmul, bias add, ReLU activation) launches a separate GPU kernel with its own memory read/write cycle. Fused kernels read input once, perform all operations, and write output once &mdash; eliminating intermediate memory traffic. Libraries like PyTorch's <code>torch.compile</code> do this automatically now, but the fused kernel quality depends heavily on the compiler's ability to analyze the operation graph.</p>
+    </div>
+
+    <div class="section" data-title="Memory: NUMA & Allocation">
+      <div class="step-label">Section 15 of 20</div>
+      <h1>Memory: NUMA, Arenas, and Huge Pages</h1>
+      <p><strong>NUMA (Non-Uniform Memory Access)</strong> is a server memory architecture where each CPU socket has its own local memory. Accessing local memory is fast; accessing another socket's memory crosses an interconnect and is 2&ndash;3x slower. Enterprise servers with 2+ sockets are NUMA by default. If your application's threads are on socket 0 but the data is in socket 1's memory, every access pays the cross-socket penalty. NUMA-aware allocation pins data to the socket that will use it.</p>
+      <p><strong>Huge pages</strong> reduce TLB (Translation Lookaside Buffer) misses. Normal memory pages are 4KB; the CPU's TLB can only cache a limited number of page mappings. For workloads with large memory footprints (multi-GB models), 4KB pages mean constant TLB misses. Huge pages (2MB or 1GB) cover more memory per TLB entry, drastically reducing misses. Linux supports this via <code>madvise</code> or transparent huge pages; it's rarely enabled by default.</p>
+      <p><strong>Arena allocation</strong> and specialized allocators like <strong>mimalloc</strong> (Microsoft's high-performance malloc replacement) reduce allocation overhead for workloads that allocate and free many small objects rapidly &mdash; typical in inference pipelines processing batches of requests.</p>
+    </div>
+
+    <div class="section" data-title="Compiler Optimizations">
+      <div class="step-label">Section 16 of 20</div>
+      <h1>Compiler Optimizations</h1>
+      <p><strong>PGO (Profile-Guided Optimization)</strong> &mdash; compile the program, run it on representative input, feed the profile data back to the compiler. The compiler uses actual execution frequencies to decide what to inline, how to lay out code in memory, and which branches are hot. Typically 10&ndash;20% speedup for real workloads. Two-phase build process.</p>
+      <p><strong>Peephole optimization</strong> &mdash; the compiler scans small windows (2&ndash;5 instructions) and replaces patterns with faster equivalents. Example: <code>x * 2</code> becomes <code>x << 1</code>, or <code>x * 0</code> is eliminated entirely.</p>
+      <p><strong>Loop nest optimization</strong> &mdash; transforms nested loops for better cache behavior. Loop tiling (blocking) processes a tile of data that fits in L1 cache before moving to the next tile, instead of streaming through the entire dataset. Loop interchange swaps the order of nested loops so the inner loop accesses contiguous memory.</p>
+      <p><strong>Operator fusion</strong> &mdash; at the compiler level (not GPU kernel level), combines adjacent operations that share data. A multiply followed by an add on the same result becomes a single FMA instruction. A load followed by an immediate use can be combined into a load-and-operate instruction.</p>
+    </div>
+
+    <div class="section" data-title="IR Patterns & Scheduling">
+      <div class="step-label">Section 17 of 20</div>
+      <h1>IR Patterns &amp; Scheduling</h1>
+      <p><strong>Multi-level IR</strong> &mdash; modern compilers use multiple intermediate representations at different abstraction levels. MLIR (Multi-Level IR, from Google/LLVM) represents operations at the tensor level, the loop level, and the machine level in a single framework. This lets optimizations happen at the right level of abstraction &mdash; kernel fusion at the tensor level, vectorization at the loop level, register allocation at the machine level.</p>
+      <p><strong>Equality saturation</strong> &mdash; instead of applying optimization rules one at a time (which can miss the global optimum), equality saturation explores all possible rewrites simultaneously and selects the best. Tools like <code>egg</code> (e-graphs good) use this for compiler optimization. It finds optimizations that sequential rewriting misses.</p>
+      <p><strong>Halide's schedule concept</strong> &mdash; Halide separates <em>what</em> to compute from <em>how</em> to compute it. You write the algorithm once, then write a separate schedule that controls tiling, vectorization, parallelism, and memory layout. This lets you explore hundreds of optimization strategies without changing the algorithm. TVM and other ML compilers adopt this idea for neural network operators.</p>
+      <p><strong>Static operation scheduling</strong> &mdash; the compiler reorders instructions to maximize instruction-level parallelism, minimize pipeline stalls, and hide memory latency. On in-order CPUs (common in embedded/mobile), this is critical &mdash; the compiler must order instructions so that data is ready when the next instruction needs it.</p>
+    </div>
+
+    <div class="section" data-title="Library Landscape">
+      <div class="step-label">Section 18 of 20</div>
+      <h1>Library Landscape</h1>
+      <p><strong>PyTorch internals</strong> &mdash; at its core, PyTorch dispatches tensor operations to optimized C++/CUDA kernels. <code>torch.compile</code> (TorchDynamo + TorchInductor) captures the Python-level operation graph, optimizes it, and generates fused CUDA kernels. This is Python compensating for not having these optimizations in the language itself.</p>
+      <p><strong>CUDA kernels</strong> &mdash; custom GPU programs written in CUDA C/C++ for operations where library kernels aren't fast enough. Writing a custom CUDA kernel requires understanding GPU thread hierarchy (grids, blocks, warps), shared memory management, and memory coalescing. Libraries like Triton (from OpenAI) simplify this by letting you write GPU kernels in Python-like syntax.</p>
+      <p><strong>mimalloc</strong> &mdash; Microsoft's high-performance allocator. Drop-in replacement for malloc. Uses per-thread free lists, small page sizes, and eager decommitting. Typically 5&ndash;15% faster than glibc malloc for allocation-heavy workloads. No code changes needed &mdash; just <code>LD_PRELOAD</code> on Linux.</p>
+      <p><strong>Go's split stacks / segmented stacks</strong> &mdash; goroutines start with tiny stacks (2&ndash;8KB) that grow on demand. This allows millions of concurrent goroutines without pre-allocating large stacks. Relevant to UL's concurrency model &mdash; lightweight execution contexts for async workloads.</p>
+    </div>
+
+    <div class="section" data-title="UL's Built-in Tools">
+      <div class="step-label">Section 19 of 20</div>
+      <h1>UL's Built-in Tools</h1>
+      <p>UL incorporates these optimizations as language and compiler features rather than library-level workarounds:</p>
+      <p><strong>Mixed precision</strong> &mdash; declare via DR setting. The compiler handles FP16 computation with FP32 accumulation automatically. No <code>.half()</code> calls.</p>
+      <p><strong>Quantization</strong> &mdash; a type-level declaration. <code>int8</code> and other reduced-precision types are first-class. The compiler selects quantization parameters.</p>
+      <p><strong>Sparsity</strong> &mdash; a type-level construct. Declare a tensor as sparse, the compiler selects the format and dispatches sparse-aware operations.</p>
+      <p><strong>Prefetch</strong> &mdash; language-level annotation. The compiler calculates optimal prefetch distance per target architecture.</p>
+      <p><strong>Memory layout</strong> &mdash; controllable via DR settings. SoA vs AoS, alignment, padding &mdash; declared, not manually managed.</p>
+      <p><strong>FMA</strong> &mdash; automatic pattern recognition and fusion by the compiler.</p>
+      <p><strong>Vectorization</strong> &mdash; compiler auto-vectorizes with target-aware SIMD width selection. DR settings control whether to prefer AVX2 or AVX-512.</p>
+      <p><strong>Kernel fusion, PGO, loop nest optimization</strong> &mdash; available through compiler flags and normalization levels.</p>
+    </div>
+
+    <div class="section" data-title="Where to Go Next">
+      <div class="step-label">Section 20 of 20</div>
+      <h1>Where to Go Next</h1>
+      <p>You've covered the full stack: from how code becomes operations (LLVM), through CPU pipeline stages, branch prediction, SIMD, cache behavior, GPU tensor cores, quantization, mixed precision, sparsity, memory topology, compiler optimizations, IR patterns, and the library ecosystem.</p>
+      <p>From here: the <a href="dynamic-runtime.html" style="color:#1a3a7a;">Dynamic Runtime reference</a> documents the DR settings that control these optimizations per file. The <a href="language-main.html" style="color:#1a3a7a;">Language Reference</a> covers the syntax for type declarations, annotations, and memory builtins. And the <a href="features.html" style="color:#1a3a7a;">Features page</a> lists everything currently implemented in the toolchain.</p>
+    </div>
+
+  </div>
+
+  <div class="nav-bar">
+    <span class="counter" id="counter">1 / 20</span>
+    <button class="nav-btn" id="btn-prev" onclick="go(-1)">&larr; Previous</button>
+    <button class="nav-btn" id="btn-next" onclick="go(1)">Next &rarr;</button>
+  </div>
+</main>
+
+<script>
+(function() {
+"use strict";
+const sections = document.querySelectorAll(".section");
+const navLinks = document.getElementById("nav-links");
+const counter = document.getElementById("counter");
+const btnPrev = document.getElementById("btn-prev");
+const btnNext = document.getElementById("btn-next");
+const total = sections.length;
+let current = 0;
+
+sections.forEach((sec, i) => {
+  const a = document.createElement("a");
+  a.className = "nav-link";
+  a.dataset.idx = i;
+  a.innerHTML = '<span class="nav-step-num">' + (i + 1) + '.</span> ' + sec.dataset.title;
+  a.onclick = function() { goTo(i); };
+  navLinks.appendChild(a);
+});
+
+function goTo(idx) {
+  if (idx < 0 || idx >= total) return;
+  sections[current].classList.remove("active");
+  current = idx;
+  sections[current].classList.add("active");
+  updateUI();
+}
+function go(delta) { goTo(current + delta); }
+window.go = go;
+
+function updateUI() {
+  counter.textContent = (current + 1) + " / " + total;
+  btnPrev.disabled = current === 0;
+  btnNext.disabled = current === total - 1;
+  navLinks.querySelectorAll(".nav-link").forEach(a => {
+    a.classList.toggle("active", parseInt(a.dataset.idx) === current);
+  });
+}
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); go(1); }
+  if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); go(-1); }
+});
+
+goTo(0);
+})();
+</script>
+
+</body>
+</html>
