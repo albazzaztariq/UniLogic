@@ -88,7 +88,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
     <div class="section" data-title="From Code to Operations: LLVM">
       <div class="step-label">Section 4 of 20</div>
       <h1>From Code to Operations: LLVM</h1>
-      <p>LLVM is where your code stops being code and becomes operations. Logic is gone &mdash; just loads, adds, compares, branches. Click "Compile" to see the transformation.</p>
+      <p>LLVM is where your code stops being code and becomes operations. Logic is gone &mdash; just loads, adds, compares, branches. Pick an example below, then hit Compile to watch the transformation.</p>
       <div id="llvm-repl" style="margin:10px 0;">
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; font-family:'Share Tech Mono',monospace; font-size:11px;">
           <div>
@@ -106,6 +106,7 @@ main { margin-left: 230px; height: 100vh; width: calc(100% - 230px); display: fl
         </div>
         <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
           <button onclick="llvmCompile()" style="font-size:11px;padding:5px 14px;border:1px solid #7ab3e0;border-radius:4px;background:#1e1e2e;color:#7ab3e0;cursor:pointer;font-family:'Share Tech Mono',monospace;">Compile</button>
+          <span style="font-size:10px;color:#585b70;font-family:'Share Tech Mono',monospace;">Examples:</span>
           <button onclick="llvmLoad(0)" style="font-size:10px;padding:4px 10px;border:1px solid #313244;border-radius:3px;background:transparent;color:#a6adc8;cursor:pointer;font-family:'Share Tech Mono',monospace;">Simple add</button>
           <button onclick="llvmLoad(1)" style="font-size:10px;padding:4px 10px;border:1px solid #313244;border-radius:3px;background:transparent;color:#a6adc8;cursor:pointer;font-family:'Share Tech Mono',monospace;">Loop</button>
           <button onclick="llvmLoad(2)" style="font-size:10px;padding:4px 10px;border:1px solid #313244;border-radius:3px;background:transparent;color:#a6adc8;cursor:pointer;font-family:'Share Tech Mono',monospace;">Conditional</button>
