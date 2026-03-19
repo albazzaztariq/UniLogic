@@ -1,0 +1,71 @@
+// test_stdlib_array.ul — test array standard library
+
+import "Stdlib/array.ul" function array_get(array int arr, int n, int idx) returns int
+import "Stdlib/array.ul" function array_set(array int arr, int n, int idx, int val) returns int
+import "Stdlib/array.ul" function array_contains(array int arr, int n, int val) returns bool
+import "Stdlib/array.ul" function array_index_of(array int arr, int n, int val) returns int
+import "Stdlib/array.ul" function array_sum(array int arr, int n) returns int
+import "Stdlib/array.ul" function array_min(array int arr, int n) returns int
+import "Stdlib/array.ul" function array_max(array int arr, int n) returns int
+import "Stdlib/array.ul" function array_reverse(array int arr, int n) returns int
+import "Stdlib/array.ul" function array_sort(array int arr, int n) returns int
+import "Stdlib/array.ul" function array_count(array int arr, int n, int val) returns int
+
+function main() returns int
+  array int nums = [10, 30, 20, 50, 40]
+
+  // array_get with valid index
+  int val = array_get(nums, 5, 2)
+  print val
+
+  // array_set
+  array_set(nums, 5, 2, 99)
+  print nums[2]
+
+  // array_contains
+  bool has50 = array_contains(nums, 5, 50)
+  print has50
+
+  bool has77 = array_contains(nums, 5, 77)
+  print has77
+
+  // array_index_of
+  int idx = array_index_of(nums, 5, 50)
+  print idx
+
+  // array_sum
+  array int data = [1, 2, 3, 4]
+  int total = array_sum(data, 4)
+  print total
+
+  // array_min / array_max
+  int lo = array_min(data, 4)
+  print lo
+
+  int hi = array_max(data, 4)
+  print hi
+
+  // array_count
+  array int reps = [1, 2, 3, 2, 2, 1]
+  int twos = array_count(reps, 6, 2)
+  print twos
+
+  // array_reverse
+  array int rev = [1, 2, 3, 4]
+  array_reverse(rev, 4)
+  print rev[0]
+  print rev[1]
+  print rev[2]
+  print rev[3]
+
+  // array_sort
+  array int unsorted = [5, 3, 1, 4, 2]
+  array_sort(unsorted, 5)
+  print unsorted[0]
+  print unsorted[1]
+  print unsorted[2]
+  print unsorted[3]
+  print unsorted[4]
+
+  return 0
+end function

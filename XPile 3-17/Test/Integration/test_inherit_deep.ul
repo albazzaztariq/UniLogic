@@ -1,0 +1,65 @@
+// test_inherit_deep.ul — 3-level inheritance: Animal -> Dog -> Puppy
+// tests field access at all three levels and function dispatch
+
+type Animal
+    string name
+    int age
+end type
+
+type Dog inherits Animal
+    string breed
+end type
+
+type Puppy inherits Dog
+    int weight
+end type
+
+function show_animal(Animal a) returns none
+    print a.name
+    print a.age
+end function
+
+function show_dog(Dog d) returns none
+    print d.name
+    print d.age
+    print d.breed
+end function
+
+function show_puppy(Puppy p) returns none
+    print p.name
+    print p.age
+    print p.breed
+    print p.weight
+end function
+
+function main() returns int
+    // base type — Animal
+    Animal a
+    a.name = "Tiger"
+    a.age = 10
+    show_animal(a)
+
+    // mid level — Dog
+    Dog d
+    d.name = "Rex"
+    d.age = 5
+    d.breed = "Husky"
+    show_dog(d)
+
+    // leaf level — Puppy, all 4 fields
+    Puppy p
+    p.name = "Tiny"
+    p.age = 1
+    p.breed = "Poodle"
+    p.weight = 3
+    show_puppy(p)
+
+    // modify inherited fields through Puppy
+    p.name = "Spot"
+    p.age = 2
+    p.breed = "Beagle"
+    p.weight = 5
+    show_puppy(p)
+
+    return 0
+end function

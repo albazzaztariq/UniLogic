@@ -1,0 +1,18 @@
+// test_exit_int.ul — main() returns int, returns 1 on error condition
+
+function validate(int x) returns int
+  if x < 0
+    return -1
+  end if
+  return x
+end function
+
+function main() returns int
+  int val = validate(10)
+  if val < 0
+    print 0
+    return 1
+  end if
+  print val
+  return 0
+end function

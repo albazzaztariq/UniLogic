@@ -1,0 +1,1254 @@
+function _deprecate_positional_args___inner_deprecate_positional_args__inner_f(...)
+  extra_args = args.len() - all_args.len()
+  if extra_args <= 0
+    return f(args)
+  end if
+  array int _lc0
+  for each [name, arg] in zip(kwonly_args[/* unknown expr: Slice */], args[/* unknown expr: Slice */])
+    _lc0.push(cast(name, string) + "=" + cast(arg, string))
+  end for
+  args_msg = _lc0
+  args_msg = ", ".join(args_msg)
+  warnings.warn("Pass " + cast(args_msg, string) + " as keyword args. From version " + cast(version, string) + " passing these as positional arguments will result in an error", FutureWarning)
+  kwargs.update(zip(sig.parameters, args))
+  return f()
+end function
+
+function _deprecate_positional_args___inner_deprecate_positional_args(int f)
+  sig = signature(f)
+  kwonly_args = []
+  all_args = []
+  for each [name, param] in sig.parameters.items()
+    if param.kind == Parameter.POSITIONAL_OR_KEYWORD
+      all_args.append(name)
+    else
+      if param.kind == Parameter.KEYWORD_ONLY
+        kwonly_args.append(name)
+      end if
+    end if
+  end for
+  // TRANSPILER WARNING line 72: decorator @ — manual conversion required
+  // nested function 'inner_f' hoisted to file scope as '_deprecate_positional_args___inner_deprecate_positional_args__inner_f'
+  return inner_f
+end function
+
+function check_array__is_sparse(int dtype)
+  return isinstance(dtype, SparseDtype)
+end function
+
+function check_array__is_sparse(int dtype)
+  return isinstance(dtype, SparseDtype)
+end function
+
+function _estimator_has__check()
+  for each delegate in delegates
+    if hasattr(self, delegate)
+      delegator = getattr(self, delegate)
+      if isinstance(delegator, Sequence)
+        return getattr(delegator[0], attr)
+      else
+        return getattr(delegator, attr)
+      end if
+    end if
+  end for
+  throw ValueError("None of the delegates " + cast(delegates, string) + " are present in the class.")
+end function
+
+function check_scalar__type_name(int t)
+  // Convert type into humman readable string.
+  module = t.__module__
+  qualname = t.__qualname__
+  if module == "builtins"
+    return qualname
+  else
+    if t == numbers.Real
+      return "float"
+    else
+      if t == numbers.Integral
+        return "int"
+      end if
+    end if
+  end if
+  return cast(module, string) + "." + cast(qualname, string)
+end function
+
+function _check_feature_names__add_names(int names)
+  output = ""
+  max_n_names = 5
+  for each [i, name] in enumerate(names)
+    if i >= max_n_names
+      output += "- ...\n"
+      escape
+    end if
+    output += "- " + cast(name, string) + "\n"
+  end for
+  return output
+end function
+
+// Functions to validate input and parameters within scikit-learn estimators.
+// TRANSPILER WARNING line 6: import numbers — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 7: import operator — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 8: import warnings — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 9: from collections.abc import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 10: from contextlib import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 11: from functools import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 12: from inspect import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 14: import joblib — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 15: import numpy — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 16: import scipy.sparse — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 18: from sklearn import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 19: from sklearn.exceptions import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 24: from sklearn.utils._array_api import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 32: from sklearn.utils._dataframe import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 33: from sklearn.utils._isfinite import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 34: from sklearn.utils._tags import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 35: from sklearn.utils.fixes import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER: module-level variable FLOAT_DTYPES — verify type is correct
+// Original: FLOAT_DTYPES = ...
+function _deprecate_positional_args(int func)
+  // Decorator for methods that issues warnings for positional arguments.
+  // nested function '_inner_deprecate_positional_args' hoisted to file scope as '_deprecate_positional_args___inner_deprecate_positional_args'
+  if func != empty
+    return _deprecate_positional_args___inner_deprecate_positional_args(func)
+  end if
+  return _inner_deprecate_positional_args
+end function
+
+function _assert_all_finite(int X, int allow_nan, int msg_dtype, int estimator_name, int input_name)
+  // Like assert_all_finite, but only for ndarray.
+  [xp, is_array_api] = get_namespace(X)
+  if _get_config()["assume_finite"]
+    return
+  end if
+  X = xp.asarray(X)
+  if not is_array_api and X.dtype == np.dtype("object") and not allow_nan
+    if _object_dtype_isnan(X).any()
+      throw ValueError("Input contains NaN")
+    end if
+  end if
+  if not xp.isdtype(X.dtype, ["real floating", "complex floating"])
+    return
+  end if
+  with np.errstate()
+    first_pass_isfinite = xp.isfinite(xp.sum(X))
+  end with
+  if first_pass_isfinite
+    return
+  end if
+  _assert_all_finite_element_wise(X)
+end function
+
+function _assert_all_finite_element_wise(int X)
+  // TRANSPILER: set translated to array — no deduplication
+  use_cython = xp == np and X.data.contiguous and [np.float32, np.float64].contains(X.dtype.type)
+  if use_cython
+    out = cy_isfinite(X.reshape(-1))
+    has_nan_error = /* false if allow_nan else out == FiniteStatus.has_nan */
+    has_inf = out == FiniteStatus.has_infinite
+  else
+    has_inf = xp.any(xp.isinf(X))
+    has_nan_error = /* false if allow_nan else xp.any(xp.isnan(X)) */
+  end if
+  if has_inf or has_nan_error
+    if has_nan_error
+      type_err = "NaN"
+    else
+      msg_dtype = /* msg_dtype if msg_dtype != empty else X.dtype */
+      type_err = "infinity or a value too large for " + cast(msg_dtype, string)
+    end if
+    padded_input_name = /* input_name + " " if input_name else "" */
+    msg_err = "Input " + cast(padded_input_name, string) + "contains " + cast(type_err, string) + "."
+    if estimator_name and input_name == "X" and has_nan_error
+      msg_err += "\n" + cast(estimator_name, string) + " does not accept missing values encoded as NaN natively. For supervised learning, you might want to consider sklearn.ensemble.HistGradientBoostingClassifier and Regressor which accept missing values encoded as NaNs natively. Alternatively, it is possible to preprocess the data, for instance by using an imputer transformer in a pipeline or drop samples with missing values. See https://scikit-learn.org/stable/modules/impute.html You can find a list of all estimators that handle NaN values at the following page: https://scikit-learn.org/stable/modules/impute.html#estimators-that-handle-nan-values"
+    end if
+    throw ValueError(msg_err)
+  end if
+end function
+
+function assert_all_finite(int X)
+  // Throw a ValueError if X contains NaN or infinity.
+  _assert_all_finite(/* X.data if sp.issparse(X) else X */)
+end function
+
+function as_float_array(int X)
+  // Convert an array-like to an array of floats.
+  if isinstance(X, np.matrix) or not isinstance(X, np.ndarray) and not sp.issparse(X)
+    return check_array(X)
+  else
+    if sp.issparse(X) and [np.float32, np.float64].contains(X.dtype)
+      return /* X.copy() if copy else X */
+    else
+      if [np.float32, np.float64].contains(X.dtype)
+        return /* X.copy(/* "F" if X.flags["F_CONTIGUOUS"] else "C" */) if copy else X */
+      else
+        if "uib".contains(X.dtype.kind) and X.dtype.itemsize <= 4
+          return_dtype = np.float32
+        else
+          return_dtype = np.float64
+        end if
+        return X.astype(return_dtype)
+      end if
+    end if
+  end if
+end function
+
+function _is_arraylike(int x)
+  // Returns whether the input is array-like.
+  if sp.issparse(x)
+    return false
+  end if
+  return hasattr(x, "__len__") or hasattr(x, "shape") or hasattr(x, "__array__")
+end function
+
+function _is_arraylike_not_scalar(int array)
+  // Return True if array is array-like and not a scalar
+  return _is_arraylike(array) and not np.isscalar(array)
+end function
+
+function _use_interchange_protocol(int X)
+  // Use interchange protocol for non-pandas dataframes that follow the protocol.
+  return not is_pandas_df(X) and hasattr(X, "__dataframe__")
+end function
+
+function _num_features(int X)
+  // Return the number of features in an array-like X.
+  type_ = type(X)
+  if type_.__module__ == "builtins"
+    type_name = type_.__qualname__
+  else
+    type_name = cast(type_.__module__, string) + "." + cast(type_.__qualname__, string)
+  end if
+  message = "Unable to find the number of features from X of type " + cast(type_name, string)
+  if not hasattr(X, "__len__") and not hasattr(X, "shape")
+    if not hasattr(X, "__array__")
+      throw TypeError(message)
+    end if
+    X = np.asarray(X)
+  end if
+  if hasattr(X, "shape")
+    if not hasattr(X.shape, "__len__") or X.shape.len() <= 1
+      message += " with shape " + cast(X.shape, string)
+      throw TypeError(message)
+    end if
+    return X.shape[1]
+  end if
+  first_sample = X[0]
+  if isinstance(first_sample, [str, bytes, dict])
+    message += " where the samples are of type " + cast(type(first_sample).__qualname__, string)
+    throw TypeError(message)
+  end if
+  try
+    return first_sample.len()
+  catch Exception as err
+    throw TypeError(message)
+  end try
+end function
+
+function _num_samples(int x)
+  // Return number of samples in array-like x.
+  message = "Expected sequence or array-like, got %s" % type(x)
+  if hasattr(x, "fit") and callable(x.fit)
+    throw TypeError(message)
+  end if
+  if _use_interchange_protocol(x)
+    return x.__dataframe__().num_rows()
+  end if
+  if not hasattr(x, "__len__") and not hasattr(x, "shape")
+    if hasattr(x, "__array__")
+      [xp, _] = get_namespace(x)
+      x = xp.asarray(x)
+    else
+      throw TypeError(message)
+    end if
+  end if
+  if hasattr(x, "shape") and x.shape != empty
+    if x.shape.len() == 0
+      throw TypeError("Input should have at least 1 dimension i.e. satisfy `len(x.shape) > 0`, got scalar `" + cast(x, string) + "` instead.")
+    end if
+    if isinstance(x.shape[0], numbers.Integral)
+      return x.shape[0]
+    end if
+  end if
+  try
+    return x.len()
+  catch TypeError as type_error
+    throw TypeError(message)
+  end try
+end function
+
+function check_memory(int memory)
+  // Check that ``memory`` is joblib.Memory-like.
+  if memory == empty or isinstance(memory, str)
+    memory = joblib.Memory()
+  else
+    if not hasattr(memory, "cache")
+      throw ValueError("'memory' should be None, a string or have the same interface as joblib.Memory. Got memory='" + cast(memory, string) + "' instead.")
+    end if
+  end if
+  return memory
+end function
+
+function check_consistent_length(...)
+  // Check that all arrays have consistent first dimensions.
+  array int _lc1
+  for each X in arrays
+    if X != empty
+      _lc1.push(_num_samples(X))
+    end if
+  end for
+  lengths = _lc1
+  if set(lengths).len() > 1
+    array int _lc2
+    for each l in lengths
+      _lc2.push(cast(l, int))
+    end for
+    throw ValueError("Found input variables with inconsistent numbers of samples: %r" % _lc2)
+  end if
+end function
+
+function _make_indexable(int iterable)
+  // Ensure iterable supports indexing or convert to an indexable variant.
+  if sp.issparse(iterable)
+    return iterable.tocsr()
+  else
+    if hasattr(iterable, "__getitem__") or hasattr(iterable, "iloc")
+      return iterable
+    else
+      if iterable == empty
+        return iterable
+      end if
+    end if
+  end if
+  return np.array(iterable)
+end function
+
+function indexable(...)
+  // Make arrays indexable for cross-validation.
+  array int _lc3
+  for each X in iterables
+    _lc3.push(_make_indexable(X))
+  end for
+  result = _lc3
+  check_consistent_length(result)
+  return result
+end function
+
+function _ensure_sparse_format(int sparse_container, int accept_sparse, int dtype, int copy, int ensure_all_finite, int accept_large_sparse, int estimator_name, int input_name)
+  // Convert a sparse container to a given format.
+  if dtype == empty
+    dtype = sparse_container.dtype
+  end if
+  changed_format = false
+  sparse_container_type_name = type(sparse_container).__name__
+  if isinstance(accept_sparse, str)
+    accept_sparse = [accept_sparse]
+  end if
+  _check_large_sparse(sparse_container, accept_large_sparse)
+  if accept_sparse == false
+    padded_input = /* " for " + input_name if input_name else "" */
+    throw TypeError("Sparse data was passed" + cast(padded_input, string) + ", but dense data is required. Use '.toarray()' to convert to a dense numpy array.")
+  else
+    if isinstance(accept_sparse, [list, tuple])
+      if accept_sparse.len() == 0
+        throw ValueError("When providing 'accept_sparse' as a tuple or list, it must contain at least one string value.")
+      end if
+      if not accept_sparse.contains(sparse_container.format)
+        sparse_container = sparse_container.asformat(accept_sparse[0])
+        changed_format = true
+      end if
+    else
+      if accept_sparse != true
+        throw ValueError("Parameter 'accept_sparse' should be a string, boolean or list of strings. You provided 'accept_sparse=" + cast(accept_sparse, string) + "'.")
+      end if
+    end if
+  end if
+  if dtype != sparse_container.dtype
+    sparse_container = sparse_container.astype(dtype)
+  else
+    if copy and not changed_format
+      sparse_container = sparse_container.copy()
+    end if
+  end if
+  if ensure_all_finite
+    if not hasattr(sparse_container, "data")
+      warnings.warn("Can't check " + cast(sparse_container.format, string) + " sparse matrix for nan or inf.")
+    else
+      _assert_all_finite(sparse_container.data)
+    end if
+  end if
+  if changed_format
+    requested_sparse_format = accept_sparse[0]
+    _preserve_dia_indices_dtype(sparse_container, sparse_container_type_name, requested_sparse_format)
+  end if
+  return sparse_container
+end function
+
+function _ensure_no_complex_data(int array)
+  if hasattr(array, "dtype") and array.dtype != empty and hasattr(array.dtype, "kind") and array.dtype.kind == "c"
+    throw ValueError("Complex data not supported\n{}\n".format(array))
+  end if
+end function
+
+function _check_estimator_name(int estimator)
+  if estimator != empty
+    if isinstance(estimator, str)
+      return estimator
+    else
+      return estimator.__class__.__name__
+    end if
+  end if
+  return empty
+end function
+
+function _pandas_dtype_needs_early_conversion(int pd_dtype)
+  // Return True if pandas extension pd_dtype need to be converted early.
+  // TRANSPILER WARNING line 688: from pandas import ... — convert to UL import syntax — manual conversion required
+  // TRANSPILER WARNING line 689: from pandas.api.types import ... — convert to UL import syntax — manual conversion required
+  if is_bool_dtype(pd_dtype)
+    return true
+  end if
+  if isinstance(pd_dtype, SparseDtype)
+    return false
+  end if
+  try
+    // TRANSPILER WARNING line 705: from pandas.api.types import ... — convert to UL import syntax — manual conversion required
+  catch ImportError
+    return false
+  end try
+  if isinstance(pd_dtype, SparseDtype) or not is_extension_array_dtype(pd_dtype)
+    return false
+  else
+    if is_float_dtype(pd_dtype)
+      return true
+    else
+      if is_integer_dtype(pd_dtype)
+        return true
+      end if
+    end if
+  end if
+  return false
+end function
+
+function _is_extension_array_dtype(int array)
+  return hasattr(array, "dtype") and hasattr(array.dtype, "na_value")
+end function
+
+function check_array(int array, int accept_sparse)
+  // Input validation on an array, list, sparse matrix or similar.
+  if isinstance(array, np.matrix)
+    throw TypeError("np.matrix is not supported. Please convert to a numpy array with np.asarray. For more information see: https://numpy.org/doc/stable/reference/generated/numpy.matrix.html")
+  end if
+  [xp, is_array_api_compliant] = get_namespace(array)
+  array_orig = array
+  dtype_numeric = isinstance(dtype, str) and dtype == "numeric"
+  dtype_orig = getattr(array, "dtype", empty)
+  if not is_array_api_compliant and not hasattr(dtype_orig, "kind")
+    dtype_orig = empty
+  end if
+  dtypes_orig = empty
+  pandas_requires_conversion = false
+  type_if_series = empty
+  if hasattr(array, "dtypes") and hasattr(array.dtypes, "__array__")
+    with suppress(ImportError)
+      // TRANSPILER WARNING line 886: from pandas import ... — convert to UL import syntax — manual conversion required
+      // nested function 'is_sparse' hoisted to file scope as 'check_array__is_sparse'
+      if not hasattr(array, "sparse") and array.dtypes.apply(is_sparse).any()
+        warnings.warn("pandas.DataFrame with sparse columns found.It will be converted to a dense numpy array.")
+      end if
+    end with
+    dtypes_orig = list(array.dtypes)
+    pandas_requires_conversion = any(/* unknown expr: GeneratorExp */)
+    if all(/* unknown expr: GeneratorExp */)
+      dtype_orig = np.result_type(dtypes_orig)
+    else
+      if pandas_requires_conversion and any(/* unknown expr: GeneratorExp */)
+        dtype_orig = object
+      end if
+    end if
+  else
+    if _is_extension_array_dtype(array) or hasattr(array, "iloc") and hasattr(array, "dtype")
+      type_if_series = type(array)
+      pandas_requires_conversion = _pandas_dtype_needs_early_conversion(array.dtype)
+      if isinstance(array.dtype, np.dtype)
+        dtype_orig = array.dtype
+      else
+        dtype_orig = empty
+      end if
+    end if
+  end if
+  if dtype_numeric
+    if dtype_orig != empty and hasattr(dtype_orig, "kind") and dtype_orig.kind == "O"
+      dtype = xp.float64
+    else
+      dtype = empty
+    end if
+  end if
+  if isinstance(dtype, [list, tuple])
+    if dtype_orig != empty and dtype.contains(dtype_orig)
+      dtype = empty
+    else
+      dtype = dtype[0]
+    end if
+  end if
+  if pandas_requires_conversion
+    new_dtype = /* dtype_orig if dtype == empty else dtype */
+    array = array.astype(new_dtype)
+    dtype = empty
+  end if
+  if not [true, false, "allow-nan"].contains(ensure_all_finite)
+    throw ValueError("ensure_all_finite should be a bool or 'allow-nan'. Got " + cast(ensure_all_finite, string) + " instead.")
+  end if
+  if dtype != empty and _is_numpy_namespace(xp)
+    dtype = np.dtype(dtype)
+  end if
+  estimator_name = _check_estimator_name(estimator)
+  context = /* " by %s" % estimator_name if estimator != empty else "" */
+  if hasattr(array, "sparse") and array.ndim > 1
+    with suppress(ImportError)
+      // TRANSPILER WARNING line 964: from pandas import ... — convert to UL import syntax — manual conversion required
+      // nested function 'is_sparse' hoisted to file scope as 'check_array__is_sparse'
+      if array.dtypes.apply(is_sparse).all()
+        array = array.sparse.to_coo()
+        if array.dtype == np.dtype("object")
+          array int _lc4
+          for each dt in array_orig.dtypes
+            _lc4.push(dt.subtype.name)
+          end for
+          unique_dtypes = set(_lc4)
+          if unique_dtypes.len() > 1
+            throw ValueError("Pandas DataFrame with mixed sparse extension arrays generated a sparse matrix with object dtype which can not be converted to a scipy sparse matrix.Sparse extension arrays should all have the same numeric type.")
+          end if
+        end if
+      end if
+    end with
+  end if
+  if sp.issparse(array)
+    _ensure_no_complex_data(array)
+    array = _ensure_sparse_format(array)
+    if ensure_2d and array.ndim < 2
+      throw ValueError("Expected 2D input, got input with shape " + cast(array.shape, string) + ".\nReshape your data either using array.reshape(-1, 1) if your data has a single feature or array.reshape(1, -1) if it contains a single sample.")
+    end if
+  else
+    with warnings.catch_warnings()
+      try
+        warnings.simplefilter("error", ComplexWarning)
+        if dtype != empty and xp.isdtype(dtype, "integral")
+          array = _asarray_with_order(array)
+          if xp.isdtype(array.dtype, ["real floating", "complex floating"])
+            _assert_all_finite(array)
+          end if
+          array = xp.astype(array, dtype)
+        else
+          array = _asarray_with_order(array)
+        end if
+      catch ComplexWarning as complex_warning
+        throw ValueError("Complex data not supported\n{}\n".format(array))
+      end try
+    end with
+    _ensure_no_complex_data(array)
+    if ensure_2d
+      if array.ndim == 0
+        throw ValueError("Expected 2D array, got scalar array instead:\narray={}.\nReshape your data either using array.reshape(-1, 1) if your data has a single feature or array.reshape(1, -1) if it contains a single sample.".format(array))
+      end if
+      if array.ndim == 1
+        if type_if_series != empty
+          msg = "Expected a 2-dimensional container but got " + cast(type_if_series, string) + " instead. Pass a DataFrame containing a single row (i.e. single sample) or a single column (i.e. single feature) instead."
+        else
+          msg = "Expected 2D array, got 1D array instead:\narray=" + cast(array, string) + ".\nReshape your data either using array.reshape(-1, 1) if your data has a single feature or array.reshape(1, -1) if it contains a single sample."
+        end if
+        throw ValueError(msg)
+      end if
+    end if
+    if dtype_numeric and hasattr(array.dtype, "kind") and "USV".contains(array.dtype.kind)
+      throw ValueError("dtype='numeric' is not compatible with arrays of bytes/strings.Convert your data to numeric values explicitly instead.")
+    end if
+    if not allow_nd and array.ndim >= 3
+      throw ValueError("Found array with dim " + cast(array.ndim, string) + ", while dim <= 2 is required" + cast(context, string) + ".")
+    end if
+    if ensure_all_finite
+      _assert_all_finite(array)
+    end if
+    if copy
+      if _is_numpy_namespace(xp)
+        if np.may_share_memory(array, array_orig)
+          array = _asarray_with_order(array)
+        end if
+      else
+        array = _asarray_with_order(array)
+      end if
+    end if
+  end if
+  if ensure_min_samples > 0
+    n_samples = _num_samples(array)
+    if n_samples < ensure_min_samples
+      throw ValueError("Found array with %d sample(s) (shape=%s) while a minimum of %d is required%s." % [n_samples, array.shape, ensure_min_samples, context])
+    end if
+  end if
+  if ensure_min_features > 0 and array.ndim == 2
+    n_features = array.shape[1]
+    if n_features < ensure_min_features
+      throw ValueError("Found array with %d feature(s) (shape=%s) while a minimum of %d is required%s." % [n_features, array.shape, ensure_min_features, context])
+    end if
+  end if
+  if ensure_non_negative
+    whom = input_name
+    if estimator_name
+      whom += " in " + cast(estimator_name, string)
+    end if
+    check_non_negative(array, whom)
+  end if
+  if force_writeable
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict0 = map_new()
+    map_set(_dict0, "order", cast("K", string))
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict1 = map_new()
+    copy_params = /* _dict0 if not sp.issparse(array) else _dict1 */
+    array_data = /* array.data if sp.issparse(array) else array */
+    flags = getattr(array_data, "flags", empty)
+    if not getattr(flags, "writeable", true)
+      if is_pandas_df_or_series(array_orig)
+        try
+          array_data.flags.writeable = true
+        catch ValueError
+          array = array.copy()
+        end try
+      else
+        array = array.copy()
+      end if
+    end if
+  end if
+  return array
+end function
+
+function _check_large_sparse(int X, int accept_large_sparse)
+  // Raise a ValueError if X has 64bit indices and accept_large_sparse=False
+  if not accept_large_sparse
+    supported_indices = ["int32"]
+    if X.format == "coo"
+      index_keys = ["col", "row"]
+    else
+      if ["csr", "csc", "bsr"].contains(X.format)
+        index_keys = ["indices", "indptr"]
+      else
+        return
+      end if
+    end if
+    for each key in index_keys
+      indices_datatype = getattr(X, key).dtype
+      if not supported_indices.contains(indices_datatype)
+        throw ValueError("Only sparse matrices with 32-bit integer indices are accepted. Got " + cast(indices_datatype, string) + " indices. Please do report a minimal reproducer on scikit-learn issue tracker so that support for your use-case can be studied by maintainers. See: https://scikit-learn.org/dev/developers/minimal_reproducer.html")
+      end if
+    end for
+  end if
+end function
+
+function check_X_y(int X, int y, int accept_sparse)
+  // Input validation for standard estimators.
+  if y == empty
+    if estimator == empty
+      estimator_name = "estimator"
+    else
+      estimator_name = _check_estimator_name(estimator)
+    end if
+    throw ValueError(cast(estimator_name, string) + " requires y to be passed, but the target y is None")
+  end if
+  X = check_array(X)
+  y = _check_y(y)
+  check_consistent_length(X, y)
+  return [X, y]
+end function
+
+function _check_y(int y, int multi_output, int y_numeric, int estimator)
+  // Isolated part of check_X_y dedicated to y validation
+  if multi_output
+    y = check_array(y)
+  else
+    estimator_name = _check_estimator_name(estimator)
+    y = column_or_1d(y)
+    _assert_all_finite(y)
+    _ensure_no_complex_data(y)
+  end if
+  if y_numeric and hasattr(y.dtype, "kind") and y.dtype.kind == "O"
+    y = y.astype(np.float64)
+  end if
+  return y
+end function
+
+function column_or_1d(int y)
+  // Ravel column or 1d numpy array, else raises an error.
+  [xp, _] = get_namespace(y)
+  y = check_array(y)
+  shape = y.shape
+  if shape.len() == 1
+    return _asarray_with_order(xp.reshape(y, [-1]))
+  end if
+  if shape.len() == 2 and shape[1] == 1
+    if warn
+      warnings.warn("A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples, ), for example using ravel().", DataConversionWarning)
+    end if
+    return _asarray_with_order(xp.reshape(y, [-1]))
+  end if
+  throw ValueError("y should be a 1d array, got an array of shape {} instead.".format(shape))
+end function
+
+function check_random_state(int seed)
+  // Turn seed into an np.random.RandomState instance.
+  if seed == empty or seed == np.random
+    return np.random.mtrand._rand
+  end if
+  if isinstance(seed, numbers.Integral)
+    return np.random.RandomState(seed)
+  end if
+  if isinstance(seed, np.random.RandomState)
+    return seed
+  end if
+  throw ValueError(cast(seed, string) + " cannot be used to seed a numpy.random.RandomState instance")
+end function
+
+function has_fit_parameter(int estimator, int parameter)
+  // Check whether the estimator's fit method supports the given parameter.
+  return hasattr(estimator, "fit") and signature(estimator.fit).parameters.contains(parameter)
+end function
+
+function check_symmetric(int array)
+  // Make sure that array is 2D, square and symmetric.
+  if array.ndim != 2 or array.shape[0] != array.shape[1]
+    throw ValueError("array must be 2-dimensional and square. shape = {0}".format(array.shape))
+  end if
+  if sp.issparse(array)
+    diff = array - array.T
+    if not ["csr", "csc", "coo"].contains(diff.format)
+      diff = diff.tocsr()
+    end if
+    symmetric = np.all(absval(diff.data) < tol)
+  else
+    symmetric = np.allclose(array, array.T)
+  end if
+  if not symmetric
+    if raise_exception
+      throw ValueError("Array must be symmetric")
+    end if
+    if raise_warning
+      warnings.warn("Array is not symmetric, and will be converted to symmetric by average with its transpose.")
+    end if
+    if sp.issparse(array)
+      conversion = "to" + array.format
+      array = getattr(0.5 * array + array.T, conversion)()
+    else
+      array = 0.5 * array + array.T
+    end if
+  end if
+  return array
+end function
+
+function _is_fitted(int estimator, int attributes, int all_or_any)
+  // Determine if an estimator is fitted
+  if attributes != empty
+    if not isinstance(attributes, [list, tuple])
+      attributes = [attributes]
+    end if
+    array int _lc5
+    for each attr in attributes
+      _lc5.push(hasattr(estimator, attr))
+    end for
+    return all_or_any(_lc5)
+  end if
+  if hasattr(estimator, "__sklearn_is_fitted__")
+    return estimator.__sklearn_is_fitted__()
+  end if
+  array int _lc6
+  for each v in vars(estimator)
+    if v.ends_with("_") and not v.starts_with("__")
+      _lc6.push(v)
+    end if
+  end for
+  fitted_attrs = _lc6
+  return fitted_attrs.len() > 0
+end function
+
+function check_is_fitted(int estimator, int attributes)
+  // Perform is_fitted validation for estimator.
+  if isclass(estimator)
+    throw TypeError(cast(estimator, string) + " is a class, not an instance.")
+  end if
+  if msg == empty
+    msg = "This %(name)s instance is not fitted yet. Call 'fit' with appropriate arguments before using this estimator."
+  end if
+  if not hasattr(estimator, "fit")
+    throw TypeError(cast(estimator, string) + " is not an estimator instance.")
+  end if
+  tags = get_tags(estimator)
+  if not tags.requires_fit and attributes == empty
+    return
+  end if
+  if not _is_fitted(estimator, attributes, all_or_any)
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict2 = map_new()
+    map_set(_dict2, "name", cast(type(estimator).__name__, string))
+    throw NotFittedError(msg % _dict2)
+  end if
+end function
+
+function _estimator_has(int attr)
+  // Check if we can delegate a method to the underlying estimator.
+  // nested function 'check' hoisted to file scope as '_estimator_has__check'
+  return check
+end function
+
+function check_non_negative(int X, int whom)
+  [xp, _] = get_namespace(X)
+  if sp.issparse(X)
+    if ["lil", "dok"].contains(X.format)
+      X = X.tocsr()
+    end if
+    if X.data.size == 0
+      X_min = 0
+    else
+      X_min = X.data.min()
+    end if
+  else
+    X_min = xp.min(X)
+  end if
+  if X_min < 0
+    throw ValueError("Negative values in data passed to " + cast(whom, string) + ".")
+  end if
+end function
+
+function check_scalar(int x, int name, int target_type)
+  // Validate scalar parameters type and value.
+  // nested function 'type_name' hoisted to file scope as 'check_scalar__type_name'
+  if not isinstance(x, target_type)
+    if isinstance(target_type, tuple)
+      types_str = ", ".join(/* unknown expr: GeneratorExp */)
+      target_type_str = "{" + cast(types_str, string) + "}"
+    else
+      target_type_str = check_scalar__type_name(target_type)
+    end if
+    throw TypeError(cast(name, string) + " must be an instance of " + cast(target_type_str, string) + ", not " + cast(type(x).__qualname__, string) + ".")
+  end if
+  expected_include_boundaries = ["left", "right", "both", "neither"]
+  if not expected_include_boundaries.contains(include_boundaries)
+    throw ValueError("Unknown value for `include_boundaries`: " + cast(include_boundaries, string) + ". Possible values are: " + cast(expected_include_boundaries, string) + ".")
+  end if
+  if max_val == empty and include_boundaries == "right"
+    throw ValueError("`include_boundaries`='right' without specifying explicitly `max_val` is inconsistent.")
+  end if
+  if min_val == empty and include_boundaries == "left"
+    throw ValueError("`include_boundaries`='left' without specifying explicitly `min_val` is inconsistent.")
+  end if
+  comparison_operator = /* operator.lt if ["left", "both"].contains(include_boundaries) else operator.le */
+  if min_val != empty and comparison_operator(x, min_val)
+    throw ValueError(cast(name, string) + " == " + cast(x, string) + ", must be " + cast(/* ">=" if ["left", "both"].contains(include_boundaries) else ">" */, string) + " " + cast(min_val, string) + ".")
+  end if
+  comparison_operator = /* operator.gt if ["right", "both"].contains(include_boundaries) else operator.ge */
+  if max_val != empty and comparison_operator(x, max_val)
+    throw ValueError(cast(name, string) + " == " + cast(x, string) + ", must be " + cast(/* "<=" if ["right", "both"].contains(include_boundaries) else "<" */, string) + " " + cast(max_val, string) + ".")
+  end if
+  return x
+end function
+
+function _check_psd_eigenvalues(int lambdas, int enable_warnings)
+  // Check the eigenvalues of a positive semidefinite (PSD) matrix.
+  lambdas = np.array(lambdas)
+  is_double_precision = lambdas.dtype == np.float64
+  significant_imag_ratio = 1e-05
+  significant_neg_ratio = /* 1e-05 if is_double_precision else 0.005 */
+  significant_neg_value = /* 1e-10 if is_double_precision else 1e-06 */
+  small_pos_ratio = /* 1e-12 if is_double_precision else 2e-07 */
+  if not np.isreal(lambdas).all()
+    max_imag_abs = np.abs(np.imag(lambdas)).max()
+    max_real_abs = np.abs(np.real(lambdas)).max()
+    if max_imag_abs > significant_imag_ratio * max_real_abs
+      throw ValueError("There are significant imaginary parts in eigenvalues (%g of the maximum real part). Either the matrix is not PSD, or there was an issue while computing the eigendecomposition of the matrix." % max_imag_abs / max_real_abs)
+    end if
+    if enable_warnings
+      warnings.warn("There are imaginary parts in eigenvalues (%g of the maximum real part). Either the matrix is not PSD, or there was an issue while computing the eigendecomposition of the matrix. Only the real parts will be kept." % max_imag_abs / max_real_abs, PositiveSpectrumWarning)
+    end if
+  end if
+  lambdas = np.real(lambdas)
+  max_eig = lambdas.max()
+  if max_eig < 0
+    throw ValueError("All eigenvalues are negative (maximum is %g). Either the matrix is not PSD, or there was an issue while computing the eigendecomposition of the matrix." % max_eig)
+  else
+    min_eig = lambdas.min()
+    if min_eig < -significant_neg_ratio * max_eig and min_eig < -significant_neg_value
+      throw ValueError("There are significant negative eigenvalues (%g of the maximum positive). Either the matrix is not PSD, or there was an issue while computing the eigendecomposition of the matrix." % -min_eig / max_eig)
+    else
+      if min_eig < 0
+        if enable_warnings
+          warnings.warn("There are negative eigenvalues (%g of the maximum positive). Either the matrix is not PSD, or there was an issue while computing the eigendecomposition of the matrix. Negative eigenvalues will be replaced with 0." % -min_eig / max_eig, PositiveSpectrumWarning)
+        end if
+        lambdas[lambdas < 0] = 0
+      end if
+    end if
+  end if
+  too_small_lambdas = 0 < lambdas bit_and lambdas < small_pos_ratio * max_eig
+  if too_small_lambdas.any()
+    if enable_warnings
+      warnings.warn("Badly conditioned PSD matrix spectrum: the largest eigenvalue is more than %g times the smallest. Small eigenvalues will be replaced with 0." % 1 / small_pos_ratio, PositiveSpectrumWarning)
+    end if
+    lambdas[too_small_lambdas] = 0
+  end if
+  return lambdas
+end function
+
+function _check_sample_weight(int sample_weight, int X)
+  // Validate sample weights.
+  [xp, is_array_api, device] = get_namespace_and_device(X)
+  n_samples = _num_samples(X)
+  max_float_type = _max_precision_float_dtype(xp, device)
+  float_dtypes = /* [xp.float32] if max_float_type == xp.float32 else [xp.float64, xp.float32] */
+  if force_float_dtype and dtype != empty and not float_dtypes.contains(dtype)
+    dtype = max_float_type
+  end if
+  if sample_weight == empty
+    sample_weight = xp.ones(n_samples)
+  else
+    if isinstance(sample_weight, numbers.Number)
+      sample_weight = xp.full(n_samples, sample_weight)
+    else
+      if force_float_dtype and dtype == empty
+        dtype = float_dtypes
+      end if
+      if is_array_api and ensure_same_device
+        sample_weight = xp.asarray(sample_weight)
+      end if
+      sample_weight = check_array(sample_weight)
+      if sample_weight.ndim != 1
+        throw ValueError("Sample weights must be 1D array or scalar, got " + cast(sample_weight.ndim, string) + "D array. Expected either a scalar value or a 1D array of length " + cast(n_samples, string) + ".")
+      end if
+      if sample_weight.shape != [n_samples]
+        throw ValueError("sample_weight.shape == {}, expected {}!".format(sample_weight.shape, [n_samples]))
+      end if
+    end if
+  end if
+  if not allow_all_zero_weights
+    if xp.all(sample_weight == 0)
+      throw ValueError("Sample weights must contain at least one non-zero number.")
+    end if
+  end if
+  if ensure_non_negative
+    check_non_negative(sample_weight, "`sample_weight`")
+  end if
+  return sample_weight
+end function
+
+function _allclose_dense_sparse(int x, int y, int rtol, int atol)
+  // Check allclose for sparse and dense data.
+  if sp.issparse(x) and sp.issparse(y)
+    x = x.tocsr()
+    y = y.tocsr()
+    x.sum_duplicates()
+    y.sum_duplicates()
+    return np.array_equal(x.indices, y.indices) and np.array_equal(x.indptr, y.indptr) and np.allclose(x.data, y.data)
+  else
+    if not sp.issparse(x) and not sp.issparse(y)
+      return np.allclose(x, y)
+    end if
+  end if
+  throw ValueError("Can only compare two sparse matrices, not a sparse matrix and an array")
+end function
+
+function _check_response_method(int estimator, int response_method)
+  // Check if `response_method` is available in estimator and return it.
+  if isinstance(response_method, str)
+    list_methods = [response_method]
+  else
+    list_methods = response_method
+  end if
+  array int _lc7
+  for each method in list_methods
+    _lc7.push(getattr(estimator, method, empty))
+  end for
+  prediction_method = _lc7
+  // TRANSPILER WARNING line 2275: lambda function — define as named function — manual conversion required
+  prediction_method = reduce(/* lambda */, prediction_method)
+  if prediction_method == empty
+    throw AttributeError(cast(estimator.__class__.__name__, string) + " has none of the following attributes: " + cast(", ".join(list_methods), string) + ".")
+  end if
+  return prediction_method
+end function
+
+function _check_method_params(int X, int params, int indices)
+  // Check and validate the parameters passed to a specific
+  // TRANSPILER WARNING line 2305: from sklearn.utils import ... — convert to UL import syntax — manual conversion required
+  // TRANSPILER: dict values cast to string — may lose type information
+  map _dict3 = map_new()
+  method_params_validated = _dict3
+  for each [param_key, param_value] in params.items()
+    if not _is_arraylike(param_value) and not sp.issparse(param_value) or _num_samples(param_value) != _num_samples(X)
+      method_params_validated[param_key] = param_value
+    else
+      method_params_validated[param_key] = _make_indexable(param_value)
+      method_params_validated[param_key] = _safe_indexing(method_params_validated[param_key], indices)
+    end if
+  end for
+  return method_params_validated
+end function
+
+function _get_feature_names(int X)
+  // Get feature names from X.
+  feature_names = empty
+  if is_pandas_df(X)
+    feature_names = np.asarray(X.columns)
+  else
+    if hasattr(X, "__dataframe__")
+      df_protocol = X.__dataframe__()
+      feature_names = np.asarray(list(df_protocol.column_names()))
+    end if
+  end if
+  if feature_names == empty or feature_names.len() == 0
+    return
+  end if
+  types = sorted(/* unknown expr: GeneratorExp */)
+  if types.len() > 1 and types.contains("str")
+    throw TypeError("Feature names are only supported if all input features have string names, but your input has " + cast(types, string) + " as feature name / column name types. If you want feature names to be stored and validated, you must convert them all to strings, by using X.columns = X.columns.astype(str) for example. Otherwise you can remove feature / column names from your input data, or convert them all to a non-string data type.")
+  end if
+  if types.len() == 1 and types[0] == "str"
+    return feature_names
+  end if
+end function
+
+function _check_feature_names_in(int estimator, int input_features)
+  // Check `input_features` and generate names if needed.
+  feature_names_in_ = getattr(estimator, "feature_names_in_", empty)
+  n_features_in_ = getattr(estimator, "n_features_in_", empty)
+  if input_features != empty
+    input_features = np.asarray(input_features)
+    if feature_names_in_ != empty and not np.array_equal(feature_names_in_, input_features)
+      throw ValueError("input_features is not equal to feature_names_in_")
+    end if
+    if n_features_in_ != empty and input_features.len() != n_features_in_
+      throw ValueError("input_features should have length equal to number of features (" + cast(n_features_in_, string) + "), got " + cast(input_features.len(), string))
+    end if
+    return input_features
+  end if
+  if feature_names_in_ != empty
+    return feature_names_in_
+  end if
+  if not generate_names
+    return
+  end if
+  if n_features_in_ == empty
+    throw ValueError("Unable to generate feature names without n_features_in_")
+  end if
+  array int _lc8
+  for each i in range(n_features_in_)
+    _lc8.push("x" + cast(i, string))
+  end for
+  return np.asarray(_lc8)
+end function
+
+function _generate_get_feature_names_out(int estimator, int n_features_out, int input_features)
+  // Generate feature names out for estimator using the estimator name as the prefix.
+  _check_feature_names_in(estimator, input_features)
+  estimator_name = estimator.__class__.__name__.lower()
+  array int _lc9
+  for each i in range(n_features_out)
+    _lc9.push(cast(estimator_name, string) + cast(i, string))
+  end for
+  return np.asarray(_lc9)
+end function
+
+function _check_monotonic_cst(int estimator, int monotonic_cst)
+  // Check the monotonic constraints and return the corresponding array.
+  original_monotonic_cst = monotonic_cst
+  if monotonic_cst == empty or isinstance(monotonic_cst, dict)
+    monotonic_cst = np.full()
+    if isinstance(original_monotonic_cst, dict)
+      if not hasattr(estimator, "feature_names_in_")
+        throw ValueError(cast(estimator.__class__.__name__, string) + " was not fitted on data with feature names. Pass monotonic_cst as an integer array instead.")
+      end if
+      unexpected_feature_names = list(set(original_monotonic_cst) - set(estimator.feature_names_in_))
+      unexpected_feature_names.sort()
+      n_unexpeced = unexpected_feature_names.len()
+      if unexpected_feature_names
+        if unexpected_feature_names.len() > 5
+          unexpected_feature_names = unexpected_feature_names[/* unknown expr: Slice */]
+          unexpected_feature_names.append("...")
+        end if
+        throw ValueError("monotonic_cst contains " + cast(n_unexpeced, string) + " unexpected feature names: " + cast(unexpected_feature_names, string) + ".")
+      end if
+      for each [feature_idx, feature_name] in enumerate(estimator.feature_names_in_)
+        if original_monotonic_cst.contains(feature_name)
+          cst = original_monotonic_cst[feature_name]
+          if not [-1, 0, 1].contains(cst)
+            throw ValueError("monotonic_cst['" + cast(feature_name, string) + "'] must be either -1, 0 or 1. Got " + cast(cst, string) + ".")
+          end if
+          monotonic_cst[feature_idx] = cst
+        end if
+      end for
+    end if
+  else
+    unexpected_cst = np.setdiff1d(monotonic_cst, [-1, 0, 1])
+    if unexpected_cst.shape[0]
+      throw ValueError("monotonic_cst must be an array-like of -1, 0 or 1. Observed values: " + cast(unexpected_cst.tolist(), string) + ".")
+    end if
+    monotonic_cst = np.asarray(monotonic_cst)
+    if monotonic_cst.shape[0] != estimator.n_features_in_
+      throw ValueError("monotonic_cst has shape " + cast(monotonic_cst.shape, string) + " but the input data X has " + cast(estimator.n_features_in_, string) + " features.")
+    end if
+  end if
+  return monotonic_cst
+end function
+
+function _check_pos_label_consistency(int pos_label, int y_true)
+  // Check if `pos_label` need to be specified or not.
+  if pos_label == empty
+    [xp, _, device] = get_namespace_and_device(y_true)
+    classes = xp.unique_values(y_true)
+    if _is_numpy_namespace(xp) and "OUS".contains(classes.dtype.kind) or classes.shape[0] > 2 or not xp.all(classes == xp.asarray([0, 1])) or xp.all(classes == xp.asarray([-1, 1])) or xp.all(classes == xp.asarray([0])) or xp.all(classes == xp.asarray([-1])) or xp.all(classes == xp.asarray([1]))
+      classes = _convert_to_numpy(classes)
+      array int _lc10
+      for each c in classes.tolist()
+        _lc10.push(repr(c))
+      end for
+      classes_repr = ", ".join(_lc10)
+      throw ValueError("y_true takes value in {" + cast(classes_repr, string) + "} and pos_label is not specified: either make y_true take value in {0, 1} or {-1, 1} or pass pos_label explicitly.")
+    end if
+    pos_label = 1
+  end if
+  return pos_label
+end function
+
+function _to_object_array(int sequence)
+  // Convert sequence to a 1-D NumPy array of object dtype.
+  out = np.empty(sequence.len())
+  out[/* unknown expr: Slice */] = sequence
+  return out
+end function
+
+function _check_feature_names(int estimator, int X)
+  // Set or check the `feature_names_in_` attribute of an estimator.
+  if reset
+    feature_names_in = _get_feature_names(X)
+    if feature_names_in != empty
+      estimator.feature_names_in_ = feature_names_in
+    else
+      if hasattr(estimator, "feature_names_in_")
+        delattr(estimator, "feature_names_in_")
+      end if
+    end if
+    return
+  end if
+  fitted_feature_names = getattr(estimator, "feature_names_in_", empty)
+  X_feature_names = _get_feature_names(X)
+  if fitted_feature_names == empty and X_feature_names == empty
+    return
+  end if
+  if X_feature_names != empty and fitted_feature_names == empty
+    warnings.warn("X has feature names, but " + cast(estimator.__class__.__name__, string) + " was fitted without feature names")
+    return
+  end if
+  if X_feature_names == empty and fitted_feature_names != empty
+    warnings.warn("X does not have valid feature names, but " + cast(estimator.__class__.__name__, string) + " was fitted with feature names")
+    return
+  end if
+  if fitted_feature_names.len() != X_feature_names.len() or np.any(fitted_feature_names != X_feature_names)
+    message = "The feature names should match those that were passed during fit.\n"
+    fitted_feature_names_set = set(fitted_feature_names)
+    X_feature_names_set = set(X_feature_names)
+    unexpected_names = sorted(X_feature_names_set - fitted_feature_names_set)
+    missing_names = sorted(fitted_feature_names_set - X_feature_names_set)
+    // nested function 'add_names' hoisted to file scope as '_check_feature_names__add_names'
+    if unexpected_names
+      message += "Feature names unseen at fit time:\n"
+      message += _check_feature_names__add_names(unexpected_names)
+    end if
+    if missing_names
+      message += "Feature names seen at fit time, yet now missing:\n"
+      message += _check_feature_names__add_names(missing_names)
+    end if
+    if not missing_names and not unexpected_names
+      message += "Feature names must be in the same order as they were in fit.\n"
+    end if
+    throw ValueError(message)
+  end if
+end function
+
+function _check_n_features(int estimator, int X, int reset)
+  // Set the `n_features_in_` attribute, or check against it on an estimator.
+  try
+    n_features = _num_features(X)
+  catch TypeError as e
+    if not reset and hasattr(estimator, "n_features_in_")
+      throw ValueError("X does not contain any features, but " + cast(estimator.__class__.__name__, string) + " is expecting " + cast(estimator.n_features_in_, string) + " features")
+    end if
+    return
+  end try
+  if reset
+    estimator.n_features_in_ = n_features
+    return
+  end if
+  if not hasattr(estimator, "n_features_in_")
+    return
+  end if
+  if n_features != estimator.n_features_in_
+    throw ValueError("X has " + cast(n_features, string) + " features, but " + cast(estimator.__class__.__name__, string) + " is expecting " + cast(estimator.n_features_in_, string) + " features as input.")
+  end if
+end function
+
+function validate_data(int X, int y, int reset, int validate_separately, int skip_check_array)
+  // Validate input data and set or check feature names and counts of the input.
+  _check_feature_names(_estimator, X)
+  tags = get_tags(_estimator)
+  if y == empty and tags.target_tags.required
+    throw ValueError("This " + cast(_estimator.__class__.__name__, string) + " estimator requires y to be passed, but the target y is None.")
+  end if
+  no_val_X = isinstance(X, str) and X == "no_validation"
+  no_val_y = y == empty or isinstance(y, str) and y == "no_validation"
+  if no_val_X and no_val_y
+    throw ValueError("Validation should be done on X, y or both.")
+  end if
+  // TRANSPILER: dict values cast to string — may lose type information
+  map _dict4 = map_new()
+  map_set(_dict4, "estimator", cast(_estimator, string))
+  default_check_params = _dict4
+  // TRANSPILER: dict values cast to string — may lose type information
+  map _dict5 = map_new()
+  check_params = _dict5
+  if skip_check_array
+    if not no_val_X and no_val_y
+      out = X
+    else
+      if no_val_X and not no_val_y
+        out = y
+      else
+        out = [X, y]
+      end if
+    end if
+  else
+    if not no_val_X and no_val_y
+      out = check_array(X)
+    else
+      if no_val_X and not no_val_y
+        out = _check_y(y)
+      else
+        if validate_separately
+          [check_X_params, check_y_params] = validate_separately
+          if not check_X_params.contains("estimator")
+            // TRANSPILER: dict values cast to string — may lose type information
+            map _dict6 = map_new()
+            check_X_params = _dict6
+          end if
+          X = check_array(X)
+          if not check_y_params.contains("estimator")
+            // TRANSPILER: dict values cast to string — may lose type information
+            map _dict7 = map_new()
+            check_y_params = _dict7
+          end if
+          y = check_array(y)
+        else
+          [X, y] = check_X_y(X, y)
+        end if
+        out = [X, y]
+      end if
+    end if
+  end if
+  if not no_val_X and check_params.get("ensure_2d", true)
+    _check_n_features(_estimator, X)
+  end if
+  return out
+end function
+

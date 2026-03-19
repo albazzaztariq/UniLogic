@@ -1,0 +1,6 @@
+// test_exit_none.ul — main() returns none with no return statement
+
+function main() returns none
+  print 42
+  print 99
+end function

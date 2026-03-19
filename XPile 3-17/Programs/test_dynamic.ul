@@ -1,0 +1,13 @@
+function main() returns int
+    array int nums = []
+    nums.push(10)
+    nums.push(20)
+    nums.push(30)
+    print nums.len()
+    print nums[0]
+    print nums[2]
+    int popped = nums.pop()
+    print popped
+    print nums.len()
+    return 0
+end function

@@ -1,0 +1,52 @@
+// test_inherit.ul — inheritance
+
+type Animal
+    string name
+    int age
+end type
+
+type Dog inherits Animal
+    string breed
+end type
+
+type Puppy inherits Dog
+    int weight
+end type
+
+function describe(Dog d) returns none
+    print d.name
+    print d.age
+    print d.breed
+end function
+
+function main() returns none
+    // base type
+    Animal a
+    a.name = "Cat"
+    a.age = 5
+    print a.name
+    print a.age
+
+    // child type — access inherited + own fields
+    Dog d
+    d.name = "Rex"
+    d.age = 3
+    d.breed = "Labrador"
+    print d.name
+    print d.age
+    print d.breed
+
+    // pass child type to function
+    describe(d)
+
+    // grandchild type — two levels of inheritance
+    Puppy p
+    p.name = "Tiny"
+    p.age = 1
+    p.breed = "Beagle"
+    p.weight = 8
+    print p.name
+    print p.age
+    print p.breed
+    print p.weight
+end function

@@ -1,0 +1,15 @@
+// Test multiple return values
+
+function minmax(int a, int b) returns (int, int)
+  if a < b
+    return (a, b)
+  end if
+  return (b, a)
+end function
+
+function main() returns int
+  (int lo, int hi) = minmax(10, 3)
+  print lo
+  print hi
+  return 0
+end function

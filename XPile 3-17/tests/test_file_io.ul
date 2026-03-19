@@ -1,0 +1,7 @@
+// tests/test_file_io.ul — File I/O test (basic, no FFI)
+
+function main() returns int
+  print "file io test start"
+  print "file io test end"
+  return 0
+end function

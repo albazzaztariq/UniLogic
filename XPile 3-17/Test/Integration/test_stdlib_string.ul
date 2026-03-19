@@ -1,0 +1,57 @@
+// test_stdlib_string.ul — test string standard library
+
+import "Stdlib/string.ul" function str_len(string s) returns int
+import "Stdlib/string.ul" function str_equals(string a, string b) returns bool
+import "Stdlib/string.ul" function str_contains(string s, string sub) returns bool
+import "Stdlib/string.ul" function str_starts_with(string s, string prefix) returns bool
+import "Stdlib/string.ul" function str_ends_with(string s, string suffix) returns bool
+import "Stdlib/string.ul" function str_upper(string s) returns string
+import "Stdlib/string.ul" function str_lower(string s) returns string
+import "Stdlib/string.ul" function str_trim(string s) returns string
+import "Stdlib/string.ul" function str_concat(string a, string b) returns string
+
+function main() returns int
+  // str_len
+  int len = str_len("hello")
+  print len
+
+  // str_equals
+  bool eq = str_equals("abc", "abc")
+  print eq
+
+  bool neq = str_equals("abc", "xyz")
+  print neq
+
+  // str_contains
+  bool has = str_contains("hello world", "world")
+  print has
+
+  bool nope = str_contains("hello world", "xyz")
+  print nope
+
+  // str_starts_with
+  bool sw = str_starts_with("hello world", "hello")
+  print sw
+
+  // str_ends_with
+  bool ew = str_ends_with("hello world", "world")
+  print ew
+
+  // str_upper
+  string up = str_upper("hello")
+  print up
+
+  // str_lower
+  string lo = str_lower("HELLO")
+  print lo
+
+  // str_trim
+  string trimmed = str_trim("  hello  ")
+  print trimmed
+
+  // str_concat
+  string joined = str_concat("hello ", "world")
+  print joined
+
+  return 0
+end function

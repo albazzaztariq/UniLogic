@@ -1,0 +1,16 @@
+// test_exit.ul — test exit() builtin and main() return type variants
+// Scenario: main() with no return type calling exit(0)
+
+function check(int val) returns int
+  if val < 0
+    print -1
+    exit(1)
+  end if
+  return val * 2
+end function
+
+function main()
+  int result = check(5)
+  print result
+  exit(0)
+end function

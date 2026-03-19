@@ -1,0 +1,11 @@
+// test_inline_norm.ul — inline @norm toggle inside function body
+
+function main() returns int
+  int x = 10
+  @norm 2
+  int y = x + 5
+  @norm 0
+  int z = y * 2
+  print z
+  return 0
+end function

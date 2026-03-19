@@ -1,0 +1,6 @@
+// Stdlib/http.ul — basic HTTP client
+// Uses system curl via FFI for C target, urllib for Python, fetch for JS
+
+import "ulhttp" function http_get(string url) returns string
+import "ulhttp" function http_post(string url, string body) returns string
+import "ulhttp" function http_get_json(string url) returns string

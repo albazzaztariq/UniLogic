@@ -1,0 +1,248 @@
+// eval.ul — Simple math expression evaluator
+// Supports +, -, *, / and parentheses with correct operator precedence.
+// Uses recursive descent parsing with result types for parse errors.
+
+import "string" function str_char_at(string s, int i) returns string
+import "string" function str_substr(string s, int start, int len) returns string
+import "string" function strlen(string s) returns int
+
+// Parser state: position in the expression string
+// We pass pos as a 1-element array so it can be mutated by called functions.
+
+// Skip whitespace
+function skip_spaces(string expr, array int pos) returns none
+    int len = strlen(expr)
+    while pos[0] < len
+        string ch = str_char_at(expr, pos[0])
+        if ch == " "
+            pos[0] = pos[0] + 1
+        else
+            escape
+        end if
+    end while
+end function
+
+// Parse an integer number (returns the value)
+function parse_number(string expr, array int pos) returns int|error
+    int len = strlen(expr)
+    skip_spaces(expr, pos)
+    if pos[0] >= len
+        return error "unexpected end of expression"
+    end if
+
+    int start = pos[0]
+    bool negative = false
+    string ch = str_char_at(expr, pos[0])
+
+    // Handle leading minus for negative numbers at start or after open paren
+    if ch == "-"
+        negative = true
+        pos[0] = pos[0] + 1
+        if pos[0] >= len
+            return error "unexpected end after minus"
+        end if
+        ch = str_char_at(expr, pos[0])
+    end if
+
+    // Must start with a digit
+    if ch < "0"
+        return error "expected number"
+    end if
+    if ch > "9"
+        return error "expected number"
+    end if
+
+    int result = 0
+    while pos[0] < len
+        ch = str_char_at(expr, pos[0])
+        if ch >= "0"
+            if ch <= "9"
+                // digit: result = result * 10 + digit_value
+                int digit = 0
+                if ch == "0"
+                    digit = 0
+                end if
+                if ch == "1"
+                    digit = 1
+                end if
+                if ch == "2"
+                    digit = 2
+                end if
+                if ch == "3"
+                    digit = 3
+                end if
+                if ch == "4"
+                    digit = 4
+                end if
+                if ch == "5"
+                    digit = 5
+                end if
+                if ch == "6"
+                    digit = 6
+                end if
+                if ch == "7"
+                    digit = 7
+                end if
+                if ch == "8"
+                    digit = 8
+                end if
+                if ch == "9"
+                    digit = 9
+                end if
+                result = result * 10 + digit
+                pos[0] = pos[0] + 1
+            else
+                escape
+            end if
+        else
+            escape
+        end if
+    end while
+
+    if negative
+        result = 0 - result
+    end if
+    return ok result
+end function
+
+// Parse a primary expression: number or parenthesized expression
+function parse_primary(string expr, array int pos) returns int|error
+    skip_spaces(expr, pos)
+    int len = strlen(expr)
+
+    if pos[0] >= len
+        return error "unexpected end of expression"
+    end if
+
+    string ch = str_char_at(expr, pos[0])
+
+    // Parenthesized expression
+    if ch == "("
+        pos[0] = pos[0] + 1
+        int val = parse_add(expr, pos)?
+        skip_spaces(expr, pos)
+        if pos[0] >= len
+            return error "missing closing parenthesis"
+        end if
+        string close = str_char_at(expr, pos[0])
+        if close != ")"
+            return error "expected closing parenthesis"
+        end if
+        pos[0] = pos[0] + 1
+        return ok val
+    end if
+
+    // Number (including negative)
+    int num = parse_number(expr, pos)?
+    return ok num
+end function
+
+// Parse multiplication and division (higher precedence)
+function parse_mul(string expr, array int pos) returns int|error
+    int lhs = parse_primary(expr, pos)?
+
+    while pos[0] < strlen(expr)
+        skip_spaces(expr, pos)
+        if pos[0] >= strlen(expr)
+            escape
+        end if
+        string op = str_char_at(expr, pos[0])
+        if op == "*"
+            pos[0] = pos[0] + 1
+            int rhs = parse_primary(expr, pos)?
+            lhs = lhs * rhs
+        else
+            if op == "/"
+                pos[0] = pos[0] + 1
+                int rhs = parse_primary(expr, pos)?
+                if rhs == 0
+                    return error "division by zero"
+                end if
+                lhs = lhs / rhs
+            else
+                escape
+            end if
+        end if
+    end while
+
+    return ok lhs
+end function
+
+// Parse addition and subtraction (lower precedence)
+function parse_add(string expr, array int pos) returns int|error
+    int lhs = parse_mul(expr, pos)?
+
+    while pos[0] < strlen(expr)
+        skip_spaces(expr, pos)
+        if pos[0] >= strlen(expr)
+            escape
+        end if
+        string op = str_char_at(expr, pos[0])
+        if op == "+"
+            pos[0] = pos[0] + 1
+            int rhs = parse_mul(expr, pos)?
+            lhs = lhs + rhs
+        else
+            if op == "-"
+                pos[0] = pos[0] + 1
+                int rhs = parse_mul(expr, pos)?
+                lhs = lhs - rhs
+            else
+                escape
+            end if
+        end if
+    end while
+
+    return ok lhs
+end function
+
+// Top-level evaluate function
+function evaluate(string expr) returns int|error
+    array int pos = [0]
+    int result = parse_add(expr, pos)?
+    return ok result
+end function
+
+// Test helper: evaluate and print result
+function test_eval(string expr) returns none
+    print expr
+    int result = evaluate(expr)?
+    print result
+    print ""
+end function
+
+function main() returns int
+    // Test 10 different expressions
+
+    // 1. Simple addition
+    test_eval("3 + 4")
+
+    // 2. Subtraction
+    test_eval("10 - 3")
+
+    // 3. Multiplication
+    test_eval("6 * 7")
+
+    // 4. Division
+    test_eval("20 / 4")
+
+    // 5. Operator precedence: * before +
+    test_eval("3 + 4 * 2")
+
+    // 6. Parentheses override precedence
+    test_eval("(3 + 4) * 2")
+
+    // 7. Complex nested expression
+    test_eval("(10 + 2) * (8 - 3)")
+
+    // 8. Multiple operations
+    test_eval("100 - 20 * 3 + 5")
+
+    // 9. Nested parentheses
+    test_eval("((2 + 3) * (4 + 1))")
+
+    // 10. Single number
+    test_eval("42")
+
+    return 0
+end function

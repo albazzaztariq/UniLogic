@@ -1,0 +1,53 @@
+// test_types.ul — user-defined struct types
+
+type Point
+    int x
+    int y
+end type
+
+type Person
+    string name
+    int age
+    Point location
+end type
+
+function print_point(Point p) returns none
+    print p.x
+    print p.y
+end function
+
+function make_point(int x, int y) returns Point
+    Point result
+    result.x = x
+    result.y = y
+    return result
+end function
+
+function main() returns none
+    // basic type instantiation and field access
+    Point p
+    p.x = 10
+    p.y = 20
+    print p.x
+    print p.y
+
+    // nested struct
+    Person bob
+    bob.name = "Bob"
+    bob.age = 30
+    bob.location.x = 100
+    bob.location.y = 200
+    print bob.name
+    print bob.age
+    print bob.location.x
+    print bob.location.y
+
+    // pass struct to function
+    print_point(p)
+
+    // return struct from function
+    Point q
+    q = make_point(5, 15)
+    print q.x
+    print q.y
+end function

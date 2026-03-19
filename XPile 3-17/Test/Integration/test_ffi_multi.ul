@@ -1,0 +1,25 @@
+// test_ffi_multi.ul — FFI with multiple args and return values
+
+import "math" function sqrt(double x) returns double
+import "math" function pow(double base, double exp) returns double
+import "math" function fmod(double x, double y) returns double
+
+function main() returns int
+    // sqrt of 625 = 25
+    double s = sqrt(625.0)
+    print s
+
+    // pow(2, 10) = 1024
+    double p = pow(2.0, 10.0)
+    print p
+
+    // fmod(17, 5) = 2 (remainder)
+    double m = fmod(17.0, 5.0)
+    print m
+
+    // chained: sqrt(pow(3, 4)) = sqrt(81) = 9
+    double chained = sqrt(pow(3.0, 4.0))
+    print chained
+
+    return 0
+end function

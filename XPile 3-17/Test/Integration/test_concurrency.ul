@@ -1,0 +1,14 @@
+// Test threading with spawn/wait
+@dr concurrency = threaded
+
+function worker(int id) returns none
+  print id
+end function
+
+function main() returns int
+  spawn worker(1)
+  spawn worker(2)
+  spawn worker(3)
+  wait()
+  return 0
+end function

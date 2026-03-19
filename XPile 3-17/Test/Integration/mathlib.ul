@@ -1,0 +1,16 @@
+// mathlib.ul — shared library for local import testing
+
+function factorial(int n) returns int
+  if n <= 1
+    return 1
+  end if
+  return n * factorial(n - 1)
+end function
+
+function square(int x) returns int
+  return x * x
+end function
+
+function add(int a, int b) returns int
+  return a + b
+end function

@@ -1,0 +1,12 @@
+// test_vm_call.ul — function calls
+
+function add(int a, int b) returns int
+  return a + b
+end function
+
+function main() returns int
+  int result = add(10, 20)
+  print result
+  print add(3, 4)
+  return 0
+end function

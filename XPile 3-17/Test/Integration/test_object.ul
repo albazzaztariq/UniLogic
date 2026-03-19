@@ -1,0 +1,36 @@
+// test_object.ul — object declaration, instantiation, methods, inheritance
+
+object Animal
+  string name
+  int age
+
+  function speak() returns string
+    return "..."
+  end function
+end object
+
+object Dog inherits Animal
+  string breed
+
+  function speak() returns string
+    return "Woof!"
+  end function
+
+  function info() returns string
+    return breed
+  end function
+end object
+
+function main() returns int
+  Dog d
+  d.name = "Rex"
+  d.age = 3
+  d.breed = "Labrador"
+
+  print d.name
+  print d.age
+  print d.speak()
+  print d.info()
+
+  return 0
+end function

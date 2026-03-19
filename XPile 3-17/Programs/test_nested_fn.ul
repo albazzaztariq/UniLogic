@@ -1,0 +1,33 @@
+// Test nested function declarations
+// A function can define helper functions inside its body.
+
+function outer() returns int
+    function add_ten(int x) returns int
+        return x + 10
+    end function
+
+    function twice(int x) returns int
+        return x * 2
+    end function
+
+    int a = add_ten(5)
+    int b = twice(a)
+    print a
+    print b
+    return b
+end function
+
+function main() returns int
+    int result = outer()
+    print result
+
+    // Nested function with no params
+    function greet() returns string
+        return "hello from nested"
+    end function
+
+    string msg = greet()
+    print msg
+
+    return 0
+end function

@@ -1,0 +1,23 @@
+// test_result.ul — ok|error result types and ? propagation
+
+function divide(int a, int b) returns int|error
+  if b == 0
+    return error "division by zero"
+  end if
+  return ok a / b
+end function
+
+function safe_calc(int x, int y) returns int|error
+  int result = divide(x, y)?
+  return ok result * 2
+end function
+
+function main() returns int
+  int a = divide(10, 2)?
+  print a
+  int b = safe_calc(20, 4)?
+  print b
+  int c = divide(5, 0)?
+  print c
+  return 0
+end function

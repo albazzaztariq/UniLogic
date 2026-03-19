@@ -1,0 +1,67 @@
+// Task 2: Test try/catch/finally
+
+function divide(int a, int b) returns int
+    if b == 0
+        throw ZeroDivisionError "division by zero"
+    end if
+    return a / b
+end function
+
+function main() returns int
+    // Test 1: basic try/catch
+    try
+        int result = divide(10, 0)
+        print "should not reach here"
+    catch ZeroDivisionError
+        print "test1: caught division by zero"
+    end try
+
+    // Test 2: catch with binding
+    try
+        throw ValueError "bad input"
+    catch ValueError as e
+        print "test2: " + e
+    end try
+
+    // Test 3: finally always runs
+    try
+        print "test3: in try"
+    finally
+        print "test3: in finally"
+    end try
+
+    // Test 4: catch-all
+    try
+        throw RuntimeError "something went wrong"
+    catch as e
+        print "test4: " + e
+    end try
+
+    // Test 5: multiple catch clauses
+    try
+        throw TypeError "type mismatch"
+    catch ValueError
+        print "test5: not this one"
+    catch TypeError as e
+        print "test5: " + e
+    end try
+
+    // Test 6: finally with catch
+    try
+        throw TestError "oops"
+    catch TestError
+        print "test6: caught"
+    finally
+        print "test6: finally ran"
+    end try
+
+    // Test 7: no exception path
+    try
+        int x = divide(10, 2)
+        print "test7: " + cast(x, string)
+    catch ZeroDivisionError
+        print "test7: should not reach"
+    end try
+
+    return 0
+end function

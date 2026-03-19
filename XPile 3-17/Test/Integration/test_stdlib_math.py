@@ -1,0 +1,61 @@
+from dataclasses import dataclass, field
+from math import ceil, floor, pow, sqrt
+
+
+def math_sqrt(x):
+    return sqrt(x)
+
+def math_pow(base, exp):
+    return pow(base, exp)
+
+def math_abs(x):
+    if (x < 0.0):
+        return (0.0 - x)
+    return x
+
+def math_floor(x):
+    return floor(x)
+
+def math_ceil(x):
+    return ceil(x)
+
+def math_min(a, b):
+    if (a < b):
+        return a
+    return b
+
+def math_max(a, b):
+    if (a > b):
+        return a
+    return b
+
+def math_pi():
+    return 3.141592653589793
+
+def math_e():
+    return 2.718281828459045
+
+def main():
+    s = math_sqrt(144.0)
+    print(s)
+    p = math_pow(2.0, 10.0)
+    print(p)
+    a = math_abs((0.0 - 42.5))
+    print(a)
+    fl = math_floor(3.7)
+    print(fl)
+    ce = math_ceil(3.2)
+    print(ce)
+    mn = math_min(5.0, 3.0)
+    print(mn)
+    mx = math_max(5.0, 3.0)
+    print(mx)
+    pi = math_pi()
+    print(pi)
+    e = math_e()
+    print(e)
+    return 0
+
+
+if __name__ == "__main__":
+    main()

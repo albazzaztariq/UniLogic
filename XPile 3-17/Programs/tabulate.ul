@@ -1,0 +1,169 @@
+// tabulate.ul — Table formatting (Python tabulate library equivalent)
+// Source: https://github.com/astanin/python-tabulate
+// Implements: grid and simple table format styles
+// Gap: UL has no 2D arrays; data passed as flat array with row/col dimensions
+
+import "string" function strlen(string s) returns int
+
+// Repeat a single character n times — UL has no string repetition operator
+function repeat_char(string ch, int n) returns string
+    string result = ""
+    for each i in range(n)
+        result = result + ch
+    end for
+    return result
+end function
+
+// Pad string to width with trailing spaces (left-aligned)
+// tabulate uses str.ljust(width) internally
+function pad_str(string s, int width) returns string
+    int slen = strlen(s)
+    string result = s
+    int pad = width - slen
+    for each i in range(pad)
+        result = result + " "
+    end for
+    return result
+end function
+
+// Build a separator line: begin + fill*w1 + sep + fill*w2 + ... + end
+// From tabulate's _build_line function
+function build_line(array int widths, int cols, string begin_s, string fill, string sep, string end_s) returns string
+    string line = begin_s
+    for each c in range(cols)
+        line = line + repeat_char(fill, widths[c])
+        if c < cols - 1
+            line = line + sep
+        end if
+    end for
+    line = line + end_s
+    return line
+end function
+
+// Build a data/header row: begin + pad + content + pad + sep + ... + end
+// From tabulate's _build_simple_row / _format_table
+function build_row(array string cells, array int widths, int cols, string begin_s, string sep, string end_s, int padding) returns string
+    string line = begin_s
+    for each c in range(cols)
+        // Add padding spaces before content
+        for each p in range(padding)
+            line = line + " "
+        end for
+        // Content padded to column width
+        line = line + pad_str(cells[c], widths[c])
+        // Add padding spaces after content
+        for each p in range(padding)
+            line = line + " "
+        end for
+        if c < cols - 1
+            line = line + sep
+        end if
+    end for
+    line = line + end_s
+    return line
+end function
+
+// Main tabulate function
+// fmt: 0 = grid, 1 = simple
+// data: flat array, data[row * cols + col]
+// headers: array of column headers
+function tabulate(array string data, int rows, int cols, array string headers, int fmt) returns none
+    // Step 1: Calculate column widths (from tabulate's _column_type / width logic)
+    // width = max(header_width, max_data_width_in_column)
+    array int widths = [0, 0, 0, 0, 0, 0, 0, 0]
+    for each c in range(cols)
+        widths[c] = strlen(headers[c])
+    end for
+    for each r in range(rows)
+        for each c in range(cols)
+            int cell_len = strlen(data[r * cols + c])
+            if cell_len > widths[c]
+                widths[c] = cell_len
+            end if
+        end for
+    end for
+
+    // Step 2: Add padding to widths for grid format
+    // tabulate: padded_widths = [w + 2*pad for w in colwidths]
+    // For grid (pad=1): width stays the same, padding is added in row building
+    // For simple (pad=0): no extra padding
+
+    if fmt == 0
+        // === Grid format ===
+        // From tabulate source: grid TableFormat definition
+        // padded_widths used for separator lines include the padding
+        array int padded = [0, 0, 0, 0, 0, 0, 0, 0]
+        for each c in range(cols)
+            padded[c] = widths[c] + 2
+        end for
+
+        // lineabove: +---+---+
+        print build_line(padded, cols, "+", "-", "+", "+")
+
+        // header row: | h1 | h2 |
+        print build_row(headers, widths, cols, "|", "|", "|", 1)
+
+        // linebelowheader: +===+===+
+        print build_line(padded, cols, "+", "=", "+", "+")
+
+        // data rows with linebetweenrows
+        for each r in range(rows)
+            array string row_cells = ["", "", "", "", "", "", "", ""]
+            for each c in range(cols)
+                row_cells[c] = data[r * cols + c]
+            end for
+            print build_row(row_cells, widths, cols, "|", "|", "|", 1)
+            if r < rows - 1
+                print build_line(padded, cols, "+", "-", "+", "+")
+            end if
+        end for
+
+        // linebelow: +---+---+
+        print build_line(padded, cols, "+", "-", "+", "+")
+
+    else
+        // === Simple format ===
+        // From tabulate source: simple TableFormat definition
+        // No borders. Dashes under header only.
+        // with_header_hide: lineabove, linebelow
+
+        // header row (no begin/end, double-space separator)
+        print build_row(headers, widths, cols, "", "  ", "", 0)
+
+        // linebelowheader: dashes separated by double spaces
+        print build_line(widths, cols, "", "-", "  ", "")
+
+        // data rows (no separators between rows)
+        for each r in range(rows)
+            array string row_cells = ["", "", "", "", "", "", "", ""]
+            for each c in range(cols)
+                row_cells[c] = data[r * cols + c]
+            end for
+            print build_row(row_cells, widths, cols, "", "  ", "", 0)
+        end for
+    end if
+end function
+
+function main() returns int
+    // Test 1: 3x3 grid format — simple data
+    print "=== Test 1: Grid format ==="
+    array string h1 = ["Name", "Age", "City", "", "", "", "", ""]
+    array string t1 = ["Alice", "30", "New York", "Bob", "25", "Chicago", "Charlie", "35", "Houston", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+    tabulate(t1, 3, 3, h1, 0)
+
+    print ""
+
+    // Test 2: Simple format — same data
+    print "=== Test 2: Simple format ==="
+    tabulate(t1, 3, 3, h1, 1)
+
+    print ""
+
+    // Test 3: Grid format — varying column widths
+    print "=== Test 3: Wide columns ==="
+    array string h3 = ["Item", "Description", "Price", "Qty", "", "", "", ""]
+    array string t3 = ["Widget", "A small widget", "9.99", "100", "Gizmo", "Large industrial gizmo", "249.50", "5", "Bolt", "M8 hex bolt", "0.50", "10000", "", "", "", "", "", "", "", "", "", "", "", ""]
+    tabulate(t3, 3, 4, h3, 0)
+
+    return 0
+end function

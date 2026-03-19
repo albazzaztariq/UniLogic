@@ -1,0 +1,64 @@
+// test_match.ul — Match statement test
+// Tests: integer matching, string matching, default case, nested statements
+
+function test_int_match() returns none
+  int x = 2
+
+  match x
+    1
+      print "one"
+    2
+      print "two"
+    3
+      print "three"
+    default
+      print "other"
+  end match
+end function
+
+function test_default() returns none
+  int y = 99
+
+  match y
+    1
+      print "one"
+    2
+      print "two"
+    default
+      print "default hit"
+  end match
+end function
+
+function test_match_expr() returns none
+  int val = 3 + 2
+
+  match val
+    4
+      print "four"
+    5
+      print "five"
+    6
+      print "six"
+  end match
+end function
+
+function test_match_negative() returns none
+  int n = -1
+
+  match n
+    -1
+      print "negative one"
+    0
+      print "zero"
+    1
+      print "positive one"
+  end match
+end function
+
+function main() returns int
+  test_int_match()
+  test_default()
+  test_match_expr()
+  test_match_negative()
+  return 0
+end function

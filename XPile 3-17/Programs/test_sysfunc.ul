@@ -1,0 +1,37 @@
+// Task 11: Test system functions
+
+function main() returns int
+    // Test 1: time() returns positive integer
+    int t = time()
+    if t > 0
+        print 1
+    end if
+
+    // Test 2: clock() returns positive nanoseconds
+    int c = clock()
+    if c > 0
+        print 1
+    end if
+
+    // Test 3: random_seed + random_int — reproducible
+    random_seed(42)
+    int r1 = random_int(1, 100)
+    if r1 >= 1 and r1 <= 100
+        print 1
+    end if
+
+    // Test 4: random() returns float in [0, 1)
+    random_seed(42)
+    float f = random()
+    if f >= 0.0 and f < 1.0
+        print 1
+    end if
+
+    // Test 5: vault reads env var (PATH should exist)
+    string path = vault("PATH")
+    if size(path) > 0
+        print 1
+    end if
+
+    return 0
+end function

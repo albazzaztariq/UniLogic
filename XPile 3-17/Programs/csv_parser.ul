@@ -1,0 +1,163 @@
+// csv_parser.ul — CSV parser with quoted field support
+// Parses a CSV string into rows and columns.
+// Handles commas inside quoted fields, multi-row data, column lookup by name.
+
+import "string" function str_char_at(string s, int i) returns string
+import "string" function str_substr(string s, int start, int len) returns string
+import "string" function str_index_of(string s, string sub) returns int
+import "string" function strlen(string s) returns int
+
+// Parse a single CSV row — writes fields into output array, returns field count
+function parse_row(string row, array string out) returns int
+    int field_count = 0
+    int pos = 0
+    int row_len = strlen(row)
+    string current = ""
+    bool in_quotes = false
+
+    while pos < row_len
+        string ch = str_char_at(row, pos)
+
+        if in_quotes
+            if ch == "\""
+                in_quotes = false
+            else
+                current = current + ch
+            end if
+        else
+            if ch == "\""
+                in_quotes = true
+            else
+                if ch == ","
+                    out[field_count] = current
+                    field_count = field_count + 1
+                    current = ""
+                else
+                    if ch != "\n"
+                        current = current + ch
+                    end if
+                end if
+            end if
+        end if
+
+        pos = pos + 1
+    end while
+
+    // Save last field
+    out[field_count] = current
+    field_count = field_count + 1
+    return field_count
+end function
+
+// Split a multi-line CSV string into rows — writes into output, returns count
+function split_rows(string csv, array string out) returns int
+    int row_count = 0
+    int pos = 0
+    int csv_len = strlen(csv)
+    string current = ""
+
+    while pos < csv_len
+        string ch = str_char_at(csv, pos)
+        if ch == "\n"
+            if strlen(current) > 0
+                out[row_count] = current
+                row_count = row_count + 1
+            end if
+            current = ""
+        else
+            current = current + ch
+        end if
+        pos = pos + 1
+    end while
+
+    if strlen(current) > 0
+        out[row_count] = current
+        row_count = row_count + 1
+    end if
+
+    return row_count
+end function
+
+// Get a specific cell by row and column index
+function get_cell(array string rows, int row, int col) returns string
+    array string fields = ["", "", "", "", "", "", "", ""]
+    parse_row(rows[row], fields)
+    return fields[col]
+end function
+
+// Get column index by header name
+function get_column_index(string header_row, string col_name) returns int
+    array string headers = ["", "", "", "", "", "", "", ""]
+    int count = parse_row(header_row, headers)
+    for each i in range(count)
+        if headers[i] == col_name
+            return i
+        end if
+    end for
+    return -1
+end function
+
+function main() returns int
+    // CSV data with 5 rows, 4 columns
+    // Note: fields with commas inside quotes
+    string csv = "Name,Age,City,Score\nAlice,30,New York,95\nBob,25,\"Los Angeles, CA\",87\nCharlie,35,Chicago,92\nDiana,28,Houston,88\nEve,32,\"Portland, OR\",91\n"
+
+    // Parse into rows
+    array string rows = ["", "", "", "", "", "", "", "", "", ""]
+    int num_rows = split_rows(csv, rows)
+    print "Total rows (including header):"
+    print num_rows
+
+    // Print header
+    print ""
+    print "=== CSV Data ==="
+    array string headers = ["", "", "", "", "", "", "", ""]
+    parse_row(rows[0], headers)
+    print headers[0]
+    print headers[1]
+    print headers[2]
+    print headers[3]
+
+    // Print each data row
+    print ""
+    for each i in range(1, num_rows)
+        array string fields = ["", "", "", "", "", "", "", ""]
+        parse_row(rows[i], fields)
+        print fields[0]
+        print fields[1]
+        print fields[2]
+        print fields[3]
+        print "---"
+    end for
+
+    // Get specific cells
+    print ""
+    print "=== Cell Lookups ==="
+    string cell1 = get_cell(rows, 1, 0)
+    print "Row 1, Col 0 (Name):"
+    print cell1
+
+    string cell2 = get_cell(rows, 2, 2)
+    print "Row 2, Col 2 (City):"
+    print cell2
+
+    string cell3 = get_cell(rows, 4, 3)
+    print "Row 4, Col 3 (Score):"
+    print cell3
+
+    // Column lookup by name
+    print ""
+    print "=== Column by Name ==="
+    int city_col = get_column_index(rows[0], "City")
+    print "City column index:"
+    print city_col
+
+    // Print all cities
+    print "All cities:"
+    for each i in range(1, num_rows)
+        string city = get_cell(rows, i, city_col)
+        print city
+    end for
+
+    return 0
+end function

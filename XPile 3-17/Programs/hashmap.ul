@@ -1,0 +1,494 @@
+// hashmap.ul — Hash map (Ben Hoyt's ht.c equivalent)
+// Source: https://github.com/benhoyt/ht
+// Algorithm: open addressing, linear probing, power-of-2 capacity
+// Gap: UL lacks bitwise XOR (delta reserved/unimplemented); using polynomial hash
+//      instead of FNV-1a. All other logic (probing, expansion, load factor) faithful.
+// Gap: UL lacks unsigned integers; FNV-1a 64-bit offset exceeds int64 range.
+// Gap: UL fixed-size arrays; max capacity 256 slots.
+
+@dr memory = manual
+
+import "string" function str_char_at(string s, int i) returns string
+import "string" function strlen(string s) returns int
+
+// Character to integer value for hashing
+// Maps printable ASCII chars to their code points
+function char_val(string ch) returns int
+    // Lowercase letters
+    if ch == "a"
+        return 97
+    end if
+    if ch == "b"
+        return 98
+    end if
+    if ch == "c"
+        return 99
+    end if
+    if ch == "d"
+        return 100
+    end if
+    if ch == "e"
+        return 101
+    end if
+    if ch == "f"
+        return 102
+    end if
+    if ch == "g"
+        return 103
+    end if
+    if ch == "h"
+        return 104
+    end if
+    if ch == "i"
+        return 105
+    end if
+    if ch == "j"
+        return 106
+    end if
+    if ch == "k"
+        return 107
+    end if
+    if ch == "l"
+        return 108
+    end if
+    if ch == "m"
+        return 109
+    end if
+    if ch == "n"
+        return 110
+    end if
+    if ch == "o"
+        return 111
+    end if
+    if ch == "p"
+        return 112
+    end if
+    if ch == "q"
+        return 113
+    end if
+    if ch == "r"
+        return 114
+    end if
+    if ch == "s"
+        return 115
+    end if
+    if ch == "t"
+        return 116
+    end if
+    if ch == "u"
+        return 117
+    end if
+    if ch == "v"
+        return 118
+    end if
+    if ch == "w"
+        return 119
+    end if
+    if ch == "x"
+        return 120
+    end if
+    if ch == "y"
+        return 121
+    end if
+    if ch == "z"
+        return 122
+    end if
+    // Uppercase letters
+    if ch == "A"
+        return 65
+    end if
+    if ch == "B"
+        return 66
+    end if
+    if ch == "C"
+        return 67
+    end if
+    if ch == "D"
+        return 68
+    end if
+    if ch == "E"
+        return 69
+    end if
+    if ch == "F"
+        return 70
+    end if
+    if ch == "G"
+        return 71
+    end if
+    if ch == "H"
+        return 72
+    end if
+    if ch == "I"
+        return 73
+    end if
+    if ch == "J"
+        return 74
+    end if
+    if ch == "K"
+        return 75
+    end if
+    if ch == "L"
+        return 76
+    end if
+    if ch == "M"
+        return 77
+    end if
+    if ch == "N"
+        return 78
+    end if
+    if ch == "O"
+        return 79
+    end if
+    if ch == "P"
+        return 80
+    end if
+    if ch == "Q"
+        return 81
+    end if
+    if ch == "R"
+        return 82
+    end if
+    if ch == "S"
+        return 83
+    end if
+    if ch == "T"
+        return 84
+    end if
+    if ch == "U"
+        return 85
+    end if
+    if ch == "V"
+        return 86
+    end if
+    if ch == "W"
+        return 87
+    end if
+    if ch == "X"
+        return 88
+    end if
+    if ch == "Y"
+        return 89
+    end if
+    if ch == "Z"
+        return 90
+    end if
+    // Digits
+    if ch == "0"
+        return 48
+    end if
+    if ch == "1"
+        return 49
+    end if
+    if ch == "2"
+        return 50
+    end if
+    if ch == "3"
+        return 51
+    end if
+    if ch == "4"
+        return 52
+    end if
+    if ch == "5"
+        return 53
+    end if
+    if ch == "6"
+        return 54
+    end if
+    if ch == "7"
+        return 55
+    end if
+    if ch == "8"
+        return 56
+    end if
+    if ch == "9"
+        return 57
+    end if
+    // Common symbols
+    if ch == " "
+        return 32
+    end if
+    if ch == "_"
+        return 95
+    end if
+    if ch == "-"
+        return 45
+    end if
+    if ch == "."
+        return 46
+    end if
+    return 0
+end function
+
+// Polynomial hash function
+// Faithful linear probing requires a hash function; ht.c uses FNV-1a
+// but UL lacks bitwise XOR. Using hash = hash * 31 + byte_value instead.
+// The probing, expansion, and collision resolution logic is identical to ht.c.
+function hash_key(string key) returns int
+    int hash = 5381
+    int len = strlen(key)
+    for each i in range(len)
+        string ch = str_char_at(key, i)
+        hash = hash * 31 + char_val(ch)
+    end for
+    // Ensure positive
+    if hash < 0
+        hash = 0 - hash
+    end if
+    return hash
+end function
+
+// Hash map state:
+// keys[i] = key string ("" means empty, "__deleted__" means tombstone)
+// vals[i] = value string
+// cap = current capacity (always power of 2)
+// len = number of live entries
+
+// hm_set: from ht.c ht_set + ht_set_entry
+// Hash key, linear probe for empty or matching slot, insert
+function hm_set(array string keys, array string vals, array int hm_state, string key, string val) returns none
+    int cap = hm_state[0]
+
+    // From ht.c: expand if length >= capacity / 2
+    if hm_state[1] >= cap / 2
+        // Expand: double capacity, rehash all entries
+        // ht.c ht_expand: allocate new_capacity * 2, rehash all
+        int new_cap = cap * 2
+        // Create temporary storage for old entries
+        array string old_keys = ["","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]
+        array string old_vals = ["","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]
+
+        for each i in range(cap)
+            old_keys[i] = keys[i]
+            old_vals[i] = vals[i]
+            keys[i] = ""
+            vals[i] = ""
+        end for
+
+        hm_state[0] = new_cap
+        hm_state[1] = 0
+
+        // Rehash all existing entries (from ht.c ht_expand)
+        for each i in range(cap)
+            if old_keys[i] != ""
+                if old_keys[i] != "__deleted__"
+                    hm_set(keys, vals, hm_state, old_keys[i], old_vals[i])
+                end if
+            end if
+        end for
+
+        cap = new_cap
+    end if
+
+    // From ht.c ht_set_entry: hash & (capacity-1) for index
+    int hash = hash_key(key)
+    int index = hash % cap
+
+    // Linear probing (from ht.c)
+    while keys[index] != ""
+        if keys[index] == key
+            // Key exists — update value (from ht.c: entries[index].value = value)
+            vals[index] = val
+            return
+        end if
+        if keys[index] == "__deleted__"
+            // Reuse tombstone slot
+            escape
+        end if
+        // Move to next slot (linear probing)
+        index = index + 1
+        if index >= cap
+            index = 0
+        end if
+    end while
+
+    keys[index] = key
+    vals[index] = val
+    hm_state[1] = hm_state[1] + 1
+end function
+
+// hm_get: from ht.c ht_get
+// Hash key, linear probe until found or empty
+function hm_get(array string keys, array string vals, array int hm_state, string key) returns string|error
+    int cap = hm_state[0]
+    int hash = hash_key(key)
+    int index = hash % cap
+
+    while keys[index] != ""
+        if keys[index] == key
+            return ok vals[index]
+        end if
+        index = index + 1
+        if index >= cap
+            index = 0
+        end if
+    end while
+    return error "key not found"
+end function
+
+// hm_has: check if key exists
+function hm_has(array string keys, array int hm_state, string key) returns bool
+    int cap = hm_state[0]
+    int hash = hash_key(key)
+    int index = hash % cap
+
+    while keys[index] != ""
+        if keys[index] == key
+            return true
+        end if
+        index = index + 1
+        if index >= cap
+            index = 0
+        end if
+    end while
+    return false
+end function
+
+// hm_delete: NOT in original ht.c (documented limitation)
+// Implementing with tombstone marker "__deleted__"
+// Tombstones keep probing chains intact but don't count as live entries
+function hm_delete(array string keys, array string vals, array int hm_state, string key) returns none
+    int cap = hm_state[0]
+    int hash = hash_key(key)
+    int index = hash % cap
+
+    while keys[index] != ""
+        if keys[index] == key
+            keys[index] = "__deleted__"
+            vals[index] = ""
+            hm_state[1] = hm_state[1] - 1
+            return
+        end if
+        index = index + 1
+        if index >= cap
+            index = 0
+        end if
+    end while
+end function
+
+// hm_len: from ht.c ht_length
+function hm_len(array int hm_state) returns int
+    return hm_state[1]
+end function
+
+function main() returns int
+    // Initialize hash map — capacity 16 (from ht.c INITIAL_CAPACITY)
+    array string keys = ["","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]
+    array string vals = ["","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",""]
+    // hm_state[0]=capacity, hm_state[1]=length
+    array int hm_state = [16, 0]
+
+    // === 50+ operations ===
+
+    // Ops 1-10: Set initial entries
+    print "Setting 10 entries..."
+    hm_set(keys, vals, hm_state, "apple", "red")
+    hm_set(keys, vals, hm_state, "banana", "yellow")
+    hm_set(keys, vals, hm_state, "cherry", "red")
+    hm_set(keys, vals, hm_state, "date", "brown")
+    hm_set(keys, vals, hm_state, "elderberry", "purple")
+    hm_set(keys, vals, hm_state, "fig", "green")
+    hm_set(keys, vals, hm_state, "grape", "purple")
+    hm_set(keys, vals, hm_state, "honeydew", "green")
+    hm_set(keys, vals, hm_state, "kiwi", "brown")
+    hm_set(keys, vals, hm_state, "lemon", "yellow")
+    print "Length:"
+    print hm_len(hm_state)
+
+    // Ops 11-15: Get existing keys
+    print ""
+    print "Get tests:"
+    string v1 = hm_get(keys, vals, hm_state, "apple")?
+    print "apple -> {v1}"
+    string v2 = hm_get(keys, vals, hm_state, "banana")?
+    print "banana -> {v2}"
+    string v3 = hm_get(keys, vals, hm_state, "grape")?
+    print "grape -> {v3}"
+    string v4 = hm_get(keys, vals, hm_state, "kiwi")?
+    print "kiwi -> {v4}"
+    string v5 = hm_get(keys, vals, hm_state, "lemon")?
+    print "lemon -> {v5}"
+
+    // Ops 16-20: Has checks
+    print ""
+    print "Has tests:"
+    print "has apple:"
+    print hm_has(keys, hm_state, "apple")
+    print "has mango:"
+    print hm_has(keys, hm_state, "mango")
+    print "has cherry:"
+    print hm_has(keys, hm_state, "cherry")
+    print "has zzz:"
+    print hm_has(keys, hm_state, "zzz")
+    print "has fig:"
+    print hm_has(keys, hm_state, "fig")
+
+    // Ops 21-25: Update existing keys
+    print ""
+    print "Updating 5 entries..."
+    hm_set(keys, vals, hm_state, "apple", "green")
+    hm_set(keys, vals, hm_state, "banana", "brown")
+    hm_set(keys, vals, hm_state, "cherry", "dark red")
+    hm_set(keys, vals, hm_state, "grape", "green")
+    hm_set(keys, vals, hm_state, "lemon", "bright yellow")
+    print "Length after updates (should be same):"
+    print hm_len(hm_state)
+    string v6 = hm_get(keys, vals, hm_state, "apple")?
+    print "apple -> {v6}"
+    string v7 = hm_get(keys, vals, hm_state, "cherry")?
+    print "cherry -> {v7}"
+
+    // Ops 26-30: Delete entries
+    print ""
+    print "Deleting fig, date, elderberry"
+    hm_delete(keys, vals, hm_state, "fig")
+    hm_delete(keys, vals, hm_state, "date")
+    hm_delete(keys, vals, hm_state, "elderberry")
+    print "Length after deletes:"
+    print hm_len(hm_state)
+    print "has fig:"
+    print hm_has(keys, hm_state, "fig")
+    print "has date:"
+    print hm_has(keys, hm_state, "date")
+
+    // Ops 31-40: Add more entries (should trigger expansion at capacity/2)
+    print ""
+    print "Adding 10 more entries..."
+    hm_set(keys, vals, hm_state, "mango", "orange")
+    hm_set(keys, vals, hm_state, "nectarine", "orange")
+    hm_set(keys, vals, hm_state, "orange", "orange")
+    hm_set(keys, vals, hm_state, "papaya", "orange")
+    hm_set(keys, vals, hm_state, "quince", "yellow")
+    hm_set(keys, vals, hm_state, "raspberry", "red")
+    hm_set(keys, vals, hm_state, "strawberry", "red")
+    hm_set(keys, vals, hm_state, "tangerine", "orange")
+    hm_set(keys, vals, hm_state, "watermelon", "green")
+    hm_set(keys, vals, hm_state, "plum", "purple")
+    print "Length:"
+    print hm_len(hm_state)
+
+    // Ops 41-50: Verify all entries survive expansion
+    print ""
+    print "Verify after expansion:"
+    string va = hm_get(keys, vals, hm_state, "apple")?
+    print "apple -> {va}"
+    string vb = hm_get(keys, vals, hm_state, "banana")?
+    print "banana -> {vb}"
+    string vm = hm_get(keys, vals, hm_state, "mango")?
+    print "mango -> {vm}"
+    string vo = hm_get(keys, vals, hm_state, "orange")?
+    print "orange -> {vo}"
+    string vr = hm_get(keys, vals, hm_state, "raspberry")?
+    print "raspberry -> {vr}"
+    string vw = hm_get(keys, vals, hm_state, "watermelon")?
+    print "watermelon -> {vw}"
+    string vp = hm_get(keys, vals, hm_state, "plum")?
+    print "plum -> {vp}"
+    print "has strawberry:"
+    print hm_has(keys, hm_state, "strawberry")
+    print "has fig (deleted):"
+    print hm_has(keys, hm_state, "fig")
+    print "Final length:"
+    print hm_len(hm_state)
+
+    return 0
+end function

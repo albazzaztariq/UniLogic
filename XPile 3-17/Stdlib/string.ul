@@ -1,0 +1,142 @@
+// string.ul — standard string library for UniLogic
+// Usage: import "Stdlib/string.ul" function str_len(string s) returns int
+
+// FFI bindings to C string.h
+import "string" function strlen(string s) returns int
+import "string" function strncmp(string a, string b, int n) returns int
+import "string" function strcmp(string a, string b) returns int
+import "string" function strstr(string haystack, string needle) returns string
+import "string" function strcpy(string dest, string src) returns string
+import "string" function strcat(string dest, string src) returns string
+
+// str_len — return length of string
+function str_len(string s) returns int
+  return strlen(s)
+end function
+
+// str_equals — compare two strings for equality
+function str_equals(string a, string b) returns bool
+  return strcmp(a, b) == 0
+end function
+
+// str_concat — concatenate two strings (allocates new string)
+function str_concat(string a, string b) returns string
+  int alen = strlen(a)
+  int blen = strlen(b)
+  string result = memtake(alen + blen + 1)
+  strcpy(result, a)
+  strcat(result, b)
+  return result
+end function
+
+// str_contains — check if string contains a substring
+function str_contains(string s, string sub) returns bool
+  string found = strstr(s, sub)
+  return found != empty
+end function
+
+// str_starts_with — check if string starts with prefix
+function str_starts_with(string s, string prefix) returns bool
+  int plen = strlen(prefix)
+  return strncmp(s, prefix, plen) == 0
+end function
+
+// str_ends_with — check if string ends with suffix
+function str_ends_with(string s, string suffix) returns bool
+  int slen = strlen(s)
+  int suflen = strlen(suffix)
+  if suflen > slen
+    return false
+  end if
+  int offset = slen - suflen
+  int i = 0
+  while i < suflen
+    if s[offset + i] != suffix[i]
+      return false
+    end if
+    i = i + 1
+  end while
+  return true
+end function
+
+// str_upper — convert string to uppercase (allocates new string)
+function str_upper(string s) returns string
+  int len = strlen(s)
+  string result = memtake(len + 1)
+  int i = 0
+  while i < len
+    int c = s[i]
+    if c >= 97
+      if c <= 122
+        c = c - 32
+      end if
+    end if
+    result[i] = c
+    i = i + 1
+  end while
+  result[len] = 0
+  return result
+end function
+
+// str_lower — convert string to lowercase (allocates new string)
+function str_lower(string s) returns string
+  int len = strlen(s)
+  string result = memtake(len + 1)
+  int i = 0
+  while i < len
+    int c = s[i]
+    if c >= 65
+      if c <= 90
+        c = c + 32
+      end if
+    end if
+    result[i] = c
+    i = i + 1
+  end while
+  result[len] = 0
+  return result
+end function
+
+// str_trim — remove leading and trailing whitespace (allocates new string)
+function str_trim(string s) returns string
+  int len = strlen(s)
+  int start = 0
+  while start < len
+    int c = s[start]
+    if c != 32
+      if c != 9
+        if c != 10
+          if c != 13
+            escape
+          end if
+        end if
+      end if
+    end if
+    start = start + 1
+  end while
+
+  int stop = len - 1
+  while stop >= start
+    int c = s[stop]
+    if c != 32
+      if c != 9
+        if c != 10
+          if c != 13
+            escape
+          end if
+        end if
+      end if
+    end if
+    stop = stop - 1
+  end while
+
+  int newlen = stop - start + 1
+  string result = memtake(newlen + 1)
+  int i = 0
+  while i < newlen
+    result[i] = s[start + i]
+    i = i + 1
+  end while
+  result[newlen] = 0
+  return result
+end function

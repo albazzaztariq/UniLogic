@@ -1,0 +1,675 @@
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+DEBUG:pygls.server:Content length: 117
+DEBUG:pygls.protocol.json_rpc:Request 'initialize' received
+INFO:pygls.protocol.language_server:Language server initialized InitializeParams(capabilities=ClientCapabilities(workspace=None, text_document=TextDocumentClientCapabilities(synchronization=None, filters=None, completion=None, hover=None, signature_help=None, declaration=None, definition=None, type_definition=None, implementation=None, references=None, document_highlight=None, document_symbol=None, code_action=None, code_lens=None, document_link=None, color_provider=None, formatting=DocumentFormattingClientCapabilities(dynamic_registration=None), range_formatting=None, on_type_formatting=None, rename=None, folding_range=None, selection_range=None, publish_diagnostics=None, call_hierarchy=None, semantic_tokens=None, linked_editing_range=None, moniker=None, type_hierarchy=None, inline_value=None, inlay_hint=None, diagnostic=None, inline_completion=None), notebook_document=None, window=None, general=None, experimental=None), process_id=None, client_info=None, locale=None, root_path=None, root_uri=None, initialization_options=None, trace=None, work_done_token=None, workspace_folders=None)
+DEBUG:pygls.protocol.language_server:Server capabilities: {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "documentFormattingProvider": {"documentSelector": null}, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "documentFormattingProvider": {"documentSelector": null}, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}, "serverInfo": {"name": "ul-language-server", "version": "v0.1.0"}}}
+DEBUG:pygls.server:Content length: 57
+DEBUG:pygls.protocol.json_rpc:Notification 'initialized' received
+DEBUG:pygls.server:Content length: 242
+DEBUG:pygls.protocol.json_rpc:Notification 'textDocument/didOpen' received
+DEBUG:pygls.protocol.json_rpc:Sending notification: 'textDocument/publishDiagnostics' PublishDiagnosticsParams(uri='file:///messy.ul', diagnostics=[], version=None)
+INFO:pygls.protocol.json_rpc:Sending data: {"params": {"uri": "file:///messy.ul", "diagnostics": []}, "method": "textDocument/publishDiagnostics", "jsonrpc": "2.0"}
+DEBUG:pygls.server:Content length: 170
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/formatting' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 2, "jsonrpc": "2.0", "result": [{"range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 0}}, "newText": "function main() returns int\n  int x = 5\n  print x\n\n  return 0\nend function\n"}]}
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+DEBUG:pygls.server:Content length: 83
+DEBUG:pygls.protocol.json_rpc:Request 'initialize' received
+INFO:pygls.protocol.language_server:Language server initialized InitializeParams(capabilities=ClientCapabilities(workspace=None, text_document=None, notebook_document=None, window=None, general=None, experimental=None), process_id=None, client_info=None, locale=None, root_path=None, root_uri=None, initialization_options=None, trace=None, work_done_token=None, workspace_folders=None)
+DEBUG:pygls.protocol.language_server:Server capabilities: {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "documentFormattingProvider": {"documentSelector": null}, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "documentFormattingProvider": {"documentSelector": null}, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}, "serverInfo": {"name": "ul-language-server", "version": "v0.1.0"}}}
+DEBUG:pygls.server:Content length: 57
+DEBUG:pygls.protocol.json_rpc:Notification 'initialized' received
+DEBUG:pygls.server:Content length: 242
+DEBUG:pygls.protocol.json_rpc:Notification 'textDocument/didOpen' received
+DEBUG:pygls.protocol.json_rpc:Sending notification: 'textDocument/publishDiagnostics' PublishDiagnosticsParams(uri='file:///messy.ul', diagnostics=[], version=None)
+INFO:pygls.protocol.json_rpc:Sending data: {"params": {"uri": "file:///messy.ul", "diagnostics": []}, "method": "textDocument/publishDiagnostics", "jsonrpc": "2.0"}
+DEBUG:pygls.server:Content length: 170
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/formatting' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 2, "jsonrpc": "2.0", "result": [{"range": {"start": {"line": 0, "character": 0}, "end": {"line": 8, "character": 0}}, "newText": "function main() returns int\n  int x = 5\n  print x\n\n  return 0\nend function\n"}]}
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+DEBUG:pygls.server:Content length: 83
+DEBUG:pygls.protocol.json_rpc:Request 'initialize' received
+INFO:pygls.protocol.language_server:Language server initialized InitializeParams(capabilities=ClientCapabilities(workspace=None, text_document=None, notebook_document=None, window=None, general=None, experimental=None), process_id=None, client_info=None, locale=None, root_path=None, root_uri=None, initialization_options=None, trace=None, work_done_token=None, workspace_folders=None)
+DEBUG:pygls.protocol.language_server:Server capabilities: {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "documentSymbolProvider": true, "documentFormattingProvider": {"documentSelector": null}, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "documentSymbolProvider": true, "documentFormattingProvider": {"documentSelector": null}, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}, "serverInfo": {"name": "ul-language-server", "version": "v0.1.0"}}}
+DEBUG:pygls.server:Content length: 57
+DEBUG:pygls.protocol.json_rpc:Notification 'initialized' received
+DEBUG:pygls.server:Content length: 1385
+DEBUG:pygls.protocol.json_rpc:Notification 'textDocument/didOpen' received
+DEBUG:pygls.protocol.json_rpc:Sending notification: 'textDocument/publishDiagnostics' PublishDiagnosticsParams(uri='file:///test.ul', diagnostics=[], version=None)
+INFO:pygls.protocol.json_rpc:Sending data: {"params": {"uri": "file:///test.ul", "diagnostics": []}, "method": "textDocument/publishDiagnostics", "jsonrpc": "2.0"}
+DEBUG:pygls.server:Content length: 124
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/documentSymbol' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 2, "jsonrpc": "2.0", "result": [{"name": "add", "kind": 12, "range": {"start": {"line": 4, "character": 8}, "end": {"line": 6, "character": 0}}, "selectionRange": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 12}}, "detail": "(int a, int b) returns int", "children": [{"name": "a", "kind": 13, "range": {"start": {"line": 4, "character": 18}, "end": {"line": 4, "character": 20}}, "selectionRange": {"start": {"line": 4, "character": 18}, "end": {"line": 4, "character": 20}}, "detail": "int"}, {"name": "b", "kind": 13, "range": {"start": {"line": 4, "character": 25}, "end": {"line": 4, "character": 27}}, "selectionRange": {"start": {"line": 4, "character": 25}, "end": {"line": 4, "character": 27}}, "detail": "int"}]}, {"name": "factorial", "kind": 12, "range": {"start": {"line": 8, "character": 8}, "end": {"line": 13, "character": 0}}, "selectionRange": {"start": {"line": 8, "character": 8}, "end": {"line": 8, "character": 18}}, "detail": "(int n) returns int", "children": [{"name": "n", "kind": 13, "range": {"start": {"line": 8, "character": 24}, "end": {"line": 8, "character": 26}}, "selectionRange": {"start": {"line": 8, "character": 24}, "end": {"line": 8, "character": 26}}, "detail": "int"}]}, {"name": "is_even", "kind": 12, "range": {"start": {"line": 15, "character": 8}, "end": {"line": 17, "character": 0}}, "selectionRange": {"start": {"line": 15, "character": 8}, "end": {"line": 15, "character": 16}}, "detail": "(int n) returns bool", "children": [{"name": "n", "kind": 13, "range": {"start": {"line": 15, "character": 22}, "end": {"line": 15, "character": 24}}, "selectionRange": {"start": {"line": 15, "character": 22}, "end": {"line": 15, "character": 24}}, "detail": "int"}]}, {"name": "clamp", "kind": 12, "range": {"start": {"line": 19, "character": 8}, "end": {"line": 27, "character": 0}}, "selectionRange": {"start": {"line": 19, "character": 8}, "end": {"line": 19, "character": 14}}, "detail": "(int val, int lo, int hi) returns int", "children": [{"name": "val", "kind": 13, "range": {"start": {"line": 19, "character": 22}, "end": {"line": 19, "character": 26}}, "selectionRange": {"start": {"line": 19, "character": 22}, "end": {"line": 19, "character": 26}}, "detail": "int"}, {"name": "lo", "kind": 13, "range": {"start": {"line": 19, "character": 30}, "end": {"line": 19, "character": 33}}, "selectionRange": {"start": {"line": 19, "character": 30}, "end": {"line": 19, "character": 33}}, "detail": "int"}, {"name": "hi", "kind": 13, "range": {"start": {"line": 19, "character": 38}, "end": {"line": 19, "character": 41}}, "selectionRange": {"start": {"line": 19, "character": 38}, "end": {"line": 19, "character": 41}}, "detail": "int"}]}, {"name": "main", "kind": 12, "range": {"start": {"line": 29, "character": 8}, "end": {"line": 70, "character": 0}}, "selectionRange": {"start": {"line": 29, "character": 8}, "end": {"line": 29, "character": 13}}, "detail": "() returns int", "children": [{"name": "x", "kind": 13, "range": {"start": {"line": 31, "character": 5}, "end": {"line": 31, "character": 7}}, "selectionRange": {"start": {"line": 31, "character": 5}, "end": {"line": 31, "character": 7}}, "detail": "int"}, {"name": "limit", "kind": 13, "range": {"start": {"line": 35, "character": 7}, "end": {"line": 35, "character": 13}}, "selectionRange": {"start": {"line": 35, "character": 7}, "end": {"line": 35, "character": 13}}, "detail": "fixed int"}, {"name": "i", "kind": 13, "range": {"start": {"line": 38, "character": 5}, "end": {"line": 38, "character": 7}}, "selectionRange": {"start": {"line": 38, "character": 5}, "end": {"line": 38, "character": 7}}, "detail": "int"}, {"name": "ratio", "kind": 13, "range": {"start": {"line": 52, "character": 7}, "end": {"line": 52, "character": 13}}, "selectionRange": {"start": {"line": 52, "character": 7}, "end": {"line": 52, "character": 13}}, "detail": "float"}, {"name": "clamped", "kind": 13, "range": {"start": {"line": 56, "character": 5}, "end": {"line": 56, "character": 13}}, "selectionRange": {"start": {"line": 56, "character": 5}, "end": {"line": 56, "character": 13}}, "detail": "int"}, {"name": "fact", "kind": 13, "range": {"start": {"line": 60, "character": 5}, "end": {"line": 60, "character": 10}}, "selectionRange": {"start": {"line": 60, "character": 5}, "end": {"line": 60, "character": 10}}, "detail": "int"}, {"name": "nums", "kind": 13, "range": {"start": {"line": 64, "character": 7}, "end": {"line": 64, "character": 12}}, "selectionRange": {"start": {"line": 64, "character": 7}, "end": {"line": 64, "character": 12}}, "detail": "int"}]}]}
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+DEBUG:pygls.server:Content length: 83
+DEBUG:pygls.protocol.json_rpc:Request 'initialize' received
+INFO:pygls.protocol.language_server:Language server initialized InitializeParams(capabilities=ClientCapabilities(workspace=None, text_document=None, notebook_document=None, window=None, general=None, experimental=None), process_id=None, client_info=None, locale=None, root_path=None, root_uri=None, initialization_options=None, trace=None, work_done_token=None, workspace_folders=None)
+DEBUG:pygls.protocol.language_server:Server capabilities: {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}, "serverInfo": {"name": "ul-language-server", "version": "v0.1.0"}}}
+DEBUG:pygls.server:Content length: 57
+DEBUG:pygls.protocol.json_rpc:Notification 'initialized' received
+DEBUG:pygls.server:Content length: 1385
+DEBUG:pygls.protocol.json_rpc:Notification 'textDocument/didOpen' received
+DEBUG:pygls.protocol.json_rpc:Sending notification: 'textDocument/publishDiagnostics' PublishDiagnosticsParams(uri='file:///test.ul', diagnostics=[], version=None)
+INFO:pygls.protocol.json_rpc:Sending data: {"params": {"uri": "file:///test.ul", "diagnostics": []}, "method": "textDocument/publishDiagnostics", "jsonrpc": "2.0"}
+DEBUG:pygls.server:Content length: 203
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/references' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 10, "jsonrpc": "2.0", "result": [{"uri": "file:///test.ul", "range": {"start": {"line": 4, "character": 9}, "end": {"line": 4, "character": 12}}}, {"uri": "file:///test.ul", "range": {"start": {"line": 31, "character": 10}, "end": {"line": 31, "character": 13}}}]}
+DEBUG:pygls.server:Content length: 176
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/rename' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 11, "jsonrpc": "2.0", "result": {"changes": {"file:///test.ul": [{"range": {"start": {"line": 4, "character": 9}, "end": {"line": 4, "character": 12}}, "newText": "sum"}, {"range": {"start": {"line": 31, "character": 10}, "end": {"line": 31, "character": 13}}, "newText": "sum"}]}}}
+DEBUG:pygls.server:Content length: 207
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/inlayHint' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 12, "jsonrpc": "2.0", "result": [{"position": {"line": 31, "character": 6}, "label": ": int", "kind": 1, "paddingLeft": false, "paddingRight": true}, {"position": {"line": 31, "character": 15}, "label": "a:", "kind": 2, "paddingLeft": false, "paddingRight": true}, {"position": {"line": 31, "character": 18}, "label": "b:", "kind": 2, "paddingLeft": false, "paddingRight": true}, {"position": {"line": 35, "character": 12}, "label": ": fixed int", "kind": 1, "paddingLeft": false, "paddingRight": true}, {"position": {"line": 38, "character": 6}, "label": ": int", "kind": 1, "paddingLeft": false, "paddingRight": true}]}
+DEBUG:pygls.server:Content length: 238
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/codeAction' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 13, "jsonrpc": "2.0", "result": []}
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+DEBUG:pygls.server:Content length: 83
+DEBUG:pygls.protocol.json_rpc:Request 'initialize' received
+INFO:pygls.protocol.language_server:Language server initialized InitializeParams(capabilities=ClientCapabilities(workspace=None, text_document=None, notebook_document=None, window=None, general=None, experimental=None), process_id=None, client_info=None, locale=None, root_path=None, root_uri=None, initialization_options=None, trace=None, work_done_token=None, workspace_folders=None)
+DEBUG:pygls.protocol.language_server:Server capabilities: {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}, "serverInfo": {"name": "ul-language-server", "version": "v0.1.0"}}}
+DEBUG:pygls.server:Content length: 57
+DEBUG:pygls.protocol.json_rpc:Notification 'initialized' received
+DEBUG:pygls.server:Content length: 308
+DEBUG:pygls.protocol.json_rpc:Notification 'textDocument/didOpen' received
+DEBUG:pygls.protocol.json_rpc:Sending notification: 'textDocument/publishDiagnostics' PublishDiagnosticsParams(uri='file:///dead.ul', diagnostics=[Diagnostic(range=0:8-0:21, message="Function 'unused_helper' is never called.", severity=<DiagnosticSeverity.Hint: 4>, code=None, code_description=None, source='ul-deadcode', tags=[<DiagnosticTag.Unnecessary: 1>], related_information=None, data=None)], version=None)
+INFO:pygls.protocol.json_rpc:Sending data: {"params": {"uri": "file:///dead.ul", "diagnostics": [{"range": {"start": {"line": 0, "character": 8}, "end": {"line": 0, "character": 21}}, "message": "Function 'unused_helper' is never called.", "severity": 4, "source": "ul-deadcode", "tags": [1]}]}, "method": "textDocument/publishDiagnostics", "jsonrpc": "2.0"}
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.', '(', ' '], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+DEBUG:pygls.server:Content length: 83
+DEBUG:pygls.protocol.json_rpc:Request 'initialize' received
+INFO:pygls.protocol.language_server:Language server initialized InitializeParams(capabilities=ClientCapabilities(workspace=None, text_document=None, notebook_document=None, window=None, general=None, experimental=None), process_id=None, client_info=None, locale=None, root_path=None, root_uri=None, initialization_options=None, trace=None, work_done_token=None, workspace_folders=None)
+DEBUG:pygls.protocol.language_server:Server capabilities: {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": [".", "(", " "]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}, "serverInfo": {"name": "ul-language-server", "version": "v0.1.0"}}}
+DEBUG:pygls.server:Content length: 57
+DEBUG:pygls.protocol.json_rpc:Notification 'initialized' received
+DEBUG:pygls.server:Content length: 1405
+DEBUG:pygls.protocol.json_rpc:Notification 'textDocument/didOpen' received
+DEBUG:pygls.protocol.json_rpc:Sending notification: 'textDocument/publishDiagnostics' PublishDiagnosticsParams(uri='file:///test.ul', diagnostics=[], version=None)
+INFO:pygls.protocol.json_rpc:Sending data: {"params": {"uri": "file:///test.ul", "diagnostics": []}, "method": "textDocument/publishDiagnostics", "jsonrpc": "2.0"}
+DEBUG:pygls.server:Content length: 124
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/documentSymbol' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 2, "jsonrpc": "2.0", "result": [{"name": "@dr memory", "kind": 7, "range": {"start": {"line": 3, "character": 0}, "end": {"line": 3, "character": 20}}, "selectionRange": {"start": {"line": 3, "character": 1}, "end": {"line": 3, "character": 4}}, "detail": "manual"}, {"name": "add", "kind": 12, "range": {"start": {"line": 4, "character": 0}, "end": {"line": 6, "character": 12}}, "selectionRange": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 11}}, "detail": "(int a, int b) returns int"}, {"name": "factorial", "kind": 12, "range": {"start": {"line": 8, "character": 0}, "end": {"line": 13, "character": 12}}, "selectionRange": {"start": {"line": 8, "character": 8}, "end": {"line": 8, "character": 17}}, "detail": "(int n) returns int"}, {"name": "is_even", "kind": 12, "range": {"start": {"line": 15, "character": 0}, "end": {"line": 17, "character": 12}}, "selectionRange": {"start": {"line": 15, "character": 8}, "end": {"line": 15, "character": 15}}, "detail": "(int n) returns bool"}, {"name": "clamp", "kind": 12, "range": {"start": {"line": 19, "character": 0}, "end": {"line": 27, "character": 12}}, "selectionRange": {"start": {"line": 19, "character": 8}, "end": {"line": 19, "character": 13}}, "detail": "(int val, int lo, int hi) returns int"}, {"name": "main", "kind": 12, "range": {"start": {"line": 29, "character": 0}, "end": {"line": 70, "character": 12}}, "selectionRange": {"start": {"line": 29, "character": 8}, "end": {"line": 29, "character": 12}}, "detail": "() returns int"}]}
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.'], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.feature_manager:Registered "workspace/symbol" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.'], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.feature_manager:Registered "workspace/symbol" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.'], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.feature_manager:Registered "workspace/symbol" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.'], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.feature_manager:Registered "workspace/symbol" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+DEBUG:pygls.server:Content length: 83
+DEBUG:pygls.protocol.json_rpc:Request 'initialize' received
+INFO:pygls.protocol.language_server:Language server initialized InitializeParams(capabilities=ClientCapabilities(workspace=None, text_document=None, notebook_document=None, window=None, general=None, experimental=None), process_id=None, client_info=None, locale=None, root_path=None, root_uri=None, initialization_options=None, trace=None, work_done_token=None, workspace_folders=None)
+DEBUG:pygls.protocol.language_server:Server capabilities: {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": ["."]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "workspaceSymbolProvider": {"resolveProvider": false}, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": ["."]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "workspaceSymbolProvider": {"resolveProvider": false}, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}, "serverInfo": {"name": "ul-language-server", "version": "v0.1.0"}}}
+DEBUG:pygls.server:Content length: 57
+DEBUG:pygls.protocol.json_rpc:Notification 'initialized' received
+DEBUG:pygls.server:Content length: 1405
+DEBUG:pygls.protocol.json_rpc:Notification 'textDocument/didOpen' received
+DEBUG:pygls.protocol.json_rpc:Sending notification: 'textDocument/publishDiagnostics' PublishDiagnosticsParams(uri='file:///test.ul', diagnostics=[], version=None)
+INFO:pygls.protocol.json_rpc:Sending data: {"params": {"uri": "file:///test.ul", "diagnostics": []}, "method": "textDocument/publishDiagnostics", "jsonrpc": "2.0"}
+DEBUG:pygls.server:Content length: 157
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/hover' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 10, "jsonrpc": "2.0", "result": {"contents": {"kind": "markdown", "value": "**function** `add(int a, int b)` returns `int`"}, "range": {"start": {"line": 4, "character": 9}, "end": {"line": 4, "character": 12}}}}
+DEBUG:pygls.server:Content length: 163
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/completion' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 11, "jsonrpc": "2.0", "result": {"isIncomplete": false, "items": [{"label": "absval", "kind": 14, "insertText": "absval", "insertTextFormat": 1}, {"label": "address", "kind": 14, "insertText": "address", "insertTextFormat": 1}, {"label": "and", "kind": 14, "insertText": "and", "insertTextFormat": 1}, {"label": "arena", "kind": 25, "insertText": "arena", "insertTextFormat": 1}, {"label": "array", "kind": 25, "insertText": "array", "insertTextFormat": 1}, {"label": "bitflip", "kind": 14, "insertText": "bitflip", "insertTextFormat": 1}, {"label": "bool", "kind": 25, "insertText": "bool", "insertTextFormat": 1}, {"label": "both0", "kind": 14, "insertText": "both0", "insertTextFormat": 1}, {"label": "both1", "kind": 14, "insertText": "both1", "insertTextFormat": 1}, {"label": "cast", "kind": 14, "insertText": "cast", "insertTextFormat": 1}, {"label": "change", "kind": 14, "insertText": "change", "insertTextFormat": 1}, {"label": "complex", "kind": 25, "insertText": "complex", "insertTextFormat": 1}, {"label": "const", "kind": 14, "insertText": "const", "insertTextFormat": 1}, {"label": "constant", "kind": 14, "insertText": "constant", "insertTextFormat": 1}, {"label": "continue", "kind": 14, "insertText": "continue", "insertTextFormat": 1}, {"label": "default", "kind": 14, "insertText": "default", "insertTextFormat": 1}, {"label": "delta", "kind": 14, "insertText": "delta", "insertTextFormat": 1}, {"label": "deref", "kind": 14, "insertText": "deref", "insertTextFormat": 1}, {"label": "do", "kind": 14, "insertText": "do", "insertTextFormat": 1}, {"label": "double", "kind": 25, "insertText": "double", "insertTextFormat": 1}, {"label": "each", "kind": 14, "insertText": "each", "insertTextFormat": 1}, {"label": "either1", "kind": 14, "insertText": "either1", "insertTextFormat": 1}, {"label": "else", "kind": 14, "insertText": "else", "insertTextFormat": 1}, {"label": "empty", "kind": 14, "insertText": "empty", "insertTextFormat": 1}, {"label": "end", "kind": 14, "insertText": "end", "insertTextFormat": 1}, {"label": "equals", "kind": 14, "insertText": "equals", "insertTextFormat": 1}, {"label": "error", "kind": 14, "insertText": "error", "insertTextFormat": 1}, {"label": "escape", "kind": 14, "insertText": "escape", "insertTextFormat": 1}, {"label": "exit", "kind": 14, "insertText": "exit", "insertTextFormat": 1}, {"label": "export", "kind": 14, "insertText": "export", "insertTextFormat": 1}, {"label": "false", "kind": 14, "insertText": "false", "insertTextFormat": 1}, {"label": "file", "kind": 25, "insertText": "file", "insertTextFormat": 1}, {"label": "fixed", "kind": 14, "insertText": "fixed", "insertTextFormat": 1}, {"label": "float", "kind": 25, "insertText": "float", "insertTextFormat": 1}, {"label": "for", "kind": 14, "insertText": "for", "insertTextFormat": 1}, {"label": "from", "kind": 14, "insertText": "from", "insertTextFormat": 1}, {"label": "function", "kind": 14, "insertText": "function", "insertTextFormat": 1}, {"label": "if", "kind": 14, "insertText": "if", "insertTextFormat": 1}, {"label": "import", "kind": 14, "insertText": "import", "insertTextFormat": 1}, {"label": "in", "kind": 14, "insertText": "in", "insertTextFormat": 1}, {"label": "inherits", "kind": 14, "insertText": "inherits", "insertTextFormat": 1}, {"label": "inline", "kind": 14, "insertText": "inline", "insertTextFormat": 1}, {"label": "int", "kind": 25, "insertText": "int", "insertTextFormat": 1}, {"label": "int16", "kind": 25, "insertText": "int16", "insertTextFormat": 1}, {"label": "int32", "kind": 25, "insertText": "int32", "insertTextFormat": 1}, {"label": "int64", "kind": 25, "insertText": "int64", "insertTextFormat": 1}, {"label": "int8", "kind": 25, "insertText": "int8", "insertTextFormat": 1}, {"label": "integer", "kind": 25, "insertText": "integer", "insertTextFormat": 1}, {"label": "iterate", "kind": 14, "insertText": "iterate", "insertTextFormat": 1}, {"label": "killswitch", "kind": 14, "insertText": "killswitch", "insertTextFormat": 1}, {"label": "left", "kind": 14, "insertText": "left", "insertTextFormat": 1}, {"label": "list", "kind": 25, "insertText": "list", "insertTextFormat": 1}, {"label": "lock", "kind": 14, "insertText": "lock", "insertTextFormat": 1}, {"label": "map", "kind": 25, "insertText": "map", "insertTextFormat": 1}, {"label": "match", "kind": 14, "insertText": "match", "insertTextFormat": 1}, {"label": "memcopy", "kind": 14, "insertText": "memcopy", "insertTextFormat": 1}, {"label": "memgive", "kind": 14, "insertText": "memgive", "insertTextFormat": 1}, {"label": "memmove", "kind": 14, "insertText": "memmove", "insertTextFormat": 1}, {"label": "memset", "kind": 14, "insertText": "memset", "insertTextFormat": 1}, {"label": "memtake", "kind": 14, "insertText": "memtake", "insertTextFormat": 1}, {"label": "negate", "kind": 14, "insertText": "negate", "insertTextFormat": 1}, {"label": "new", "kind": 14, "insertText": "new", "insertTextFormat": 1}, {"label": "nocache", "kind": 14, "insertText": "nocache", "insertTextFormat": 1}, {"label": "none", "kind": 25, "insertText": "none", "insertTextFormat": 1}, {"label": "not", "kind": 14, "insertText": "not", "insertTextFormat": 1}, {"label": "object", "kind": 14, "insertText": "object", "insertTextFormat": 1}, {"label": "ok", "kind": 14, "insertText": "ok", "insertTextFormat": 1}, {"label": "or", "kind": 14, "insertText": "or", "insertTextFormat": 1}, {"label": "pack", "kind": 14, "insertText": "pack", "insertTextFormat": 1}, {"label": "parallel", "kind": 14, "insertText": "parallel", "insertTextFormat": 1}, {"label": "portal", "kind": 14, "insertText": "portal", "insertTextFormat": 1}, {"label": "print", "kind": 14, "insertText": "print", "insertTextFormat": 1}, {"label": "prompt", "kind": 14, "insertText": "prompt", "insertTextFormat": 1}, {"label": "return", "kind": 14, "insertText": "return", "insertTextFormat": 1}, {"label": "returns", "kind": 14, "insertText": "returns", "insertTextFormat": 1}, {"label": "right", "kind": 14, "insertText": "right", "insertTextFormat": 1}, {"label": "size", "kind": 14, "insertText": "size", "insertTextFormat": 1}, {"label": "some", "kind": 14, "insertText": "some", "insertTextFormat": 1}, {"label": "spawn", "kind": 14, "insertText": "spawn", "insertTextFormat": 1}, {"label": "string", "kind": 25, "insertText": "string", "insertTextFormat": 1}, {"label": "teleport", "kind": 14, "insertText": "teleport", "insertTextFormat": 1}, {"label": "true", "kind": 14, "insertText": "true", "insertTextFormat": 1}, {"label": "type", "kind": 14, "insertText": "type", "insertTextFormat": 1}, {"label": "typeof", "kind": 14, "insertText": "typeof", "insertTextFormat": 1}, {"label": "uint16", "kind": 25, "insertText": "uint16", "insertTextFormat": 1}, {"label": "uint32", "kind": 25, "insertText": "uint32", "insertTextFormat": 1}, {"label": "uint64", "kind": 25, "insertText": "uint64", "insertTextFormat": 1}, {"label": "uint8", "kind": 25, "insertText": "uint8", "insertTextFormat": 1}, {"label": "unlock", "kind": 14, "insertText": "unlock", "insertTextFormat": 1}, {"label": "wait", "kind": 14, "insertText": "wait", "insertTextFormat": 1}, {"label": "while", "kind": 14, "insertText": "while", "insertTextFormat": 1}, {"label": "yield", "kind": 14, "insertText": "yield", "insertTextFormat": 1}, {"label": "yields", "kind": 14, "insertText": "yields", "insertTextFormat": 1}, {"label": "add", "kind": 3, "detail": "(int a, int b) returns int", "insertText": "add", "insertTextFormat": 1}, {"label": "factorial", "kind": 3, "detail": "(int n) returns int", "insertText": "factorial", "insertTextFormat": 1}, {"label": "is_even", "kind": 3, "detail": "(int n) returns bool", "insertText": "is_even", "insertTextFormat": 1}, {"label": "clamp", "kind": 3, "detail": "(int val, int lo, int hi) returns int", "insertText": "clamp", "insertTextFormat": 1}, {"label": "main", "kind": 3, "detail": "() returns int", "insertText": "main", "insertTextFormat": 1}, {"label": "x", "kind": 6, "detail": "int", "insertText": "x", "insertTextFormat": 1}]}}
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.'], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.feature_manager:Registered "workspace/symbol" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+DEBUG:pygls.server:Content length: 83
+DEBUG:pygls.protocol.json_rpc:Request 'initialize' received
+INFO:pygls.protocol.language_server:Language server initialized InitializeParams(capabilities=ClientCapabilities(workspace=None, text_document=None, notebook_document=None, window=None, general=None, experimental=None), process_id=None, client_info=None, locale=None, root_path=None, root_uri=None, initialization_options=None, trace=None, work_done_token=None, workspace_folders=None)
+DEBUG:pygls.protocol.language_server:Server capabilities: {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": ["."]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "workspaceSymbolProvider": {"resolveProvider": false}, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": ["."]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "workspaceSymbolProvider": {"resolveProvider": false}, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}, "serverInfo": {"name": "ul-language-server", "version": "v0.1.0"}}}
+DEBUG:pygls.server:Content length: 57
+DEBUG:pygls.protocol.json_rpc:Notification 'initialized' received
+DEBUG:pygls.server:Content length: 1405
+DEBUG:pygls.protocol.json_rpc:Notification 'textDocument/didOpen' received
+DEBUG:pygls.protocol.json_rpc:Sending notification: 'textDocument/publishDiagnostics' PublishDiagnosticsParams(uri='file:///test.ul', diagnostics=[], version=None)
+INFO:pygls.protocol.json_rpc:Sending data: {"params": {"uri": "file:///test.ul", "diagnostics": []}, "method": "textDocument/publishDiagnostics", "jsonrpc": "2.0"}
+DEBUG:pygls.server:Content length: 164
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/definition' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 12, "jsonrpc": "2.0", "result": null}
+DEBUG:pygls.server:Content length: 125
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/documentSymbol' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 14, "jsonrpc": "2.0", "result": [{"name": "@dr memory", "kind": 7, "range": {"start": {"line": 3, "character": 0}, "end": {"line": 3, "character": 20}}, "selectionRange": {"start": {"line": 3, "character": 1}, "end": {"line": 3, "character": 4}}, "detail": "manual"}, {"name": "add", "kind": 12, "range": {"start": {"line": 4, "character": 0}, "end": {"line": 6, "character": 12}}, "selectionRange": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 11}}, "detail": "(int a, int b) returns int"}, {"name": "factorial", "kind": 12, "range": {"start": {"line": 8, "character": 0}, "end": {"line": 13, "character": 12}}, "selectionRange": {"start": {"line": 8, "character": 8}, "end": {"line": 8, "character": 17}}, "detail": "(int n) returns int"}, {"name": "is_even", "kind": 12, "range": {"start": {"line": 15, "character": 0}, "end": {"line": 17, "character": 12}}, "selectionRange": {"start": {"line": 15, "character": 8}, "end": {"line": 15, "character": 15}}, "detail": "(int n) returns bool"}, {"name": "clamp", "kind": 12, "range": {"start": {"line": 19, "character": 0}, "end": {"line": 27, "character": 12}}, "selectionRange": {"start": {"line": 19, "character": 8}, "end": {"line": 19, "character": 13}}, "detail": "(int val, int lo, int hi) returns int"}, {"name": "main", "kind": 12, "range": {"start": {"line": 29, "character": 0}, "end": {"line": 70, "character": 12}}, "selectionRange": {"start": {"line": 29, "character": 8}, "end": {"line": 29, "character": 12}}, "detail": "() returns int"}]}
+DEBUG:pygls.server:Content length: 130
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/semanticTokens/full' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 17, "jsonrpc": "2.0", "result": {"data": [0, 0, 35, 6, 0, 1, 0, 70, 6, 0, 1, 0, 61, 6, 0, 1, 1, 1, 9, 0, 0, 2, 2, 2, 0, 0, 7, 6, 2, 0, 0, 2, 1, 5, 0, 0, 7, 6, 2, 0, 1, 8, 8, 0, 0, 0, 4, 3, 1, 0, 0, 4, 3, 7, 0, 0, 2, 1, 2, 0, 0, 5, 3, 7, 0, 0, 2, 1, 2, 0, 0, 9, 7, 0, 0, 0, 4, 3, 7, 0, 1, 8, 6, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 5, 0, 0, 2, 1, 2, 0, 1, 3, 3, 0, 0, 0, 9, 8, 0, 0, 2, 8, 8, 0, 0, 0, 10, 9, 1, 0, 0, 4, 3, 7, 0, 0, 2, 1, 2, 0, 0, 9, 7, 0, 0, 0, 4, 3, 7, 0, 1, 4, 2, 0, 0, 0, 2, 1, 2, 0, 0, 3, 2, 5, 0, 0, 2, 1, 3, 0, 1, 10, 6, 0, 0, 0, 2, 1, 3, 0, 1, 5, 3, 0, 0, 0, 3, 2, 0, 0, 1, 8, 6, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 5, 0, 0, 10, 9, 1, 0, 0, 2, 1, 2, 0, 0, 2, 1, 5, 0, 0, 2, 1, 3, 0, 1, 3, 3, 0, 0, 0, 9, 8, 0, 0, 2, 8, 8, 0, 0, 0, 8, 7, 1, 0, 0, 4, 3, 7, 0, 0, 2, 1, 2, 0, 0, 9, 7, 0, 0, 0, 5, 4, 7, 0, 1, 8, 6, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 5, 0, 0, 2, 1, 3, 0, 0, 3, 2, 5, 0, 0, 2, 1, 3, 0, 1, 3, 3, 0, 0, 0, 9, 8, 0, 0, 2, 8, 8, 0, 0, 0, 6, 5, 1, 0, 0, 4, 3, 7, 0, 0, 4, 3, 2, 0, 0, 5, 3, 7, 0, 0, 3, 2, 2, 0, 0, 5, 3, 7, 0, 0, 3, 2, 2, 0, 0, 9, 7, 0, 0, 0, 4, 3, 7, 0, 1, 4, 2, 0, 0, 0, 4, 3, 2, 0, 0, 2, 1, 5, 0, 0, 3, 2, 2, 0, 1, 10, 6, 0, 0, 0, 3, 2, 2, 0, 1, 5, 3, 0, 0, 0, 3, 2, 0, 0, 1, 4, 2, 0, 0, 0, 4, 3, 2, 0, 0, 2, 1, 5, 0, 0, 3, 2, 2, 0, 1, 10, 6, 0, 0, 0, 3, 2, 2, 0, 1, 5, 3, 0, 0, 0, 3, 2, 0, 0, 1, 8, 6, 0, 0, 0, 4, 3, 2, 0, 1, 3, 3, 0, 0, 0, 9, 8, 0, 0, 2, 8, 8, 0, 0, 0, 5, 4, 1, 0, 0, 10, 7, 0, 0, 0, 4, 3, 7, 0, 1, 2, 19, 6, 0, 1, 5, 3, 7, 0, 0, 2, 1, 2, 0, 0, 2, 1, 5, 0, 0, 4, 3, 1, 0, 0, 2, 1, 3, 0, 0, 3, 1, 3, 0, 1, 7, 5, 0, 0, 0, 2, 1, 2, 0, 2, 2, 16, 6, 0, 1, 7, 5, 0, 0, 0, 4, 3, 7, 0, 0, 6, 5, 2, 2, 0, 2, 1, 5, 0, 0, 4, 3, 3, 0, 2, 2, 13, 6, 0, 1, 5, 3, 7, 0, 0, 2, 1, 2, 0, 0, 2, 1, 5, 0, 0, 2, 1, 3, 0, 1, 7, 5, 0, 0, 0, 2, 1, 2, 0, 0, 2, 1, 5, 0, 0, 2, 1, 3, 0, 1, 9, 5, 0, 0, 0, 2, 1, 2, 0, 1, 5, 1, 2, 0, 0, 3, 2, 5, 0, 0, 2, 1, 3, 0, 1, 5, 3, 0, 0, 0, 6, 5, 0, 0, 2, 2, 12, 6, 0, 1, 4, 2, 0, 0, 0, 8, 7, 1, 0, 0, 2, 1, 2, 0, 1, 9, 5, 0, 0, 0, 2, 1, 3, 0, 1, 6, 4, 0, 0, 1, 9, 5, 0, 0, 0, 2, 1, 3, 0, 1, 5, 3, 0, 0, 0, 3, 2, 0, 0, 2, 2, 7, 6, 0, 1, 7, 5, 7, 0, 0, 6, 5, 2, 0, 0, 2, 1, 5, 0, 0, 7, 6, 0, 0, 0, 2, 1, 2, 0, 0, 3, 2, 5, 0, 0, 5, 5, 7, 0, 1, 7, 5, 0, 0, 0, 6, 5, 2, 0, 2, 2, 8, 6, 0, 1, 5, 3, 7, 0, 0, 8, 7, 2, 0, 0, 2, 1, 5, 0, 0, 6, 5, 1, 0, 0, 2, 1, 2, 0, 0, 3, 1, 3, 0, 0, 3, 1, 3, 0, 1, 7, 5, 0, 0, 0, 8, 7, 2, 0, 2, 2, 12, 6, 0, 1, 5, 3, 7, 0, 0, 5, 4, 2, 0, 0, 2, 1, 5, 0, 0, 10, 9, 1, 0, 0, 2, 1, 3, 0, 1, 7, 5, 0, 0, 0, 5, 4, 2, 0, 2, 2, 19, 6, 0, 1, 7, 5, 7, 0, 0, 4, 3, 7, 0, 0, 5, 4, 2, 0, 0, 2, 1, 5, 0, 0, 4, 2, 3, 0, 0, 4, 2, 3, 0, 0, 4, 2, 3, 0, 0, 4, 2, 3, 0, 0, 4, 2, 3, 0, 1, 5, 3, 0, 0, 0, 5, 4, 0, 0, 0, 2, 1, 2, 0, 0, 3, 2, 0, 0, 0, 5, 4, 2, 0, 1, 9, 5, 0, 0, 0, 2, 1, 2, 0, 1, 5, 3, 0, 0, 0, 4, 3, 0, 0, 2, 8, 6, 0, 0, 0, 2, 1, 3, 0, 1, 3, 3, 0, 0, 0, 9, 8, 0, 0]}}
+INFO:pygls.feature_manager:Registered builtin feature exit
+INFO:pygls.feature_manager:Registered builtin feature initialize
+INFO:pygls.feature_manager:Registered builtin feature initialized
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature notebookDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature $/setTrace
+INFO:pygls.feature_manager:Registered builtin feature shutdown
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didChange
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didClose
+INFO:pygls.feature_manager:Registered builtin feature textDocument/didOpen
+INFO:pygls.feature_manager:Registered builtin feature window/workDoneProgress/cancel
+INFO:pygls.feature_manager:Registered builtin feature workspace/didChangeWorkspaceFolders
+INFO:pygls.feature_manager:Registered builtin feature workspace/executeCommand
+INFO:pygls.feature_manager:Registered "textDocument/didOpen" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didChange" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/didSave" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/semanticTokens/full" with options "SemanticTokensRegistrationOptions(legend=SemanticTokensLegend(token_types=['keyword', 'function', 'variable', 'number', 'string', 'operator', 'comment', 'type', 'parameter', 'macro'], token_modifiers=['declaration', 'readonly', 'defaultLibrary']), document_selector=None, range=None, full=True, work_done_progress=None, id=None)"
+INFO:pygls.feature_manager:Registered "textDocument/hover" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/definition" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/completion" with options "CompletionOptions(trigger_characters=['.'], all_commit_characters=None, resolve_provider=None, completion_item=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/formatting" with options "DocumentFormattingRegistrationOptions(document_selector=None, work_done_progress=None)"
+INFO:pygls.feature_manager:Registered "textDocument/documentSymbol" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/rename" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/references" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/codeAction" with options "None"
+INFO:pygls.feature_manager:Registered "textDocument/inlayHint" with options "None"
+INFO:pygls.feature_manager:Registered "workspace/symbol" with options "None"
+INFO:pygls.server:Starting async IO server
+DEBUG:asyncio:Using proactor: IocpProactor
+DEBUG:pygls.server:Content length: 83
+DEBUG:pygls.protocol.json_rpc:Request 'initialize' received
+INFO:pygls.protocol.language_server:Language server initialized InitializeParams(capabilities=ClientCapabilities(workspace=None, text_document=None, notebook_document=None, window=None, general=None, experimental=None), process_id=None, client_info=None, locale=None, root_path=None, root_uri=None, initialization_options=None, trace=None, work_done_token=None, workspace_folders=None)
+DEBUG:pygls.protocol.language_server:Server capabilities: {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": ["."]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "workspaceSymbolProvider": {"resolveProvider": false}, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"positionEncoding": "utf-16", "textDocumentSync": {"openClose": true, "change": 2, "save": true}, "completionProvider": {"triggerCharacters": ["."]}, "hoverProvider": true, "definitionProvider": true, "referencesProvider": true, "documentSymbolProvider": true, "codeActionProvider": true, "workspaceSymbolProvider": {"resolveProvider": false}, "documentFormattingProvider": {"documentSelector": null}, "renameProvider": true, "executeCommandProvider": {"commands": []}, "semanticTokensProvider": {"legend": {"tokenTypes": ["keyword", "function", "variable", "number", "string", "operator", "comment", "type", "parameter", "macro"], "tokenModifiers": ["declaration", "readonly", "defaultLibrary"]}, "documentSelector": null, "full": true}, "inlayHintProvider": {"resolveProvider": false}, "workspace": {"workspaceFolders": {"supported": true, "changeNotifications": true}, "fileOperations": {}}}, "serverInfo": {"name": "ul-language-server", "version": "v0.1.0"}}}
+DEBUG:pygls.server:Content length: 57
+DEBUG:pygls.protocol.json_rpc:Notification 'initialized' received
+DEBUG:pygls.server:Content length: 1405
+DEBUG:pygls.protocol.json_rpc:Notification 'textDocument/didOpen' received
+DEBUG:pygls.protocol.json_rpc:Sending notification: 'textDocument/publishDiagnostics' PublishDiagnosticsParams(uri='file:///test.ul', diagnostics=[], version=None)
+INFO:pygls.protocol.json_rpc:Sending data: {"params": {"uri": "file:///test.ul", "diagnostics": []}, "method": "textDocument/publishDiagnostics", "jsonrpc": "2.0"}
+DEBUG:pygls.server:Content length: 164
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/definition' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 20, "jsonrpc": "2.0", "result": {"uri": "file:///test.ul", "range": {"start": {"line": 4, "character": 8}, "end": {"line": 4, "character": 11}}}}
+DEBUG:pygls.server:Content length: 203
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/references' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 21, "jsonrpc": "2.0", "result": [{"uri": "file:///test.ul", "range": {"start": {"line": 4, "character": 9}, "end": {"line": 4, "character": 12}}}, {"uri": "file:///test.ul", "range": {"start": {"line": 31, "character": 10}, "end": {"line": 31, "character": 13}}}]}
+DEBUG:pygls.server:Content length: 170
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/formatting' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 22, "jsonrpc": "2.0", "result": [{"range": {"start": {"line": 0, "character": 0}, "end": {"line": 72, "character": 0}}, "newText": "// test.run \u2014 UniLogic test program\n// Covers: functions, var decls, arithmetic, if/else, while, for each,\n//         return, print, cast, fixed/const, bool, comparison\n@dr memory = manual\n\nfunction add(int a, int b) returns int\n  return a + b\nend function\n\nfunction factorial(int n) returns int\n  if n <= 1\n    return 1\n  end if\n  return n * factorial(n - 1)\nend function\n\nfunction is_even(int n) returns bool\n  return n % 2 == 0\nend function\n\nfunction clamp(int val, int lo, int hi) returns int\n  if val < lo\n    return lo\n  end if\n  if val > hi\n    return hi\n  end if\n  return val\nend function\n\nfunction main() returns int\n  // basic arithmetic\n  int x = add(3, 7)\n  print x\n\n  // fixed (const)\n  fixed int limit = 100\n\n  // while loop\n  int i = 0\n  while i < 5\n    print i\n    i += 1\n  end while\n\n  // if / else\n  if is_even(x)\n    print 1\n  else\n    print 0\n  end if\n\n  // cast\n  float ratio = change(x)->float\n  print ratio\n\n  // clamp\n  int clamped = clamp(x, 0, 8)\n  print clamped\n\n  // factorial\n  int fact = factorial(5)\n  print fact\n\n  // array + for each\n  array int nums = [10, 20, 30, 40, 50]\n  for each n in nums\n    print n\n  end for\n\n  return 0\nend function\n"}]}
+DEBUG:pygls.server:Content length: 176
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/rename' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 23, "jsonrpc": "2.0", "result": {"changes": {"file:///test.ul": [{"range": {"start": {"line": 4, "character": 9}, "end": {"line": 4, "character": 12}}, "newText": "sum"}, {"range": {"start": {"line": 31, "character": 10}, "end": {"line": 31, "character": 13}}, "newText": "sum"}]}}}
+DEBUG:pygls.server:Content length: 207
+DEBUG:pygls.protocol.json_rpc:Request 'textDocument/inlayHint' received
+INFO:pygls.protocol.json_rpc:Sending data: {"id": 24, "jsonrpc": "2.0", "result": [{"position": {"line": 31, "character": 6}, "label": ": int", "kind": 1, "paddingLeft": false, "paddingRight": true}, {"position": {"line": 31, "character": 15}, "label": "a:", "kind": 2, "paddingLeft": false, "paddingRight": true}, {"position": {"line": 31, "character": 18}, "label": "b:", "kind": 2, "paddingLeft": false, "paddingRight": true}, {"position": {"line": 35, "character": 12}, "label": ": fixed int", "kind": 1, "paddingLeft": false, "paddingRight": true}, {"position": {"line": 38, "character": 6}, "label": ": int", "kind": 1, "paddingLeft": false, "paddingRight": true}]}

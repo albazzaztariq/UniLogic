@@ -1,0 +1,14 @@
+// test_wasm.ul — basic WASM target test
+// Verifies LLVM IR output with wasm32-unknown-unknown target triple
+
+function add(int a, int b) returns int
+    return a + b
+end function
+
+function main() returns int
+    int x = add(10, 32)
+    print x
+    int y = x * 2
+    print y
+    return 0
+end function

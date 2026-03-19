@@ -1,0 +1,56 @@
+// test_nested_types.ul — 3-level deep struct nesting
+// Inner -> Middle -> Outer, with field access at all levels
+
+type Inner
+    int value
+    int code
+end type
+
+type Middle
+    string label
+    Inner core
+end type
+
+type Outer
+    int id
+    Middle mid
+end type
+
+function set_inner(int v, int c) returns Inner
+    Inner i
+    i.value = v
+    i.code = c
+    return i
+end function
+
+function main() returns int
+    // build from inside out
+    Outer o
+    o.id = 1
+    o.mid.label = "test"
+    o.mid.core.value = 42
+    o.mid.core.code = 99
+
+    // read at all three levels
+    print o.id
+    print o.mid.label
+    print o.mid.core.value
+    print o.mid.core.code
+
+    // second instance with different values
+    Outer o2
+    o2.id = 2
+    o2.mid.label = "second"
+    o2.mid.core.value = 100
+    o2.mid.core.code = 200
+    print o2.id
+    print o2.mid.label
+    print o2.mid.core.value
+    print o2.mid.core.code
+
+    // modify deep field and re-read
+    o.mid.core.value = 777
+    print o.mid.core.value
+
+    return 0
+end function

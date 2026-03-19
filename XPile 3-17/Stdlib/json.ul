@@ -1,0 +1,7 @@
+// Stdlib/json.ul — JSON parsing and serialization
+// Uses FFI to target-specific JSON libraries
+
+import "uljson" function json_parse(string s) returns <none>
+import "uljson" function json_stringify(<none> m) returns string
+import "uljson" function json_get(<none> m, string key) returns string
+import "uljson" function json_get_int(<none> m, string key) returns int

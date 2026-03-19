@@ -1,0 +1,11 @@
+// test_vm_basic.ul — basic VM test
+
+function main() returns int
+  print 42
+  print 7 + 3
+  int x = 5
+  int y = 10
+  print x + y
+  print x * y
+  return 0
+end function

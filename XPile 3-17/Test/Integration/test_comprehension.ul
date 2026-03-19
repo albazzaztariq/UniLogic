@@ -1,0 +1,9 @@
+// test_comprehension.ul — array comprehensions
+
+function main() returns int
+  array int squares = [x * x for x in range(1, 6)]
+  print squares[0]
+  print squares[4]
+
+  return 0
+end function

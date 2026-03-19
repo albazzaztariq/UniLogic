@@ -1,0 +1,22 @@
+// test_result_bytecode.ul — result types with ok/error and ? propagation
+// Tests divide function that returns error on division by zero
+
+function divide(int a, int b) returns int|error
+    if b == 0
+        return error "division by zero"
+    end if
+    return ok a / b
+end function
+
+function main() returns int
+    int r1 = divide(10, 2)?
+    print r1
+
+    int r2 = divide(100, 5)?
+    print r2
+
+    int r3 = divide(42, 7)?
+    print r3
+
+    return 0
+end function

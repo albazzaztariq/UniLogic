@@ -1,0 +1,10 @@
+
+constant int MAX = 100
+constant string VER = "1.0"
+
+function main() returns int
+    print MAX
+    print VER
+    return 0
+end function
+

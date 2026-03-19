@@ -1,0 +1,5 @@
+C:/Users/azt12/OneDrive/Documents/Computing/Pragma/CURRENT/XPile 3-17/GUI_Qt/build2/CMakeFiles/UniLogicProjectManager.dir
+C:/Users/azt12/OneDrive/Documents/Computing/Pragma/CURRENT/XPile 3-17/GUI_Qt/build2/CMakeFiles/edit_cache.dir
+C:/Users/azt12/OneDrive/Documents/Computing/Pragma/CURRENT/XPile 3-17/GUI_Qt/build2/CMakeFiles/rebuild_cache.dir
+C:/Users/azt12/OneDrive/Documents/Computing/Pragma/CURRENT/XPile 3-17/GUI_Qt/build2/CMakeFiles/UniLogicProjectManager_autogen_timestamp_deps.dir
+C:/Users/azt12/OneDrive/Documents/Computing/Pragma/CURRENT/XPile 3-17/GUI_Qt/build2/CMakeFiles/UniLogicProjectManager_autogen.dir

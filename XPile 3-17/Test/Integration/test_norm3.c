@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <math.h>
+#include <stdlib.h>
+static char* __ul_strcat(const char* a, const char* b) {
+    int la = (int)strlen(a), lb = (int)strlen(b);
+    char* r = (char*)malloc(la + lb + 1); memcpy(r, a, la); memcpy(r + la, b, lb); r[la+lb] = 0; return r; }
+
+int main(void);
+
+int main(void)
+{
+    int x = 5;
+    x = (x + 10);
+    x = (x * 2);
+    x = (x - 1);
+    printf("%d\n", x);
+    int c = 0;
+    c = (c + 1);
+    c = (c + 1);
+    c = (c + 1);
+    c = (c - 1);
+    printf("%d\n", c);
+    __auto_type _t0 = sqrt(256.0);
+    __auto_type _t1 = sqrt(_t0);
+    double v = sqrt(_t1);
+    printf("%f\n", v);
+    int raw = 97;
+    __auto_type _t2 = ((float)raw);
+    double d = ((double)_t2);
+    printf("%f\n", d);
+    int a = 10;
+    int b = 20;
+    int c2 = 30;
+    int d2 = 40;
+    __auto_type _t3 = ((a > 0) && (b > 0));
+    __auto_type _t4 = (_t3 && (c2 > 0));
+    if ((_t4 && (d2 > 0))) {
+        printf("%d\n", 1);
+    }
+    __auto_type _t5 = ((a > 0) && (b > 100));
+    if ((_t5 && (c2 > 0))) {
+        printf("%d\n", 999);
+    }
+    printf("%d\n", 0);
+    return 0;
+}
+
+

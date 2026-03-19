@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+fda29a15e6c18dc352d8b4fde48e39be CMakeFiles/UniLogicProjectManager_autogen
+1cdfb43d047a513d04fc1bbeb44920b1 UniLogicProjectManager_autogen/timestamp

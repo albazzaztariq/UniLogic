@@ -1,0 +1,20 @@
+@dr concurrency = threaded
+
+int shared_counter = 0
+
+function worker() returns none
+  int i = 0
+  while i < 1000
+    lock counter_lock
+    shared_counter = shared_counter + 1
+    unlock counter_lock
+    i = i + 1
+  end while
+end function
+
+function main() returns none
+  spawn worker()
+  spawn worker()
+  wait
+  print shared_counter
+end function

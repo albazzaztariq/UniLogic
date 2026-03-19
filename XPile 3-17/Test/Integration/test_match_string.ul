@@ -1,0 +1,37 @@
+// test_match_string.ul — match statement on string values
+
+function greet(string lang) returns none
+    match lang
+        "en"
+            print "hello"
+        "es"
+            print "hola"
+        "fr"
+            print "bonjour"
+        "de"
+            print "hallo"
+        default
+            print "unknown"
+    end match
+end function
+
+function main() returns int
+    greet("en")
+    greet("es")
+    greet("fr")
+    greet("de")
+    greet("jp")
+
+    // match with a variable
+    string code = "es"
+    match code
+        "en"
+            print "english"
+        "es"
+            print "spanish"
+        default
+            print "other"
+    end match
+
+    return 0
+end function

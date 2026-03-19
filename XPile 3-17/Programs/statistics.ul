@@ -1,0 +1,178 @@
+// statistics.ul — Statistical functions (simple-statistics JS library equivalent)
+// Source: https://github.com/simple-statistics/simple-statistics
+// Implements: mean, median, mode, variance, stddev, quantile
+// Gap: UL has no built-in sort; uses insertion sort instead of native Array.sort()
+
+import "Stdlib/math.ul" function math_sqrt(double x) returns double
+import "Stdlib/math.ul" function math_floor(double x) returns double
+
+// Insertion sort (ascending) — in-place on first n elements
+// simple-statistics uses JS Array.sort() which is comparison-based;
+// insertion sort is faithful to the comparison-based approach for small n
+function sort_doubles(array double arr, int n) returns none
+    for each i in range(1, n)
+        double key = arr[i]
+        int j = i - 1
+        while j >= 0
+            if arr[j] > key
+                arr[j + 1] = arr[j]
+                j = j - 1
+            else
+                escape
+            end if
+        end while
+        arr[j + 1] = key
+    end for
+end function
+
+// mean.js: return sum(x) / x.length
+function stat_mean(array double arr, int n) returns double
+    double sum = 0.0
+    for each i in range(n)
+        sum = sum + arr[i]
+    end for
+    return sum / cast(n, double)
+end function
+
+// quantile_sorted.js: linear interpolation (type=7, R/numpy default)
+// Requires sorted input
+// idx = (n-1) * p
+// If integer index: return arr[idx]
+// If fractional: interpolate between floor and ceil
+function quantile_sorted(array double sorted, int n, double p) returns double
+    if p == 0.0
+        return sorted[0]
+    end if
+    if p == 1.0
+        return sorted[n - 1]
+    end if
+    double idx = cast(n - 1, double) * p
+    double fl = math_floor(idx)
+    int lo = cast(fl, int)
+    double fraction = idx - fl
+    if fraction < 0.0001
+        return sorted[lo]
+    end if
+    return sorted[lo] + fraction * (sorted[lo + 1] - sorted[lo])
+end function
+
+// quantile.js: sort then delegate to quantile_sorted
+function stat_quantile(array double arr, int n, double p) returns double
+    // Copy array then sort (original uses quickselect for partial sort;
+    // UL lacks quickselect, using full insertion sort instead)
+    array double sorted = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    for each i in range(n)
+        sorted[i] = arr[i]
+    end for
+    sort_doubles(sorted, n)
+    return quantile_sorted(sorted, n, p)
+end function
+
+// median.js: return quantile(x, 0.5)
+function stat_median(array double arr, int n) returns double
+    return stat_quantile(arr, n, 0.5)
+end function
+
+// mode.js: sort, then modeSorted — find longest consecutive run
+// On tie, returns the most recently seen mode (matching simple-statistics)
+function stat_mode(array double arr, int n) returns double
+    array double sorted = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    for each i in range(n)
+        sorted[i] = arr[i]
+    end for
+    sort_doubles(sorted, n)
+
+    // modeSorted algorithm: scan for longest run
+    double max_val = sorted[0]
+    int max_count = 0
+    int count = 0
+    double last_val = sorted[0]
+    for each i in range(n)
+        if sorted[i] == last_val
+            count = count + 1
+        else
+            count = 1
+            last_val = sorted[i]
+        end if
+        if count > max_count
+            max_count = count
+            max_val = sorted[i]
+        end if
+    end for
+    return max_val
+end function
+
+// variance.js: sum of squared deviations from mean / n (population variance)
+// sumNthPowerDeviations(x, 2) / x.length
+function stat_variance(array double arr, int n) returns double
+    double m = stat_mean(arr, n)
+    double sum_sq = 0.0
+    for each i in range(n)
+        double dev = arr[i] - m
+        sum_sq = sum_sq + dev * dev
+    end for
+    return sum_sq / cast(n, double)
+end function
+
+// standard_deviation.js: sqrt(variance(x)), returns 0 if n==1
+function stat_stddev(array double arr, int n) returns double
+    if n == 1
+        return 0.0
+    end if
+    double v = stat_variance(arr, n)
+    return math_sqrt(v)
+end function
+
+function main() returns int
+    // Dataset 1: [2, 4, 4, 4, 5, 5, 7, 9]
+    // Known answers: mean=5, median=4.5, mode=4, variance=4, stddev=2
+    print "=== Dataset 1: [2, 4, 4, 4, 5, 5, 7, 9] ==="
+    array double d1 = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    int n1 = 8
+    print "mean:"
+    print stat_mean(d1, n1)
+    print "median:"
+    print stat_median(d1, n1)
+    print "mode:"
+    print stat_mode(d1, n1)
+    print "variance:"
+    print stat_variance(d1, n1)
+    print "stddev:"
+    print stat_stddev(d1, n1)
+
+    // Dataset 2: [1, 2, 3, 4, 5]
+    // Known: mean=3, median=3, mode=1 (all unique, first seen), variance=2, stddev≈1.4142
+    print ""
+    print "=== Dataset 2: [1, 2, 3, 4, 5] ==="
+    array double d2 = [1.0, 2.0, 3.0, 4.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    int n2 = 5
+    print "mean:"
+    print stat_mean(d2, n2)
+    print "median:"
+    print stat_median(d2, n2)
+    print "mode:"
+    print stat_mode(d2, n2)
+    print "variance:"
+    print stat_variance(d2, n2)
+    print "stddev:"
+    print stat_stddev(d2, n2)
+
+    // Quantile tests
+    print ""
+    print "=== Quantile tests ==="
+    // quantile([3,6,7,8,8,9,10,13,15,16,20], 0.5) = 9
+    array double d3 = [3.0, 6.0, 7.0, 8.0, 8.0, 9.0, 10.0, 13.0, 15.0, 16.0, 20.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    int n3 = 11
+    print "Q(0.25):"
+    print stat_quantile(d3, n3, 0.25)
+    print "Q(0.5):"
+    print stat_quantile(d3, n3, 0.5)
+    print "Q(0.75):"
+    print stat_quantile(d3, n3, 0.75)
+    print "Q(0.0):"
+    print stat_quantile(d3, n3, 0.0)
+    print "Q(1.0):"
+    print stat_quantile(d3, n3, 1.0)
+
+    return 0
+end function

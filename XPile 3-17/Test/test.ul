@@ -1,0 +1,71 @@
+// test.run — UniLogic test program
+// Covers: functions, var decls, arithmetic, if/else, while, for each,
+//         return, print, cast, fixed/const, bool, comparison
+@dr memory = manual 
+function add(int a, int b) returns int
+  return a + b
+end function
+
+function factorial(int n) returns int
+  if n <= 1
+    return 1
+  end if
+  return n * factorial(n - 1)
+end function
+
+function is_even(int n) returns bool
+  return n % 2 == 0
+end function
+
+function clamp(int val, int lo, int hi) returns int
+  if val < lo
+    return lo
+  end if
+  if val > hi
+    return hi
+  end if
+  return val
+end function
+
+function main() returns int
+  // basic arithmetic
+  int x = add(3, 7)
+  print x
+
+  // fixed (const)
+  fixed int limit = 100
+
+  // while loop
+  int i = 0
+  while i < 5
+    print i
+    i += 1
+  end while
+
+  // if / else
+  if is_even(x)
+    print 1
+  else
+    print 0
+  end if
+
+  // cast
+  float ratio = change(x)->float
+  print ratio
+
+  // clamp
+  int clamped = clamp(x, 0, 8)
+  print clamped
+
+  // factorial
+  int fact = factorial(5)
+  print fact
+
+  // array + for each
+  array int nums = [10, 20, 30, 40, 50]
+  for each n in nums
+    print n
+  end for
+
+  return 0
+end function

@@ -1,0 +1,45 @@
+// Task 9: Test fixed enumerations
+
+fixed Priority
+    low    = 1
+    medium = 2
+    high   = 3
+end fixed
+
+fixed Color
+    red   = 10
+    green = 20
+    blue  = 30
+end fixed
+
+function main() returns int
+    // Test 1: Access enum members
+    int p = Priority.high
+    print p
+
+    // Test 2: Use enum in expression
+    int total = Priority.low + Priority.medium + Priority.high
+    print total
+
+    // Test 3: Compare with enum value
+    if p == Priority.high
+        print 1
+    end if
+
+    // Test 4: Second enum
+    int c = Color.green
+    print c
+
+    // Test 5: Enum in match
+    int val = Priority.medium
+    match val
+        1
+            print 100
+        2
+            print 200
+        3
+            print 300
+    end match
+
+    return 0
+end function

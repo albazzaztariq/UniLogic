@@ -1,0 +1,16 @@
+// Stdlib/map.ul — key/value store operations
+// Uses FFI to C stdlib for hash-based storage
+
+import "stdio" function puts(string s) returns none
+import "stdlib" function malloc(int size) returns <none>
+import "stdlib" function free(<none> ptr) returns none
+
+// Map operations — implemented as FFI bindings
+// In interpreter mode, these use Python dicts internally
+
+import "ulmap" function map_new() returns <none>
+import "ulmap" function map_set(<none> m, string key, string val) returns none
+import "ulmap" function map_get(<none> m, string key) returns string
+import "ulmap" function map_has(<none> m, string key) returns bool
+import "ulmap" function map_remove(<none> m, string key) returns none
+import "ulmap" function map_len(<none> m) returns int

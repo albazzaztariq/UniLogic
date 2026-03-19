@@ -1,0 +1,62 @@
+// math.ul — standard math library for UniLogic
+// Usage: import "Stdlib/math.ul" function math_sqrt(double x) returns double
+
+// FFI bindings to C math.h
+import "math" function sqrt(double x) returns double
+import "math" function pow(double base, double exp) returns double
+import "math" function floor(double x) returns double
+import "math" function ceil(double x) returns double
+
+// math_sqrt — square root
+function math_sqrt(double x) returns double
+  return sqrt(x)
+end function
+
+// math_pow — raise base to exponent
+function math_pow(double base, double exp) returns double
+  return pow(base, exp)
+end function
+
+// math_abs — absolute value (pure UL)
+function math_abs(double x) returns double
+  if x < 0.0
+    return 0.0 - x
+  end if
+  return x
+end function
+
+// math_floor — round down to nearest integer
+function math_floor(double x) returns double
+  return floor(x)
+end function
+
+// math_ceil — round up to nearest integer
+function math_ceil(double x) returns double
+  return ceil(x)
+end function
+
+// math_min — minimum of two values (pure UL)
+function math_min(double a, double b) returns double
+  if a < b
+    return a
+  end if
+  return b
+end function
+
+// math_max — maximum of two values (pure UL)
+function math_max(double a, double b) returns double
+  if a > b
+    return a
+  end if
+  return b
+end function
+
+// math_pi — return pi constant
+function math_pi() returns double
+  return 3.14159265358979323846
+end function
+
+// math_e — return Euler's number
+function math_e() returns double
+  return 2.71828182845904523536
+end function

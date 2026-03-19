@@ -1,0 +1,21 @@
+// Test string operations as methods
+import "string" function strlen(string s) returns int
+import "string" function strstr(string haystack, string needle) returns string
+
+function str_len(string s) returns int
+  return strlen(s)
+end function
+
+function str_contains(string s, string sub) returns bool
+  string found = strstr(s, sub)
+  return found != empty
+end function
+
+function main() returns int
+  string s = "Hello World"
+  int len = s.len()
+  print len
+  bool has = s.contains("World")
+  print has
+  return 0
+end function

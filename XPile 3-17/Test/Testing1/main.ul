@@ -1,0 +1,6 @@
+// Testing1 — UniLogic project entry point
+
+function main() returns int
+  print 0
+  return 0
+end function

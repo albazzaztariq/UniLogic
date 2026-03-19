@@ -1,0 +1,17 @@
+// Test default parameter values
+
+function greet(string name, string greeting = "Hello") returns string
+  return "{greeting}, {name}!"
+end function
+
+function add(int a, int b = 10) returns int
+  return a + b
+end function
+
+function main() returns int
+  print greet("World")
+  print greet("World", "Hi")
+  print add(5)
+  print add(5, 20)
+  return 0
+end function

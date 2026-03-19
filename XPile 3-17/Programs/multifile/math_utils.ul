@@ -1,0 +1,93 @@
+// math_utils.ul — Mathematical utilities
+// Provides: gcd, lcm, is_prime, prime_factors, fibonacci
+
+function gcd(int a, int b) returns int
+    if a < 0
+        a = 0 - a
+    end if
+    if b < 0
+        b = 0 - b
+    end if
+    while b != 0
+        int temp = b
+        b = a % temp
+        a = temp
+    end while
+    return a
+end function
+
+function lcm(int a, int b) returns int
+    if a == 0
+        return 0
+    end if
+    if b == 0
+        return 0
+    end if
+    int g = gcd(a, b)
+    int result = a / g * b
+    if result < 0
+        result = 0 - result
+    end if
+    return result
+end function
+
+function is_prime(int n) returns bool
+    if n < 2
+        return false
+    end if
+    if n < 4
+        return true
+    end if
+    if n % 2 == 0
+        return false
+    end if
+    int i = 3
+    while i * i <= n
+        if n % i == 0
+            return false
+        end if
+        i = i + 2
+    end while
+    return true
+end function
+
+// Return count of prime factors stored in the factors array
+function prime_factors(int n, array int factors) returns int
+    int count = 0
+    while n % 2 == 0
+        factors[count] = 2
+        count = count + 1
+        n = n / 2
+    end while
+    int i = 3
+    while i * i <= n
+        while n % i == 0
+            factors[count] = i
+            count = count + 1
+            n = n / i
+        end while
+        i = i + 2
+    end while
+    if n > 1
+        factors[count] = n
+        count = count + 1
+    end if
+    return count
+end function
+
+function fibonacci(int n) returns int
+    if n <= 0
+        return 0
+    end if
+    if n == 1
+        return 1
+    end if
+    int a = 0
+    int b = 1
+    for each i in range(2, n + 1)
+        int temp = a + b
+        a = b
+        b = temp
+    end for
+    return b
+end function

@@ -1,0 +1,14 @@
+// test_ffi.ul — FFI test: calling C functions from UniLogic
+
+import "math" function sqrt(double x) returns double
+import "stdio" function puts(string s) returns int
+
+function main() returns int
+  double val = 144.0
+  double result = sqrt(val)
+  print result
+
+  puts("Hello from FFI!")
+
+  return 0
+end function

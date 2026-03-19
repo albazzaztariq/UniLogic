@@ -1,0 +1,47 @@
+// test_norm3.ul — normalization level 3 on complex nested expressions
+// @norm 3
+
+import "math" function sqrt(double x) returns double
+
+function main() returns int
+    // Level 1: compound assignment chains
+    int x = 5
+    x += 10
+    x *= 2
+    x -= 1
+    print x
+
+    // Level 1: increment and decrement
+    int c = 0
+    c++
+    c++
+    c++
+    c--
+    print c
+
+    // Level 2: deeply nested calls
+    double v = sqrt(sqrt(sqrt(256.0)))
+    print v
+
+    // Level 2: chained cast
+    int raw = 97
+    double d = change(change(raw)->float)->double
+    print d
+
+    // Level 3: multi-condition boolean splitting
+    int a = 10
+    int b = 20
+    int c2 = 30
+    int d2 = 40
+    if a > 0 and b > 0 and c2 > 0 and d2 > 0
+        print 1
+    end if
+
+    // Level 3: mixed condition — some false
+    if a > 0 and b > 100 and c2 > 0
+        print 999
+    end if
+    print 0
+
+    return 0
+end function

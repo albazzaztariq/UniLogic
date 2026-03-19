@@ -1,0 +1,172 @@
+{
+  "name": "unilogic",
+  "displayName": "UniLogic Language",
+  "description": "Language support for UniLogic (.ul) — syntax highlighting, diagnostics, hover definitions",
+  "version": "0.1.0",
+  "publisher": "xpile",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "unilogic.explainStructure",
+        "title": "UniLogic: Explain Structure"
+      },
+      {
+        "command": "unilogic.explainExecution",
+        "title": "UniLogic: Explain Execution Flow"
+      },
+      {
+        "command": "unilogic.testConnection",
+        "title": "UniLogic: Test AI Connection"
+      },
+      {
+        "command": "unilogic.selectModel",
+        "title": "UniLogic: Select AI Model"
+      },
+      {
+        "command": "unilogic.showDependencyGraph",
+        "title": "UniLogic: Show Dependency Graph"
+      },
+      {
+        "command": "unilogic.formatDocument",
+        "title": "UniLogic: Format Document"
+      },
+      {
+        "command": "unilogic.showDrDiff",
+        "title": "UniLogic: Show DR Diff"
+      },
+      {
+        "command": "unilogic.showCOutput",
+        "title": "UniLogic: Show C Output"
+      },
+      {
+        "command": "unilogic.showSymbolOutline",
+        "title": "UniLogic: Show Symbol Outline"
+      },
+      {
+        "command": "unilogic.runFile",
+        "title": "UniLogic: Run File"
+      },
+      {
+        "command": "unilogic.compileFile",
+        "title": "UniLogic: Compile File"
+      },
+      {
+        "command": "unilogic.showNormView",
+        "title": "UniLogic: Show Normalization View"
+      },
+      {
+        "command": "unilogic.showProfile",
+        "title": "UniLogic: Show Profile"
+      },
+      {
+        "command": "unilogic.runWithProfile",
+        "title": "UniLogic: Run with Profile"
+      },
+      {
+        "command": "unilogic.showDrMonitor",
+        "title": "UniLogic: Show DR Monitor"
+      },
+      {
+        "command": "unilogic.applyHotPathHighlights",
+        "title": "UniLogic: Show Hot Paths"
+      },
+      {
+        "command": "unilogic.toggleFunctionLogging",
+        "title": "UniLogic: Toggle Function Logging"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "unilogic.runFile",
+        "key": "ctrl+f5",
+        "when": "editorLangId == ul"
+      },
+      {
+        "command": "unilogic.compileFile",
+        "key": "ctrl+shift+f5",
+        "when": "editorLangId == ul"
+      }
+    ],
+    "languages": [
+      {
+        "id": "ul",
+        "aliases": [
+          "UniLogic",
+          "ul"
+        ],
+        "extensions": [
+          ".ul"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ul",
+        "scopeName": "source.ul",
+        "path": "./syntaxes/ul.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "UniLogic",
+      "properties": {
+        "unilogic.pythonPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the Python interpreter used to run the LSP server. Leave empty to auto-detect."
+        },
+        "unilogic.compilerPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the directory containing Main.py (the XPile compiler). Example: C:\\Users\\you\\XPile"
+        },
+        "unilogic.lsp.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the UniLogic Language Server (diagnostics, hover, semantic tokens)."
+        },
+        "unilogic.ai.provider": {
+          "type": "string",
+          "enum": ["openai-compatible", "anthropic"],
+          "default": "openai-compatible",
+          "description": "AI provider for code walkthrough. Use 'openai-compatible' for Ollama, OpenAI, or any compatible endpoint."
+        },
+        "unilogic.ai.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for AI provider. Optional for local models (Ollama)."
+        },
+        "unilogic.ai.endpoint": {
+          "type": "string",
+          "default": "http://localhost:11434/v1",
+          "description": "Base URL for OpenAI-compatible API. Default is Ollama's local endpoint."
+        },
+        "unilogic.ai.model": {
+          "type": "string",
+          "default": "llama3",
+          "description": "Model name for code walkthrough. Use command 'UniLogic: Select AI Model' to browse available models."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "python ../sync_compiler.py"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.79.0",
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.75.0"
+  }
+}

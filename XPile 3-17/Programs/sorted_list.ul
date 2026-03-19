@@ -1,0 +1,384 @@
+// sorted_list.ul — SortedList (Python sortedcontainers equivalent)
+// Source: https://github.com/grantjenks/python-sortedcontainers
+// Uses list-of-lists architecture with binary search on maxes
+// Gap: UL lacks dynamic arrays; max capacity fixed at 128 elements, 16 sublists
+// Gap: Original uses Python bisect module; reimplemented as manual binary search
+
+// Flat storage for all elements across all sublists
+// Sublists are contiguous segments in this array
+// sub_start[i] = starting index in data[]
+// sub_len[i] = number of elements in sublist i
+// sub_max[i] = maximum value in sublist i
+
+// Binary search: find leftmost position where val could be inserted
+function bisect_arr(array int arr, int lo, int hi, int val) returns int
+    while lo < hi
+        int mid = (lo + hi) / 2
+        if arr[mid] < val
+            lo = mid + 1
+        else
+            hi = mid
+        end if
+    end while
+    return lo
+end function
+
+// Binary search right: find rightmost position where val could be inserted
+function bisect_arr_r(array int arr, int lo, int hi, int val) returns int
+    while lo < hi
+        int mid = (lo + hi) / 2
+        if arr[mid] <= val
+            lo = mid + 1
+        else
+            hi = mid
+        end if
+    end while
+    return lo
+end function
+
+// Shift elements right by 1 in data[pos..end-1] to make room at pos
+function shift_up(array int data, int pos, int end_idx) returns none
+    int i = end_idx
+    while i > pos
+        data[i] = data[i - 1]
+        i = i - 1
+    end while
+end function
+
+// Shift elements left by 1 in data[pos+1..end-1] to fill gap at pos
+function shift_down(array int data, int pos, int end_idx) returns none
+    int i = pos
+    while i < end_idx - 1
+        data[i] = data[i + 1]
+        i = i + 1
+    end while
+end function
+
+// Shift all data right from position onwards to make room for a new sublist
+function shift_data_up(array int data, int from_pos, int total) returns none
+    int i = total
+    while i > from_pos
+        data[i] = data[i - 1]
+        i = i - 1
+    end while
+end function
+
+// Insert into sublist at sorted position (insort from bisect module)
+function sl_insort(array int data, int start, int len, int val) returns int
+    int pos = bisect_arr(data, start, start + len, val)
+    // Shift everything from pos..start+len up by 1
+    shift_up(data, pos, start + len)
+    data[pos] = val
+    return pos
+end function
+
+// Expand: split sublist if it exceeds 2*LOAD
+// From sortedcontainers _expand method
+function sl_expand(array int data, array int sub_start, array int sub_len, array int sub_max, array int state, int pos) returns none
+    int load = state[2]
+    int num_subs = state[0]
+    if sub_len[pos] > load * 2
+        // Split at LOAD — faithful to original algorithm
+        int old_start = sub_start[pos]
+        int split_at = load
+
+        // Shift sublist metadata to make room for new sublist at pos+1
+        int i = num_subs
+        while i > pos + 1
+            sub_start[i] = sub_start[i - 1]
+            sub_len[i] = sub_len[i - 1]
+            sub_max[i] = sub_max[i - 1]
+            i = i - 1
+        end while
+
+        // New sublist gets elements from split_at onward
+        sub_start[pos + 1] = old_start + split_at
+        sub_len[pos + 1] = sub_len[pos] - split_at
+        sub_max[pos + 1] = data[old_start + sub_len[pos] - 1]
+
+        // Original sublist keeps first split_at elements
+        sub_len[pos] = split_at
+        sub_max[pos] = data[old_start + split_at - 1]
+
+        state[0] = num_subs + 1
+    end if
+end function
+
+// Add value maintaining sort order
+// From sortedcontainers SortedList.add
+function sl_add(array int data, array int sub_start, array int sub_len, array int sub_max, array int state, int val) returns none
+    int num_subs = state[0]
+    int total = state[1]
+
+    if num_subs == 0
+        // First element — create initial sublist
+        data[0] = val
+        sub_start[0] = 0
+        sub_len[0] = 1
+        sub_max[0] = val
+        state[0] = 1
+        state[1] = 1
+        return
+    end if
+
+    // bisect_right on _maxes to find target sublist
+    int pos = 0
+    for each k in range(num_subs)
+        if sub_max[k] < val
+            pos = k + 1
+        else
+            escape
+        end if
+    end for
+
+    if pos == num_subs
+        // Value larger than all maxes — append to last sublist
+        pos = num_subs - 1
+        int ins_at = sub_start[pos] + sub_len[pos]
+        // Shift all data after this sublist up by 1
+        int i = total
+        while i > ins_at
+            data[i] = data[i - 1]
+            i = i - 1
+        end while
+        data[ins_at] = val
+        sub_len[pos] = sub_len[pos] + 1
+        sub_max[pos] = val
+        // Update subsequent sublist starts
+        for each s in range(pos + 1, num_subs)
+            sub_start[s] = sub_start[s] + 1
+        end for
+    else
+        // Insert into sublist at sorted position
+        int s_start = sub_start[pos]
+        int s_len = sub_len[pos]
+        int ins_pos = bisect_arr(data, s_start, s_start + s_len, val)
+        // Shift all data from ins_pos onward up by 1
+        int i = total
+        while i > ins_pos
+            data[i] = data[i - 1]
+            i = i - 1
+        end while
+        data[ins_pos] = val
+        sub_len[pos] = sub_len[pos] + 1
+        if val > sub_max[pos]
+            sub_max[pos] = val
+        end if
+        // Update subsequent sublist starts
+        for each s in range(pos + 1, num_subs)
+            sub_start[s] = sub_start[s] + 1
+        end for
+    end if
+
+    state[1] = total + 1
+
+    // Expand if needed (split oversized sublist)
+    sl_expand(data, sub_start, sub_len, sub_max, state, pos)
+end function
+
+// Remove value from sorted list
+// From sortedcontainers SortedList.remove / _delete
+function sl_remove(array int data, array int sub_start, array int sub_len, array int sub_max, array int state, int val) returns int|error
+    int num_subs = state[0]
+    if num_subs == 0
+        return error "value not in list"
+    end if
+
+    // bisect_left on _maxes to find sublist
+    int pos = 0
+    for each k in range(num_subs)
+        if sub_max[k] < val
+            pos = k + 1
+        end if
+    end for
+    if pos == num_subs
+        return error "value not in list"
+    end if
+
+    // bisect_left within sublist to find element
+    int s_start = sub_start[pos]
+    int s_len = sub_len[pos]
+    int idx = bisect_arr(data, s_start, s_start + s_len, val)
+    if idx >= s_start + s_len
+        return error "value not in list"
+    end if
+    if data[idx] != val
+        return error "value not in list"
+    end if
+
+    // Delete element — shift data left
+    int total = state[1]
+    int i = idx
+    while i < total - 1
+        data[i] = data[i + 1]
+        i = i + 1
+    end while
+
+    sub_len[pos] = sub_len[pos] - 1
+    state[1] = total - 1
+
+    // Update subsequent sublist starts
+    for each s in range(pos + 1, num_subs)
+        sub_start[s] = sub_start[s] - 1
+    end for
+
+    if sub_len[pos] == 0
+        // Remove empty sublist
+        int j = pos
+        while j < num_subs - 1
+            sub_start[j] = sub_start[j + 1]
+            sub_len[j] = sub_len[j + 1]
+            sub_max[j] = sub_max[j + 1]
+            j = j + 1
+        end while
+        state[0] = num_subs - 1
+    else
+        // Update max
+        sub_max[pos] = data[sub_start[pos] + sub_len[pos] - 1]
+    end if
+
+    return ok 1
+end function
+
+// Contains: two-phase binary search (from sortedcontainers __contains__)
+function sl_contains(array int data, array int sub_start, array int sub_len, array int sub_max, array int state, int val) returns bool
+    int num_subs = state[0]
+    if num_subs == 0
+        return false
+    end if
+
+    // bisect_left on _maxes
+    int pos = 0
+    for each k in range(num_subs)
+        if sub_max[k] < val
+            pos = k + 1
+        end if
+    end for
+    if pos == num_subs
+        return false
+    end if
+
+    // bisect_left within sublist
+    int s_start = sub_start[pos]
+    int s_len = sub_len[pos]
+    int idx = bisect_arr(data, s_start, s_start + s_len, val)
+    if idx >= s_start + s_len
+        return false
+    end if
+    return data[idx] == val
+end function
+
+// Get element by global index (from sortedcontainers __getitem__)
+function sl_get(array int data, array int sub_start, array int sub_len, array int state, int idx) returns int
+    // Walk sublists to find the one containing this global index
+    int remaining = idx
+    int num_subs = state[0]
+    for each s in range(num_subs)
+        if remaining < sub_len[s]
+            return data[sub_start[s] + remaining]
+        end if
+        remaining = remaining - sub_len[s]
+    end for
+    return 0
+end function
+
+// Length
+function sl_len(array int state) returns int
+    return state[1]
+end function
+
+// Print all elements in order
+function sl_print(array int data, array int state) returns none
+    int total = state[1]
+    string result = "["
+    for each i in range(total)
+        if i > 0
+            result = result + ", "
+        end if
+        result = result + "{data[i]}"
+    end for
+    result = result + "]"
+    print result
+end function
+
+function main() returns int
+    // Initialize storage
+    array int data = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    array int sub_start = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    array int sub_len = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    array int sub_max = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    // state[0]=num_sublists, state[1]=total_count, state[2]=load_factor
+    array int state = [0, 0, 8]
+
+    // 20+ operations mixing adds, removes, and lookups
+
+    // Op 1-10: Add values in non-sorted order
+    print "Adding: 50, 20, 80, 10, 40, 90, 30, 70, 60, 15"
+    sl_add(data, sub_start, sub_len, sub_max, state, 50)
+    sl_add(data, sub_start, sub_len, sub_max, state, 20)
+    sl_add(data, sub_start, sub_len, sub_max, state, 80)
+    sl_add(data, sub_start, sub_len, sub_max, state, 10)
+    sl_add(data, sub_start, sub_len, sub_max, state, 40)
+    sl_add(data, sub_start, sub_len, sub_max, state, 90)
+    sl_add(data, sub_start, sub_len, sub_max, state, 30)
+    sl_add(data, sub_start, sub_len, sub_max, state, 70)
+    sl_add(data, sub_start, sub_len, sub_max, state, 60)
+    sl_add(data, sub_start, sub_len, sub_max, state, 15)
+
+    print "After 10 adds:"
+    sl_print(data, state)
+    print "Length:"
+    print sl_len(state)
+
+    // Op 11-14: Contains checks
+    print "Contains 40:"
+    print sl_contains(data, sub_start, sub_len, sub_max, state, 40)
+    print "Contains 99:"
+    print sl_contains(data, sub_start, sub_len, sub_max, state, 99)
+    print "Contains 10:"
+    print sl_contains(data, sub_start, sub_len, sub_max, state, 10)
+    print "Contains 90:"
+    print sl_contains(data, sub_start, sub_len, sub_max, state, 90)
+
+    // Op 15-16: Index access
+    print "Element at index 0:"
+    print sl_get(data, sub_start, sub_len, state, 0)
+    print "Element at index 5:"
+    print sl_get(data, sub_start, sub_len, state, 5)
+    print "Element at index 9:"
+    print sl_get(data, sub_start, sub_len, state, 9)
+
+    // Op 17-19: Remove values
+    print "Removing 20, 80, 15"
+    sl_remove(data, sub_start, sub_len, sub_max, state, 20)?
+    sl_remove(data, sub_start, sub_len, sub_max, state, 80)?
+    sl_remove(data, sub_start, sub_len, sub_max, state, 15)?
+
+    print "After removes:"
+    sl_print(data, state)
+    print "Length:"
+    print sl_len(state)
+
+    // Op 20-25: Add more values including duplicates
+    print "Adding: 25, 25, 55, 5, 95, 42"
+    sl_add(data, sub_start, sub_len, sub_max, state, 25)
+    sl_add(data, sub_start, sub_len, sub_max, state, 25)
+    sl_add(data, sub_start, sub_len, sub_max, state, 55)
+    sl_add(data, sub_start, sub_len, sub_max, state, 5)
+    sl_add(data, sub_start, sub_len, sub_max, state, 95)
+    sl_add(data, sub_start, sub_len, sub_max, state, 42)
+
+    print "Final state:"
+    sl_print(data, state)
+    print "Length:"
+    print sl_len(state)
+
+    // Verify sort order maintained
+    print "Elements by index:"
+    int total = sl_len(state)
+    for each i in range(total)
+        print sl_get(data, sub_start, sub_len, state, i)
+    end for
+
+    return 0
+end function

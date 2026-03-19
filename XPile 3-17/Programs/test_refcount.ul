@@ -1,0 +1,17 @@
+@dr memory = refcount
+
+function allocate_many() returns int
+  int total = 0
+  int i = 0
+  while i < 1000
+    string s = "item " + cast(i, string)
+    total = total + s.len()
+    i = i + 1
+  end while
+  return total
+end function
+
+function main()
+  int result = allocate_many()
+  print result
+end function

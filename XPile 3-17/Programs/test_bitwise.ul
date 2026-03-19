@@ -1,0 +1,29 @@
+// Task 13: Test bitwise aliases
+
+function main() returns int
+    // Test 1: band (alias for bit_and)
+    int a = 0xFF
+    int b = 0x0F
+    int r1 = a band b
+    print r1
+
+    // Test 2: bor (alias for bit_or)
+    int r2 = 0xF0 bor 0x0F
+    print r2
+
+    // Test 3: xor (primary), diff/delta (aliases)
+    int r3 = 0xFF xor 0x0F
+    print r3
+
+    // Test 4: bnot (alias for bit_not)
+    int r4 = bnot 0
+    print r4
+
+    // Test 5: lshift / rshift
+    int r5 = 1 lshift 4
+    print r5
+    int r6 = 256 rshift 4
+    print r6
+
+    return 0
+end function

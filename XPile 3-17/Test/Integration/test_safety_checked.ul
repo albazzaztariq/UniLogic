@@ -1,0 +1,10 @@
+// test_safety_checked.ul — bounds checking with @dr safety = checked
+
+@dr safety = checked
+
+function main() returns int
+  array int arr = [1, 2, 3]
+  print arr[1]
+  print arr[10]
+  return 0
+end function

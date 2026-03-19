@@ -1,0 +1,24 @@
+// Test module-level variable declarations
+int MAX_SIZE = 1024
+float PI = 3.14159
+string GREETING = "hello"
+array int PRIMES = [2, 3, 5, 7, 11]
+
+function double_max() returns int
+    return MAX_SIZE * 2
+end function
+
+function main() returns int
+    print MAX_SIZE
+    print PI
+    print GREETING
+    print PRIMES[0]
+    print PRIMES[4]
+    print double_max()
+
+    // Module vars are mutable
+    MAX_SIZE = 2048
+    print MAX_SIZE
+
+    return 0
+end function

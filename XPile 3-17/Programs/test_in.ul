@@ -1,0 +1,31 @@
+// Task 12: Test x in collection
+
+function main() returns int
+    // Test 1: string in string
+    string msg = "hello world"
+    if "world" in msg
+        print 1
+    end if
+
+    // Test 2: string not in string
+    if "xyz" in msg
+        print 0
+    else
+        print 1
+    end if
+
+    // Test 3: int in list
+    list int nums = [10, 20, 30, 40, 50]
+    if 30 in nums
+        print 1
+    end if
+
+    // Test 4: int not in list
+    if 99 in nums
+        print 0
+    else
+        print 1
+    end if
+
+    return 0
+end function
