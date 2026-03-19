@@ -68,23 +68,74 @@ hr { border: none; border-top: 1px solid #ddd; margin: 36px 0; }
 <h1>What is UniLogic?</h1>
 
 <div class="body">
-  <p><strong>Q: What is this called?</strong></p>
-  <p>UniLogic. One syntax that covers the range from low-level systems work to high-level application development. Runtime behavior that is declared rather than inherited from whichever language you happened to pick. A schema-based expression layer that describes what a program does in the same terms you would use to explain it to another person, rather than the terms required to build it in an IDE.</p>
-  <p>This is a hobby project and an ongoing design exercise, not a product. The work is documented as it develops. Feedback and collaboration from people who find this worth thinking about is genuinely welcome.</p>
+
+  <p><strong>What is this?</strong></p>
+
+  <p>An open-source programming language and research project. UL (UniLogic) is a single language that compiles to C, Python, JavaScript, LLVM IR, and WebAssembly from the same source file. It is statically typed by default with an optional dynamic mode, has configurable runtime behavior per file, and treats AI/ML optimization as a first-class language concern rather than a library afterthought.</p>
+
+  <p>The project is open-source, documented as it develops, and not a product for sale. It's a research effort exploring whether a single unified language can replace the tradeoffs that currently force developers to choose between performance, portability, safety, and ecosystem access. Collaboration and feedback from anyone who finds this worth thinking about is welcome.</p>
 
   <hr>
 
-  <p><strong>Q: What's some differences in runtime behaviors?</strong></p>
-  <p>Rust already toggles safety with unsafe blocks. Inside unsafe, you get raw pointers, manual memory, no borrow checker. Outside, you get full safety guarantees. Same language, two modes, toggled per-block.</p>
-  <p>C# has unsafe context too, by letting you use pointers and fixed-size buffers, opting out of GC for that scope.</p>
-  <p>D has @nogc annotation, which marks functions that aren't allowed to allocate from the garbage collector. You can mix GC and manual memory in the same program.</p>
-  <p>Zig lets you choose allocators per-call. You can have arena allocation in one place, general purpose style allocation in another, with no allocation at all in some hot path. You pass the allocator explicitly.</p>
-  <p>Swift has both ARC (reference counting) and unsafe pointers available in the same language.</p>
-  <p>No language puts all of these on a single dial panel. Every one picks a default and lets you escape from it in limited ways. Here, you declare your policy and the compiler enforces it.</p>
-  <p>Every function, data structure, and IO operation works under all configurations. A linked list under GC doesn't need a destructor. Under manual memory it does. Under refcount it needs weak reference support. These are the sorts of things that are a coverage goal, and is a necessary part of a system of unified syntax.</p>
-  <p>One standard library with an implementation of everything is the route to achieving a successful build for this concept. There's no novel ideas and reinventing the wheel, but rather just patching together and recreating past work. However, there is some design of interfacing and other systems that allow for co-existence of these systems.</p>
-  <p>The syntax decisions borrow from what already exists across C, Python, Java, and Javascript. The angle of attack in this component is to unify and minimize, not to invent. I want anyone to be able to see it and understand it. Verbosity is chosen over efficiency or what many might see as elegance. It's not something prioritizing functional programming; the entire personality and image being built is one revolving around practicality.</p>
+  <p><strong>Why does this exist?</strong></p>
+
+  <p>Every programming language makes tradeoff decisions that you inherit when you choose it. Python gives you an enormous ecosystem and fast development but is 10&ndash;100x slower than C, has a GIL that prevents real parallelism, and offers no path to native binaries. C gives you maximum performance and hardware access but has no memory safety, no package ecosystem comparable to pip, and alienates practitioners who aren't systems programmers. JavaScript runs everywhere but has no integer type, no static types without bolting on TypeScript, and no way to write low-level code. Java gives you type safety and threading but locks you into the JVM, GC you can't turn off, and startup times measured in seconds.</p>
+
+  <p>Each of these languages made decisions about memory management, type checking, safety guarantees, and concurrency at design time. Those decisions are fixed. You can escape them in narrow ways &mdash; Rust has <code>unsafe</code>, Python has Cython, JavaScript has WASM &mdash; but the escape hatches are limited, bolted on, and often require learning an entirely separate tool or language.</p>
+
+  <p>UL makes these decisions configurable. Memory model (GC, manual, refcount, arena), safety level (checked or unchecked), type system (static or dynamic), integer width (32, 64, or platform), concurrency model (threaded, parallel, async, cooperative) &mdash; all declared per file at compile time. The compiler enforces that files with conflicting settings don't interact unsafely.</p>
+
+  <hr>
+
+  <p><strong>How does it work?</strong></p>
+
+  <p>The compiler (XPile) translates UL source into any of five targets. Compile to C or LLVM IR for native binaries with full hardware access. Compile to Python and your code runs anywhere a Python interpreter exists, with full access to the Python ecosystem (pip, numpy, pandas &mdash; all callable). Compile to JavaScript and it runs in any browser or Node.js environment. Compile to WebAssembly and it runs on any device with a browser, no install required.</p>
+
+  <p>Each target isn't a watered-down translation. The C output uses <code>stdio.h</code>, <code>stdint.h</code>, structs with inheritance via composition, and maps UL builtins to their C equivalents. The Python output uses dataclasses, native Python match/case, and idiomatic Python patterns. The JS output uses factory functions, strict equality, and <code>console.log</code>. You get the ecosystem of each target language with zero loss and everything gained from writing in a single syntax.</p>
+
+  <p>The standard library has one implementation that works across all runtime configurations. A linked list under GC doesn't need a destructor. Under manual memory it does. Under refcount it needs weak reference support. The standard library handles this &mdash; the developer declares what they want and the compiler selects the correct implementation path.</p>
+
+  <hr>
+
+  <p><strong>What about AI and ML?</strong></p>
+
+  <p>AI needs a language. Python has the tooling (PyTorch, TensorFlow, Hugging Face) but is the wrong language for performance-critical computation. C and CUDA have the speed but alienate ML practitioners and require specialist knowledge to use effectively. The result is that the AI ecosystem is built on Python calling C calling CUDA &mdash; three languages, three build systems, three sets of abstractions leaking into each other.</p>
+
+  <p>The optimizations that matter for AI workloads are currently either clunky library operations or simply unavailable at the language level:</p>
+
+  <ul style="margin:12px 0 18px 24px; color:#2a2a2a; line-height:2;">
+    <li>Mixed precision requires <code>.half()</code> calls scattered manually across an entire codebase</li>
+    <li>Quantization is a post-training library operation, not a type</li>
+    <li>Kernel fusion depends on whether <code>torch.compile</code> happens to recognize the pattern</li>
+    <li>Custom CUDA kernels require writing GPU programs in a separate language</li>
+    <li>Sparsity requires converting tensors to sparse formats and using separate library functions</li>
+    <li>Prefetch requires hardware-specific compiler intrinsics placed manually</li>
+    <li>Memory layout (struct-of-arrays vs array-of-structs) must be managed by hand</li>
+  </ul>
+
+  <p>UL treats these as language-level concerns. Mixed precision is a compile-time setting &mdash; declare it once and the compiler applies FP16 computation with FP32 accumulation. Quantization is a type (<code>int8</code> is first-class, not a library conversion). Sparsity is a type-level construct. Prefetch is a language annotation where the compiler calculates the optimal distance per target architecture. Memory layout is controlled via DR settings. FMA patterns are recognized and fused automatically.</p>
+
+  <hr>
+
+  <p><strong>What else?</strong></p>
+
+  <ul style="margin:12px 0 18px 24px; color:#2a2a2a; line-height:2;">
+    <li>Formal memory safety via SMT solver &mdash; the same mathematics used by Airbus and automotive manufacturers, built into the compiler</li>
+    <li>Error handling with Result types, <code>?</code> propagation, and <code>exit()</code> &mdash; you choose the model per function</li>
+    <li>Match statement with pattern matching across all compilation targets</li>
+    <li>Type inheritance with structs and fields</li>
+    <li>Foreign function interface for calling C libraries directly</li>
+    <li>AST normalization at four levels for code simplification</li>
+    <li>VS Code extension with diagnostics, hover, autocomplete, signature help, go-to-definition, AI-powered code walkthroughs, and dependency graph visualization</li>
+    <li>Interactive browser REPL that runs entirely client-side with zero dependencies</li>
+    <li>DR conflict detection across files at compile time before anything runs</li>
+    <li>Bytecode VM specification (register-based, 32-bit fixed-width, tiered ISA)</li>
+  </ul>
+
+  <p>The syntax borrows from what already exists across C, Python, Java, and JavaScript. The goal is to unify and minimize, not to invent. Verbosity is chosen over cleverness. Readability over elegance. Practicality over ideology.</p>
+
   <p>The full design rationale and conceptual basis is documented in the <a href="LANG_Complete_F.pdf">LANG Project document</a>.</p>
+
 </div>
 
 </div>
