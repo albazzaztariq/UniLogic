@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pragma — Dynamic Runtime</title>
+<title>UniLogic — Dynamic Runtime</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -273,7 +273,7 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
 
 <nav>
   <a href="javascript:history.back()" class="nav-back">← Back</a>
-  <div class="nav-logo">Pragma / DR</div>
+  <div class="nav-logo">UniLogic / DR</div>
 
   <div class="nav-section">Memory</div>
   <a href="#memory">memory</a>
@@ -305,11 +305,11 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
   <div class="page-label">Dynamic Runtime — DR</div>
   <h1>Dynamic Runtime</h1>
   <p class="page-intro">
-    Pragma exposes 11 runtime settings that cover the decisions most languages make once at the language level and never revisit. Each setting is declared at the top of a source file and enforced by the compiler for that file. All settings have defaults — if you don't declare them, the defaults apply silently. Most code will never need to touch any of this.
+    UniLogic exposes 11 runtime settings that cover the decisions most languages make once at the language level and never revisit. Each setting is declared at the top of a source file and enforced by the compiler for that file. All settings have defaults — if you don't declare them, the defaults apply silently. Most code will never need to touch any of this.
   </p>
 </div>
 
-<p>Most languages pick a memory model, a concurrency model, and an error strategy at design time. You inherit them when you choose the language, and working around them — if possible at all — requires unsafe blocks, external libraries, or runtime flags. Pragma treats these as per-file compile-time configuration. The standard library is implemented to work correctly under all combinations.</p>
+<p>Most languages pick a memory model, a concurrency model, and an error strategy at design time. You inherit them when you choose the language, and working around them — if possible at all — requires unsafe blocks, external libraries, or runtime flags. UniLogic treats these as per-file compile-time configuration. The standard library is implemented to work correctly under all combinations.</p>
 
 <div class="example">
 <span class="ex-key">memory</span>:      <span class="ex-val">gc</span>          <span class="ex-cm">// or: manual · refcount · arena</span><br>
@@ -380,7 +380,7 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
 
 <div class="suboption-wrap">
   <div class="suboption-label">Contract note — allocator: custom</div>
-  <p>When <code>allocator: custom</code> is set, the provided struct must implement the Pragma allocator interface: <code>alloc(size, align) → ptr</code>, <code>free(ptr)</code>, and <code>realloc(ptr, new_size) → ptr</code>. This is not a setting — it is a compile-time contract. The compiler will reject a custom allocator that does not satisfy the interface.</p>
+  <p>When <code>allocator: custom</code> is set, the provided struct must implement the UniLogic allocator interface: <code>alloc(size, align) → ptr</code>, <code>free(ptr)</code>, and <code>realloc(ptr, new_size) → ptr</code>. This is not a setting — it is a compile-time contract. The compiler will reject a custom allocator that does not satisfy the interface.</p>
 </div>
 
 <h2 id="overflow">overflow</h2>
@@ -554,7 +554,7 @@ hr { border: none; border-top: 1px solid #dde1e8; margin: 48px 0; }
       <span class="setting-values">unchecked &nbsp;|&nbsp; checked</span>
     </div>
     <div class="setting-body">
-      <p class="setting-desc"><strong>unchecked</strong> — Exceptions are not declared in function signatures. On the JVM target, the transpiler wraps all exceptions in <code>RuntimeException</code> so callers are never forced to handle them. This is the standard behaviour for Pragma code and all other targets.</p>
+      <p class="setting-desc"><strong>unchecked</strong> — Exceptions are not declared in function signatures. On the JVM target, the transpiler wraps all exceptions in <code>RuntimeException</code> so callers are never forced to handle them. This is the standard behaviour for UniLogic code and all other targets.</p>
       <p class="setting-desc"><strong>checked</strong> — The transpiler generates explicit <code>throws</code> declarations on the JVM target, propagating exception types up the call stack as Java requires. Use this when integrating with Java libraries that expect checked exceptions to be declared.</p>
       <div class="setting-default">default: <span>unchecked</span> &nbsp;·&nbsp; only applies when target is JVM and error_model is exceptions</div>
     </div>

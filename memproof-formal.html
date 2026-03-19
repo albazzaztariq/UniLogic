@@ -561,7 +561,7 @@ VC:  0 ≤ i ∧ i &lt; arr_len</pre>
 <p>The proof witness for each VC is collected and bundled into the overall MemProof certificate:</p>
 
 <pre>{
-  "program_hash":   "&lt;sha256 of Pragma source&gt;",
+  "program_hash":   "&lt;sha256 of UL source&gt;",
   "verifier_cid":   "&lt;IPFS CID of MemProof version used&gt;",
   "memory_model":   "block-offset-v1",
   "vcs": [
@@ -609,7 +609,7 @@ VC:  0 ≤ i ∧ i &lt; arr_len</pre>
 <p>The top-level soundness theorem in Coq:</p>
 
 <pre>Theorem memproof_sound :
-  forall prog : PragmaProgram,
+  forall prog : ULProgram,
   forall cert : Certificate,
   memproof prog = Proved cert ->
   memory_safe prog.</pre>
