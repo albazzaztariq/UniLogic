@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inside a .ubi File — Format, Sections, and Metadata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Georgia', serif; font-size: 16px; line-height: 1.7; color: #1a1a1a; background: #fafaf8; display: flex; }
+nav { position: fixed; top: 0; left: 0; width: 230px; height: 100vh; overflow-y: auto; padding: 24px 0 40px; z-index: 100; background: #1e1e2e; border-right: 1px solid #313244; }
+.nav-logo { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; padding: 0 20px 16px; color: #5b8fc9; border-bottom: 1px solid #313244; margin-bottom: 8px; display: block; text-decoration: none; }
+.nav-section { margin-top: 14px; padding: 3px 20px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-family: sans-serif; font-weight: bold; color: #585b70; }
+nav a { display: block; padding: 5px 20px 5px 23px; text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 13px; color: #a6adc8; border-left: 3px solid transparent; transition: background 0.12s, color 0.12s; }
+nav a:hover { background: #313244; color: #cdd6f4; border-left-color: #7ab3e0; }
+main { margin-left: 230px; padding: 56px 80px 100px 72px; max-width: 920px; width: 100%; }
+h1 { font-size: 2.2rem; font-weight: normal; margin-bottom: 8px; padding-bottom: 14px; color: #1a1a1a; border-bottom: 2px solid #e0d8f0; }
+.subtitle { font-size: 1rem; margin-bottom: 32px; font-style: italic; color: #666; }
+h2 { font-size: 1.5rem; font-weight: normal; margin-top: 48px; margin-bottom: 4px; padding-bottom: 6px; scroll-margin-top: 32px; color: #2d1b69; border-bottom: 1px solid #e0d8f0; }
+h3 { font-size: 1.05rem; font-weight: bold; margin-top: 28px; margin-bottom: 8px; color: #333; }
+p { margin-bottom: 14px; color: #2a2a2a; }
+pre { padding: 18px 22px; border-radius: 6px; white-space: pre-wrap; word-break: break-word; font-family: 'Share Tech Mono', monospace; font-size: 13px; line-height: 1.6; margin: 14px 0 20px; background: #1e1e2e; color: #cdd6f4; border-left: 3px solid #7ab3e0; }
+code { padding: 1px 6px; border-radius: 3px; font-family: 'Share Tech Mono', monospace; font-size: 14px; background: #ede8f5; color: #1a3a7a; }
+pre code { background: none; color: inherit; padding: 0; }
+.note { padding: 12px 16px; margin: 16px 0; border-radius: 0 4px 4px 0; font-size: 15px; background: #f0f4ff; border-left: 4px solid #6c7ef7; }
+.note strong { display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #4a5fcc; }
+.warn { padding: 12px 16px; margin: 16px 0; border-radius: 0 4px 4px 0; font-size: 15px; background: #fff8e8; border-left: 4px solid #f5a623; }
+.warn strong { display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #c07820; }
+.link-card { display: inline-block; margin-top: 16px; margin-right: 8px; padding: 10px 24px; background: #1e1e2e; color: #7ab3e0; border: 1px solid #313244; border-radius: 5px; text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 0.08em; transition: background 0.15s; }
+.link-card:hover { background: #0a1f5e; }
+@media (max-width: 700px) { nav { display: none; } main { margin-left: 0; padding: 20px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="learn-bytecode.html" class="nav-logo">&larr; Back to Bytecode Tutorial</a>
+  <div class="nav-section">On This Page</div>
+  <a href="#whats-in-the-file">What's in the File</a>
+  <a href="#constant-pool">The Constant Pool</a>
+  <a href="#block-metadata">Block Metadata</a>
+  <a href="#control-flow">Control Flow Table</a>
+  <a href="#debug-section">The Debug Section</a>
+  <a href="#why-this-design">Why This Design</a>
+  <div class="nav-section">Also</div>
+  <a href="learn-bytecode.html">Bytecode Interpreters</a>
+  <a href="interpreter.html">UBI Technical Reference</a>
+  <a href="language-main.html">Syntax Reference</a>
+</nav>
+
+<main>
+
+<h1>Inside a .ubi File</h1>
+<p class="subtitle">The format, sections, and metadata the compiler provides to help the interpreter.</p>
+
+<!-- ======================================================= -->
+
+<h2 id="whats-in-the-file">What's in the File</h2>
+
+<p>A <code>.ubi</code> file is not source code and not machine code. It is a compact binary format &mdash; a sequence of instructions that the UBI interpreter knows how to execute. You cannot read it in a text editor any more than you can read a JPEG by opening it in Notepad. It is meant for the interpreter, not for humans.</p>
+
+<p>The file is divided into sections, each with a specific purpose. Here is the high-level layout:</p>
+
+<pre><code>+--------------------------------------------------+
+|  Header (24 bytes)                                |
+|  Magic number, version, section sizes             |
++--------------------------------------------------+
+|  Constant Pool                                    |
+|  Numbers, strings, booleans used by the program   |
++--------------------------------------------------+
+|  Function Table                                   |
+|  Where each function starts, register count       |
++--------------------------------------------------+
+|  Block Metadata                                   |
+|  Which parts of the code are hot (run frequently) |
++--------------------------------------------------+
+|  Control Flow Table                               |
+|  Which blocks can jump to which other blocks      |
++--------------------------------------------------+
+|  Instructions                                     |
+|  The actual bytecode (fixed 32-bit instructions)  |
++--------------------------------------------------+
+|  Debug Section (optional)                         |
+|  Variable names, line numbers, types              |
++--------------------------------------------------+</code></pre>
+
+<p>If you have worked with Java, this is the same idea as a <code>.class</code> file. If you have worked with Python, think <code>.pyc</code>. The concept is identical &mdash; compiled-but-not-native instructions bundled with metadata &mdash; but the specific format and what metadata is included differs significantly. UBI ships far more compiler intelligence in the file than either of those formats.</p>
+
+<!-- ======================================================= -->
+
+<h2 id="constant-pool">The Constant Pool</h2>
+
+<p>Programs reuse values. The number <code>0</code>, the string <code>"error"</code>, the boolean <code>true</code> &mdash; these appear over and over. Instead of encoding each value directly into every instruction that uses it, the compiler stores each unique value once in a table at the top of the file: the <em>constant pool</em>.</p>
+
+<p>Instructions reference constants by index. When the interpreter sees "load constant #3 into register r0," it goes to the 4th entry in the constant pool (indices start at 0) and copies that value into the register. The instruction itself is just a 32-bit word containing the opcode and the index &mdash; no matter whether the constant is the integer <code>42</code> or a 500-character string.</p>
+
+<p>This is what keeps the instruction stream compact. Every instruction is exactly 32 bits. The constants can be any size, but the instructions that reference them are always the same width. Uniform instruction width means the interpreter can jump to any instruction by offset without scanning &mdash; instruction N is always at byte offset <code>N &times; 4</code>.</p>
+
+<!-- ======================================================= -->
+
+<h2 id="block-metadata">Block Metadata and Hotness Counters</h2>
+
+<p>The compiler divides each function into <em>basic blocks</em> &mdash; straight-line chunks of code with no branches in the middle. A basic block runs from start to finish every time it executes; you cannot jump into the middle or branch out partway through. This is the fundamental unit of control flow analysis.</p>
+
+<p>Each block carries a 6-bit counter (values 0 through 63) that tracks how many times it has been executed. This is the <em>hotness counter</em>. When a counter saturates &mdash; hits 63 &mdash; the interpreter knows this code is hot. It runs frequently and deserves extra optimization effort. In the future, saturating the counter will be the signal for a JIT compiler to compile that block to native machine code.</p>
+
+<p>The key insight is that you do not want to optimize all code. In most programs, the vast majority of code runs once or twice &mdash; startup logic, error handlers, configuration parsing. Only the inner loops and hot paths deserve the investment of analysis and optimization. The hotness counter is what separates the two, and the compiler provides the infrastructure for it so the interpreter does not have to build it at runtime.</p>
+
+<div class="note">
+  <strong>Did you know?</strong>
+  The "magic number" at the start of a .ubi file is the bytes U, B, I followed by a null byte (<code>0x55 0x42 0x49 0x00</code>). Every binary format has one &mdash; it is how programs quickly check "is this file the right type?" without reading the whole thing. Java's is <code>0xCAFEBABE</code>. PNG images start with <code>0x89504E47</code>. Even GIF files start with the literal text <code>GIF89a</code>.
+</div>
+
+<!-- ======================================================= -->
+
+<h2 id="control-flow">The Control Flow Table</h2>
+
+<p>Normally, an interpreter figures out "where can this code jump to?" by scanning the instructions at runtime. It sees a branch instruction, looks at the target offset, and follows it. UBI's compiler pre-computes this entire graph and ships it in the file as the <em>control flow table</em>.</p>
+
+<p>Each entry in the table is an edge: "block 3 can jump to block 7 (branch taken)" or "block 3 falls through to block 4 (branch not taken)." Together, these edges form the complete control flow graph of the program. The interpreter gets this information for free the moment it loads the file.</p>
+
+<p>Why does this matter? Two reasons. First, the interpreter can <em>prefetch</em> the next block's instructions into the CPU cache before it finishes executing the current block, because it already knows which blocks are reachable. Second, a future JIT compiler gets the entire control flow graph without performing any analysis at all &mdash; no dominator trees to compute, no loop detection to run. The compiler already did that work. The JIT just reads the table and starts optimizing.</p>
+
+<!-- ======================================================= -->
+
+<h2 id="debug-section">The Debug Section (and Stripping)</h2>
+
+<p>By default, the compiler includes a debug section at the end of the file: variable names, function signatures, source line numbers, and type information. This is what makes error messages useful. With debug info, you get: <em>"Error at line 42 in function 'calculate': division by zero."</em> Without it: <em>"Error at instruction offset 0x01A4."</em></p>
+
+<p>For distribution, you can strip the debug section entirely:</p>
+
+<pre><code>ul build app.ul -t ubi --strip</code></pre>
+
+<p>The program still runs identically &mdash; the interpreter does not need any of this information to execute the bytecode. But decompiling a stripped file gives you generic names like <code>_r0</code>, <code>_r1</code> instead of <code>total</code>, <code>count</code>. The logic is all there; the meaning is gone.</p>
+
+<p>It is like shipping a building without the blueprints. It still stands, but good luck figuring out which wall is load-bearing.</p>
+
+<!-- ======================================================= -->
+
+<h2 id="why-this-design">Why This Design</h2>
+
+<p>The JVM (1995) kept its bytecode simple and put all intelligence in the runtime. HotSpot, the JVM's JIT compiler, discovers control flow, profiles hotness, and builds optimization data entirely at runtime. This worked &mdash; brilliantly &mdash; but it means every program pays a warmup cost while the runtime rediscovers facts the compiler already knew.</p>
+
+<p>UBI does the opposite. The compiler does extra work at compile time to embed metadata &mdash; block hotness counters, control flow edges, register liveness &mdash; directly in the <code>.ubi</code> file. The interpreter can exploit this information from the very first instruction, with zero warmup.</p>
+
+<p>This is the same approach Android's ART runtime and WebAssembly use. It is the modern consensus: if the compiler already knows something, do not make the runtime rediscover it. Ship the knowledge in the file. Let the interpreter be fast from the start, and give the JIT a head start when it kicks in later.</p>
+
+<div class="note">
+  <strong>Did you know?</strong>
+  A typical UL program produces a .ubi file that is 2&ndash;5x smaller than the equivalent .pyc (Python bytecode) file, because UBI's fixed 32-bit instructions are more compact than Python's variable-width bytecode. Smaller file means faster loading means faster startup.
+</div>
+
+<hr style="border:none; border-top:1px solid #e8e4f0; margin:40px 0;">
+
+<div style="display:flex; justify-content:space-between;">
+<a href="learn-dispatch.html" class="link-card">&larr; Previous: How Dispatch Works</a>
+<a href="learn-quickening.html" class="link-card">Next: How Quickening Works &rarr;</a>
+</div>
+
+</main>
+
+</body>
+</html>

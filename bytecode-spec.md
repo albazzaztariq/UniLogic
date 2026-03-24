@@ -22,7 +22,7 @@ The UL bytecode uses a **register-based** architecture. Each instruction names i
 
 ## 2. File Format
 
-A `.ulb` file (UniLogic Bytecode) has the following layout:
+A `.ubi` file (UniLogic Bytecode Interpreter) has the following layout:
 
 ```
 ┌──────────────────────────────────┐
@@ -44,7 +44,7 @@ A `.ulb` file (UniLogic Bytecode) has the following layout:
 
 | Offset | Size | Field | Value |
 |--------|------|-------|-------|
-| 0 | 4 | Magic bytes | `0x554C4243` (`ULBC` in ASCII) |
+| 0 | 4 | Magic bytes | `0x55424900` (`UBI\0` — 3 chars + null byte) |
 | 4 | 2 | Major version | `0x0100` (1.0) |
 | 6 | 2 | Minor version | `0x0000` |
 | 8 | 4 | Constant pool entry count | u32 LE |
@@ -286,7 +286,7 @@ These are hints to the VM/JIT, not semantic requirements. A VM may execute all o
 
 ## 5. Execution Model
 
-1. The VM loads the `.ulb` file, validates magic bytes and version, parses the constant pool, function table, and block metadata into memory.
+1. The VM loads the `.ubi` file, validates magic bytes and version, parses the constant pool, function table, and block metadata into memory.
 2. The VM locates the entry-point function (default: `main`) by name.
 3. A root call frame is created with a register file of `register_count` slots, all initialized to `empty`.
 4. The PC is set to the function's instruction offset.
@@ -340,7 +340,7 @@ After the first execution, the VM may **rewrite an instruction's opcode byte in-
 | `CALL` | `CALL_RESOLVED` | Function pointer cached after first name resolution |
 | `LOAD_CONST` | `LOAD_CONST_INT` | Constant type cached — skip pool tag check |
 
-Quickened opcodes use the range `0xC0–0xDF`. Never emitted by the compiler. Never present in `.ulb` files on disk. See §7 for the full type specialization plan.
+Quickened opcodes use the range `0xC0–0xDF`. Never emitted by the compiler. Never present in `.ubi` files on disk. See §7 for the full type specialization plan.
 
 ### 5.4 Error Handling
 
@@ -358,7 +358,7 @@ All instructions in §4. Integer/float arithmetic, register moves, branches, cal
 
 ### Tier 1 — Semantic Operations (0x80–0x9F)
 
-Instructions that carry **inline cache (IC) metadata indices** for runtime specialization. Each Tier 1 instruction has a `rC` field that indexes into a per-function IC table (not part of the `.ulb` file — allocated by the VM at load time).
+Instructions that carry **inline cache (IC) metadata indices** for runtime specialization. Each Tier 1 instruction has a `rC` field that indexes into a per-function IC table (not part of the `.ubi` file — allocated by the VM at load time).
 
 | Opcode | Hex | Form | Semantics |
 |--------|-----|------|-----------|
@@ -411,15 +411,15 @@ The VM rewrites the opcode byte in-place after the first execution. If types cha
 
 ## 8. Load-Time Rewriting
 
-On first load of a `.ulb` file, the VM runs a **bytecode rewriting pass** before execution begins. This pass:
+On first load of a `.ubi` file, the VM runs a **bytecode rewriting pass** before execution begins. This pass:
 
 1. **Sequence fusion.** Scans for Tier 0 instruction sequences that match Tier 2 superinstruction patterns and rewrites them in-place. Because instructions are fixed 32-bit width, replacing a multi-instruction sequence with a superinstruction + NOPs is a simple aligned write. Example: `CMP_LT r3 r0 r1` + `JUMP_IF_FALSE r3 +4` becomes `LOOP_TEST r0 r1 +5` + `NOP`.
 
 2. **Handler reindexing.** The VM may remap opcode values in the loaded bytecode to reorder dispatch table entries for this specific program's hot paths. If profiling (via block metadata hotness counters) shows that `ADD` and `CALL` dominate, the VM can swap their dispatch table positions so they occupy adjacent I-cache lines. This is transparent to semantics — the remapping is applied to both the bytecode and the dispatch table atomically.
 
-3. **IC table allocation.** For each Tier 1 instruction, the VM allocates an inline cache slot in a per-function side table. The `ic_slot` operand in Tier 1 instructions indexes into this table. The table is not part of the `.ulb` file — it is allocated at load time and populated during execution.
+3. **IC table allocation.** For each Tier 1 instruction, the VM allocates an inline cache slot in a per-function side table. The `ic_slot` operand in Tier 1 instructions indexes into this table. The table is not part of the `.ubi` file — it is allocated at load time and populated during execution.
 
-The rewriting pass runs once per function on first load. Subsequent invocations of the same function use the rewritten bytecode. The original `.ulb` file on disk is never modified.
+The rewriting pass runs once per function on first load. Subsequent invocations of the same function use the rewritten bytecode. The original `.ubi` file on disk is never modified.
 
 ---
 

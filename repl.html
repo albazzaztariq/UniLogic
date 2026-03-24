@@ -40,7 +40,7 @@ nav {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   padding: 0 20px 16px;
-  color: #8ecfff;
+  color: #5b8fc9;
   border-bottom: 1px solid #313244;
   margin-bottom: 8px;
   display: block;
@@ -55,7 +55,7 @@ nav {
   text-transform: uppercase;
   font-family: sans-serif;
   font-weight: bold;
-  color: #b0b4cc;
+  color: #585b70;
 }
 
 nav a {
@@ -64,22 +64,28 @@ nav a {
   text-decoration: none;
   font-family: 'Share Tech Mono', monospace;
   font-size: 13px;
-  color: #d0d4e8;
+  color: #a6adc8;
   border-left: 3px solid transparent;
   transition: background 0.12s, color 0.12s;
 }
 
 nav a:hover {
   background: #313244;
-  color: #ffffff;
-  border-left-color: #8ecfff;
+  color: #cdd6f4;
+  border-left-color: #7ab3e0;
 }
 
-/* ── MAIN ─────────────────────────────────────────────────── */
+nav a.nav-active {
+  background: #252535;
+  color: #cdd6f4;
+  border-left-color: #7ab3e0;
+}
+
+/* ── MAIN LAYOUT ─────────────────────────────────────────── */
 
 main {
   margin-left: 230px;
-  padding: 32px 48px 32px 48px;
+  padding: 32px 32px 32px 48px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -89,17 +95,102 @@ main {
 h1 { font-size: 2.2rem; font-weight: normal; margin-bottom: 8px; padding-bottom: 14px; color: #1a1a1a; border-bottom: 2px solid #e0d8f0; }
 .subtitle { font-size: 1rem; margin-bottom: 20px; font-style: italic; color: #666; }
 
+/* ── REPL CONTAINER (editor + var pane side by side) ─────── */
+
+#repl-container {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+#repl-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ── TOOLBAR (level selector + language tabs) ────────────── */
+
+#toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+#level-selector {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border: 1px solid #313244;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  outline: none;
+}
+#level-selector:hover { border-color: #7ab3e0; }
+#level-selector option { background: #1e1e2e; color: #cdd6f4; }
+
+/* ── LANGUAGE TABS ───────────────────────────────────────── */
+
+.lang-tabs {
+  display: flex;
+  gap: 0;
+}
+
+.lang-tab {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  padding: 6px 18px;
+  background: #2a2a3a;
+  color: #a6adc8;
+  border: 1px solid #313244;
+  border-bottom: none;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  user-select: none;
+}
+.lang-tab:first-child { border-radius: 6px 0 0 0; }
+.lang-tab:last-child  { border-radius: 0 6px 0 0; }
+
+.lang-tab:hover { background: #313244; color: #cdd6f4; }
+.lang-tab.active {
+  background: #1e1e2e;
+  color: #7ab3e0;
+  font-weight: bold;
+  border-bottom-color: #1e1e2e;
+}
+
+.lang-tab-badge {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 6px;
+  vertical-align: middle;
+  background: rgba(122, 179, 224, 0.15);
+  color: #7ab3e0;
+}
+
 /* ── TERMINAL ────────────────────────────────────────────── */
 
 #terminal {
   flex: 1;
   background: #0a0a0f;
-  border-radius: 8px;
+  border-radius: 0 8px 8px 8px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   border: 1px solid #1a1a2e;
-  min-height: 500px;
+  min-height: 420px;
+}
+
+#terminal.has-tabs {
+  border-radius: 0 8px 8px 8px;
 }
 
 #terminal-bar {
@@ -144,8 +235,9 @@ h1 { font-size: 2.2rem; font-weight: normal; margin-bottom: 8px; padding-bottom:
 
 .line-input  { color: #f0f0f5; }
 .line-output { color: #e0e0e8; }
-.line-error  { color: #ff6b8a; }
-.line-info   { color: #8ecfff; }
+.line-error  { color: #f38ba8; }
+.line-hint   { color: #f9e2af; font-style: italic; font-size: 13px; padding-left: 16px; }
+.line-info   { color: #7ab3e0; }
 .line-banner { color: #5ba0d0; }
 .prompt-color { color: #4a9ad0; font-weight: bold; }
 
@@ -185,7 +277,224 @@ h1 { font-size: 2.2rem; font-weight: normal; margin-bottom: 8px; padding-bottom:
 
 #input-field::placeholder { color: #7a7e98; }
 
+/* ── CODE DISPLAY (Python/C read-only tabs) ──────────────── */
+
+#code-display {
+  flex: 1;
+  background: #1e1e2e;
+  border-radius: 0 8px 8px 8px;
+  border: 1px solid #1a1a2e;
+  min-height: 420px;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#code-display-bar {
+  background: #181828;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #313244;
+}
+
+#code-display-title {
+  flex: 1;
+  text-align: center;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #9098b8;
+  letter-spacing: 0.08em;
+}
+
+#code-display-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 22px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #cdd6f4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+#code-display-content::-webkit-scrollbar { width: 6px; }
+#code-display-content::-webkit-scrollbar-track { background: transparent; }
+#code-display-content::-webkit-scrollbar-thumb { background: #313244; border-radius: 3px; }
+
+.code-readonly-notice {
+  padding: 8px 16px;
+  background: #181828;
+  border-top: 1px solid #313244;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #585b70;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+/* ── TRANSPILE BUTTONS ───────────────────────────────────── */
+
+#transpile-bar {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.transpile-btn {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  padding: 5px 16px;
+  border-radius: 4px;
+  border: 1px solid #313244;
+  background: #1e1e2e;
+  color: #a6adc8;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+.transpile-btn:hover {
+  background: #313244;
+  color: #7ab3e0;
+  border-color: #7ab3e0;
+}
+
+#transpile-msg {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #585b70;
+  font-style: italic;
+  margin-left: 8px;
+}
+
+/* ── VARIABLE PANE ───────────────────────────────────────── */
+
+#var-pane {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.2s;
+}
+
+#var-pane.collapsed {
+  width: 36px;
+}
+
+#var-pane-header {
+  background: #1e1e2e;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 6px 6px 0 0;
+  border: 1px solid #313244;
+  border-bottom: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+#var-pane-header:hover { background: #252535; }
+
+#var-pane-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7ab3e0;
+}
+
+#var-pane-toggle {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  color: #585b70;
+  transition: transform 0.2s;
+}
+
+#var-pane.collapsed #var-pane-title { display: none; }
+#var-pane.collapsed #var-pane-toggle { transform: rotate(180deg); }
+#var-pane.collapsed #var-pane-header { border-radius: 6px; border-bottom: 1px solid #313244; }
+
+#var-pane-body {
+  flex: 1;
+  background: #12121a;
+  border: 1px solid #313244;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  overflow-y: auto;
+  padding: 10px 0;
+}
+
+#var-pane.collapsed #var-pane-body { display: none; }
+
+#var-pane-body::-webkit-scrollbar { width: 5px; }
+#var-pane-body::-webkit-scrollbar-track { background: transparent; }
+#var-pane-body::-webkit-scrollbar-thumb { background: #313244; border-radius: 3px; }
+
+.var-section-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #585b70;
+  padding: 6px 12px 2px;
+}
+
+.var-entry {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  padding: 3px 12px;
+  line-height: 1.5;
+  color: #cdd6f4;
+  word-break: break-all;
+}
+
+.var-type { color: #89dceb; }
+.var-name { color: #f9e2af; }
+.var-val  { color: #a6e3a1; }
+.var-eq   { color: #585b70; }
+.var-empty { color: #585b70; font-style: italic; padding: 12px; font-size: 12px; }
+.var-fn-name { color: #f9e2af; }
+.var-fn-sig  { color: #a6adc8; font-size: 11px; }
+
+/* ── OTHER REPLS LINKS ───────────────────────────────────── */
+
+#other-repls {
+  margin-top: 20px;
+  padding: 14px 20px;
+  background: #f5f3fb;
+  border: 1px solid #d8cff0;
+  border-left: 4px solid #7ab3e0;
+  border-radius: 0 6px 6px 0;
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  color: #2a2a2a;
+}
+
+#other-repls a {
+  color: #1a3a7a;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+#other-repls a:hover { color: #7ab3e0; text-decoration: underline; }
+
+.repl-sep { color: #b0a8c8; margin: 0 6px; }
+
 /* ── RESPONSIVE ──────────────────────────────────────────── */
+
+@media (max-width: 1100px) {
+  #var-pane { width: 200px; }
+}
+
+@media (max-width: 900px) {
+  #repl-container { flex-direction: column; }
+  #var-pane { width: 100%; }
+  #var-pane.collapsed { width: 100%; }
+}
 
 @media (max-width: 700px) {
   nav { display: none; }
@@ -209,8 +518,12 @@ h1 { font-size: 2.2rem; font-weight: normal; margin-bottom: 8px; padding-bottom:
   <a href="#" onclick="replCmd('print &quot;hello&quot;');return false;">print "hello"</a>
   <div class="nav-section">Try This</div>
   <a href="#" onclick="replDemo();return false;" style="line-height:1.4;">Define &amp; call a function</a>
+  <div class="nav-section">Other Pages</div>
+  <a href="language-main.html">Language Reference</a>
+  <a href="interpreter.html">Bytecode Interpreter</a>
+  <a href="tools.html">Tools &amp; Utilities</a>
+  <a href="getting-started.html">Getting Started</a>
   <div class="nav-section">Reference</div>
-  <a href="language-main.html">Syntax Reference</a>
   <a href="https://github.com/albazzaztariq/UniLogic" target="_blank">GitHub &nearr;</a>
 </nav>
 
@@ -219,27 +532,93 @@ h1 { font-size: 2.2rem; font-weight: normal; margin-bottom: 8px; padding-bottom:
 <h1>UniLogic REPL</h1>
 <p class="subtitle">Interactive interpreter running entirely in your browser &mdash; no server, no install, works offline.</p>
 
-<div id="terminal">
-  <div id="terminal-bar">
-    <span class="term-dot red"></span>
-    <span class="term-dot yellow"></span>
-    <span class="term-dot green"></span>
-    <span id="terminal-bar-title">ul &mdash; UniLogic Interactive</span>
+<!-- Toolbar: Level Selector + Language Tabs -->
+<div id="toolbar">
+  <select id="level-selector" onchange="loadLevel(this.value)">
+    <option value="">-- Load a sample --</option>
+    <option value="1">Level 1: Temperature Converter</option>
+    <option value="2">Level 2: Prime Checker</option>
+    <option value="3">Level 3: Word Count</option>
+    <option value="4">Level 4: Linked List</option>
+  </select>
+  <div class="lang-tabs">
+    <div class="lang-tab active" data-lang="ul" onclick="switchLang('ul')">UL</div>
+    <div class="lang-tab" data-lang="python" onclick="switchLang('python')">Python<span class="lang-tab-badge">read-only</span></div>
+    <div class="lang-tab" data-lang="c" onclick="switchLang('c')">C<span class="lang-tab-badge">read-only</span></div>
   </div>
-  <div id="terminal-output"></div>
-  <div id="input-row">
-    <span id="input-prompt">ul&gt; </span>
-    <textarea id="input-field" rows="1" spellcheck="false" autocomplete="off" placeholder="type an expression..."></textarea>
+</div>
+
+<div id="repl-container">
+
+  <!-- Main REPL area -->
+  <div id="repl-main">
+
+    <!-- UL Terminal (interactive) -->
+    <div id="terminal" class="has-tabs">
+      <div id="terminal-bar">
+        <span class="term-dot red"></span>
+        <span class="term-dot yellow"></span>
+        <span class="term-dot green"></span>
+        <span id="terminal-bar-title">ul &mdash; UniLogic Interactive</span>
+      </div>
+      <div id="terminal-output"></div>
+      <div id="input-row">
+        <span id="input-prompt">ul&gt; </span>
+        <textarea id="input-field" rows="1" spellcheck="false" autocomplete="off" placeholder="type an expression..."></textarea>
+      </div>
+    </div>
+
+    <!-- Code display (Python/C read-only) -->
+    <div id="code-display">
+      <div id="code-display-bar">
+        <span class="term-dot red"></span>
+        <span class="term-dot yellow"></span>
+        <span class="term-dot green"></span>
+        <span id="code-display-title">Python &mdash; equivalent code</span>
+      </div>
+      <div id="code-display-content"></div>
+      <div class="code-readonly-notice">Read-only &mdash; showing transpiled equivalent</div>
+    </div>
+
+    <!-- Transpile buttons -->
+    <div id="transpile-bar">
+      <button class="transpile-btn" onclick="transpileTo('python')">&rarr; Python</button>
+      <button class="transpile-btn" onclick="transpileTo('c')">&rarr; C</button>
+      <span id="transpile-msg"></span>
+    </div>
+
   </div>
+
+  <!-- Variable Pane -->
+  <div id="var-pane">
+    <div id="var-pane-header" onclick="toggleVarPane()">
+      <span id="var-pane-title">Variables</span>
+      <span id="var-pane-toggle">&raquo;</span>
+    </div>
+    <div id="var-pane-body">
+      <div class="var-empty">No variables defined yet.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Other REPLs -->
+<div id="other-repls">
+  Explore more:
+  <a href="repl-memory.html">Memory REPL</a>
+  <span class="repl-sep">|</span>
+  <a href="repl-performance.html">Performance REPL</a>
+  <span class="repl-sep">|</span>
+  <a href="repl-execution.html">Execution REPL</a>
 </div>
 
 </main>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════════════
-// UniLogic REPL — Pure JavaScript port of the Python tree-walking interpreter
-// Lexer → Parser → AST → Evaluator, all client-side
-// ═══════════════════════════════════════════════════════════════════════════
+// =====================================================================
+// UniLogic REPL -- Pure JavaScript port of the Python tree-walking interpreter
+// Lexer -> Parser -> AST -> Evaluator, all client-side
+// =====================================================================
 
 (function() {
 "use strict";
@@ -254,8 +633,9 @@ let   multiBuffer = "";
 let   multiDepth  = 0;
 
 // ── Interpreter state (persistent across inputs) ────────────────────────
-const globals   = {};   // variable name → value
-const functions = {};   // function name → FunctionDecl node
+const globals   = {};   // variable name -> value
+const globalTypes = {}; // variable name -> declared type string
+const functions = {};   // function name -> FunctionDecl node
 
 // ── Control flow signals ────────────────────────────────────────────────
 class ReturnValue  { constructor(v) { this.value = v; } }
@@ -263,15 +643,15 @@ class BreakSignal  {}
 class ContinueSignal {}
 class RuntimeErr extends Error { constructor(m) { super(m); this.name = "RuntimeErr"; } }
 
-// ═════════════════════════════════════════════════════════════════════════
-//  LEXER — port of Lexer/lexer.py
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
+//  LEXER -- port of Lexer/lexer.py
+// =====================================================================
 
 const KEYWORDS = new Set([
   "function","end","returns","return",
   "if","else","while","do","for","each","in",
   "match","iterate","default","escape","continue",
-  "type","inherits","new","fixed","constant",
+  "type","forks","new","fixed","constant",
   "import","from","export","print","prompt",
   "parallel","killswitch","goto","portal",
   "nocache","yield","inline","pack",
@@ -397,9 +777,9 @@ function tokenize(src) {
   return tokens;
 }
 
-// ═════════════════════════════════════════════════════════════════════════
-//  PARSER — port of Parser/parser.py
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
+//  PARSER -- port of Parser/parser.py
+// =====================================================================
 
 const TYPE_KWS = new Set([
   "int","float","double","string","bool","none","complex",
@@ -661,9 +1041,9 @@ class Parser {
   }
 }
 
-// ═════════════════════════════════════════════════════════════════════════
-//  EVALUATOR — port of REPL/repl.py Interpreter
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
+//  EVALUATOR -- port of REPL/repl.py Interpreter
+// =====================================================================
 
 // collected print output per execution
 let printBuffer = [];
@@ -799,6 +1179,10 @@ function execStmt(nd, env) {
     case "VarDecl": {
       const val = nd.init ? evalExpr(nd.init, env) : null;
       env[nd.name] = val;
+      // Track declared type for variable pane
+      if (env === globals) {
+        globalTypes[nd.name] = nd.type_.name + (nd.type_.isArray ? " array" : "") + (nd.type_.pointer ? " ptr" : "");
+      }
       return undefined;
     }
     case "Assign": {
@@ -883,9 +1267,9 @@ function execBody(stmts, env) {
   return result;
 }
 
-// ═════════════════════════════════════════════════════════════════════════
-//  MULTI-LINE DETECTION — port of block_depth()
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
+//  MULTI-LINE DETECTION -- port of block_depth()
+// =====================================================================
 
 function blockDepth(text) {
   let depth = 0, inString = false, skipAfterEnd = false;
@@ -909,9 +1293,9 @@ function blockDepth(text) {
   return depth;
 }
 
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
 //  OUTPUT HELPERS
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
 
 function escapeHtml(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
@@ -931,9 +1315,61 @@ function formatValue(val) {
   return String(val);
 }
 
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
+//  ERROR HINTS
+// =====================================================================
+
+function getErrorHint(msg) {
+  // Undefined variable
+  let m = msg.match(/undefined variable '(\w+)'/);
+  if (m) {
+    const name = m[1];
+    // Check for common misspellings or suggest declaration
+    const knownVars = Object.keys(globals);
+    for (const v of knownVars) {
+      if (v.toLowerCase() === name.toLowerCase() && v !== name) {
+        return 'Did you mean: ' + v + '? (variable names are case-sensitive)';
+      }
+    }
+    return 'Did you mean: int ' + name + ' = 0  (declare it first)';
+  }
+  // Undefined function
+  m = msg.match(/undefined function '(\w+)'/);
+  if (m) {
+    const name = m[1];
+    const knownFns = Object.keys(functions);
+    for (const f of knownFns) {
+      if (f.toLowerCase() === name.toLowerCase() && f !== name) {
+        return 'Did you mean: ' + f + '()? (function names are case-sensitive)';
+      }
+    }
+    return 'Did you mean: function ' + name + '(...) ... end function  (define it first)';
+  }
+  // Missing end
+  if (msg.includes("expected KW 'end'") || msg.includes("expected KW 'function'")) {
+    return 'Did you mean: check that every if/while/for/function block has a matching "end" keyword.';
+  }
+  // Type mismatch indicators
+  if (msg.includes("cannot iterate over")) {
+    return 'Did you mean: use an array or string with "for each"? e.g., for each x in [1, 2, 3]';
+  }
+  if (msg.includes("cannot index type")) {
+    return 'Did you mean: indexing works on arrays and strings. Check the variable type.';
+  }
+  // Division by zero
+  if (msg.includes("division by zero") || msg.includes("modulo by zero")) {
+    return 'The divisor is zero. Check your denominator value.';
+  }
+  // Unexpected !
+  if (msg.includes("did you mean 'not'")) {
+    return 'UniLogic uses "not" instead of "!". Example: not (x == 0)';
+  }
+  return null;
+}
+
+// =====================================================================
 //  HELP TEXT
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
 
 const HELP_TEXT = [
   '<span class="prompt-color">Commands:</span>',
@@ -954,9 +1390,552 @@ const HELP_TEXT = [
   '<span class="prompt-color">Built-ins:</span>  print, absval(), size(), cast(value, type)'
 ];
 
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
+//  VARIABLE PANE
+// =====================================================================
+
+function updateVarPane() {
+  const body = document.getElementById("var-pane-body");
+  const varKeys = Object.keys(globals);
+  const fnKeys = Object.keys(functions);
+
+  if (varKeys.length === 0 && fnKeys.length === 0) {
+    body.innerHTML = '<div class="var-empty">No variables defined yet.</div>';
+    return;
+  }
+
+  let html = '';
+
+  if (varKeys.length > 0) {
+    html += '<div class="var-section-label">Variables</div>';
+    for (const k of varKeys) {
+      const val = globals[k];
+      const typeStr = globalTypes[k] || inferType(val);
+      const valStr = formatValueForPane(val);
+      html += '<div class="var-entry">'
+            + '<span class="var-type">' + escapeHtml(typeStr) + '</span> '
+            + '<span class="var-name">' + escapeHtml(k) + '</span> '
+            + '<span class="var-eq">=</span> '
+            + '<span class="var-val">' + escapeHtml(valStr) + '</span>'
+            + '</div>';
+    }
+  }
+
+  if (fnKeys.length > 0) {
+    html += '<div class="var-section-label" style="margin-top:10px;">Functions</div>';
+    for (const k of fnKeys) {
+      const d = functions[k];
+      const params = d.params.map(p => p.type_.name + " " + p.name).join(", ");
+      const ret = d.returnType ? d.returnType.name : "none";
+      html += '<div class="var-entry">'
+            + '<span class="var-fn-name">' + escapeHtml(k) + '</span>'
+            + '<span class="var-fn-sig">(' + escapeHtml(params) + ') &rarr; ' + escapeHtml(ret) + '</span>'
+            + '</div>';
+    }
+  }
+
+  body.innerHTML = html;
+}
+
+function inferType(val) {
+  if (val === null || val === undefined) return "none";
+  if (typeof val === "boolean") return "bool";
+  if (typeof val === "number") return Number.isInteger(val) ? "int" : "float";
+  if (typeof val === "string") return "string";
+  if (Array.isArray(val)) return "array";
+  return "unknown";
+}
+
+function formatValueForPane(val) {
+  if (val === null || val === undefined) return "empty";
+  if (typeof val === "boolean") return val ? "true" : "false";
+  if (typeof val === "number" && !Number.isInteger(val)) return val.toFixed(6);
+  if (typeof val === "string") return '"' + val + '"';
+  if (Array.isArray(val)) return "[" + val.map(formatValueForPane).join(", ") + "]";
+  return String(val);
+}
+
+function toggleVarPane() {
+  document.getElementById("var-pane").classList.toggle("collapsed");
+}
+
+// =====================================================================
+//  SAMPLE PROGRAMS (Level Selector)
+// =====================================================================
+
+const LEVELS = {
+  "1": {
+    name: "Temperature Converter",
+    ul: [
+      '// Level 1: Fahrenheit to Celsius converter',
+      '// Basic math, variables, and print',
+      '',
+      'function f_to_c(float fahrenheit) returns float',
+      '  float celsius = (fahrenheit - 32.0) * 5.0 / 9.0',
+      '  return celsius',
+      'end function',
+      '',
+      'float temp_f = 98.6',
+      'float temp_c = f_to_c(temp_f)',
+      'print "Fahrenheit: "',
+      'print temp_f',
+      'print "Celsius: "',
+      'print temp_c',
+      '',
+      '// Try: f_to_c(212.0)  -> 100.0',
+      '// Try: f_to_c(32.0)   -> 0.0'
+    ].join('\n'),
+    python: [
+      '# Level 1: Fahrenheit to Celsius converter',
+      '# Equivalent Python code',
+      '',
+      'def f_to_c(fahrenheit: float) -> float:',
+      '    celsius = (fahrenheit - 32.0) * 5.0 / 9.0',
+      '    return celsius',
+      '',
+      'temp_f = 98.6',
+      'temp_c = f_to_c(temp_f)',
+      'print("Fahrenheit: ")',
+      'print(temp_f)',
+      'print("Celsius: ")',
+      'print(temp_c)',
+      '',
+      '# Try: f_to_c(212.0)  -> 100.0',
+      '# Try: f_to_c(32.0)   -> 0.0'
+    ].join('\n'),
+    c: [
+      '// Level 1: Fahrenheit to Celsius converter',
+      '// Equivalent C code',
+      '',
+      '#include <stdio.h>',
+      '',
+      'double f_to_c(double fahrenheit) {',
+      '    double celsius = (fahrenheit - 32.0) * 5.0 / 9.0;',
+      '    return celsius;',
+      '}',
+      '',
+      'int main(void) {',
+      '    double temp_f = 98.6;',
+      '    double temp_c = f_to_c(temp_f);',
+      '    printf("Fahrenheit: \\n");',
+      '    printf("%f\\n", temp_f);',
+      '    printf("Celsius: \\n");',
+      '    printf("%f\\n", temp_c);',
+      '    return 0;',
+      '}'
+    ].join('\n')
+  },
+  "2": {
+    name: "Prime Checker",
+    ul: [
+      '// Level 2: Prime number checker',
+      '// Loops, conditionals, and functions',
+      '',
+      'function is_prime(int n) returns bool',
+      '  if n < 2',
+      '    return false',
+      '  end if',
+      '  int i = 2',
+      '  while i * i <= n',
+      '    if n % i == 0',
+      '      return false',
+      '    end if',
+      '    i = i + 1',
+      '  end while',
+      '  return true',
+      'end function',
+      '',
+      '// Check a few numbers',
+      'int num = 17',
+      'print "Checking if 17 is prime:"',
+      'print is_prime(num)',
+      'print "Checking if 15 is prime:"',
+      'print is_prime(15)',
+      'print "Checking if 2 is prime:"',
+      'print is_prime(2)'
+    ].join('\n'),
+    python: [
+      '# Level 2: Prime number checker',
+      '# Equivalent Python code',
+      '',
+      'def is_prime(n: int) -> bool:',
+      '    if n < 2:',
+      '        return False',
+      '    i = 2',
+      '    while i * i <= n:',
+      '        if n % i == 0:',
+      '            return False',
+      '        i = i + 1',
+      '    return True',
+      '',
+      '# Check a few numbers',
+      'num = 17',
+      'print("Checking if 17 is prime:")',
+      'print(is_prime(num))',
+      'print("Checking if 15 is prime:")',
+      'print(is_prime(15))',
+      'print("Checking if 2 is prime:")',
+      'print(is_prime(2))'
+    ].join('\n'),
+    c: [
+      '// Level 2: Prime number checker',
+      '// Equivalent C code',
+      '',
+      '#include <stdio.h>',
+      '#include <stdbool.h>',
+      '',
+      'bool is_prime(int n) {',
+      '    if (n < 2) return false;',
+      '    int i = 2;',
+      '    while (i * i <= n) {',
+      '        if (n % i == 0) return false;',
+      '        i = i + 1;',
+      '    }',
+      '    return true;',
+      '}',
+      '',
+      'int main(void) {',
+      '    int num = 17;',
+      '    printf("Checking if 17 is prime:\\n");',
+      '    printf("%d\\n", is_prime(num));',
+      '    printf("Checking if 15 is prime:\\n");',
+      '    printf("%d\\n", is_prime(15));',
+      '    printf("Checking if 2 is prime:\\n");',
+      '    printf("%d\\n", is_prime(2));',
+      '    return 0;',
+      '}'
+    ].join('\n')
+  },
+  "3": {
+    name: "Word Count",
+    ul: [
+      '// Level 3: Word counting',
+      '// Arrays and string manipulation',
+      '',
+      'function count_char(string text, string ch) returns int',
+      '  int count = 0',
+      '  int i = 0',
+      '  while i < size(text)',
+      '    if text[i] == ch',
+      '      count = count + 1',
+      '    end if',
+      '    i = i + 1',
+      '  end while',
+      '  return count',
+      'end function',
+      '',
+      'string message = "hello world hello"',
+      'print "Text:"',
+      'print message',
+      'print "Length:"',
+      'print size(message)',
+      'print "Count of l:"',
+      'print count_char(message, "l")',
+      '',
+      '// Arrays',
+      'array int scores = [85, 92, 78, 95, 88]',
+      'print "Scores:"',
+      'print scores',
+      'print "First score:"',
+      'print scores[0]'
+    ].join('\n'),
+    python: [
+      '# Level 3: Word counting',
+      '# Equivalent Python code',
+      '',
+      'def count_char(text: str, ch: str) -> int:',
+      '    count = 0',
+      '    i = 0',
+      '    while i < len(text):',
+      '        if text[i] == ch:',
+      '            count = count + 1',
+      '        i = i + 1',
+      '    return count',
+      '',
+      'message = "hello world hello"',
+      'print("Text:")',
+      'print(message)',
+      'print("Length:")',
+      'print(len(message))',
+      'print("Count of l:")',
+      'print(count_char(message, "l"))',
+      '',
+      '# Arrays (lists in Python)',
+      'scores = [85, 92, 78, 95, 88]',
+      'print("Scores:")',
+      'print(scores)',
+      'print("First score:")',
+      'print(scores[0])'
+    ].join('\n'),
+    c: [
+      '// Level 3: Word counting',
+      '// Equivalent C code',
+      '',
+      '#include <stdio.h>',
+      '#include <string.h>',
+      '',
+      'int count_char(const char* text, char ch) {',
+      '    int count = 0;',
+      '    int i = 0;',
+      '    while (i < (int)strlen(text)) {',
+      '        if (text[i] == ch) {',
+      '            count = count + 1;',
+      '        }',
+      '        i = i + 1;',
+      '    }',
+      '    return count;',
+      '}',
+      '',
+      'int main(void) {',
+      '    const char* message = "hello world hello";',
+      '    printf("Text:\\n");',
+      '    printf("%s\\n", message);',
+      '    printf("Length:\\n");',
+      '    printf("%d\\n", (int)strlen(message));',
+      '    printf("Count of l:\\n");',
+      '    printf("%d\\n", count_char(message, \'l\'));',
+      '',
+      '    int scores[] = {85, 92, 78, 95, 88};',
+      '    printf("Scores:\\n");',
+      '    for (int i = 0; i < 5; i++)',
+      '        printf("%d ", scores[i]);',
+      '    printf("\\nFirst score:\\n");',
+      '    printf("%d\\n", scores[0]);',
+      '    return 0;',
+      '}'
+    ].join('\n')
+  },
+  "4": {
+    name: "Linked List",
+    ul: [
+      '// Level 4: Linked List (conceptual)',
+      '// NOTE: The REPL interpreter does not yet support',
+      '// struct/type definitions. This shows the UL syntax',
+      '// for what a linked list looks like in UniLogic.',
+      '// The code below demonstrates the parts that DO run.',
+      '',
+      '// -- What the full code looks like (cannot execute): --',
+      '// type Node forks',
+      '//   int value',
+      '//   <Node> next',
+      '// end type',
+      '//',
+      '// <Node> head = new Node',
+      '// head.value = 10',
+      '// head.next = new Node',
+      '// head.next.value = 20',
+      '',
+      '// -- What we CAN demonstrate: arrays as a list --',
+      'array int nodes = [10, 20, 30, 40]',
+      '',
+      'function list_sum(array int items) returns int',
+      '  int total = 0',
+      '  int i = 0',
+      '  while i < size(items)',
+      '    total = total + items[i]',
+      '    i = i + 1',
+      '  end while',
+      '  return total',
+      'end function',
+      '',
+      'print "Nodes:"',
+      'print nodes',
+      'print "Sum:"',
+      'print list_sum(nodes)',
+      'print "Size:"',
+      'print size(nodes)'
+    ].join('\n'),
+    python: [
+      '# Level 4: Linked List',
+      '# Equivalent Python code',
+      '',
+      'class Node:',
+      '    def __init__(self, value: int):',
+      '        self.value = value',
+      '        self.next = None',
+      '',
+      'head = Node(10)',
+      'head.next = Node(20)',
+      'head.next.next = Node(30)',
+      'head.next.next.next = Node(40)',
+      '',
+      '# Traverse and sum',
+      'def list_sum(head):',
+      '    total = 0',
+      '    current = head',
+      '    while current is not None:',
+      '        total += current.value',
+      '        current = current.next',
+      '    return total',
+      '',
+      '# Print values',
+      'current = head',
+      'values = []',
+      'while current is not None:',
+      '    values.append(current.value)',
+      '    current = current.next',
+      'print("Nodes:")',
+      'print(values)',
+      'print("Sum:")',
+      'print(list_sum(head))',
+      'print("Size:")',
+      'print(len(values))'
+    ].join('\n'),
+    c: [
+      '// Level 4: Linked List',
+      '// Equivalent C code',
+      '',
+      '#include <stdio.h>',
+      '#include <stdlib.h>',
+      '',
+      'typedef struct Node {',
+      '    int value;',
+      '    struct Node* next;',
+      '} Node;',
+      '',
+      'Node* new_node(int value) {',
+      '    Node* n = malloc(sizeof(Node));',
+      '    n->value = value;',
+      '    n->next = NULL;',
+      '    return n;',
+      '}',
+      '',
+      'int list_sum(Node* head) {',
+      '    int total = 0;',
+      '    Node* current = head;',
+      '    while (current != NULL) {',
+      '        total += current->value;',
+      '        current = current->next;',
+      '    }',
+      '    return total;',
+      '}',
+      '',
+      'int main(void) {',
+      '    Node* head = new_node(10);',
+      '    head->next = new_node(20);',
+      '    head->next->next = new_node(30);',
+      '    head->next->next->next = new_node(40);',
+      '',
+      '    printf("Sum: %d\\n", list_sum(head));',
+      '',
+      '    // Cleanup',
+      '    Node* cur = head;',
+      '    while (cur) {',
+      '        Node* tmp = cur;',
+      '        cur = cur->next;',
+      '        free(tmp);',
+      '    }',
+      '    return 0;',
+      '}'
+    ].join('\n')
+  }
+};
+
+// Track current state
+let currentLevel = "";
+let currentLang = "ul";
+
+// =====================================================================
+//  LANGUAGE TABS
+// =====================================================================
+
+window.switchLang = function(lang) {
+  currentLang = lang;
+
+  // Update tab styling
+  document.querySelectorAll('.lang-tab').forEach(function(tab) {
+    tab.classList.toggle('active', tab.getAttribute('data-lang') === lang);
+  });
+
+  const terminal = document.getElementById('terminal');
+  const codeDisplay = document.getElementById('code-display');
+
+  if (lang === 'ul') {
+    terminal.style.display = 'flex';
+    codeDisplay.style.display = 'none';
+    field.focus();
+  } else {
+    terminal.style.display = 'none';
+    codeDisplay.style.display = 'flex';
+
+    const titleEl = document.getElementById('code-display-title');
+    const contentEl = document.getElementById('code-display-content');
+    const langName = lang === 'python' ? 'Python' : 'C';
+
+    if (currentLevel && LEVELS[currentLevel]) {
+      titleEl.textContent = langName + ' \u2014 ' + LEVELS[currentLevel].name;
+      contentEl.textContent = LEVELS[currentLevel][lang];
+    } else {
+      titleEl.textContent = langName + ' \u2014 equivalent code';
+      contentEl.innerHTML = '<span style="color:#585b70;font-style:italic;">Load a sample program to see the ' + langName + ' equivalent.\nOr type your own UL code and use the transpile buttons below.</span>';
+    }
+  }
+};
+
+// =====================================================================
+//  LEVEL SELECTOR
+// =====================================================================
+
+window.loadLevel = function(level) {
+  if (!level) { currentLevel = ""; return; }
+  currentLevel = level;
+  const prog = LEVELS[level];
+  if (!prog) return;
+
+  // Clear state
+  for (const k of Object.keys(globals)) delete globals[k];
+  for (const k of Object.keys(globalTypes)) delete globalTypes[k];
+  for (const k of Object.keys(functions)) delete functions[k];
+
+  // Clear terminal output
+  output.innerHTML = '';
+
+  // Show banner
+  writeLine("", "");
+  writeLine('     <span class="line-banner">\u221E  UniLogic</span>', "");
+  writeLine('     <span class="line-info">Level ' + escapeHtml(level) + ': ' + escapeHtml(prog.name) + '</span>', "");
+  writeLine("", "");
+
+  // Switch to UL tab
+  switchLang('ul');
+
+  // Execute the UL code line-by-line display then execute
+  const lines = prog.ul.split('\n');
+  // Show the code being loaded
+  writeLine('<span style="color:#585b70;">// Loading sample program...</span>', "");
+  writeLine("", "");
+
+  // Execute the full program
+  execute(prog.ul);
+
+  writeLine("", "");
+  writeLine('<span style="color:#585b70;">// Program loaded. Try modifying values or calling functions above.</span>', "");
+
+  updateVarPane();
+  field.focus();
+};
+
+// =====================================================================
+//  TRANSPILE BUTTONS
+// =====================================================================
+
+window.transpileTo = function(lang) {
+  const msgEl = document.getElementById('transpile-msg');
+
+  if (currentLevel && LEVELS[currentLevel]) {
+    // Switch to the target language tab
+    switchLang(lang);
+    document.getElementById('level-selector').value = currentLevel;
+    msgEl.textContent = '';
+  } else {
+    msgEl.textContent = 'Live transpilation available in the UniLogic SDK.';
+    setTimeout(function() { msgEl.textContent = ''; }, 4000);
+  }
+};
+
+// =====================================================================
 //  MAIN EXECUTION
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
 
 function execute(text) {
   text = text.trim();
@@ -965,6 +1944,7 @@ function execute(text) {
   // REPL commands
   if (text === "help") {
     for (const line of HELP_TEXT) writeLine(line, "line-info");
+    updateVarPane();
     return;
   }
   if (text === "vars") {
@@ -986,12 +1966,14 @@ function execute(text) {
   }
   if (text === "clear") {
     for (const k of Object.keys(globals)) delete globals[k];
+    for (const k of Object.keys(globalTypes)) delete globalTypes[k];
     for (const k of Object.keys(functions)) delete functions[k];
     writeLine("  state cleared", "line-info");
+    updateVarPane();
     return;
   }
 
-  // Lex → Parse → Execute
+  // Lex -> Parse -> Execute
   try {
     const tokens = tokenize(text);
     const parser = new Parser(tokens);
@@ -1033,13 +2015,21 @@ function execute(text) {
       writeLine("return outside function", "line-error");
     } else {
       writeLine(escapeHtml(e.message || String(e)), "line-error");
+      // Error hints
+      const hint = getErrorHint(e.message || String(e));
+      if (hint) {
+        writeLine(escapeHtml(hint), "line-hint");
+      }
     }
   }
+
+  // Update variable pane after every execution
+  updateVarPane();
 }
 
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
 //  INPUT HANDLING
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
 
 function autoGrow() {
   field.style.height = "auto";
@@ -1057,7 +2047,7 @@ function submit() {
     writeLine(displayPrompt + escapeHtml(raw), "line-input");
     multiDepth = blockDepth(multiBuffer);
     if (multiDepth <= 0) {
-      // Block closed — execute the full buffer
+      // Block closed -- execute the full buffer
       const full = multiBuffer.trim();
       multiBuffer = "";
       multiDepth = 0;
@@ -1159,14 +2149,14 @@ window.replDemo = function() {
   field.focus();
 };
 
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
 //  STARTUP
-// ═════════════════════════════════════════════════════════════════════════
+// =====================================================================
 
 writeLine("", "");
 writeLine('     <span class="line-banner">\u221E  UniLogic</span>', "");
 writeLine('     <span class="line-banner">One Language for Everything</span>', "");
-writeLine('     <span style="color:#8888a0;">type </span><span class="prompt-color">help</span><span style="color:#8888a0;"> for commands</span>', "");
+writeLine('     <span style="color:#8888a0;">type </span><span class="prompt-color">help</span><span style="color:#8888a0;"> for commands, or pick a sample above</span>', "");
 writeLine("", "");
 writeLine('     <span style="color:#8888a0;font-style:italic;">Tip: define functions first, then call them on a new line.</span>', "");
 writeLine("", "");

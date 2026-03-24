@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniLogic Memory REPL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #1a1a1a;
+  background: #fafaf8;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+
+nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: 230px;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 24px 0 40px;
+  z-index: 100;
+  background: #1e1e2e;
+  border-right: 1px solid #313244;
+}
+
+.nav-logo {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0 20px 16px;
+  color: #8ecfff;
+  border-bottom: 1px solid #313244;
+  margin-bottom: 8px;
+  display: block;
+  text-decoration: none;
+}
+
+.nav-section {
+  margin-top: 14px;
+  padding: 3px 20px;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  font-weight: bold;
+  color: #b0b4cc;
+}
+
+nav a {
+  display: block;
+  padding: 5px 20px 5px 23px;
+  text-decoration: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: #d0d4e8;
+  border-left: 3px solid transparent;
+  transition: background 0.12s, color 0.12s;
+}
+
+nav a:hover {
+  background: #313244;
+  color: #ffffff;
+  border-left-color: #8ecfff;
+}
+
+nav a.nav-active {
+  background: #252535;
+  color: #ffffff;
+  border-left-color: #a6e3a1;
+}
+
+/* ── MAIN ─────────────────────────────────────────────────── */
+
+main {
+  margin-left: 230px;
+  padding: 24px 32px 40px 32px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+h1 { font-size: 2rem; font-weight: normal; margin-bottom: 6px; padding-bottom: 10px; color: #1a1a1a; border-bottom: 2px solid #e0d8f0; }
+.subtitle { font-size: 0.95rem; margin-bottom: 16px; font-style: italic; color: #666; }
+
+/* ── TOP SECTION: Editor + Controls ─────────────────────── */
+
+.top-section {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.editor-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-bar {
+  background: #1e1e2e;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid #313244;
+  border-bottom: none;
+}
+
+.editor-bar-title {
+  flex: 1;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #9098b8;
+  letter-spacing: 0.08em;
+}
+
+.term-dot { width: 10px; height: 10px; border-radius: 50%; }
+.term-dot.red    { background: #f38ba8; }
+.term-dot.yellow { background: #f9e2af; }
+.term-dot.green  { background: #a6e3a1; }
+
+#code-editor {
+  flex: 1;
+  min-height: 220px;
+  background: #0a0a0f;
+  border: 1px solid #313244;
+  border-radius: 0 0 8px 8px;
+  padding: 14px 18px;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #e8e8f0;
+  resize: vertical;
+  outline: none;
+  tab-size: 4;
+}
+
+.controls-panel {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#btn-run {
+  background: #a6e3a1;
+  color: #1e1e2e;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+#btn-run:hover { background: #8cd68c; }
+
+.level-selector {
+  background: #f5f3fb;
+  border: 1px solid #d8cff0;
+  border-radius: 6px;
+  padding: 12px 14px;
+}
+
+.level-selector label {
+  display: block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #585b70;
+  margin-bottom: 6px;
+}
+
+.level-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 1px solid #d8cff0;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #1a3a7a;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.level-btn:hover { background: #e8e4f0; }
+.level-btn.active { background: #1a3a7a; color: #fff; border-color: #1a3a7a; }
+
+/* ── OUTPUT CONSOLE ─────────────────────────────────────── */
+
+.output-bar {
+  background: #1e1e2e;
+  padding: 6px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid #313244;
+  border-bottom: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #9098b8;
+  letter-spacing: 0.08em;
+}
+
+#output-console {
+  background: #0a0a0f;
+  border: 1px solid #313244;
+  border-radius: 0 0 8px 8px;
+  padding: 10px 16px;
+  font-family: 'Share Tech Mono', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #e8e8f0;
+  min-height: 60px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+#output-console::-webkit-scrollbar { width: 6px; }
+#output-console::-webkit-scrollbar-track { background: transparent; }
+#output-console::-webkit-scrollbar-thumb { background: #313244; border-radius: 3px; }
+
+.out-line  { color: #e0e0e8; }
+.out-error { color: #f38ba8; }
+.out-info  { color: #8ecfff; }
+
+/* ── DISK vs RAM BREAKDOWN ──────────────────────────────── */
+
+.disk-ram-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f5f3fb;
+  border: 1px solid #d8cff0;
+  border-radius: 6px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #2a2a2a;
+}
+
+.disk-ram-label { white-space: nowrap; }
+.disk-ram-label strong { color: #1a3a7a; }
+
+.disk-ram-visual {
+  flex: 1;
+  height: 18px;
+  background: #e8e4f0;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+
+.dr-seg {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #fff;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.dr-source { background: #89b4fa; }
+.dr-bytecode { background: #a6e3a1; }
+.dr-ram { background: #f38ba8; }
+
+/* ── MIDDLE SECTION: Layout + Chart ─────────────────────── */
+
+.middle-section {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+/* ── MEMORY LAYOUT VISUALIZER ───────────────────────────── */
+
+.mem-layout-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.panel-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #585b70;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+.mem-layout-container {
+  position: relative;
+  display: flex;
+  gap: 32px;
+  background: #f5f3fb;
+  border: 1px solid #d8cff0;
+  border-radius: 6px;
+  padding: 16px;
+  min-height: 300px;
+  overflow: auto;
+}
+
+.mem-region {
+  flex: 1;
+  min-width: 180px;
+}
+
+.mem-region-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 2px solid;
+}
+
+.stack-title { color: #89b4fa; border-color: #89b4fa; }
+.heap-title  { color: #a6e3a1; border-color: #a6e3a1; }
+
+.mem-box {
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  position: relative;
+}
+
+.mem-box-stack {
+  background: rgba(137, 180, 250, 0.15);
+  border: 1px solid rgba(137, 180, 250, 0.4);
+  color: #1a3a7a;
+}
+
+.mem-box-heap {
+  background: rgba(166, 227, 161, 0.15);
+  border: 1px solid rgba(166, 227, 161, 0.4);
+  color: #1a5a3a;
+}
+
+.mem-box-freed {
+  background: rgba(88, 91, 112, 0.15);
+  border: 1px solid rgba(88, 91, 112, 0.4);
+  color: #585b70;
+  text-decoration: line-through;
+}
+
+.mem-box-leaked {
+  background: rgba(243, 139, 168, 0.15);
+  border: 1px solid rgba(243, 139, 168, 0.5);
+  color: #c03050;
+}
+
+.mem-box .mb-name { font-weight: bold; }
+.mem-box .mb-type { color: #89dceb; }
+.mem-box .mb-val  { color: #fab387; }
+.mem-box .mb-size { color: #585b70; font-size: 10px; }
+
+.frame-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #585b70;
+  margin: 8px 0 4px;
+  padding: 2px 6px;
+  background: rgba(137, 180, 250, 0.08);
+  border-radius: 3px;
+}
+
+/* ── SVG ARROW OVERLAY ──────────────────────────────────── */
+
+#arrow-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+#arrow-svg line {
+  stroke-width: 1.5;
+  stroke: #fab387;
+}
+
+#arrow-svg marker path {
+  fill: #fab387;
+}
+
+/* ── LIVE MEMORY CHART ──────────────────────────────────── */
+
+.chart-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.chart-container {
+  background: #f5f3fb;
+  border: 1px solid #d8cff0;
+  border-radius: 6px;
+  padding: 16px;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+}
+
+.chart-stat {
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: #1e1e2e;
+  color: #cdd6f4;
+}
+
+.chart-stat .cs-label { color: #585b70; font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+.chart-stat .cs-value { color: #a6e3a1; font-weight: bold; }
+
+#mem-chart {
+  flex: 1;
+  width: 100%;
+  min-height: 200px;
+  border-radius: 4px;
+  background: #1e1e2e;
+}
+
+/* ── ALLOCATION TIMELINE ────────────────────────────────── */
+
+.timeline-section {
+  margin-bottom: 16px;
+}
+
+.timeline-container {
+  background: #f5f3fb;
+  border: 1px solid #d8cff0;
+  border-radius: 6px;
+  padding: 16px;
+  min-height: 120px;
+  overflow-x: auto;
+}
+
+#timeline-canvas {
+  width: 100%;
+  min-height: 100px;
+  border-radius: 4px;
+  background: #1e1e2e;
+}
+
+.timeline-tooltip {
+  display: none;
+  position: fixed;
+  background: #1e1e2e;
+  border: 1px solid #313244;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #cdd6f4;
+  line-height: 1.5;
+  z-index: 200;
+  pointer-events: none;
+  max-width: 280px;
+}
+
+.timeline-tooltip .tt-name { color: #a6e3a1; font-weight: bold; }
+.timeline-tooltip .tt-size { color: #fab387; }
+.timeline-tooltip .tt-line { color: #89b4fa; }
+.timeline-tooltip .tt-freed { color: #585b70; }
+
+/* ── MEMORY MODE COMPARISON ─────────────────────────────── */
+
+.comparison-section {
+  margin-bottom: 16px;
+}
+
+.collapsible-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  padding: 8px 0;
+}
+
+.collapsible-header .panel-title { margin-bottom: 0; }
+
+.collapse-icon {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  color: #585b70;
+  transition: transform 0.2s;
+}
+
+.collapsible-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.collapsible-body.open {
+  max-height: 600px;
+}
+
+.comparison-container {
+  background: #f5f3fb;
+  border: 1px solid #d8cff0;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
+.comparison-table th {
+  background: #1e1e2e;
+  color: #7ab3e0;
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.comparison-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid #e0d8f0;
+  color: #2a2a2a;
+}
+
+.comparison-table tr:nth-child(even) td { background: rgba(255,255,255,0.5); }
+
+.comparison-table td:first-child { color: #1a3a7a; font-weight: bold; }
+
+#comparison-chart {
+  width: 100%;
+  height: 120px;
+  border-radius: 4px;
+  background: #1e1e2e;
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  nav { display: none; }
+  main { margin-left: 0; padding: 16px; }
+  .top-section { flex-direction: column; }
+  .controls-panel { width: 100%; }
+  .middle-section { flex-direction: column; }
+}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="repl.html" class="nav-logo">&larr; Back to Base REPL</a>
+  <div class="nav-section">REPL Modes</div>
+  <a href="repl.html">Base REPL</a>
+  <a href="repl-memory.html" class="nav-active">Memory REPL</a>
+  <a href="repl-performance.html">Performance REPL</a>
+  <a href="repl-execution.html">Execution REPL</a>
+  <div class="nav-section">Visualizations</div>
+  <a href="#mem-layout">Memory Layout</a>
+  <a href="#mem-chart-section">Live Usage Chart</a>
+  <a href="#timeline-section">Allocation Timeline</a>
+  <a href="#comparison-section">Mode Comparison</a>
+  <div class="nav-section">Reference</div>
+  <a href="interpreter.html">Bytecode Interpreter</a>
+  <a href="language-main.html">Language Reference</a>
+  <a href="https://github.com/albazzaztariq/UniLogic" target="_blank">GitHub &nearr;</a>
+</nav>
+
+<main>
+
+<h1>Memory REPL</h1>
+<p class="subtitle">Memory analysis and visualization &mdash; track allocations, visualize layout, compare memory modes.</p>
+
+<!-- ═══ TOP: Editor + Controls ═══════════════════════════════════════════ -->
+
+<div class="top-section">
+  <div class="editor-panel">
+    <div class="editor-bar">
+      <span class="term-dot red"></span>
+      <span class="term-dot yellow"></span>
+      <span class="term-dot green"></span>
+      <span class="editor-bar-title">memory-repl.ul</span>
+    </div>
+    <textarea id="code-editor" spellcheck="false" placeholder="// Write UniLogic code here..."></textarea>
+  </div>
+  <div class="controls-panel">
+    <button id="btn-run" onclick="runCode()">&#9654; Run &amp; Analyze</button>
+    <div class="level-selector">
+      <label>Sample Programs</label>
+      <button class="level-btn" onclick="loadLevel(1)">1 &mdash; Basics</button>
+      <button class="level-btn" onclick="loadLevel(2)">2 &mdash; Arrays</button>
+      <button class="level-btn" onclick="loadLevel(3)">3 &mdash; Functions</button>
+      <button class="level-btn" onclick="loadLevel(4)">4 &mdash; Linked List</button>
+    </div>
+    <div style="font-family:'Share Tech Mono',monospace; font-size:11px; color:#585b70; padding:4px 0;">
+      Tip: Level 4 is the most interesting for memory visualization.
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Output Console ═══════════════════════════════════════════════════ -->
+
+<div class="output-bar">Console Output</div>
+<div id="output-console"><span class="out-info">Ready. Select a sample program or write your own, then click Run.</span></div>
+
+<!-- ═══ Disk vs RAM Breakdown ════════════════════════════════════════════ -->
+
+<div id="disk-ram-section" class="disk-ram-bar" style="margin-top:12px;">
+  <span class="disk-ram-label">Source: <strong id="dr-source">0 B</strong></span>
+  <span class="disk-ram-label">Bytecode (.ubi): <strong id="dr-bytecode">0 B</strong></span>
+  <span class="disk-ram-label">Peak RAM: <strong id="dr-ram">0 B</strong></span>
+  <div class="disk-ram-visual">
+    <div class="dr-seg dr-source" id="dr-bar-source" style="width:33%">src</div>
+    <div class="dr-seg dr-bytecode" id="dr-bar-bytecode" style="width:33%">ubi</div>
+    <div class="dr-seg dr-ram" id="dr-bar-ram" style="width:34%">ram</div>
+  </div>
+</div>
+
+<!-- ═══ MIDDLE: Memory Layout + Chart ════════════════════════════════════ -->
+
+<div class="middle-section">
+
+  <!-- Memory Layout Visualizer -->
+  <div class="mem-layout-panel" id="mem-layout">
+    <div class="panel-title">Memory Layout &mdash; Stack &amp; Heap</div>
+    <div class="mem-layout-container" id="mem-layout-container">
+      <svg id="arrow-svg"><defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#fab387"/></marker></defs></svg>
+      <div class="mem-region" id="stack-region">
+        <div class="mem-region-title stack-title">Stack</div>
+        <div id="stack-boxes"></div>
+      </div>
+      <div class="mem-region" id="heap-region">
+        <div class="mem-region-title heap-title">Heap</div>
+        <div id="heap-boxes"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Memory Chart -->
+  <div class="chart-panel" id="mem-chart-section">
+    <div class="panel-title">Live Memory Usage</div>
+    <div class="chart-container">
+      <div class="chart-stats">
+        <div class="chart-stat"><span class="cs-label">Current</span> <span class="cs-value" id="stat-current">0 B</span></div>
+        <div class="chart-stat"><span class="cs-label">Peak</span> <span class="cs-value" id="stat-peak">0 B</span></div>
+        <div class="chart-stat"><span class="cs-label">Total Alloc</span> <span class="cs-value" id="stat-total">0 B</span></div>
+      </div>
+      <canvas id="mem-chart"></canvas>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══ Allocation Timeline ══════════════════════════════════════════════ -->
+
+<div class="timeline-section" id="timeline-section">
+  <div class="panel-title">Allocation Timeline</div>
+  <div class="timeline-container">
+    <canvas id="timeline-canvas"></canvas>
+  </div>
+</div>
+<div class="timeline-tooltip" id="timeline-tooltip"></div>
+
+<!-- ═══ Memory Mode Comparison ═══════════════════════════════════════════ -->
+
+<div class="comparison-section" id="comparison-section">
+  <div class="collapsible-header" onclick="toggleComparison()">
+    <span class="collapse-icon" id="collapse-icon">&#9654;</span>
+    <div class="panel-title">Memory Mode Comparison</div>
+  </div>
+  <div class="collapsible-body" id="comparison-body">
+    <div class="comparison-container">
+      <table class="comparison-table" id="comparison-table">
+        <thead>
+          <tr><th>Metric</th><th>Manual</th><th>GC (Mark-Sweep)</th><th>Refcount</th><th>Arena</th></tr>
+        </thead>
+        <tbody id="comparison-tbody">
+          <tr><td>Peak Memory</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+          <tr><td>Allocations</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+          <tr><td>Frees</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+          <tr><td>Fragmentation</td><td>--</td><td>--</td><td>--</td><td>--</td></tr>
+        </tbody>
+      </table>
+      <canvas id="comparison-chart"></canvas>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// =============================================================================
+// UniLogic Memory REPL
+// Full interpreter (Lexer -> Parser -> AST -> Evaluator) + Memory Tracking
+// =============================================================================
+
+(function() {
+"use strict";
+
+// ── Sample Programs ─────────────────────────────────────────────────────
+
+const LEVELS = {
+  1: {
+    name: "Basics",
+    code: `// Level 1: Basic Variables
+int x = 42
+float pi = 3.14159
+string greeting = "Hello, UniLogic!"
+bool flag = true
+int y = x * 2
+int z = y + 10
+print x
+print y
+print z
+print greeting`
+  },
+  2: {
+    name: "Arrays",
+    code: `// Level 2: Arrays & Iteration
+array int numbers = [10, 20, 30, 40, 50]
+int total = 0
+for each n in numbers
+  total += n
+end for
+print total
+
+string msg = "sum = "
+array int doubled = [0, 0, 0, 0, 0]
+int i = 0
+while i < 5
+  doubled[i] = numbers[i] * 2
+  i += 1
+end while
+print doubled`
+  },
+  3: {
+    name: "Functions",
+    code: `// Level 3: Functions & Scope
+function factorial(int n) returns int
+  if n <= 1
+    return 1
+  end if
+  return n * factorial(n - 1)
+end function
+
+function fibonacci(int n) returns int
+  if n <= 1
+    return n
+  end if
+  int a = 0
+  int b = 1
+  int i = 2
+  while i <= n
+    int temp = a + b
+    a = b
+    b = temp
+    i += 1
+  end while
+  return b
+end function
+
+int fact5 = factorial(5)
+int fib10 = fibonacci(10)
+print fact5
+print fib10
+
+array int fibs = [0, 0, 0, 0, 0, 0, 0, 0]
+int j = 0
+while j < 8
+  fibs[j] = fibonacci(j)
+  j += 1
+end while
+print fibs`
+  },
+  4: {
+    name: "Linked List",
+    code: `// Level 4: Simulated Linked List (via arrays)
+// node_val[i] = value, node_next[i] = index of next (-1 = end)
+array int node_val  = [0, 0, 0, 0, 0, 0, 0, 0]
+array int node_next = [-1, -1, -1, -1, -1, -1, -1, -1]
+int node_count = 0
+
+function push_front(int val) returns int
+  int idx = node_count
+  node_val[idx] = val
+  node_next[idx] = -1
+  if idx > 0
+    node_next[idx] = idx - 1
+  end if
+  node_count = node_count + 1
+  return idx
+end function
+
+// Build a linked list: 50 -> 40 -> 30 -> 20 -> 10
+push_front(10)
+push_front(20)
+push_front(30)
+push_front(40)
+push_front(50)
+
+// Traverse and sum
+int head = node_count - 1
+int sum = 0
+int cur = head
+while cur >= 0
+  sum += node_val[cur]
+  cur = node_next[cur]
+end while
+print sum
+
+// Show structure
+print node_val
+print node_next`
+  }
+};
+
+// ── Interpreter State ───────────────────────────────────────────────────
+
+const globals   = {};
+const functions = {};
+
+class ReturnValue   { constructor(v) { this.value = v; } }
+class BreakSignal   {}
+class ContinueSignal {}
+class RuntimeErr extends Error { constructor(m) { super(m); this.name = "RuntimeErr"; } }
+
+// ── Memory Tracker ──────────────────────────────────────────────────────
+
+let memTracker = null;
+
+class MemoryTracker {
+  constructor() {
+    this.step = 0;
+    this.allocations = [];    // {id, name, type, size, value, step_created, step_freed, line, region, heapId}
+    this.heapObjects = [];    // {id, name, type, size, value, step_created, step_freed, refs:[]}
+    this.stackFrames = [];    // [{name, vars:[{name,type,size,value}]}]
+    this.usageHistory = [];   // [{step, bytes}]
+    this.currentBytes = 0;
+    this.peakBytes = 0;
+    this.totalAllocated = 0;
+    this.nextHeapId = 1;
+    this.currentFrame = "global";
+    this.frameStack = ["global"];
+    this.pointerLinks = [];   // {from_name, to_heapId}
+  }
+
+  estimateSize(type, value) {
+    if (type === "int" || type === "integer" ||
+        type.startsWith("int") || type.startsWith("uint")) return 8;
+    if (type === "float" || type === "double") return 8;
+    if (type === "bool") return 1;
+    if (type === "string") return (typeof value === "string" ? value.length : 0) + 24;
+    if (type === "array" || Array.isArray(value)) {
+      if (!Array.isArray(value)) return 32;
+      let elemSize = 8;
+      if (value.length > 0) {
+        if (typeof value[0] === "string") elemSize = 32;
+        else if (typeof value[0] === "boolean") elemSize = 1;
+      }
+      return value.length * elemSize + 32;
+    }
+    return 8;
+  }
+
+  inferType(value) {
+    if (value === null || value === undefined) return "none";
+    if (typeof value === "boolean") return "bool";
+    if (typeof value === "number") return Number.isInteger(value) ? "int" : "float";
+    if (typeof value === "string") return "string";
+    if (Array.isArray(value)) return "array";
+    return "unknown";
+  }
+
+  trackAllocation(name, declaredType, value, line) {
+    const type = declaredType || this.inferType(value);
+    const size = this.estimateSize(type, value);
+    const isHeap = (type === "array" || type === "string" || Array.isArray(value));
+
+    this.step++;
+
+    const alloc = {
+      id: this.allocations.length,
+      name: name,
+      type: type,
+      size: size,
+      value: value,
+      step_created: this.step,
+      step_freed: -1,
+      line: line || 0,
+      region: isHeap ? "heap" : "stack",
+      heapId: isHeap ? this.nextHeapId++ : -1,
+      frame: this.currentFrame
+    };
+
+    this.allocations.push(alloc);
+    this.currentBytes += size;
+    this.totalAllocated += size;
+    if (this.currentBytes > this.peakBytes) this.peakBytes = this.currentBytes;
+    this.usageHistory.push({ step: this.step, bytes: this.currentBytes });
+
+    if (isHeap) {
+      this.heapObjects.push({
+        id: alloc.heapId,
+        name: name,
+        type: type,
+        size: size,
+        value: value,
+        step_created: this.step,
+        step_freed: -1,
+        refs: [name]
+      });
+      this.pointerLinks.push({ from_name: name, to_heapId: alloc.heapId });
+    }
+
+    return alloc;
+  }
+
+  trackUpdate(name, value, line) {
+    this.step++;
+    // Find most recent allocation for this name
+    for (let i = this.allocations.length - 1; i >= 0; i--) {
+      if (this.allocations[i].name === name && this.allocations[i].step_freed === -1) {
+        const oldSize = this.allocations[i].size;
+        const type = this.allocations[i].type;
+        const newSize = this.estimateSize(type, value);
+        this.allocations[i].value = value;
+        this.allocations[i].size = newSize;
+        this.currentBytes += (newSize - oldSize);
+        if (newSize > oldSize) this.totalAllocated += (newSize - oldSize);
+        if (this.currentBytes > this.peakBytes) this.peakBytes = this.currentBytes;
+        this.usageHistory.push({ step: this.step, bytes: this.currentBytes });
+
+        // Update heap object if applicable
+        if (this.allocations[i].heapId >= 0) {
+          for (const ho of this.heapObjects) {
+            if (ho.id === this.allocations[i].heapId) {
+              ho.value = value;
+              ho.size = newSize;
+              break;
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  trackFree(name) {
+    this.step++;
+    for (let i = this.allocations.length - 1; i >= 0; i--) {
+      if (this.allocations[i].name === name && this.allocations[i].step_freed === -1) {
+        this.allocations[i].step_freed = this.step;
+        this.currentBytes -= this.allocations[i].size;
+        if (this.currentBytes < 0) this.currentBytes = 0;
+        this.usageHistory.push({ step: this.step, bytes: this.currentBytes });
+
+        if (this.allocations[i].heapId >= 0) {
+          for (const ho of this.heapObjects) {
+            if (ho.id === this.allocations[i].heapId) {
+              ho.step_freed = this.step;
+              break;
+            }
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  pushFrame(name) {
+    this.currentFrame = name;
+    this.frameStack.push(name);
+  }
+
+  popFrame() {
+    const frameName = this.frameStack.pop();
+    // Free stack variables from this frame
+    for (const alloc of this.allocations) {
+      if (alloc.frame === frameName && alloc.region === "stack" && alloc.step_freed === -1) {
+        this.trackFree(alloc.name);
+      }
+    }
+    this.currentFrame = this.frameStack[this.frameStack.length - 1] || "global";
+  }
+
+  simulateModes() {
+    // Simulate what each memory mode would do with the same allocation pattern
+    const allocs = this.allocations;
+    const totalAllocs = allocs.length;
+    let heapAllocs = allocs.filter(a => a.region === "heap");
+
+    // Manual: explicit alloc/free, everything freed at scope end
+    const manual = {
+      peak: this.peakBytes,
+      allocs: totalAllocs,
+      frees: allocs.filter(a => a.step_freed !== -1).length,
+      fragmentation: heapAllocs.length > 2 ? "Medium" : "Low"
+    };
+
+    // GC: mark-and-sweep, delayed frees, higher peak
+    const gcOverhead = Math.ceil(this.peakBytes * 0.15); // 15% GC overhead
+    const gc = {
+      peak: this.peakBytes + gcOverhead,
+      allocs: totalAllocs,
+      frees: totalAllocs, // GC eventually frees everything
+      fragmentation: heapAllocs.length > 3 ? "High" : "Medium"
+    };
+
+    // Refcount: immediate free on zero refs, per-object overhead
+    const rcOverhead = totalAllocs * 8; // 8 bytes per refcount
+    const refcount = {
+      peak: this.peakBytes + rcOverhead,
+      allocs: totalAllocs,
+      frees: totalAllocs,
+      fragmentation: heapAllocs.length > 2 ? "Medium" : "Low"
+    };
+
+    // Arena: bulk alloc, single free, lowest fragmentation
+    const arena = {
+      peak: this.totalAllocated + 64, // arena header
+      allocs: 1, // one arena allocation
+      frees: 1,  // one arena free
+      fragmentation: "None"
+    };
+
+    return { manual, gc, refcount, arena };
+  }
+}
+
+// ── Lexer ───────────────────────────────────────────────────────────────
+
+const KEYWORDS = new Set([
+  "function","end","returns","return",
+  "if","else","while","do","for","each","in",
+  "match","iterate","default","escape","continue",
+  "type","forks","new","fixed","constant",
+  "import","from","export","print","prompt",
+  "parallel","killswitch","goto","portal",
+  "nocache","yield","inline","pack",
+  "true","false","empty",
+  "and","or","not","equals",
+  "both1","both0","either1","diff","bitflip","negate","left","right",
+  "address","deref","memmove","memcopy","memset","memtake","memgive",
+  "size","change","absval",
+  "int","integer","float","double","string","bool","none","complex",
+  "int8","int16","int32","int64",
+  "uint8","uint16","uint32","uint64",
+  "array","list","map","arena","file",
+  "ok","error","some"
+]);
+
+function tokenize(src) {
+  const tokens = [];
+  let pos = 0, line = 1, col = 1;
+  const n = src.length;
+
+  function peek(off) { const i = pos + (off||0); return i < n ? src[i] : null; }
+  function advance() {
+    const ch = src[pos++];
+    if (ch === "\n") { line++; col = 1; } else { col++; }
+    return ch;
+  }
+  function add(kind, value) { tokens.push([kind, value, line, col]); }
+  function err(msg) { throw new SyntaxError("<repl>:" + line + ":" + col + " \u2014 " + msg); }
+
+  while (pos < n) {
+    while (pos < n && " \t\r\n".includes(src[pos])) advance();
+    if (pos >= n) break;
+
+    if (peek() === "/" && peek(1) === "/") {
+      while (pos < n && peek() !== "\n") advance();
+      continue;
+    }
+
+    const ch = peek();
+
+    if (ch === '"') {
+      advance();
+      let buf = "";
+      while (pos < n && peek() !== '"') {
+        if (peek() === "\\") {
+          advance();
+          const esc = advance();
+          const map = {"n":"\n","t":"\t",'"':'"',"\\":"\\"};
+          buf += (esc in map) ? map[esc] : esc;
+        } else if (peek() === "\n") {
+          err("unterminated string");
+        } else {
+          buf += advance();
+        }
+      }
+      if (pos >= n) err("unterminated string");
+      advance();
+      add("STRING", buf);
+    }
+    else if (ch === "0" && (peek(1) === "x" || peek(1) === "X")) {
+      let buf = advance() + advance();
+      while (peek() && "0123456789abcdefABCDEF".includes(peek())) buf += advance();
+      add("HEX", buf);
+    }
+    else if (ch >= "0" && ch <= "9") {
+      let buf = "";
+      while (peek() && peek() >= "0" && peek() <= "9") buf += advance();
+      if (peek() === "." && peek(1) && peek(1) >= "0" && peek(1) <= "9") {
+        buf += advance();
+        while (peek() && peek() >= "0" && peek() <= "9") buf += advance();
+        if (peek() === "e" || peek() === "E") {
+          buf += advance();
+          if (peek() === "+" || peek() === "-") buf += advance();
+          while (peek() && peek() >= "0" && peek() <= "9") buf += advance();
+        }
+        add("FLOAT", buf);
+      } else {
+        add("INT", buf);
+      }
+    }
+    else if ((ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z") || ch === "_") {
+      let buf = "";
+      while (peek() && ((peek() >= "a" && peek() <= "z") || (peek() >= "A" && peek() <= "Z") || (peek() >= "0" && peek() <= "9") || peek() === "_")) buf += advance();
+      if (buf === "left" && peek() === "=") { advance(); add("OP", "left="); }
+      else if (buf === "right" && peek() === "=") { advance(); add("OP", "right="); }
+      else if (buf === "integer") { add("KW", "int"); }
+      else if (KEYWORDS.has(buf)) { add("KW", buf); }
+      else { add("IDENT", buf); }
+    }
+    else if (ch === "@") { advance(); add("AT", "@"); }
+    else if (ch === "#") { advance(); add("HASH", "#"); }
+    else if (ch === "+") { advance(); if (peek()==="+"){advance();add("OP","++");}else if(peek()==="="){advance();add("OP","+=");}else{add("OP","+");} }
+    else if (ch === "-") { advance(); if(peek()==="-"){advance();add("OP","--");}else if(peek()==="="){advance();add("OP","-=");}else if(peek()===">"){advance();add("OP","->");}else{add("OP","-");} }
+    else if (ch === "*") { advance(); if(peek()==="="){advance();add("OP","*=");}else{add("OP","*");} }
+    else if (ch === "/") { advance(); if(peek()==="="){advance();add("OP","/=");}else{add("OP","/");} }
+    else if (ch === "%") { advance(); if(peek()==="="){advance();add("OP","%=");}else{add("OP","%");} }
+    else if (ch === "=") { advance(); if(peek()==="="){advance();add("OP","==");}else{add("OP","=");} }
+    else if (ch === "!") { advance(); if(peek()==="="){advance();add("OP","!=");}else{err("unexpected '!' \u2014 did you mean 'not'?");} }
+    else if (ch === "<") { advance(); if(peek()==="="){advance();add("OP","<=");}else{add("OP","<");} }
+    else if (ch === ">") { advance(); if(peek()==="="){advance();add("OP",">=");}else{add("OP",">");} }
+    else if (ch === "(") { advance(); add("LPAREN","("); }
+    else if (ch === ")") { advance(); add("RPAREN",")"); }
+    else if (ch === "[") { advance(); add("LBRACKET","["); }
+    else if (ch === "]") { advance(); add("RBRACKET","]"); }
+    else if (ch === ",") { advance(); add("COMMA",","); }
+    else if (ch === ".") { advance(); add("DOT","."); }
+    else if (ch === ":") { advance(); add("COLON",":"); }
+    else if (ch === "?") { advance(); add("OP","?"); }
+    else { err("unexpected character " + JSON.stringify(ch)); }
+  }
+
+  tokens.push(["EOF","",line,col]);
+  return tokens;
+}
+
+// ── Parser ──────────────────────────────────────────────────────────────
+
+const TYPE_KWS = new Set([
+  "int","float","double","string","bool","none","complex",
+  "int8","int16","int32","int64","uint8","uint16","uint32","uint64",
+  "auto","array","list","map","arena","file"
+]);
+
+class Parser {
+  constructor(tokens) { this.tokens = tokens; this.pos = 0; }
+
+  peek()    { return this.tokens[this.pos]; }
+  advance() { const t = this.tokens[this.pos]; if(t[0]!=="EOF") this.pos++; return t; }
+  atEnd()   { return this.peek()[0] === "EOF"; }
+
+  check(kind, value) {
+    const t = this.peek();
+    if (t[0] !== kind) return false;
+    if (value !== undefined && t[1] !== value) return false;
+    return true;
+  }
+  match(kind, value) { if (this.check(kind, value)) return this.advance(); return null; }
+  expect(kind, value) {
+    const t = this.match(kind, value);
+    if (!t) {
+      const got = this.peek();
+      const want = kind + (value !== undefined ? " '" + value + "'" : "");
+      throw new SyntaxError("<repl>:" + got[2] + ":" + got[3] + " \u2014 expected " + want + ", got " + got[0] + " '" + got[1] + "'");
+    }
+    return t;
+  }
+
+  parseType() {
+    let pointer = false;
+    if (this.match("OP","<")) pointer = true;
+    const tok = this.expect("KW");
+    if (pointer) this.expect("OP",">");
+    if (tok[1] === "array") {
+      const elem = this.expect("KW");
+      return {node:"TypeName",name:elem[1],pointer,isArray:true,arraySize:0,line:tok[2],col:tok[3]};
+    }
+    return {node:"TypeName",name:tok[1],pointer,isArray:false,arraySize:0,line:tok[2],col:tok[3]};
+  }
+
+  parseParam() {
+    const ty = this.parseType();
+    const nm = this.expect("IDENT");
+    return {node:"Param",type_:ty,name:nm[1],line:nm[2],col:nm[3]};
+  }
+
+  parseFunction() {
+    const tok = this.expect("KW","function");
+    const name = this.expect("IDENT")[1];
+    this.expect("LPAREN");
+    const params = [];
+    if (!this.check("RPAREN")) {
+      params.push(this.parseParam());
+      while (this.match("COMMA")) params.push(this.parseParam());
+    }
+    this.expect("RPAREN");
+    let returnType = null;
+    if (this.match("KW","returns")) returnType = this.parseType();
+    const body = this.parseBody();
+    this.expect("KW","end");
+    this.expect("KW","function");
+    return {node:"FunctionDecl",name,params,returnType,body,line:tok[2],col:tok[3]};
+  }
+
+  parseBody() {
+    const stmts = [];
+    while (!this.atEnd()) {
+      const tok = this.peek();
+      if (tok[0]==="KW" && (tok[1]==="end" || tok[1]==="else")) break;
+      stmts.push(this.parseStatement());
+    }
+    return stmts;
+  }
+
+  parseStatement() {
+    const tok = this.peek();
+    if (tok[0]==="KW") {
+      if (tok[1]==="if")       return this.parseIf();
+      if (tok[1]==="while")    return this.parseWhile();
+      if (tok[1]==="for")      return this.parseFor();
+      if (tok[1]==="return")   return this.parseReturn();
+      if (tok[1]==="print")    return this.parsePrint();
+      if (tok[1]==="escape")   { this.advance(); return {node:"Escape",line:tok[2],col:tok[3]}; }
+      if (tok[1]==="continue") { this.advance(); return {node:"Continue",line:tok[2],col:tok[3]}; }
+      if (tok[1]==="fixed")    return this.parseVarDecl();
+      if (TYPE_KWS.has(tok[1])) return this.parseVarDecl();
+    }
+    return this.parseAssignOrExpr();
+  }
+
+  parseVarDecl() {
+    const tok = this.peek();
+    const fixed = !!this.match("KW","fixed");
+    const type_ = this.parseType();
+    const name = this.expect("IDENT")[1];
+    let init = null;
+    if (this.match("OP","=")) init = this.parseExpr();
+    return {node:"VarDecl",type_,name,init,fixed,line:tok[2],col:tok[3]};
+  }
+
+  parseIf() {
+    const tok = this.expect("KW","if");
+    const condition = this.parseExpr();
+    const thenBody = this.parseBody();
+    let elseBody = [];
+    if (this.match("KW","else")) elseBody = this.parseBody();
+    this.expect("KW","end");
+    this.expect("KW","if");
+    return {node:"If",condition,thenBody,elseBody,line:tok[2],col:tok[3]};
+  }
+
+  parseWhile() {
+    const tok = this.expect("KW","while");
+    const condition = this.parseExpr();
+    const body = this.parseBody();
+    this.expect("KW","end");
+    this.expect("KW","while");
+    return {node:"While",condition,body,line:tok[2],col:tok[3]};
+  }
+
+  parseFor() {
+    const tok = this.expect("KW","for");
+    this.expect("KW","each");
+    const varName = this.expect("IDENT")[1];
+    this.expect("KW","in");
+    const iterable = this.parseExpr();
+    const body = this.parseBody();
+    this.expect("KW","end");
+    this.expect("KW","for");
+    return {node:"For",var:varName,iterable,body,line:tok[2],col:tok[3]};
+  }
+
+  parseReturn() {
+    const tok = this.expect("KW","return");
+    let value = null;
+    if (!this.atEnd() && !this.check("KW","end")) value = this.parseExpr();
+    return {node:"Return",value,line:tok[2],col:tok[3]};
+  }
+
+  parsePrint() {
+    const tok = this.expect("KW","print");
+    const value = this.parseExpr();
+    return {node:"Print",value,line:tok[2],col:tok[3]};
+  }
+
+  parseAssignOrExpr() {
+    const expr = this.parseExpr();
+    const tok = this.peek();
+    const ASSIGN_OPS = new Set(["=","+=","-=","*=","/=","%=","left=","right="]);
+    if (tok[0]==="OP" && ASSIGN_OPS.has(tok[1])) {
+      const op = this.advance()[1];
+      const value = this.parseExpr();
+      return {node:"Assign",target:expr,op,value,line:tok[2],col:tok[3]};
+    }
+    return {node:"ExprStmt",expr,line:tok[2],col:tok[3]};
+  }
+
+  parseExpr() { return this.parseOr(); }
+
+  parseOr() {
+    let left = this.parseAnd();
+    while (this.check("KW","or")) { const op = this.advance(); left = {node:"BinaryOp",op:"or",left,right:this.parseAnd(),line:op[2],col:op[3]}; }
+    return left;
+  }
+  parseAnd() {
+    let left = this.parseNot();
+    while (this.check("KW","and")) { const op = this.advance(); left = {node:"BinaryOp",op:"and",left,right:this.parseNot(),line:op[2],col:op[3]}; }
+    return left;
+  }
+  parseNot() {
+    if (this.check("KW","not")) { const op = this.advance(); return {node:"UnaryOp",op:"not",operand:this.parseNot(),line:op[2],col:op[3]}; }
+    return this.parseComparison();
+  }
+  parseComparison() {
+    let left = this.parseAddition();
+    const CMP = new Set(["==","!=","<",">","<=",">="]);
+    while (this.peek()[0]==="OP" && CMP.has(this.peek()[1])) { const op = this.advance(); left = {node:"BinaryOp",op:op[1],left,right:this.parseAddition(),line:op[2],col:op[3]}; }
+    return left;
+  }
+  parseAddition() {
+    let left = this.parseMultiplication();
+    while (this.peek()[0]==="OP" && (this.peek()[1]==="+" || this.peek()[1]==="-")) { const op = this.advance(); left = {node:"BinaryOp",op:op[1],left,right:this.parseMultiplication(),line:op[2],col:op[3]}; }
+    return left;
+  }
+  parseMultiplication() {
+    let left = this.parseUnary();
+    while (this.peek()[0]==="OP" && (this.peek()[1]==="*" || this.peek()[1]==="/" || this.peek()[1]==="%")) { const op = this.advance(); left = {node:"BinaryOp",op:op[1],left,right:this.parseUnary(),line:op[2],col:op[3]}; }
+    return left;
+  }
+  parseUnary() {
+    const tok = this.peek();
+    if (tok[0]==="OP" && tok[1]==="-") { this.advance(); return {node:"UnaryOp",op:"-",operand:this.parseUnary(),line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && tok[1]==="address") { this.advance(); return {node:"UnaryOp",op:"address",operand:this.parseUnary(),line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && tok[1]==="deref") { this.advance(); return {node:"UnaryOp",op:"deref",operand:this.parseUnary(),line:tok[2],col:tok[3]}; }
+    return this.parsePostfix();
+  }
+  parsePostfix() {
+    let expr = this.parsePrimary();
+    while (true) {
+      if (this.check("LPAREN")) {
+        const tok = this.advance();
+        const args = [];
+        if (!this.check("RPAREN")) { args.push(this.parseExpr()); while (this.match("COMMA")) args.push(this.parseExpr()); }
+        this.expect("RPAREN");
+        const name = (expr.node==="Identifier") ? expr.name : "__expr__";
+        expr = {node:"Call",name,args,line:tok[2],col:tok[3]};
+      } else if (this.check("LBRACKET")) {
+        const tok = this.advance();
+        const idx = this.parseExpr();
+        this.expect("RBRACKET");
+        expr = {node:"Index",target:expr,index:idx,line:tok[2],col:tok[3]};
+      } else if (this.check("OP","->")) {
+        const tok = this.advance();
+        const target = this.parseType();
+        expr = {node:"Cast",expr,targetType:target,line:tok[2],col:tok[3]};
+      } else if (this.check("OP","++")) {
+        const tok = this.advance();
+        expr = {node:"PostIncrement",operand:expr,line:tok[2],col:tok[3]};
+      } else if (this.check("OP","--")) {
+        const tok = this.advance();
+        expr = {node:"PostDecrement",operand:expr,line:tok[2],col:tok[3]};
+      } else break;
+    }
+    return expr;
+  }
+  parsePrimary() {
+    const tok = this.peek();
+    if (tok[0]==="INT")    { this.advance(); return {node:"IntLiteral",value:parseInt(tok[1],10),line:tok[2],col:tok[3]}; }
+    if (tok[0]==="HEX")    { this.advance(); return {node:"IntLiteral",value:parseInt(tok[1],16),line:tok[2],col:tok[3]}; }
+    if (tok[0]==="FLOAT")  { this.advance(); return {node:"FloatLiteral",value:parseFloat(tok[1]),line:tok[2],col:tok[3]}; }
+    if (tok[0]==="STRING") { this.advance(); return {node:"StringLiteral",value:tok[1],line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && tok[1]==="true")  { this.advance(); return {node:"BoolLiteral",value:true,line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && tok[1]==="false") { this.advance(); return {node:"BoolLiteral",value:false,line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && tok[1]==="empty") { this.advance(); return {node:"EmptyLiteral",line:tok[2],col:tok[3]}; }
+    if (tok[0]==="IDENT") { this.advance(); return {node:"Identifier",name:tok[1],line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && tok[1]==="change") { this.advance(); return {node:"Identifier",name:tok[1],line:tok[2],col:tok[3]}; }
+    if (tok[0]==="LBRACKET") {
+      this.advance();
+      const elems = [];
+      if (!this.check("RBRACKET")) { elems.push(this.parseExpr()); while (this.match("COMMA")) elems.push(this.parseExpr()); }
+      this.expect("RBRACKET");
+      return {node:"ArrayLiteral",elements:elems,line:tok[2],col:tok[3]};
+    }
+    if (tok[0]==="LPAREN") {
+      this.advance();
+      const expr = this.parseExpr();
+      this.expect("RPAREN");
+      return expr;
+    }
+    throw new SyntaxError("<repl>:" + tok[2] + ":" + tok[3] + " \u2014 unexpected token " + tok[0] + " '" + tok[1] + "'");
+  }
+}
+
+// ── Evaluator ───────────────────────────────────────────────────────────
+
+let printBuffer = [];
+
+function evalExpr(nd, env) {
+  switch (nd.node) {
+    case "IntLiteral":    return nd.value;
+    case "FloatLiteral":  return nd.value;
+    case "StringLiteral": return nd.value;
+    case "BoolLiteral":   return nd.value;
+    case "EmptyLiteral":  return null;
+    case "ArrayLiteral":  return nd.elements.map(e => evalExpr(e, env));
+
+    case "Identifier":
+      if (nd.name in env) return env[nd.name];
+      if (nd.name in globals) return globals[nd.name];
+      throw new RuntimeErr("undefined variable '" + nd.name + "' at " + nd.line + ":" + nd.col);
+
+    case "BinaryOp": return evalBinop(nd, env);
+
+    case "UnaryOp": {
+      const val = evalExpr(nd.operand, env);
+      if (nd.op === "-")   return -val;
+      if (nd.op === "not") return !val;
+      throw new RuntimeErr("unknown unary op '" + nd.op + "'");
+    }
+
+    case "Cast": {
+      let inner = nd.expr;
+      if (inner.node === "Call" && inner.name === "change" && inner.args.length === 1) inner = inner.args[0];
+      const val = evalExpr(inner, env);
+      const t = nd.targetType.name;
+      if (["int","int8","int16","int32","int64","uint8","uint16","uint32","uint64"].includes(t)) return Math.trunc(Number(val));
+      if (t === "float" || t === "double") return Number(val);
+      if (t === "string") return String(val);
+      if (t === "bool") return Boolean(val);
+      return val;
+    }
+
+    case "Call": return evalCall(nd, env);
+
+    case "Index": {
+      const target = evalExpr(nd.target, env);
+      const index  = evalExpr(nd.index, env);
+      if (Array.isArray(target)) {
+        if (index < 0 || index >= target.length) throw new RuntimeErr("index " + index + " out of bounds (size " + target.length + ")");
+        return target[index];
+      }
+      if (typeof target === "string") return target[index] || "";
+      throw new RuntimeErr("cannot index type " + typeof target);
+    }
+
+    case "PostIncrement": {
+      const name = nd.operand.name;
+      const scope = (name in env) ? env : globals;
+      const val = scope[name];
+      scope[name] = val + 1;
+      if (memTracker) memTracker.trackUpdate(name, val + 1, nd.line);
+      return val;
+    }
+    case "PostDecrement": {
+      const name = nd.operand.name;
+      const scope = (name in env) ? env : globals;
+      const val = scope[name];
+      scope[name] = val - 1;
+      if (memTracker) memTracker.trackUpdate(name, val - 1, nd.line);
+      return val;
+    }
+
+    default: throw new RuntimeErr("unknown expression node: " + nd.node);
+  }
+}
+
+function evalBinop(nd, env) {
+  if (nd.op === "and") return evalExpr(nd.left, env) && evalExpr(nd.right, env);
+  if (nd.op === "or")  return evalExpr(nd.left, env) || evalExpr(nd.right, env);
+
+  const left  = evalExpr(nd.left, env);
+  const right = evalExpr(nd.right, env);
+
+  switch (nd.op) {
+    case "+":  return (typeof left === "string" || typeof right === "string") ? String(left) + String(right) : left + right;
+    case "-":  return left - right;
+    case "*":  return left * right;
+    case "/":
+      if (right === 0) throw new RuntimeErr("division by zero");
+      if (Number.isInteger(left) && Number.isInteger(right)) return Math.trunc(left / right);
+      return left / right;
+    case "%":
+      if (right === 0) throw new RuntimeErr("modulo by zero");
+      return left % right;
+    case "==": return left === right;
+    case "!=": return left !== right;
+    case "<":  return left < right;
+    case ">":  return left > right;
+    case "<=": return left <= right;
+    case ">=": return left >= right;
+    default: throw new RuntimeErr("unknown operator '" + nd.op + "'");
+  }
+}
+
+function evalCall(nd, env) {
+  const name = nd.name;
+  const args = nd.args.map(a => evalExpr(a, env));
+
+  if (name === "absval") return Math.abs(args[0]);
+  if (name === "size")   return (typeof args[0] === "string") ? args[0].length : (Array.isArray(args[0]) ? args[0].length : 0);
+  if (name === "change") return args[0];
+
+  if (!(name in functions)) throw new RuntimeErr("undefined function '" + name + "' at " + nd.line + ":" + nd.col);
+
+  const decl = functions[name];
+  if (args.length !== decl.params.length)
+    throw new RuntimeErr("'" + name + "' expects " + decl.params.length + " args, got " + args.length);
+
+  const local = {};
+  if (memTracker) memTracker.pushFrame(name);
+  for (let i = 0; i < args.length; i++) {
+    local[decl.params[i].name] = args[i];
+    if (memTracker) memTracker.trackAllocation(decl.params[i].name, decl.params[i].type_.name, args[i], nd.line);
+  }
+
+  try {
+    execBody(decl.body, local);
+  } catch (e) {
+    if (e instanceof ReturnValue) {
+      if (memTracker) memTracker.popFrame();
+      return e.value;
+    }
+    if (memTracker) memTracker.popFrame();
+    throw e;
+  }
+  if (memTracker) memTracker.popFrame();
+  return null;
+}
+
+function execStmt(nd, env) {
+  switch (nd.node) {
+    case "VarDecl": {
+      const val = nd.init ? evalExpr(nd.init, env) : null;
+      env[nd.name] = val;
+      if (memTracker) {
+        const typeName = nd.type_.isArray ? "array" : nd.type_.name;
+        memTracker.trackAllocation(nd.name, typeName, val, nd.line);
+      }
+      return undefined;
+    }
+    case "Assign": {
+      const val = evalExpr(nd.value, env);
+      if (nd.target.node === "Identifier") {
+        const name = nd.target.name;
+        const scope = (name in env) ? env : (name in globals) ? globals : env;
+        if (nd.op === "=") { scope[name] = val; }
+        else {
+          const cur = scope[name] || 0;
+          const ops = { "+=": (a,b)=>a+b, "-=": (a,b)=>a-b, "*=": (a,b)=>a*b,
+                        "/=": (a,b)=> Number.isInteger(a)&&Number.isInteger(b) ? Math.trunc(a/b) : a/b,
+                        "%=": (a,b)=>a%b };
+          scope[name] = ops[nd.op](cur, val);
+        }
+        if (memTracker) memTracker.trackUpdate(name, scope[name], nd.line);
+      } else if (nd.target.node === "Index") {
+        const target = evalExpr(nd.target.target, env);
+        const index  = evalExpr(nd.target.index, env);
+        target[index] = val;
+        // Track the update on the array itself
+        if (memTracker && nd.target.target.node === "Identifier") {
+          memTracker.trackUpdate(nd.target.target.name, target, nd.line);
+        }
+      }
+      return undefined;
+    }
+    case "If": {
+      if (evalExpr(nd.condition, env)) execBody(nd.thenBody, env);
+      else if (nd.elseBody.length) execBody(nd.elseBody, env);
+      return undefined;
+    }
+    case "While": {
+      let guard = 0;
+      while (evalExpr(nd.condition, env)) {
+        if (++guard > 100000) throw new RuntimeErr("infinite loop detected (100k iterations)");
+        try { execBody(nd.body, env); }
+        catch (e) {
+          if (e instanceof BreakSignal) break;
+          if (e instanceof ContinueSignal) continue;
+          throw e;
+        }
+      }
+      return undefined;
+    }
+    case "For": {
+      const iter = evalExpr(nd.iterable, env);
+      if (!Array.isArray(iter) && typeof iter !== "string")
+        throw new RuntimeErr("cannot iterate over " + typeof iter);
+      let guard = 0;
+      for (const item of iter) {
+        if (++guard > 100000) throw new RuntimeErr("infinite loop detected (100k iterations)");
+        env[nd.var] = item;
+        if (memTracker) {
+          if (guard === 1) memTracker.trackAllocation(nd.var, memTracker.inferType(item), item, nd.line);
+          else memTracker.trackUpdate(nd.var, item, nd.line);
+        }
+        try { execBody(nd.body, env); }
+        catch (e) {
+          if (e instanceof BreakSignal) break;
+          if (e instanceof ContinueSignal) continue;
+          throw e;
+        }
+      }
+      return undefined;
+    }
+    case "Return": {
+      const val = nd.value ? evalExpr(nd.value, env) : null;
+      throw new ReturnValue(val);
+    }
+    case "Print": {
+      const val = evalExpr(nd.value, env);
+      let s;
+      if (typeof val === "boolean") s = val ? "1" : "0";
+      else if (typeof val === "number" && !Number.isInteger(val)) s = val.toFixed(6);
+      else if (val === null) s = "empty";
+      else if (Array.isArray(val)) s = "[" + val.join(", ") + "]";
+      else s = String(val);
+      printBuffer.push(s);
+      return undefined;
+    }
+    case "ExprStmt": return evalExpr(nd.expr, env);
+    case "Escape":   throw new BreakSignal();
+    case "Continue":  throw new ContinueSignal();
+    default: throw new RuntimeErr("unknown statement node: " + nd.node);
+  }
+}
+
+function execBody(stmts, env) {
+  let result;
+  for (const s of stmts) result = execStmt(s, env);
+  return result;
+}
+
+// ── Helpers ─────────────────────────────────────────────────────────────
+
+function escapeHtml(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function formatValue(val) {
+  if (val === null || val === undefined) return "empty";
+  if (typeof val === "boolean") return val ? "1" : "0";
+  if (typeof val === "number" && !Number.isInteger(val)) return val.toFixed(6);
+  if (Array.isArray(val)) return "[" + val.map(formatValue).join(", ") + "]";
+  return String(val);
+}
+
+function formatBytes(b) {
+  if (b < 1024) return b + " B";
+  if (b < 1024 * 1024) return (b / 1024).toFixed(1) + " KB";
+  return (b / (1024 * 1024)).toFixed(1) + " MB";
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+//  VISUALIZATION
+// ═════════════════════════════════════════════════════════════════════════
+
+// ── Live Memory Chart ───────────────────────────────────────────────────
+
+function drawMemoryChart() {
+  const canvas = document.getElementById("mem-chart");
+  const container = canvas.parentElement;
+  canvas.width = container.clientWidth - 32;
+  canvas.height = 200;
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width, h = canvas.height;
+  const pad = { top: 20, right: 20, bottom: 30, left: 55 };
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = "#1e1e2e";
+  ctx.fillRect(0, 0, w, h);
+
+  const history = memTracker ? memTracker.usageHistory : [];
+  if (history.length === 0) {
+    ctx.fillStyle = "#585b70";
+    ctx.font = "13px 'Share Tech Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("No data yet -- run a program", w / 2, h / 2);
+    return;
+  }
+
+  const maxStep = Math.max(...history.map(h => h.step), 1);
+  const maxBytes = Math.max(...history.map(h => h.bytes), 64);
+  const peak = memTracker.peakBytes;
+
+  const plotW = w - pad.left - pad.right;
+  const plotH = h - pad.top - pad.bottom;
+
+  function sx(step) { return pad.left + (step / maxStep) * plotW; }
+  function sy(bytes) { return pad.top + plotH - (bytes / maxBytes) * plotH; }
+
+  // Grid lines
+  ctx.strokeStyle = "#313244";
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (plotH / 4) * i;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(w - pad.right, y); ctx.stroke();
+  }
+
+  // Peak line
+  ctx.strokeStyle = "rgba(243, 139, 168, 0.5)";
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  const peakY = sy(peak);
+  ctx.beginPath(); ctx.moveTo(pad.left, peakY); ctx.lineTo(w - pad.right, peakY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = "#f38ba8";
+  ctx.font = "10px 'Share Tech Mono', monospace";
+  ctx.textAlign = "right";
+  ctx.fillText("peak " + formatBytes(peak), w - pad.right, peakY - 4);
+
+  // Fill area
+  ctx.beginPath();
+  ctx.moveTo(sx(0), sy(0));
+  for (const pt of history) {
+    ctx.lineTo(sx(pt.step), sy(pt.bytes));
+  }
+  ctx.lineTo(sx(history[history.length - 1].step), sy(0));
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0, pad.top, 0, h - pad.bottom);
+  grad.addColorStop(0, "rgba(166, 227, 161, 0.3)");
+  grad.addColorStop(1, "rgba(166, 227, 161, 0.02)");
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  for (let i = 0; i < history.length; i++) {
+    const pt = history[i];
+    if (i === 0) ctx.moveTo(sx(pt.step), sy(pt.bytes));
+    else ctx.lineTo(sx(pt.step), sy(pt.bytes));
+  }
+  ctx.strokeStyle = "#a6e3a1";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Dots
+  for (const pt of history) {
+    ctx.beginPath();
+    ctx.arc(sx(pt.step), sy(pt.bytes), 3, 0, Math.PI * 2);
+    ctx.fillStyle = "#a6e3a1";
+    ctx.fill();
+  }
+
+  // Axes labels
+  ctx.fillStyle = "#585b70";
+  ctx.font = "10px 'Share Tech Mono', monospace";
+  ctx.textAlign = "center";
+  ctx.fillText("Execution Step", w / 2, h - 4);
+
+  ctx.save();
+  ctx.translate(12, h / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText("Bytes", 0, 0);
+  ctx.restore();
+
+  // Y axis labels
+  ctx.textAlign = "right";
+  for (let i = 0; i <= 4; i++) {
+    const val = Math.round((maxBytes / 4) * (4 - i));
+    const y = pad.top + (plotH / 4) * i;
+    ctx.fillText(formatBytes(val), pad.left - 6, y + 4);
+  }
+
+  // X axis labels
+  ctx.textAlign = "center";
+  const stepInc = Math.max(1, Math.floor(maxStep / 6));
+  for (let s = 0; s <= maxStep; s += stepInc) {
+    ctx.fillText(s.toString(), sx(s), h - pad.bottom + 14);
+  }
+
+  // Stats
+  document.getElementById("stat-current").textContent = formatBytes(memTracker.currentBytes);
+  document.getElementById("stat-peak").textContent = formatBytes(memTracker.peakBytes);
+  document.getElementById("stat-total").textContent = formatBytes(memTracker.totalAllocated);
+}
+
+// ── Memory Layout Visualizer ────────────────────────────────────────────
+
+function drawMemoryLayout() {
+  const stackBoxes = document.getElementById("stack-boxes");
+  const heapBoxes = document.getElementById("heap-boxes");
+  stackBoxes.innerHTML = "";
+  heapBoxes.innerHTML = "";
+
+  if (!memTracker || memTracker.allocations.length === 0) {
+    stackBoxes.innerHTML = '<div style="color:#585b70; font-family:Share Tech Mono,monospace; font-size:12px; padding:8px;">No allocations</div>';
+    heapBoxes.innerHTML = '<div style="color:#585b70; font-family:Share Tech Mono,monospace; font-size:12px; padding:8px;">No allocations</div>';
+    clearArrows();
+    return;
+  }
+
+  // Group stack allocations by frame
+  const frames = {};
+  const heapItems = [];
+
+  for (const alloc of memTracker.allocations) {
+    if (alloc.region === "stack") {
+      const frame = alloc.frame || "global";
+      if (!frames[frame]) frames[frame] = [];
+      frames[frame].push(alloc);
+    } else {
+      heapItems.push(alloc);
+    }
+  }
+
+  // Render stack frames
+  for (const [frameName, allocs] of Object.entries(frames)) {
+    const frameLabel = document.createElement("div");
+    frameLabel.className = "frame-label";
+    frameLabel.textContent = frameName + "()";
+    if (frameName === "global") frameLabel.textContent = "global scope";
+    stackBoxes.appendChild(frameLabel);
+
+    for (const alloc of allocs) {
+      const box = document.createElement("div");
+      const freed = alloc.step_freed !== -1;
+      box.className = "mem-box " + (freed ? "mem-box-freed" : "mem-box-stack");
+      box.setAttribute("data-alloc-name", alloc.name);
+      const valStr = formatValue(alloc.value);
+      const truncVal = valStr.length > 30 ? valStr.substring(0, 27) + "..." : valStr;
+      box.innerHTML =
+        '<span class="mb-name">' + escapeHtml(alloc.name) + '</span> ' +
+        '<span class="mb-type">' + escapeHtml(alloc.type) + '</span><br>' +
+        '<span class="mb-val">' + escapeHtml(truncVal) + '</span> ' +
+        '<span class="mb-size">' + alloc.size + 'B</span>';
+      stackBoxes.appendChild(box);
+    }
+  }
+
+  // Render heap objects
+  if (heapItems.length === 0) {
+    heapBoxes.innerHTML = '<div style="color:#585b70; font-family:Share Tech Mono,monospace; font-size:12px; padding:8px;">No heap allocations</div>';
+  } else {
+    for (const alloc of heapItems) {
+      const box = document.createElement("div");
+      const freed = alloc.step_freed !== -1;
+      box.className = "mem-box " + (freed ? "mem-box-freed" : "mem-box-heap");
+      box.setAttribute("data-heap-id", alloc.heapId);
+      const valStr = formatValue(alloc.value);
+      const truncVal = valStr.length > 40 ? valStr.substring(0, 37) + "..." : valStr;
+      box.innerHTML =
+        '<span class="mb-name">' + escapeHtml(alloc.name) + '</span> ' +
+        '<span class="mb-type">' + escapeHtml(alloc.type) + '</span> ' +
+        '<span class="mb-size">[heap #' + alloc.heapId + ']</span><br>' +
+        '<span class="mb-val">' + escapeHtml(truncVal) + '</span> ' +
+        '<span class="mb-size">' + alloc.size + 'B</span>';
+      heapBoxes.appendChild(box);
+    }
+  }
+
+  // Draw pointer arrows after DOM is updated
+  requestAnimationFrame(drawArrows);
+}
+
+// ── Pointer/Reference Arrows ────────────────────────────────────────────
+
+function clearArrows() {
+  const svg = document.getElementById("arrow-svg");
+  // Keep the defs, remove lines
+  const lines = svg.querySelectorAll("line");
+  lines.forEach(l => l.remove());
+}
+
+function drawArrows() {
+  clearArrows();
+  if (!memTracker) return;
+
+  const svg = document.getElementById("arrow-svg");
+  const container = document.getElementById("mem-layout-container");
+  const containerRect = container.getBoundingClientRect();
+
+  // Resize SVG
+  svg.setAttribute("width", container.scrollWidth);
+  svg.setAttribute("height", container.scrollHeight);
+  svg.style.width = container.scrollWidth + "px";
+  svg.style.height = container.scrollHeight + "px";
+
+  for (const link of memTracker.pointerLinks) {
+    const fromEl = container.querySelector('[data-alloc-name="' + link.from_name + '"]');
+    const toEl = container.querySelector('[data-heap-id="' + link.to_heapId + '"]');
+    if (!fromEl || !toEl) continue;
+
+    const fromRect = fromEl.getBoundingClientRect();
+    const toRect = toEl.getBoundingClientRect();
+
+    const x1 = fromRect.right - containerRect.left;
+    const y1 = fromRect.top + fromRect.height / 2 - containerRect.top;
+    const x2 = toRect.left - containerRect.left;
+    const y2 = toRect.top + toRect.height / 2 - containerRect.top;
+
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("marker-end", "url(#arrowhead)");
+    svg.appendChild(line);
+  }
+}
+
+// ── Allocation Timeline ─────────────────────────────────────────────────
+
+let timelineBars = []; // For hover detection
+
+function drawTimeline() {
+  const canvas = document.getElementById("timeline-canvas");
+  const container = canvas.parentElement;
+  canvas.width = container.clientWidth - 32;
+  const ctx = canvas.getContext("2d");
+
+  if (!memTracker || memTracker.allocations.length === 0) {
+    canvas.height = 100;
+    ctx.fillStyle = "#1e1e2e";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#585b70";
+    ctx.font = "13px 'Share Tech Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("No allocations -- run a program", canvas.width / 2, 50);
+    timelineBars = [];
+    return;
+  }
+
+  const allocs = memTracker.allocations;
+  const maxStep = memTracker.step + 1;
+  const barH = 22;
+  const gap = 3;
+  const pad = { top: 24, right: 20, bottom: 30, left: 100 };
+
+  // Arrange bars: stack vertically if overlapping
+  const lanes = [];
+  const barLanes = [];
+  for (const alloc of allocs) {
+    const start = alloc.step_created;
+    const end = alloc.step_freed === -1 ? maxStep : alloc.step_freed;
+    let lane = 0;
+    while (lane < lanes.length) {
+      if (lanes[lane] <= start) break;
+      lane++;
+    }
+    if (lane >= lanes.length) lanes.push(0);
+    lanes[lane] = end;
+    barLanes.push(lane);
+  }
+
+  const numLanes = lanes.length;
+  canvas.height = pad.top + numLanes * (barH + gap) + pad.bottom;
+
+  const w = canvas.width, h = canvas.height;
+  const plotW = w - pad.left - pad.right;
+
+  ctx.fillStyle = "#1e1e2e";
+  ctx.fillRect(0, 0, w, h);
+
+  function sx(step) { return pad.left + (step / maxStep) * plotW; }
+
+  // Color palette
+  const colors = ["#a6e3a1","#89b4fa","#fab387","#f9e2af","#89dceb","#cba6f7","#f38ba8","#94e2d5"];
+
+  timelineBars = [];
+
+  for (let i = 0; i < allocs.length; i++) {
+    const alloc = allocs[i];
+    const start = alloc.step_created;
+    const end = alloc.step_freed === -1 ? maxStep : alloc.step_freed;
+    const lane = barLanes[i];
+    const x = sx(start);
+    const barW = Math.max(sx(end) - sx(start), 4);
+    const y = pad.top + lane * (barH + gap);
+
+    const freed = alloc.step_freed !== -1;
+    const color = freed ? "#585b70" : colors[i % colors.length];
+
+    ctx.fillStyle = color;
+    ctx.globalAlpha = freed ? 0.5 : 0.85;
+    ctx.beginPath();
+    ctx.roundRect(x, y, barW, barH, 3);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // Label
+    ctx.fillStyle = freed ? "#a0a0a0" : "#1e1e2e";
+    ctx.font = "bold 10px 'Share Tech Mono', monospace";
+    ctx.textAlign = "left";
+    const label = alloc.name;
+    if (barW > 30) {
+      ctx.fillText(label, x + 4, y + 15);
+    }
+
+    // Name label on left
+    ctx.fillStyle = "#cdd6f4";
+    ctx.textAlign = "right";
+    ctx.font = "11px 'Share Tech Mono', monospace";
+
+    timelineBars.push({
+      x, y, w: barW, h: barH,
+      alloc: alloc
+    });
+  }
+
+  // X axis
+  ctx.strokeStyle = "#585b70";
+  ctx.lineWidth = 1;
+  const axisY = pad.top + numLanes * (barH + gap) + 4;
+  ctx.beginPath();
+  ctx.moveTo(pad.left, axisY);
+  ctx.lineTo(w - pad.right, axisY);
+  ctx.stroke();
+
+  ctx.fillStyle = "#585b70";
+  ctx.font = "10px 'Share Tech Mono', monospace";
+  ctx.textAlign = "center";
+  const stepInc = Math.max(1, Math.floor(maxStep / 8));
+  for (let s = 0; s <= maxStep; s += stepInc) {
+    ctx.fillText(s.toString(), sx(s), axisY + 14);
+  }
+  ctx.fillText("Execution Step", w / 2, h - 4);
+}
+
+// Timeline hover
+const timelineCanvas = document.getElementById("timeline-canvas");
+const tooltip = document.getElementById("timeline-tooltip");
+
+timelineCanvas.addEventListener("mousemove", function(e) {
+  const rect = timelineCanvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  let found = null;
+  for (const bar of timelineBars) {
+    if (mx >= bar.x && mx <= bar.x + bar.w && my >= bar.y && my <= bar.y + bar.h) {
+      found = bar;
+      break;
+    }
+  }
+
+  if (found) {
+    const a = found.alloc;
+    tooltip.style.display = "block";
+    tooltip.style.left = (e.clientX + 12) + "px";
+    tooltip.style.top = (e.clientY - 10) + "px";
+    tooltip.innerHTML =
+      '<span class="tt-name">' + escapeHtml(a.name) + '</span> (' + escapeHtml(a.type) + ')<br>' +
+      '<span class="tt-size">' + a.size + ' bytes</span><br>' +
+      '<span class="tt-line">Line ' + a.line + '</span> | Created step ' + a.step_created + '<br>' +
+      '<span class="tt-freed">' + (a.step_freed === -1 ? "Still alive" : "Freed step " + a.step_freed) + '</span>';
+  } else {
+    tooltip.style.display = "none";
+  }
+});
+
+timelineCanvas.addEventListener("mouseleave", function() {
+  tooltip.style.display = "none";
+});
+
+// ── Memory Mode Comparison ──────────────────────────────────────────────
+
+function drawComparison() {
+  if (!memTracker || memTracker.allocations.length === 0) return;
+
+  const modes = memTracker.simulateModes();
+  const tbody = document.getElementById("comparison-tbody");
+
+  tbody.innerHTML =
+    '<tr><td>Peak Memory</td><td>' + formatBytes(modes.manual.peak) + '</td><td>' + formatBytes(modes.gc.peak) + '</td><td>' + formatBytes(modes.refcount.peak) + '</td><td>' + formatBytes(modes.arena.peak) + '</td></tr>' +
+    '<tr><td>Allocations</td><td>' + modes.manual.allocs + '</td><td>' + modes.gc.allocs + '</td><td>' + modes.refcount.allocs + '</td><td>' + modes.arena.allocs + '</td></tr>' +
+    '<tr><td>Frees</td><td>' + modes.manual.frees + '</td><td>' + modes.gc.frees + '</td><td>' + modes.refcount.frees + '</td><td>' + modes.arena.frees + '</td></tr>' +
+    '<tr><td>Fragmentation</td><td>' + modes.manual.fragmentation + '</td><td>' + modes.gc.fragmentation + '</td><td>' + modes.refcount.fragmentation + '</td><td>' + modes.arena.fragmentation + '</td></tr>';
+
+  // Bar chart
+  const canvas = document.getElementById("comparison-chart");
+  const container = canvas.parentElement;
+  canvas.width = container.clientWidth - 32;
+  canvas.height = 120;
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width, h = canvas.height;
+
+  ctx.fillStyle = "#1e1e2e";
+  ctx.fillRect(0, 0, w, h);
+
+  const modeNames = ["Manual", "GC", "Refcount", "Arena"];
+  const modeColors = ["#89b4fa", "#a6e3a1", "#fab387", "#f9e2af"];
+  const peaks = [modes.manual.peak, modes.gc.peak, modes.refcount.peak, modes.arena.peak];
+  const maxPeak = Math.max(...peaks, 1);
+
+  const barW = 60;
+  const gap = (w - 4 * barW) / 5;
+  const pad = { top: 20, bottom: 28 };
+  const plotH = h - pad.top - pad.bottom;
+
+  for (let i = 0; i < 4; i++) {
+    const x = gap + i * (barW + gap);
+    const barH = (peaks[i] / maxPeak) * plotH;
+    const y = pad.top + plotH - barH;
+
+    ctx.fillStyle = modeColors[i];
+    ctx.globalAlpha = 0.85;
+    ctx.beginPath();
+    ctx.roundRect(x, y, barW, barH, [4, 4, 0, 0]);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // Value
+    ctx.fillStyle = modeColors[i];
+    ctx.font = "bold 10px 'Share Tech Mono', monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(formatBytes(peaks[i]), x + barW / 2, y - 4);
+
+    // Label
+    ctx.fillStyle = "#585b70";
+    ctx.font = "10px 'Share Tech Mono', monospace";
+    ctx.fillText(modeNames[i], x + barW / 2, h - 8);
+  }
+
+  // Title
+  ctx.fillStyle = "#585b70";
+  ctx.font = "10px 'Share Tech Mono', monospace";
+  ctx.textAlign = "left";
+  ctx.fillText("Peak Memory by Mode", 8, 12);
+}
+
+// ── Disk vs RAM Breakdown ───────────────────────────────────────────────
+
+function drawDiskRam(sourceCode) {
+  const srcBytes = new TextEncoder().encode(sourceCode).length;
+  // Estimate bytecode: ~4 bytes per instruction, roughly 1 instruction per 8 source chars
+  const estInstructions = Math.max(Math.ceil(srcBytes / 8), 4);
+  const ubiBytes = 16 + estInstructions * 4; // 16-byte header + instructions
+  const peakRam = memTracker ? memTracker.peakBytes : 0;
+
+  document.getElementById("dr-source").textContent = formatBytes(srcBytes);
+  document.getElementById("dr-bytecode").textContent = formatBytes(ubiBytes);
+  document.getElementById("dr-ram").textContent = formatBytes(peakRam);
+
+  const total = srcBytes + ubiBytes + Math.max(peakRam, 1);
+  const srcPct = Math.max((srcBytes / total) * 100, 8);
+  const ubiPct = Math.max((ubiBytes / total) * 100, 8);
+  const ramPct = Math.max((peakRam / total) * 100, 8);
+
+  document.getElementById("dr-bar-source").style.width = srcPct + "%";
+  document.getElementById("dr-bar-bytecode").style.width = ubiPct + "%";
+  document.getElementById("dr-bar-ram").style.width = ramPct + "%";
+}
+
+// ── Collapsible Comparison ──────────────────────────────────────────────
+
+window.toggleComparison = function() {
+  const body = document.getElementById("comparison-body");
+  const icon = document.getElementById("collapse-icon");
+  if (body.classList.contains("open")) {
+    body.classList.remove("open");
+    icon.innerHTML = "&#9654;";
+  } else {
+    body.classList.add("open");
+    icon.innerHTML = "&#9660;";
+  }
+};
+
+// ═════════════════════════════════════════════════════════════════════════
+//  MAIN EXECUTION
+// ═════════════════════════════════════════════════════════════════════════
+
+window.runCode = function() {
+  const source = document.getElementById("code-editor").value;
+  const consoleEl = document.getElementById("output-console");
+  consoleEl.innerHTML = "";
+
+  // Reset state
+  for (const k of Object.keys(globals)) delete globals[k];
+  for (const k of Object.keys(functions)) delete functions[k];
+  memTracker = new MemoryTracker();
+  printBuffer = [];
+
+  if (!source.trim()) {
+    consoleEl.innerHTML = '<span class="out-info">Nothing to run.</span>';
+    drawMemoryChart();
+    drawMemoryLayout();
+    drawTimeline();
+    return;
+  }
+
+  try {
+    const tokens = tokenize(source);
+    const parser = new Parser(tokens);
+
+    // First pass: collect function declarations
+    while (!parser.atEnd()) {
+      if (parser.check("KW", "function")) {
+        const decl = parser.parseFunction();
+        functions[decl.name] = decl;
+      } else {
+        const stmt = parser.parseStatement();
+        const result = execStmt(stmt, globals);
+        for (const line of printBuffer) {
+          const div = document.createElement("div");
+          div.className = "out-line";
+          div.textContent = line;
+          consoleEl.appendChild(div);
+        }
+        printBuffer = [];
+        if (stmt.node === "ExprStmt" && result !== undefined && result !== null) {
+          const div = document.createElement("div");
+          div.className = "out-line";
+          div.textContent = formatValue(result);
+          consoleEl.appendChild(div);
+        }
+      }
+    }
+    // Flush remaining print output
+    for (const line of printBuffer) {
+      const div = document.createElement("div");
+      div.className = "out-line";
+      div.textContent = line;
+      consoleEl.appendChild(div);
+    }
+    printBuffer = [];
+
+    if (consoleEl.children.length === 0) {
+      consoleEl.innerHTML = '<span class="out-info">Executed successfully (no output).</span>';
+    }
+
+  } catch (e) {
+    for (const line of printBuffer) {
+      const div = document.createElement("div");
+      div.className = "out-line";
+      div.textContent = line;
+      consoleEl.appendChild(div);
+    }
+    printBuffer = [];
+
+    const div = document.createElement("div");
+    div.className = "out-error";
+    div.textContent = e.message || String(e);
+    consoleEl.appendChild(div);
+  }
+
+  // Update all visualizations
+  drawMemoryChart();
+  drawMemoryLayout();
+  drawTimeline();
+  drawComparison();
+  drawDiskRam(source);
+};
+
+// ── Level Loader ────────────────────────────────────────────────────────
+
+window.loadLevel = function(n) {
+  const level = LEVELS[n];
+  if (!level) return;
+  document.getElementById("code-editor").value = level.code;
+
+  // Highlight active button
+  document.querySelectorAll(".level-btn").forEach((btn, i) => {
+    btn.classList.toggle("active", i === n - 1);
+  });
+};
+
+// ── Startup ─────────────────────────────────────────────────────────────
+
+// Load level 1 by default
+loadLevel(1);
+
+// Initial draw
+drawMemoryChart();
+drawTimeline();
+
+// Redraw on resize
+window.addEventListener("resize", function() {
+  drawMemoryChart();
+  drawTimeline();
+  drawArrows();
+  if (memTracker && memTracker.allocations.length > 0) drawComparison();
+});
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniLogic Bytecode Interpreter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #1a1a1a;
+  background: #fafaf8;
+  display: flex;
+}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+
+nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: 230px;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 24px 0 40px;
+  z-index: 100;
+  background: #1e1e2e;
+  border-right: 1px solid #313244;
+}
+
+.nav-logo {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0 20px 16px;
+  color: #5b8fc9;
+  border-bottom: 1px solid #313244;
+  margin-bottom: 8px;
+  display: block;
+  text-decoration: none;
+}
+
+.nav-section {
+  margin-top: 14px;
+  padding: 3px 20px;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  font-weight: bold;
+  color: #585b70;
+}
+
+nav a {
+  display: block;
+  padding: 5px 20px 5px 23px;
+  text-decoration: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: #a6adc8;
+  border-left: 3px solid transparent;
+  transition: background 0.12s, color 0.12s;
+}
+
+nav a:hover {
+  background: #313244;
+  color: #cdd6f4;
+  border-left-color: #7ab3e0;
+}
+
+nav a.nav-active {
+  background: #252535;
+  color: #cdd6f4;
+  border-left-color: #7ab3e0;
+}
+
+/* ── MAIN ─────────────────────────────────────────────────── */
+
+main {
+  margin-left: 230px;
+  padding: 56px 80px 100px 72px;
+  max-width: 920px;
+  width: 100%;
+}
+
+h1 { font-size: 2.2rem; font-weight: normal; margin-bottom: 8px; padding-bottom: 14px; color: #1a1a1a; border-bottom: 2px solid #e0d8f0; }
+.subtitle { font-size: 1rem; margin-bottom: 32px; font-style: italic; color: #666; }
+h2 { font-size: 1.5rem; font-weight: normal; margin-top: 64px; margin-bottom: 4px; padding-bottom: 6px; scroll-margin-top: 32px; color: #2d1b69; border-bottom: 1px solid #e0d8f0; }
+h3 { font-size: 1.05rem; font-weight: bold; margin-top: 32px; margin-bottom: 8px; scroll-margin-top: 32px; color: #333; }
+p { margin-bottom: 14px; color: #2a2a2a; }
+hr { border: none; border-top: 1px solid #e8e4f0; margin: 40px 0; }
+
+/* ── CODE ─────────────────────────────────────────────────── */
+
+pre {
+  padding: 18px 22px;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 14px 0 20px;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-left: 3px solid #7ab3e0;
+}
+
+code {
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 14px;
+  background: #ede8f5;
+  color: #1a3a7a;
+}
+pre code { background: none; color: inherit; padding: 0; }
+
+.kw  { color: #7ab3e0; }
+.ty  { color: #89dceb; }
+.str { color: #a6e3a1; }
+.num { color: #fab387; }
+.cm  { color: #ffffff; font-style: italic; }
+.op  { color: #89b4fa; }
+.fn  { color: #f9e2af; }
+.reg { color: #f38ba8; }
+
+/* ── NOTES ─────────────────────────────────────────────────── */
+
+.note, .warn {
+  padding: 12px 16px;
+  margin: 16px 0;
+  border-radius: 0 4px 4px 0;
+  font-size: 15px;
+}
+.note strong, .warn strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.note { background: #f0f4ff; border-left: 4px solid #6c7ef7; }
+.warn { background: #fff8e8; border-left: 4px solid #f5a623; }
+.note strong { color: #4a5fcc; }
+.warn strong { color: #c07820; }
+
+table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 0.93rem; }
+th { background: #1e1e2e; color: #7ab3e0; padding: 8px 12px; text-align: left; font-weight: 500; }
+td { padding: 8px 12px; border-bottom: 1px solid #eee; color: #2a2a2a; }
+tr:nth-child(even) td { background: #f5f3fb; }
+td:first-child { color: #1a3a7a; font-family: 'Share Tech Mono', monospace; font-size: 0.88em; }
+
+/* ── QUICK LINKS ───────────────────────────────────────────── */
+
+.quick-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0 0 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e8e4f0;
+}
+.quick-links a {
+  background: #f0ebfa;
+  color: #1a3a7a;
+  text-decoration: none;
+  padding: 5px 16px;
+  border-radius: 20px;
+  font-size: 0.83rem;
+  font-family: 'Jost', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  border: 1px solid #d8cff0;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.quick-links a:hover {
+  background: #1a3a7a;
+  color: #fff;
+  border-color: #1a3a7a;
+}
+
+/* ── HERO ─────────────────────────────────────────────────── */
+
+.hero {
+  background: linear-gradient(135deg, #1e1e2e 0%, #0a1f5e 100%);
+  color: #cdd6f4;
+  padding: 32px 36px;
+  border-radius: 6px;
+  margin: 0 0 32px;
+}
+.hero-headline {
+  color: #7ab3e0;
+  font-family: 'Georgia', serif;
+  font-size: 1.45rem;
+  font-weight: bold;
+  margin: 0 0 10px;
+  line-height: 1.35;
+}
+.hero-sub {
+  color: #a6adc8;
+  font-size: 0.97rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.hero-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.hero-pill {
+  background: rgba(100, 160, 220, 0.12);
+  border: 1px solid rgba(100, 160, 220, 0.4);
+  color: #7ab3e0;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+/* ── STATUS BADGE ─────────────────────────────────────────── */
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f5f3fb;
+  border: 1px solid #d8cff0;
+  border-left: 4px solid #a6e3a1;
+  border-radius: 0 6px 6px 0;
+  padding: 10px 16px;
+  margin: 24px 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #a6e3a1;
+  flex-shrink: 0;
+}
+.status-text { color: #2a2a2a; }
+.status-count { color: #1a3a7a; font-weight: bold; }
+
+/* ── ENCODING DIAGRAM ─────────────────────────────────────── */
+
+.encoding-row {
+  display: flex;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  margin: 8px 0;
+  border: 1px solid #d8cff0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.enc-field {
+  padding: 7px 10px;
+  border-right: 1px solid #d8cff0;
+  text-align: center;
+  line-height: 1.2;
+}
+.enc-field:last-child { border-right: none; }
+.enc-label { font-size: 10px; color: #585b70; display: block; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.08em; }
+.enc-value { color: #1a3a7a; font-weight: bold; }
+.enc-op   { background: #1e1e2e; color: #7ab3e0; flex: 0 0 80px; }
+.enc-op .enc-label { color: #585b70; }
+.enc-op .enc-value { color: #7ab3e0; }
+.enc-rd   { background: #fff0f5; flex: 0 0 60px; }
+.enc-rd .enc-value { color: #f38ba8; }
+.enc-rs   { background: #f0f8ff; flex: 0 0 60px; }
+.enc-rs .enc-value { color: #89dceb; }
+.enc-imm  { background: #fffbf0; flex: 1; }
+.enc-imm .enc-value { color: #fab387; }
+.enc-bits { background: #f5f3fb; flex: 0 0 60px; }
+.enc-bits .enc-value { color: #585b70; font-size: 10px; }
+
+.enc-label-row {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #585b70;
+  margin-bottom: 4px;
+  padding-left: 2px;
+}
+
+/* ── TOOL CARD ────────────────────────────────────────────── */
+
+.tool-card {
+  background: #f5f3fb;
+  border: 1px solid #d8cff0;
+  border-left: 4px solid #7ab3e0;
+  border-radius: 0 6px 6px 0;
+  padding: 20px 24px;
+  margin: 20px 0;
+}
+.tool-card h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #1a3a7a;
+  font-size: 1.1rem;
+}
+.tool-card p:last-child { margin-bottom: 0; }
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="javascript:history.back()" class="nav-logo">&larr; Back</a>
+  <div class="nav-section">On This Page</div>
+  <a href="#what-it-is">What It Is</a>
+  <a href="#why-register">Why Register-Based</a>
+  <a href="#instruction-format">Instruction Format</a>
+  <a href="#tiered-isa">Tiered ISA</a>
+  <a href="#memory-modes">Memory Modes</a>
+  <a href="#usage">Usage</a>
+  <a href="#stripping">Debug Stripping</a>
+  <a href="#research">Research Basis</a>
+  <div class="nav-section">Interactive</div>
+  <a href="repl.html">Base REPL</a>
+  <a href="repl-performance.html">Performance REPL</a>
+  <a href="repl-memory.html">Memory REPL</a>
+  <a href="repl-execution.html">Execution REPL</a>
+  <div class="nav-section">Other Pages</div>
+  <a href="language-main.html">Language Reference</a>
+  <a href="tools.html">Tools &amp; Utilities</a>
+  <a href="dr-checker.html">Runtime Conflict Checker</a>
+  <div class="nav-section">Reference</div>
+  <a href="https://github.com/albazzaztariq/UniLogic" target="_blank">GitHub &nearr;</a>
+</nav>
+
+<main>
+
+<h1>Bytecode Interpreter</h1>
+<p class="subtitle">UBI &mdash; the UniLogic bytecode interpreter</p>
+
+<p style="margin-bottom:6px;">Python (stack-based) &mdash; <code>x = a + b</code>:</p>
+
+<pre><span class="op">LOAD_FAST</span>    <span class="num">0</span> <span class="cm">(a)      -- push a onto operand stack</span>
+<span class="op">LOAD_FAST</span>    <span class="num">1</span> <span class="cm">(b)      -- push b onto operand stack</span>
+<span class="op">BINARY_ADD</span>              <span class="cm">-- pop two, add, push result</span>
+<span class="op">STORE_FAST</span>   <span class="num">2</span> <span class="cm">(x)      -- pop result, store in x</span></pre>
+
+<p><strong>4 instructions, 6 stack operations (3 pushes, 3 pops).</strong> Every intermediate value goes through the operand stack in memory.</p>
+
+<p style="margin-bottom:6px;">UBI (register-based) &mdash; same operation:</p>
+
+<pre><span class="op">ADD</span> <span class="reg">r2</span>, <span class="reg">r0</span>, <span class="reg">r1</span>    <span class="cm">-- r2 = r0 + r1</span></pre>
+
+<p><strong>1 instruction, 0 stack operations.</strong> The values stay in registers.</p>
+
+<hr>
+
+<div class="hero">
+  <div class="hero-headline">A register-based interpreter that executes compiled UniLogic bytecode directly.</div>
+  <p class="hero-sub">UL source files (<code style="background:rgba(255,255,255,0.1); color:#cdd6f4;">.ul</code>) compile to UL bytecode (<code style="background:rgba(255,255,255,0.1); color:#cdd6f4;">.ubi</code>), then hand that file to UBI. It loads the instructions, sets up the register file, and runs. The XPile toolchain performs the compilation to bytecode.</p>
+  <div class="hero-pills">
+    <span class="hero-pill">Register-Based</span>
+    <span class="hero-pill">Fixed 32-Bit Instructions</span>
+    <span class="hero-pill">Tiered ISA</span>
+    <span class="hero-pill">Four Memory Modes</span>
+  </div>
+</div>
+
+<p style="font-family:'Share Tech Mono',monospace; font-size:17px; font-weight:bold; letter-spacing:0.15em; text-transform:uppercase; color:#585b70; margin-bottom:8px;">Jump To</p>
+<div class="quick-links">
+  <a href="#what-it-is">What It Is</a>
+  <a href="#why-register">Why Register-Based</a>
+  <a href="#instruction-format">Instruction Format</a>
+  <a href="#tiered-isa">Tiered ISA</a>
+  <a href="#memory-modes">Memory Modes</a>
+  <a href="#usage">Usage</a>
+  <a href="#stripping">Debug Stripping</a>
+  <a href="#research">Research Basis</a>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     WHAT IT IS
+════════════════════════════════════════════════════════════ -->
+
+<h2 id="what-it-is" style="margin-top: 16px;">What It Is</h2>
+
+<p>The UniLogic Bytecode Interpreter (UBI) runs <code>.ubi</code> files &mdash; compiled UniLogic bytecode. It sits alongside the existing transpilation targets (C, Python, JS, LLVM IR) as a self-contained execution path: instead of emitting source code and handing off to another compiler, you get a binary bytecode format that UBI runs directly.</p>
+
+<p>The interpreter is register-based. It maintains a flat register file, a program counter, a call stack for function calls and returns, and a heap for dynamic allocation. Each instruction is 32 bits wide. The interpreter fetches, decodes, and dispatches one instruction per cycle in a straightforward switch-based dispatch loop.</p>
+
+<p>This is useful when you want a portable execution environment without pulling in a C compiler or a Python runtime. Ship the <code>.ubi</code> file and the interpreter binary, and it runs.</p>
+
+<!-- ═══════════════════════════════════════════════════════════
+     WHY REGISTER-BASED
+════════════════════════════════════════════════════════════ -->
+
+<h2 id="why-register">Why Register-Based</h2>
+
+<p>Most teaching interpreters use a stack machine because it is easy to implement: push operands, execute an opcode, result stays on the stack. The JVM and CPython both work this way. UBI uses a register machine instead, and the reason is direct: fewer instructions.</p>
+
+<p>Shi et al. (VEE 2005, "Virtual Machine Showdown: Stack Versus Registers") implemented the same programs on both architectures and found that register-based interpreters execute roughly 2&ndash;3&times; fewer instructions than equivalent stack interpreters. The trade-off is that each instruction is wider (you have to encode register operands), but that is exactly the deal UBI makes: fixed 32-bit instructions, fewer of them, less dispatch overhead.</p>
+
+<p>RegCPython &mdash; a register-based reimplementation of CPython &mdash; confirmed the register architecture is appreciably faster and that "compilation speed is never a reason for choosing stack architecture" (Brito &amp; Valente, ACM SAC 2023).</p>
+
+<p>For a language like UniLogic where the type system is doing real work at compile time, it makes sense to lean into that and emit efficient bytecode rather than carrying the overhead of a stack machine at runtime.</p>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     INSTRUCTION FORMAT
+════════════════════════════════════════════════════════════ -->
+
+<h2 id="instruction-format">Instruction Format</h2>
+
+<p>Every UBI instruction is exactly 32 bits. There are three encoding forms depending on what the instruction needs to express:</p>
+
+<h3>Form A &mdash; Register/Register (arithmetic, logic, comparisons)</h3>
+
+<p class="enc-label-row">bits: [31&ndash;24] opcode &nbsp;|&nbsp; [23&ndash;16] rd &nbsp;|&nbsp; [15&ndash;8] rs1 &nbsp;|&nbsp; [7&ndash;0] rs2</p>
+<div class="encoding-row">
+  <div class="enc-field enc-op"><span class="enc-label">opcode</span><span class="enc-value">8 bits</span></div>
+  <div class="enc-field enc-rd"><span class="enc-label">rd</span><span class="enc-value">8 bits</span></div>
+  <div class="enc-field enc-rs"><span class="enc-label">rs1</span><span class="enc-value">8 bits</span></div>
+  <div class="enc-field enc-rs"><span class="enc-label">rs2</span><span class="enc-value">8 bits</span></div>
+</div>
+
+<h3>Form B &mdash; Register/Immediate (loads, branches, calls)</h3>
+
+<p class="enc-label-row">bits: [31&ndash;24] opcode &nbsp;|&nbsp; [23&ndash;16] rd &nbsp;|&nbsp; [15&ndash;0] immediate</p>
+<div class="encoding-row">
+  <div class="enc-field enc-op"><span class="enc-label">opcode</span><span class="enc-value">8 bits</span></div>
+  <div class="enc-field enc-rd"><span class="enc-label">rd</span><span class="enc-value">8 bits</span></div>
+  <div class="enc-field enc-imm"><span class="enc-label">immediate</span><span class="enc-value">16 bits</span></div>
+</div>
+
+<h3>Form C &mdash; No operands (halt, nop, return)</h3>
+
+<p class="enc-label-row">bits: [31&ndash;24] opcode &nbsp;|&nbsp; [23&ndash;0] unused (zero)</p>
+<div class="encoding-row">
+  <div class="enc-field enc-op"><span class="enc-label">opcode</span><span class="enc-value">8 bits</span></div>
+  <div class="enc-field enc-imm"><span class="enc-label">unused</span><span class="enc-value" style="color:#585b70;">24 bits (zero)</span></div>
+</div>
+
+<p style="margin-top:20px;">The fixed-width format simplifies the decoder: read 4 bytes, extract the top 8 bits to get the opcode, then branch on encoding form. No variable-length parsing, no prefix bytes.</p>
+
+<div class="tool-card">
+  <h3>Register naming</h3>
+  <p>Registers are referenced by index in the bytecode. The register file size is configurable at interpreter startup. Calling convention and register assignment are handled by the compiler (XPile's UBI backend) &mdash; the interpreter itself just operates on indices.</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TIERED ISA
+════════════════════════════════════════════════════════════ -->
+
+<h2 id="tiered-isa">Tiered ISA</h2>
+
+<p>The instruction set is split into tiers. This is partly pragmatic (build the basics first, validate them, then add higher-level ops) and partly architectural (a future JIT only needs to handle Tier 0 to be correct; Tier 1 is an optimization layer on top).</p>
+
+<h3>Tier 0 &mdash; Core</h3>
+
+<p>The fundamentals. Anything a correct program needs.</p>
+
+<table>
+  <tr><th>Category</th><th>Instructions</th></tr>
+  <tr><td>Integer arithmetic</td><td>ADD, SUB, MUL, DIV, MOD</td></tr>
+  <tr><td>Bitwise</td><td>AND, OR, XOR, NOT, SHL, SHR</td></tr>
+  <tr><td>Comparison</td><td>EQ, NEQ, LT, LTE, GT, GTE</td></tr>
+  <tr><td>Control flow</td><td>JMP, JMPIF, JMPIFN, CALL, RET, HALT</td></tr>
+  <tr><td>Data movement</td><td>LOAD, STORE, LOADI (immediate), MOV</td></tr>
+  <tr><td>Memory</td><td>ALLOC, FREE (used by manual/gc modes)</td></tr>
+  <tr><td>I/O</td><td>PRINT, PRINTLN, READ</td></tr>
+</table>
+
+<h3>Tier 1 &mdash; Semantic Operations</h3>
+
+<p>Higher-level ops that map directly to UniLogic language constructs. They could be lowered to Tier 0 sequences, but encoding them as single instructions keeps the bytecode compact and makes the interpreter's intent obvious.</p>
+
+<table>
+  <tr><th>Instruction</th><th>What It Does</th></tr>
+  <tr><td>ASSERT_TYPE</td><td>Runtime type assertion &mdash; traps if the value in rd does not match the expected type tag</td></tr>
+  <tr><td>CAST</td><td>Explicit type conversion between numeric types</td></tr>
+  <tr><td>BOUNDS_CHECK</td><td>Array bounds check with a clean trap on failure rather than a silent bad access</td></tr>
+  <tr><td>REFCOUNT_INC / DEC</td><td>Increment/decrement reference counts when running in refcount memory mode</td></tr>
+  <tr><td>GC_MARK</td><td>Mark an allocation as reachable during a GC cycle</td></tr>
+  <tr><td>ARENA_PUSH / POP</td><td>Push and pop arena frames for scoped bulk allocation</td></tr>
+</table>
+
+<div class="note">
+  <strong>Future tier</strong>
+  Tier 2 is reserved for JIT-facing hints: loop annotations, hot-path markers, inline cache slots. Nothing there yet &mdash; the interpreter executes Tier 0 and Tier 1 today.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MEMORY MODES
+════════════════════════════════════════════════════════════ -->
+
+<h2 id="memory-modes">Memory Modes</h2>
+
+<p>UBI supports four memory management strategies, selected at compile time via the <code>@mem</code> annotation in UniLogic source. The interpreter adapts its allocation and free behavior based on which mode the bytecode was compiled for.</p>
+
+<table>
+  <tr><th>Mode</th><th>How it works</th></tr>
+  <tr><td>manual</td><td>Explicit <code>ALLOC</code> and <code>FREE</code> instructions; the programmer controls every allocation lifetime, no runtime overhead.</td></tr>
+  <tr><td>gc</td><td>A simple mark-and-sweep collector; <code>GC_MARK</code> instructions identify reachable objects, the collector sweeps the rest at configurable intervals.</td></tr>
+  <tr><td>refcount</td><td>Each heap allocation carries a reference count; <code>REFCOUNT_INC</code> and <code>REFCOUNT_DEC</code> maintain it, and an allocation is freed when the count hits zero.</td></tr>
+  <tr><td>arena</td><td>Allocations are made from a contiguous region; <code>ARENA_PUSH</code> opens a frame and <code>ARENA_POP</code> frees everything in it at once &mdash; good for temporary scratch memory with a clear scope.</td></tr>
+</table>
+
+<p>The mode is fixed per compilation unit. You do not switch memory modes at runtime.</p>
+
+<!-- ═══════════════════════════════════════════════════════════
+     USAGE
+════════════════════════════════════════════════════════════ -->
+
+<h2 id="usage">Usage</h2>
+
+<p>Two steps: compile the <code>.ul</code> source to bytecode, then run it.</p>
+
+<h3>Step 1 &mdash; Compile to UBI bytecode</h3>
+
+<pre><span class="cm"># -t ubi selects the UBI bytecode target</span>
+ul build test.ul <span class="op">-t</span> ubi</pre>
+
+<p>This produces <code>test.ubi</code> in the current directory.</p>
+
+<h3>Step 2 &mdash; Run the bytecode</h3>
+
+<pre>ULBytecode.exe test.ubi</pre>
+
+<p>The interpreter loads the <code>.ubi</code> file, validates the header, initializes the register file and heap according to the memory mode embedded in the bytecode, and starts executing from the entry point.</p>
+
+<h3>With a memory mode annotation</h3>
+
+<pre><span class="cm"># In your .ul source, annotate the memory mode:</span>
+<span class="op">@mem</span>(<span class="str">arena</span>)
+<span class="kw">fn</span> <span class="fn">main</span>() {
+    <span class="cm">-- your code here</span>
+}</pre>
+
+<pre><span class="cm"># Then compile and run as normal:</span>
+ul build main.ul <span class="op">-t</span> ubi
+ULBytecode.exe main.ubi</pre>
+
+<div class="note">
+  <strong>Default memory mode</strong>
+  If no <code>@mem</code> annotation is present, the compiler defaults to <code>manual</code>. You get explicit alloc/free and no runtime overhead from a collector.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     DEBUG STRIPPING
+════════════════════════════════════════════════════════════ -->
+
+<h2 id="stripping">Debug Stripping</h2>
+
+<p>By default, the compiler embeds a debug section in every <code>.ubi</code> file. This section contains variable names, type information, function signatures, and a line number table that maps bytecode offsets back to original source lines. This is what powers readable error messages, the decompiler (<code>ubi2ul</code>), and future debugger integration.</p>
+
+<p>For distribution, you can strip the debug section entirely:</p>
+
+<pre>ul build app.ul <span class="op">-t</span> ubi <span class="op">--strip</span></pre>
+
+<p>A stripped <code>.ubi</code> file runs identically &mdash; the interpreter does not need the debug section to execute. The difference is in what happens when something goes wrong or when someone tries to decompile it:</p>
+
+<table>
+  <tr><th>Behaviour</th><th>With debug section</th><th>Stripped</th></tr>
+  <tr><td>Error messages</td><td>Function name, source line number, variable name</td><td>Function index, instruction offset only</td></tr>
+  <tr><td>Decompilation (<code>ubi2ul</code>)</td><td>Near-perfect source reconstruction with original names</td><td>Generic slot names (<code>_r0</code>, <code>_r1</code>), flat control flow</td></tr>
+  <tr><td>File size</td><td>Larger (debug tables + string heap)</td><td>Smaller (code + constant pool only)</td></tr>
+</table>
+
+<h3>Debug section contents</h3>
+
+<p>The debug section is appended after the instruction blocks and marked by an 8-byte sentinel (<code>UBDB</code> + <code>0xDB00DB00</code>). It contains four tables:</p>
+
+<table>
+  <tr><th>Table</th><th>What it stores</th></tr>
+  <tr><td>Variable Name Table</td><td>Register slot &rarr; variable name mapping, per function. Scope start offsets for each variable.</td></tr>
+  <tr><td>Type Table</td><td>Struct, object, enum, and array type definitions with field names and types.</td></tr>
+  <tr><td>Function Debug Table</td><td>Function index &rarr; name, parameter list with types, return type, first source line.</td></tr>
+  <tr><td>Line Number Table</td><td>Instruction offset &rarr; source line mapping, delta-encoded with zigzag compression.</td></tr>
+</table>
+
+<p>All entries reference a shared string heap at the start of the debug section. Integer values are ULEB128-encoded for compact storage.</p>
+
+<div class="note">
+  <strong>When to strip</strong>
+  Strip when shipping to end users or when the binary will be distributed publicly and you do not want source-level decompilation. Keep the debug section during development and testing &mdash; the line number table alone is worth the extra bytes.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     RESEARCH BASIS
+════════════════════════════════════════════════════════════ -->
+
+<h2 id="research">Research Basis</h2>
+
+<p>Every design decision in UBI is grounded in published research. The table below maps each implemented feature to the paper that informed it.</p>
+
+<table>
+  <tr><th>Feature</th><th>What It Does</th><th>Citation</th></tr>
+  <tr><td>Register-based architecture</td><td>2&ndash;3&times; fewer instructions than stack-based interpreters; bytecode only 25&ndash;30% larger.</td><td>Shi, Gregg, Beatty, Ertl. ACM VEE 2005</td></tr>
+  <tr><td>Register architecture validation</td><td>Confirmed register beats stack; compilation speed is not a valid argument for stack-based design.</td><td>Brito &amp; Valente. ACM SAC 2023</td></tr>
+  <tr><td>Stack model ceiling evidence</td><td>Even after aggressive optimization, PyPy remains ~18&times; faster than CPython 3.14 &mdash; the stack model has a hard ceiling.</td><td>Grinberg, 2025</td></tr>
+  <tr><td>Adaptive specialization</td><td>Generic opcodes rewrite themselves in-place to type-specialized variants after first execution.</td><td>CPython PEP 659 (Shannon, 2021)</td></tr>
+  <tr><td>Direct threaded dispatch</td><td>Computed goto gives the branch predictor a separate site per handler; 15&ndash;25% speedup over switch dispatch.</td><td>Ertl &amp; Gregg. JILP 2003</td></tr>
+  <tr><td>Inline caching + quickening</td><td>Combining inline cache slots with instruction quickening for interpreter-level optimization.</td><td>Brunthaler. ECOOP 2010</td></tr>
+  <tr><td>Meta-tracing JIT</td><td>Tracing at the meta-interpreter level for language-agnostic JIT optimization. Informed tiered ISA and hotness counters.</td><td>Bolz et al. ICOOOLPS 2009</td></tr>
+  <tr><td>Side-exit trace compilation</td><td>Hot path as straight-line code, side exits at guard points. Influenced block metadata and control flow table.</td><td>Pall. LuaJIT 2005&ndash;present</td></tr>
+  <tr><td>Polymorphic inline caches</td><td>IC slots for monomorphic/polymorphic dispatch in Tier 1 instructions.</td><td>H&ouml;lzle, Chambers, Ungar. ECOOP 1991</td></tr>
+  <tr><td>Self-optimizing interpreters</td><td>Partial evaluation approach to interpreter optimization. Informed versioned instruction and specialization state machine.</td><td>W&uuml;rthinger et al. Onward! 2013</td></tr>
+  <tr><td>Trace JIT type specialization</td><td>Trace-based type specialization for dynamic languages. Evaluated for UBI; rejected due to trace explosion in nested control flow.</td><td>Gal et al. ACM PLDI 2009</td></tr>
+  <tr><td>Copy-and-patch compilation</td><td>Template-based JIT. Evaluated and rejected &mdash; measured 2&ndash;9% speedup ceiling, insufficient for UBI&rsquo;s goals.</td><td>Haase. OOPSLA 2021</td></tr>
+  <tr><td>Sea-of-nodes IR</td><td>Graph-based intermediate representation used by V8 TurboFan and HotSpot C2. Evaluated for Phase 3 JIT.</td><td>Click &amp; Paleczny. ACM SIGPLAN 1995</td></tr>
+  <tr><td>CPython experimental JIT</td><td>Reference implementation of copy-and-patch in CPython 3.13. Confirmed the ceiling of non-optimizing JIT.</td><td>CPython PEP 744 (Haase, Skinner et al., 2024)</td></tr>
+  <tr><td>Linear scan register allocation</td><td>O(n) register allocation for JIT with acceptable code quality. Used in Phase 1 JIT.</td><td>Poletto &amp; Sarkar. ACM TOPLAS 1999</td></tr>
+  <tr><td>SSA-form linear scan</td><td>Extension of linear scan for SSA-form IR. Directly applicable to UBI&rsquo;s CFG-SSA intermediate representation.</td><td>Wimmer &amp; Franz. CGO 2010</td></tr>
+  <tr><td>Second-chance binpacking</td><td>Improved register allocation quality within the linear scan framework. Phase 2 improvement.</td><td>Traub et al. ACM SIGPLAN 1998</td></tr>
+  <tr><td>Dynamic deoptimization</td><td>Checkpoint + reconstruct model for falling back to interpreter when JIT guards fail.</td><td>H&ouml;lzle, Chambers, Ungar. ACM SIGPLAN 1992</td></tr>
+  <tr><td>Speculative optimization IR</td><td>Frame state handling for speculative optimizations in a dynamic compiler. Informed JIT checkpoint design.</td><td>Duboscq et al. VMIL 2013</td></tr>
+  <tr><td>On-stack replacement</td><td>Enter JIT-compiled code mid-execution at loop back-edges without restarting the function.</td><td>Fink &amp; Qian. CGO 2003</td></tr>
+  <tr><td>Modular OSR in LLVM</td><td>OSR implementation for LLVM-based backends. Relevant if UBI lowers to LLVM IR.</td><td>Lameed &amp; Hendren. VEE 2013</td></tr>
+  <tr><td>Global value numbering</td><td>Redundancy elimination &mdash; identifies and removes duplicate computations across basic blocks.</td><td>Click. ACM SIGPLAN 1995</td></tr>
+  <tr><td>Graph coloring register allocation</td><td>Optimal register allocation via interference graphs. Considered for Phase 3 if linear scan quality is insufficient.</td><td>Chaitin. ACM SIGPLAN 1982</td></tr>
+  <tr><td>Partial escape analysis</td><td>Heap-to-stack promotion for short-lived objects. Phase 3 optimization for reducing GC pressure.</td><td>Stadler et al. CGO 2014</td></tr>
+  <tr><td>HotSpot compiler design</td><td>Two-tier JIT architecture (C1 client + C2 server). Phase 1 is analogous to C1; Phase 2 to C2.</td><td>Kotzmann et al. ACM TACO 2008</td></tr>
+  <tr><td>GC-JIT interaction</td><td>Pointer bitmaps and stack maps for garbage collection in JIT-compiled code.</td><td>Agesen et al. ACM SIGPLAN 1998</td></tr>
+  <tr><td>Superinstruction formation</td><td>Fusing common bytecode sequences into single superinstructions to reduce dispatch overhead. Directly informs UBI&rsquo;s Tier 2 load-time rewriting.</td><td>Casey, Ertl, Gregg. SCOPES 2003</td></tr>
+  <tr><td>Context threading dispatch</td><td>Aligns hardware and virtual PC using native call/return for dispatch. 19&ndash;37% speedup over direct threading on pipelined processors.</td><td>Berndl, Vitale, Amaral, Lapkowski. CGO 2005</td></tr>
+  <tr><td>Speculatively vectorized bytecode</td><td>Encodes SIMD vector operations on top of existing bytecode for backwards-compatible SIMD acceleration in interpreters.</td><td>Rohou, Dyshel, Nuzman et al. HiPEAC 2011</td></tr>
+  <tr><td>Interpreter vectorization</td><td>Reduces instruction dispatch via SIMD, extending split-compilation to interpreters for near-zero runtime overhead.</td><td>Nuzman, Rohou, Zaks. ACM TACO 2012</td></tr>
+  <tr><td>Reusable inline caching</td><td>Modern IC design for dynamic languages with per-site type feedback. Directly relevant to UBI Tier 1 IC slot architecture.</td><td>Choi et al. ACM PLDI 2019</td></tr>
+  <tr><td>Bytecode verification</td><td>Abstract interpretation for validating bytecode safety at load time. Informs UBI&rsquo;s .ubi file validation before execution.</td><td>Leroy. Journal of Automated Reasoning, 2003</td></tr>
+  <tr><td>Floating-point value encoding</td><td>NaN-boxing to encode pointers into IEEE 754 doubles. Enables single-word value representation without tagged unions.</td><td>Dinda. "FPVM: Towards a Floating Point Virtual Machine." HPDC 2022</td></tr>
+  <tr><td>Hosted interpreter optimization</td><td>Identifies performance bottlenecks in interpreters hosted on managed runtimes and techniques to overcome them.</td><td>Gruber, Urbach, Prehofer. "Efficient Interpreter Optimizations for the JVM." PPPJ 2013</td></tr>
+  <tr><td>Value representation survey</td><td>Definitive comparison of tagged pointers (V8), NaN-boxing (JavaScriptCore), and nun-boxing (SpiderMonkey) for dynamic value storage.</td><td>Wingo. "Value Representation in JavaScript Implementations." 2011</td></tr>
+</table>
+
+<hr style="border:none; border-top:1px solid #e8e4f0; margin:48px 0 24px;">
+
+<p style="text-align:center;"><a href="learn-bytecode.html" style="color:#4a5fcc; font-style:italic;">I'm lost. Can you explain this more slowly and clearly?</a></p>
+
+</main>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+// Linked List
+// Implements a singly linked list with insert, search, and print
+// Concepts: types (structs), pointers, memory, data structures
+
+// A single node in the linked list
+type Node
+  int value
+  Node <next>
+end type
+
+// The linked list with head pointer and size
+type LinkedList
+  Node <head>
+  int size
+end type
+
+// Initialize an empty list
+function list_init(LinkedList <ll>)
+  deref(<ll>).head = 0
+  deref(<ll>).size = 0
+end function
+
+// Insert a new node at the front
+function push_front(LinkedList <ll>, int value)
+  Node <node> = memtake(size(Node))
+  deref(<node>).value = value
+  deref(<node>).next = deref(<ll>).head
+  deref(<ll>).head = <node>
+  deref(<ll>).size++
+end function
+
+// Search for a value, return true if found
+function find(LinkedList <ll>, int value) returns bool
+  Node <current> = deref(<ll>).head
+  while <current> != 0 do
+    if deref(<current>).value == value
+      return true
+    end if
+    <current> = deref(<current>).next
+  end do
+  return false
+end function
+
+// Print all elements: [a -> b -> c]
+function print_list(LinkedList <ll>)
+  string result = "["
+  Node <current> = deref(<ll>).head
+  bool first = true
+  while <current> != 0 do
+    if not first
+      result += " -> "
+    end if
+    result += cast(deref(<current>).value, string)
+    first = false
+    <current> = deref(<current>).next
+  end do
+  result += "]"
+  print result
+end function
+
+// Free all nodes in the list
+function list_free(LinkedList <ll>)
+  Node <current> = deref(<ll>).head
+  while <current> != 0 do
+    Node <temp> = <current>
+    <current> = deref(<current>).next
+    memgive(<temp>)
+  end do
+  deref(<ll>).head = 0
+  deref(<ll>).size = 0
+end function
+
+// Main program
+function main() returns int
+  print "=== Linked List ==="
+  print ""
+
+  // Build a list by pushing to front
+  LinkedList ll
+  list_init(address(ll))
+
+  array int[5] values = [10, 20, 30, 40, 50]
+  for int i = 0 while i < 5 do i++
+    push_front(address(ll), values[i])
+    print "Pushed " + cast(values[i], string) + ", size = " + cast(ll.size, string)
+  end for
+
+  print ""
+  print "List contents:"
+  print_list(address(ll))
+
+  print ""
+
+  // Search for values
+  array int[3] search_for = [30, 99, 10]
+  for int i = 0 while i < 3 do i++
+    if find(address(ll), search_for[i])
+      print "Found " + cast(search_for[i], string) + " in list"
+    else
+      print cast(search_for[i], string) + " not in list"
+    end if
+  end for
+
+  // Clean up allocated memory
+  list_free(address(ll))
+
+  return 0
+end function

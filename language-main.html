@@ -747,21 +747,19 @@ body.theme-default .mods-section-title { color: #1a1a1a; border-bottom-color: #b
   <a href="#ann-async">@async / @await</a>
 
   <div class="nav-section">Targets</div>
-  <a href="#ann-platform">@platform</a>
+  <a href="#ann-platform">@only_compile</a>
 
   <div class="nav-section">Safety</div>
   <a href="#ann-alias">@alias</a>
 
   <div class="nav-section" style="margin-top:20px;padding-top:8px;border-top:1px solid #313244;color:#45475a;font-size:9px;">Advanced &mdash; enterprise / framework</div>
-  <a href="#ann-nullable">@allownull</a>
+  <a href="#ann-nullable">@nullable</a>
   <a href="#ann-data">@byvalue</a>
   <a href="#ann-sealed">@locked</a>
-  <a href="#ann-singleton">@onlyone</a>
+  <a href="#ann-singleton">@unclonable</a>
   <a href="#ann-inline">@embedcall</a>
-  <a href="#ann-extends">@expands</a>
-  <a href="#ann-operator">@symbol</a>
-  <a href="#ann-receiver">@inscope</a>
-  <a href="#ann-delegate">@copymethods</a>
+  <a href="#ann-operator">symbol declaration</a>
+  <a href="#ann-receiver">uses TypeName</a>
 </nav>
 
 <!-- ══════════════════════════════════════════
@@ -996,6 +994,27 @@ attempts <span class="op">=</span> attempts <span class="op">+</span> <span clas
 
 <p style="color:#c0392b; font-size:0.9rem;">Note: if a return type is anything other than nothing, it must be declared.</p>
 
+<h3 id="method-resolution" class="anchor-target">Automatic Method Resolution</h3>
+<p>Any function whose first parameter is a typed value can be called as a method on that type. No annotation needed — this is default compiler behavior.</p>
+<pre><span class="kw">function</span> <span class="fn">truncate</span>(<span class="ty">string</span> s, <span class="ty">int</span> max) <span class="kw">returns</span> <span class="ty">string</span>
+  <span class="kw">if</span> s.length <span class="op">&lt;=</span> max
+    <span class="kw">return</span> s
+  <span class="kw">end if</span>
+  <span class="kw">return</span> s.<span class="fn">slice</span>(<span class="num">0</span>, max) <span class="op">+</span> <span class="str">"..."</span>
+<span class="kw">end function</span>
+
+<span class="cm">// both calls are equivalent</span>
+<span class="kw">let</span> t <span class="op">=</span> <span class="fn">truncate</span>(title, <span class="num">40</span>)
+<span class="kw">let</span> t <span class="op">=</span> title.<span class="fn">truncate</span>(<span class="num">40</span>)</pre>
+
+<h3 id="delegation" class="anchor-target">Delegation via Polymorphism</h3>
+<p>Delegation does not need a language feature. Type a variable as the parent, assign different child implementations, and vtable dispatch handles method routing at runtime.</p>
+<pre><span class="ty">Logger</span> tl <span class="op">=</span> <span class="kw">new</span> <span class="ty">FileLogger</span>[<span class="str">"output.txt"</span>]
+tl.<span class="fn">log</span>(<span class="str">"hello"</span>)          <span class="cm">// FileLogger's log runs</span>
+
+tl <span class="op">=</span> <span class="kw">new</span> <span class="ty">NetworkLogger</span>[<span class="str">"192.168.1.1"</span>]
+tl.<span class="fn">log</span>(<span class="str">"hello"</span>)          <span class="cm">// NetworkLogger's log runs</span></pre>
+
 <hr>
 
 <h2 id="types" class="anchor-target">Types</h2>
@@ -1005,7 +1024,7 @@ attempts <span class="op">=</span> attempts <span class="op">+</span> <span clas
   <span class="ty">float</span> score <span class="op">=</span> <span class="num">0.0</span>
 <span class="kw">end type</span>
 
-<span class="kw">type</span> ProPlayer <span class="kw">inherits</span> Player
+<span class="kw">type</span> ProPlayer <span class="kw">forks</span> Player
   <span class="ty">int</span> rank
 <span class="kw">end type</span>
 
@@ -1440,16 +1459,16 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player[<span clas
   <div class="mods-section-title">Targets</div>
   <div class="mods-grid">
     <div class="mods-card wide" id="ann-platform">
-      <div class="mods-card-name">@platform</div>
-      <div class="mods-card-desc">Restricts a function to one or more compile targets. When multiple @platform overrides exist for the same function name, the compiler selects the correct one. The undecorated declaration acts as the shared signature.</div>
+      <div class="mods-card-name">@only_compile</div>
+      <div class="mods-card-desc">Restricts a function to a specific compile target. When multiple @only_compile overrides exist for the same function name, the compiler selects the correct one. The undecorated declaration acts as the shared signature.</div>
       <pre><span class="kw">function</span> <span class="fn">format_date</span>(<span class="kw">int</span> ts) <span class="kw">string</span>   <span class="cm">// shared signature</span>
 
-<span class="ann">@platform</span>(c)
+<span class="ann">@only_compile</span> c
 <span class="kw">function</span> <span class="fn">format_date</span>(<span class="kw">int</span> ts)
   <span class="kw">return</span> <span class="fn">strftime</span>(<span class="str">"%Y-%m-%d"</span>, ts)
 <span class="kw">end function</span>
 
-<span class="ann">@platform</span>(js)
+<span class="ann">@only_compile</span> js
 <span class="kw">function</span> <span class="fn">format_date</span>(<span class="kw">int</span> ts)
   <span class="kw">return</span> <span class="fn">js_date</span>(ts).<span class="fn">toISOString</span>()
 <span class="kw">end function</span></pre>
@@ -1461,12 +1480,12 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player[<span clas
   <div class="mods-section-title">Safety</div>
   <div class="mods-grid">
     <div class="mods-card wide" id="ann-nullable">
-      <div class="mods-card-name">@allownull</div>
-      <div class="mods-card-desc">Marks a field or parameter as explicitly nullable. Without this modifier, the compiler assumes non-null and enforces it. Absence of @allownull is the non-null contract.</div>
+      <div class="mods-card-name">@nullable</div>
+      <div class="mods-card-desc">Marks a field or parameter as explicitly nullable. Without this modifier, the compiler assumes non-null and enforces it. Absence of @nullable is the non-null contract.</div>
       <pre><span class="kw">type</span> <span class="ty">Session</span>
   <span class="kw">string</span>            token
-  <span class="ann">@allownull</span> <span class="kw">string</span>  user
-  <span class="ann">@allownull</span> <span class="kw">int</span>     expiresAt
+  <span class="ann">@nullable</span> <span class="kw">string</span>  user
+  <span class="ann">@nullable</span> <span class="kw">int</span>     expiresAt
 <span class="kw">end type</span></pre>
     </div>
   </div>
@@ -1496,15 +1515,15 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player[<span clas
   <span class="kw">string</span> kind
 <span class="kw">end type</span>
 
-<span class="kw">type</span> <span class="ty">Circle</span> <span class="kw">extends</span> <span class="ty">Shape</span>
+<span class="kw">type</span> <span class="ty">Circle</span> <span class="kw">forks</span> <span class="ty">Shape</span>
   <span class="kw">int</span> radius
 <span class="kw">end type</span></pre>
     </div>
 
     <div class="mods-card" id="ann-singleton">
-      <div class="mods-card-name">@onlyone</div>
-      <div class="mods-card-desc">Exactly one instance ever exists. The runtime creates it on first access. No constructor is callable externally.</div>
-      <pre><span class="ann">@onlyone</span>
+      <div class="mods-card-name">@unclonable</div>
+      <div class="mods-card-desc">Exactly one instance ever exists. Cannot be forked. The runtime creates it on first access. No constructor is callable externally.</div>
+      <pre><span class="ann">@unclonable</span>
 <span class="kw">type</span> <span class="ty">AppConfig</span>
   <span class="kw">string</span> env
   <span class="kw">int</span>    maxConnections
@@ -1546,49 +1565,28 @@ Player p <span class="op">=</span> <span class="kw">new</span> Player[<span clas
 <span class="kw">end function</span></pre>
     </div>
 
-    <div class="mods-card" id="ann-extends">
-      <div class="mods-card-name">@expands</div>
-      <div class="mods-card-desc">Makes a free function callable as a method on the named type. The type itself is not modified — resolved entirely by the compiler at the call site.</div>
-      <pre><span class="ann">@expands</span>(<span class="ty">string</span>)
-<span class="kw">function</span> <span class="fn">truncate</span>(<span class="kw">string</span> s, <span class="kw">int</span> max)
-  <span class="kw">if</span> s.length <span class="op">&lt;=</span> max
-    <span class="kw">return</span> s
-  <span class="kw">end if</span>
-  <span class="kw">return</span> s.<span class="fn">slice</span>(<span class="num">0</span>, max) <span class="op">+</span> <span class="str">"…"</span>
-<span class="kw">end function</span>
-
-<span class="kw">let</span> t <span class="op">=</span> title.<span class="fn">truncate</span>(<span class="num">40</span>)</pre>
-    </div>
-
     <div class="mods-card" id="ann-operator">
-      <div class="mods-card-name">@symbol</div>
-      <div class="mods-card-desc">Maps a named function to an operator symbol for a type. Supported: <code>+  -  *  /  %  ==  !=  &lt;  &gt;  &lt;=  &gt;=</code>.</div>
-      <pre><span class="ann">@symbol</span>(<span class="op">+</span>)
-<span class="kw">function</span> <span class="fn">add</span>(<span class="ty">Vector2</span> a, <span class="ty">Vector2</span> b)
-  <span class="kw">return</span> <span class="fn">Vector2</span>(a.x <span class="op">+</span> b.x, a.y <span class="op">+</span> b.y)
+      <div class="mods-card-name">symbol declaration</div>
+      <div class="mods-card-desc">Binds an operator to an existing function. The function's parameter types determine when the operator is rewritten. Built-in operators for primitives (int, float, string) cannot be overridden. Duplicate bindings for the same operator and parameter types cause a semcheck error.</div>
+      <pre><span class="kw">symbol</span> <span class="str">"+"</span> <span class="op">=</span> <span class="fn">vector_add</span>
+
+<span class="kw">function</span> <span class="fn">vector_add</span>(<span class="ty">Vector</span> a, <span class="ty">Vector</span> b) <span class="kw">returns</span> <span class="ty">Vector</span>
+  <span class="kw">return</span> <span class="fn">make_vector</span>(a.x <span class="op">+</span> b.x, a.y <span class="op">+</span> b.y)
 <span class="kw">end function</span>
 
-<span class="kw">let</span> v <span class="op">=</span> origin <span class="op">+</span> offset</pre>
+<span class="cm">// v1 + v2 where both are Vectors calls vector_add</span>
+<span class="cm">// 3 + 5 is still normal addition</span>
+<span class="kw">let</span> v <span class="op">=</span> v1 <span class="op">+</span> v2</pre>
     </div>
 
     <div class="mods-card" id="ann-receiver">
-      <div class="mods-card-name">@inscope</div>
-      <div class="mods-card-desc">The function executes in the context of the named type — its fields are in scope without qualification. Foundation for DSL builders.</div>
-      <pre><span class="ann">@inscope</span>(<span class="ty">QueryBuilder</span>)
-<span class="kw">function</span> <span class="fn">build_query</span>()
+      <div class="mods-card-name">uses TypeName</div>
+      <div class="mods-card-desc">The function executes in the context of the named type — its fields are in scope without qualification. Foundation for DSL builders, configuration blocks, UI layout, and test fixtures.</div>
+      <pre><span class="kw">function</span> <span class="fn">build_query</span>() <span class="kw">uses</span> <span class="ty">QueryBuilder</span>
   <span class="fn">from</span>(<span class="str">"users"</span>)
   <span class="fn">where</span>(active <span class="op">=</span> <span class="kw">true</span>)
   <span class="fn">limit</span>(<span class="num">100</span>)
 <span class="kw">end function</span></pre>
-    </div>
-
-    <div class="mods-card wide" id="ann-delegate">
-      <div class="mods-card-name">@copymethods</div>
-      <div class="mods-card-desc">Forwards all interface calls on a type to a named field of that interface type. The compiler generates every forwarding method — no boilerplate required.</div>
-      <pre><span class="kw">type</span> <span class="ty">TimestampedLogger</span>
-  <span class="ann">@copymethods</span> <span class="ty">Logger</span> inner    <span class="cm">// log() forwarded to inner.log() automatically</span>
-  <span class="kw">string</span>           format
-<span class="kw">end type</span></pre>
     </div>
 
   </div>
@@ -1721,11 +1719,11 @@ a.free()                               <span class="cm">// entire arena released
 
 <table>
   <tr><th>UL (primary)</th><th>UL (alias)</th><th>C</th><th>Meaning</th></tr>
-  <tr><td>diff</td><td>delta</td><td>^</td><td>Bitwise XOR &mdash; bits that differ</td></tr>
-  <tr><td>both1</td><td>band</td><td>&amp;</td><td>Bitwise AND &mdash; both bits must be 1</td></tr>
-  <tr><td>either1</td><td>bor</td><td>|</td><td>Bitwise OR &mdash; either bit is 1</td></tr>
+  <tr><td>diff</td><td>&mdash;</td><td>^</td><td>Bitwise XOR &mdash; bits that differ</td></tr>
+  <tr><td>both1</td><td>&mdash;</td><td>&amp;</td><td>Bitwise AND &mdash; both bits must be 1</td></tr>
+  <tr><td>either1</td><td>&mdash;</td><td>|</td><td>Bitwise OR &mdash; either bit is 1</td></tr>
   <tr><td>both0</td><td>&mdash;</td><td>~(a|b)</td><td>Bitwise NOR &mdash; both bits must be 0</td></tr>
-  <tr><td>bitflip</td><td>bnot</td><td>~</td><td>Bitwise NOT &mdash; invert all bits</td></tr>
+  <tr><td>bitflip</td><td>&mdash;</td><td>~</td><td>Bitwise NOT &mdash; invert all bits</td></tr>
   <tr><td>negate</td><td>&mdash;</td><td>-</td><td>Arithmetic negation</td></tr>
   <tr><td>x left n</td><td>x &lt;&lt; n</td><td>Left shift — multiply by 2ⁿ</td></tr>
   <tr><td>x right n</td><td>x &gt;&gt; n</td><td>Right shift — divide by 2ⁿ (logical on uint)</td></tr>

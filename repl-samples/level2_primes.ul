@@ -1,0 +1,74 @@
+// Prime Checker
+// Tests numbers for primality and finds primes in a range
+// Concepts: functions, loops, conditionals
+
+// Check if a number is prime
+function is_prime(int n) returns bool
+  if n < 2
+    return false
+  end if
+  if n == 2
+    return true
+  end if
+  if n % 2 == 0
+    return false
+  end if
+  // Only check odd divisors up to sqrt(n)
+  int i = 3
+  while i * i <= n do
+    if n % i == 0
+      return false
+    end if
+    i += 2
+  end do
+  return true
+end function
+
+// Count how many primes exist below a limit
+function count_primes(int limit) returns int
+  int count = 0
+  for int num = 2 while num < limit do num++
+    if is_prime(num)
+      count++
+    end if
+  end for
+  return count
+end function
+
+// Main program
+function main() returns int
+  print "=== Prime Checker ==="
+  print ""
+
+  // Test specific numbers
+  array int[7] test_nums = [1, 2, 7, 15, 23, 42, 97]
+  for int i = 0 while i < 7 do i++
+    int n = test_nums[i]
+    if is_prime(n)
+      print cast(n, string) + " is prime"
+    else
+      print cast(n, string) + " is not prime"
+    end if
+  end for
+
+  print ""
+
+  // Find all primes below 50
+  print "Primes below 50:"
+  string line = ""
+  for int n = 2 while n < 50 do n++
+    if is_prime(n)
+      if line != ""
+        line += " "
+      end if
+      line += cast(n, string)
+    end if
+  end for
+  print line
+
+  print ""
+  int total = count_primes(100)
+  print "Total primes below 100: " + cast(total, string)
+
+  return 0
+end function

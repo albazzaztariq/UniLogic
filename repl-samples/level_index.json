@@ -1,0 +1,42 @@
+[
+  {
+    "level": 1,
+    "title": "Temperature Converter",
+    "description": "Variables, print, basic math",
+    "files": {
+      "python": "level1_temperature.py",
+      "c": "level1_temperature.c",
+      "ul": "level1_temperature.ul"
+    }
+  },
+  {
+    "level": 2,
+    "title": "Prime Checker",
+    "description": "Functions, loops, conditionals",
+    "files": {
+      "python": "level2_primes.py",
+      "c": "level2_primes.c",
+      "ul": "level2_primes.ul"
+    }
+  },
+  {
+    "level": 3,
+    "title": "Word Counter",
+    "description": "Maps, string manipulation, sorting",
+    "files": {
+      "python": "level3_wordcount.py",
+      "c": "level3_wordcount.c",
+      "ul": "level3_wordcount.ul"
+    }
+  },
+  {
+    "level": 4,
+    "title": "Linked List",
+    "description": "Types (structs), pointers, memory, data structures",
+    "files": {
+      "python": "level4_linkedlist.py",
+      "c": "level4_linkedlist.c",
+      "ul": "level4_linkedlist.ul"
+    }
+  }
+]

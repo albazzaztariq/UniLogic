@@ -1,0 +1,2526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniLogic Execution REPL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #1a1a1a;
+  background: #fafaf8;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── NAV ─────────────────────────────────────────────────── */
+
+nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: 230px;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 24px 0 40px;
+  z-index: 100;
+  background: #1e1e2e;
+  border-right: 1px solid #313244;
+}
+
+.nav-logo {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0 20px 16px;
+  color: #8ecfff;
+  border-bottom: 1px solid #313244;
+  margin-bottom: 8px;
+  display: block;
+  text-decoration: none;
+}
+
+.nav-section {
+  margin-top: 14px;
+  padding: 3px 20px;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  font-weight: bold;
+  color: #b0b4cc;
+}
+
+nav a {
+  display: block;
+  padding: 5px 20px 5px 23px;
+  text-decoration: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: #d0d4e8;
+  border-left: 3px solid transparent;
+  transition: background 0.12s, color 0.12s;
+}
+
+nav a:hover {
+  background: #313244;
+  color: #ffffff;
+  border-left-color: #8ecfff;
+}
+
+nav a.nav-active {
+  background: #252535;
+  color: #cdd6f4;
+  border-left-color: #7ab3e0;
+}
+
+/* ── MAIN ─────────────────────────────────────────────────── */
+
+main {
+  margin-left: 230px;
+  padding: 24px 32px 32px 32px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+h1 { font-size: 2rem; font-weight: normal; margin-bottom: 4px; padding-bottom: 10px; color: #1a1a1a; border-bottom: 2px solid #e0d8f0; }
+.subtitle { font-size: 0.95rem; margin-bottom: 16px; font-style: italic; color: #666; }
+
+/* ── LEVEL SELECTOR ──────────────────────────────────────── */
+
+.level-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.level-btn {
+  background: #f0ebfa;
+  color: #1a3a7a;
+  border: 1px solid #d8cff0;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-family: 'Jost', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.level-btn:hover {
+  background: #1a3a7a;
+  color: #fff;
+  border-color: #1a3a7a;
+}
+
+.level-btn.active {
+  background: #1a3a7a;
+  color: #fff;
+  border-color: #1a3a7a;
+}
+
+/* ── TOP PANELS ──────────────────────────────────────────── */
+
+.top-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  min-height: 320px;
+}
+
+.top-row > * { flex: 1; min-width: 0; }
+
+/* ── EDITOR ──────────────────────────────────────────────── */
+
+.editor-wrap {
+  background: #0a0a0f;
+  border-radius: 8px;
+  border: 1px solid #1a1a2e;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1.4;
+}
+
+.editor-bar {
+  background: #1e1e2e;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #313244;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #9098b8;
+}
+
+.term-dot { width: 10px; height: 10px; border-radius: 50%; }
+.term-dot.red    { background: #f38ba8; }
+.term-dot.yellow { background: #f9e2af; }
+.term-dot.green  { background: #a6e3a1; }
+
+.editor-body {
+  display: flex;
+  flex: 1;
+  overflow: auto;
+}
+
+.gutter {
+  width: 38px;
+  background: #0d0d14;
+  padding: 8px 0;
+  text-align: right;
+  user-select: none;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.gutter-line {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  line-height: 1.65;
+  color: #585b70;
+  padding: 0 6px 0 0;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.gutter-line .bp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f38ba8;
+  position: absolute;
+  left: 4px;
+  display: none;
+}
+
+.gutter-line.has-bp .bp-dot { display: block; }
+.gutter-line.current-line { color: #7ab3e0; font-weight: bold; }
+
+.code-area {
+  flex: 1;
+  padding: 8px 12px;
+  overflow: auto;
+}
+
+.code-area pre {
+  margin: 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #cdd6f4;
+  white-space: pre;
+  background: transparent;
+  border: none;
+}
+
+.code-line {
+  height: 20px;
+  line-height: 20px;
+  padding: 0 4px;
+  border-radius: 2px;
+  white-space: pre;
+}
+
+.code-line.highlight {
+  background: rgba(122, 179, 224, 0.2);
+}
+
+/* syntax classes */
+.kw  { color: #7ab3e0; }
+.ty  { color: #89dceb; }
+.str { color: #a6e3a1; }
+.num { color: #fab387; }
+.cm  { color: #6c7086; font-style: italic; }
+.op  { color: #89b4fa; }
+.fn  { color: #f9e2af; }
+.reg { color: #f38ba8; }
+
+/* ── OUTPUT PANEL (below editor) ─────────────────────────── */
+
+.output-panel {
+  background: #0a0a0f;
+  border-radius: 0 0 8px 8px;
+  border: 1px solid #1a1a2e;
+  border-top: 1px solid #313244;
+  padding: 8px 14px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: #e8e8f0;
+  max-height: 100px;
+  overflow-y: auto;
+  margin-top: -1px;
+}
+
+.output-panel:empty::before {
+  content: "Output appears here...";
+  color: #585b70;
+  font-style: italic;
+}
+
+.output-line { line-height: 1.5; }
+.output-line.error { color: #f38ba8; }
+.output-line.info  { color: #8ecfff; }
+
+/* ── CALL STACK ──────────────────────────────────────────── */
+
+.callstack-wrap {
+  background: #0a0a0f;
+  border-radius: 8px;
+  border: 1px solid #1a1a2e;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 0.6;
+}
+
+.panel-header {
+  background: #1e1e2e;
+  padding: 8px 14px;
+  border-bottom: 1px solid #313244;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #9098b8;
+  letter-spacing: 0.06em;
+}
+
+.callstack-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 6px;
+}
+
+.stack-frame {
+  background: #13131e;
+  border: 1px solid #252540;
+  border-radius: 6px;
+  padding: 8px 10px;
+  animation: frameIn 0.25s ease-out;
+}
+
+.stack-frame.exiting {
+  animation: frameOut 0.25s ease-in forwards;
+}
+
+@keyframes frameIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes frameOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(-10px) scale(0.95); }
+}
+
+.frame-name {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: #f9e2af;
+  margin-bottom: 4px;
+}
+
+.frame-line {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #585b70;
+  margin-bottom: 4px;
+}
+
+.frame-vars {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #a6adc8;
+  line-height: 1.5;
+}
+
+.frame-var-entry {
+  display: flex;
+  gap: 4px;
+}
+
+.frame-var-name { color: #89dceb; }
+.frame-var-val  { color: #fab387; }
+
+/* ── DEBUGGER CONTROLS ───────────────────────────────────── */
+
+.controls-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.ctrl-btn {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border: 1px solid #313244;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.ctrl-btn:hover {
+  background: #313244;
+  border-color: #7ab3e0;
+  color: #fff;
+}
+
+.ctrl-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.ctrl-btn.run    { border-color: #a6e3a1; color: #a6e3a1; }
+.ctrl-btn.run:hover { background: #a6e3a1; color: #0a0a0f; }
+.ctrl-btn.reset  { border-color: #f38ba8; color: #f38ba8; }
+.ctrl-btn.reset:hover { background: #f38ba8; color: #0a0a0f; }
+
+.status-indicator {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #585b70;
+  margin-left: 8px;
+}
+
+.status-indicator.stepping {
+  color: #7ab3e0;
+  animation: pulse-border 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+.current-line-display {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #a6adc8;
+  margin-left: auto;
+}
+
+/* ── BOTTOM ROW ──────────────────────────────────────────── */
+
+.bottom-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  min-height: 200px;
+}
+
+.bottom-row > * { flex: 1; min-width: 0; }
+
+/* ── DATA STRUCTURE VIZ ──────────────────────────────────── */
+
+.datastruct-wrap {
+  background: #0a0a0f;
+  border-radius: 8px;
+  border: 1px solid #1a1a2e;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.datastruct-body {
+  flex: 1;
+  overflow: auto;
+  padding: 12px;
+}
+
+.ds-empty {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #585b70;
+  font-style: italic;
+  padding: 16px;
+}
+
+.ds-array-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #89dceb;
+  margin-bottom: 6px;
+}
+
+.ds-array-row {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.ds-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 40px;
+}
+
+.ds-cell-val {
+  background: #1e1e2e;
+  border: 1px solid #313244;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #fab387;
+  text-align: center;
+  min-width: 36px;
+  transition: background 0.3s;
+}
+
+.ds-cell-val.changed {
+  background: rgba(249, 226, 175, 0.2);
+  border-color: #f9e2af;
+}
+
+.ds-cell-idx {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: #585b70;
+  margin-top: 2px;
+}
+
+/* Linked list nodes */
+.ds-linked-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.ds-node {
+  background: #1e1e2e;
+  border: 1px solid #313244;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #cdd6f4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 50px;
+}
+
+.ds-node-val { color: #fab387; font-weight: bold; }
+.ds-node-label { color: #585b70; font-size: 10px; }
+
+.ds-arrow {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  color: #7ab3e0;
+  padding: 0 4px;
+}
+
+.ds-null {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #f38ba8;
+  font-style: italic;
+}
+
+/* Hash table */
+.ds-hash-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.ds-bucket {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ds-bucket-idx {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #585b70;
+  width: 24px;
+  text-align: right;
+}
+
+.ds-bucket-content {
+  background: #1e1e2e;
+  border: 1px solid #313244;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #a6e3a1;
+  flex: 1;
+  min-height: 22px;
+}
+
+.ds-bucket-content.empty-bucket {
+  color: #585b70;
+  font-style: italic;
+}
+
+/* ── REGISTER / FRAME VIEW ───────────────────────────────── */
+
+.regview-wrap {
+  background: #0a0a0f;
+  border-radius: 8px;
+  border: 1px solid #1a1a2e;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.regview-body {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+}
+
+.reg-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+}
+
+.reg-table th {
+  background: #1e1e2e;
+  color: #7ab3e0;
+  padding: 6px 10px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.reg-table td {
+  padding: 4px 10px;
+  border-bottom: 1px solid #151520;
+  color: #a6adc8;
+  transition: background 0.5s;
+}
+
+.reg-table tr:nth-child(even) td { background: rgba(30, 30, 46, 0.3); }
+
+.reg-table td.reg-slot  { color: #585b70; width: 50px; }
+.reg-table td.reg-name  { color: #89dceb; }
+.reg-table td.reg-type  { color: #7ab3e0; width: 60px; }
+.reg-table td.reg-value { color: #fab387; }
+
+.reg-table tr.flash td {
+  background: rgba(249, 226, 175, 0.15) !important;
+}
+
+.reg-empty {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #585b70;
+  font-style: italic;
+  padding: 16px;
+}
+
+/* ── EXECUTION FLOW GRAPH ────────────────────────────────── */
+
+.flow-graph-wrap {
+  background: #0a0a0f;
+  border-radius: 8px;
+  border: 1px solid #1a1a2e;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.flow-graph-body {
+  padding: 16px;
+  position: relative;
+  min-height: 120px;
+  overflow: auto;
+}
+
+.fg-node {
+  position: absolute;
+  background: #1e1e2e;
+  border: 2px solid #313244;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: #cdd6f4;
+  text-align: center;
+  white-space: nowrap;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.fg-node.active {
+  border-color: #7ab3e0;
+  box-shadow: 0 0 12px rgba(122, 179, 224, 0.3);
+}
+
+.fg-edge {
+  position: absolute;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: #585b70;
+}
+
+.fg-edge-line {
+  position: absolute;
+  background: #313244;
+  z-index: 0;
+}
+
+.fg-edge-label {
+  position: absolute;
+  background: #0a0a0f;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 10px;
+  color: #7ab3e0;
+  z-index: 1;
+}
+
+.fg-empty {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #585b70;
+  font-style: italic;
+  padding: 16px;
+}
+
+/* ── CPU PIPELINE ────────────────────────────────────────── */
+
+.pipeline-section {
+  margin-bottom: 12px;
+}
+
+.pipeline-toggle {
+  background: #1e1e2e;
+  border: 1px solid #313244;
+  border-radius: 8px 8px 0 0;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: #9098b8;
+  transition: background 0.15s;
+}
+
+.pipeline-toggle:hover { background: #252540; }
+
+.pipeline-toggle .arrow { transition: transform 0.2s; }
+.pipeline-toggle.open .arrow { transform: rotate(180deg); }
+
+.pipeline-body {
+  background: #0a0a0f;
+  border: 1px solid #1a1a2e;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease;
+}
+
+.pipeline-body.open { max-height: 400px; }
+
+.pipeline-stages {
+  display: flex;
+  gap: 0;
+  padding: 16px;
+}
+
+.pipeline-stage {
+  flex: 1;
+  background: #13131e;
+  border: 1px solid #252540;
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+  position: relative;
+}
+
+.pipeline-stage:not(:last-child)::after {
+  content: "\2192";
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #585b70;
+  font-size: 18px;
+  z-index: 1;
+}
+
+.pipeline-stage-name {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7ab3e0;
+  margin-bottom: 8px;
+}
+
+.pipeline-stage-instr {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: #f9e2af;
+  margin-bottom: 4px;
+  min-height: 18px;
+}
+
+.pipeline-stage-src {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: #585b70;
+  min-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pipeline-stage.active {
+  border-color: #7ab3e0;
+  box-shadow: 0 0 8px rgba(122, 179, 224, 0.15);
+}
+
+/* ── RESPONSIVE ──────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  nav { display: none; }
+  main { margin-left: 0; padding: 12px; }
+  .top-row, .bottom-row { flex-direction: column; }
+}
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="repl.html" class="nav-logo">&larr; Back to Base REPL</a>
+  <div class="nav-section">Debugger</div>
+  <a href="#" onclick="dbgRun();return false;">Run</a>
+  <a href="#" onclick="dbgStep();return false;">Step</a>
+  <a href="#" onclick="dbgStepIn();return false;">Step In</a>
+  <a href="#" onclick="dbgStepOut();return false;">Step Out</a>
+  <a href="#" onclick="dbgReset();return false;">Reset</a>
+  <div class="nav-section">Levels</div>
+  <a href="#" onclick="loadLevel(0);return false;">1 &mdash; Arithmetic</a>
+  <a href="#" onclick="loadLevel(1);return false;">2 &mdash; Functions</a>
+  <a href="#" onclick="loadLevel(2);return false;">3 &mdash; Loops &amp; Arrays</a>
+  <a href="#" onclick="loadLevel(3);return false;">4 &mdash; Linked List</a>
+  <div class="nav-section">REPL Pages</div>
+  <a href="repl.html">Base REPL</a>
+  <a href="repl-execution.html" class="nav-active">Execution REPL</a>
+  <div class="nav-section">Reference</div>
+  <a href="language-main.html">Language Reference</a>
+  <a href="interpreter.html">Bytecode Interpreter</a>
+  <a href="https://github.com/albazzaztariq/UniLogic" target="_blank">GitHub &nearr;</a>
+</nav>
+
+<main>
+
+<h1>Execution REPL</h1>
+<p class="subtitle">Step-through debugger &mdash; visualize execution, call stacks, data structures, and the CPU pipeline.</p>
+
+<!-- Level selector -->
+<div class="level-bar">
+  <button class="level-btn active" onclick="loadLevel(0)">Level 1: Arithmetic</button>
+  <button class="level-btn" onclick="loadLevel(1)">Level 2: Functions</button>
+  <button class="level-btn" onclick="loadLevel(2)">Level 3: Loops &amp; Arrays</button>
+  <button class="level-btn" onclick="loadLevel(3)">Level 4: Linked List</button>
+</div>
+
+<!-- Debugger controls -->
+<div class="controls-bar">
+  <button class="ctrl-btn run" id="btn-run" onclick="dbgRun()">&#9654; Run</button>
+  <button class="ctrl-btn" id="btn-step" onclick="dbgStep()">Step</button>
+  <button class="ctrl-btn" id="btn-stepin" onclick="dbgStepIn()">Step In</button>
+  <button class="ctrl-btn" id="btn-stepout" onclick="dbgStepOut()">Step Out</button>
+  <button class="ctrl-btn reset" id="btn-reset" onclick="dbgReset()">Reset</button>
+  <span class="status-indicator" id="status-ind">Ready</span>
+  <span class="current-line-display" id="cur-line-disp"></span>
+</div>
+
+<!-- Top row: editor + call stack -->
+<div class="top-row">
+  <div class="editor-wrap">
+    <div class="editor-bar">
+      <span class="term-dot red"></span>
+      <span class="term-dot yellow"></span>
+      <span class="term-dot green"></span>
+      <span style="flex:1; text-align:center;">source.ul</span>
+    </div>
+    <div class="editor-body">
+      <div class="gutter" id="gutter"></div>
+      <div class="code-area" id="code-area"><pre id="code-lines"></pre></div>
+    </div>
+    <div class="output-panel" id="output-panel"></div>
+  </div>
+
+  <div class="callstack-wrap">
+    <div class="panel-header">Call Stack</div>
+    <div class="callstack-body" id="callstack-body"></div>
+  </div>
+</div>
+
+<!-- Bottom row: data structures + register view -->
+<div class="bottom-row">
+  <div class="datastruct-wrap">
+    <div class="panel-header">Data Structures</div>
+    <div class="datastruct-body" id="datastruct-body">
+      <div class="ds-empty">No data structures to display. Run a program with arrays or linked lists.</div>
+    </div>
+  </div>
+
+  <div class="regview-wrap">
+    <div class="panel-header">Register / Frame View</div>
+    <div class="regview-body" id="regview-body">
+      <div class="reg-empty">No variables in scope.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Execution flow graph -->
+<div class="flow-graph-wrap">
+  <div class="panel-header">Execution Flow Graph</div>
+  <div class="flow-graph-body" id="flow-graph-body">
+    <div class="fg-empty">Call graph appears after execution begins.</div>
+  </div>
+</div>
+
+<!-- CPU Pipeline (collapsible) -->
+<div class="pipeline-section">
+  <div class="pipeline-toggle" id="pipeline-toggle" onclick="togglePipeline()">
+    CPU Pipeline Visualizer <span class="arrow">&#9660;</span>
+  </div>
+  <div class="pipeline-body" id="pipeline-body">
+    <div class="pipeline-stages">
+      <div class="pipeline-stage" id="pipe-fetch">
+        <div class="pipeline-stage-name">Fetch</div>
+        <div class="pipeline-stage-instr" id="pipe-fetch-instr">&mdash;</div>
+        <div class="pipeline-stage-src" id="pipe-fetch-src">&nbsp;</div>
+      </div>
+      <div class="pipeline-stage" id="pipe-decode">
+        <div class="pipeline-stage-name">Decode</div>
+        <div class="pipeline-stage-instr" id="pipe-decode-instr">&mdash;</div>
+        <div class="pipeline-stage-src" id="pipe-decode-src">&nbsp;</div>
+      </div>
+      <div class="pipeline-stage" id="pipe-execute">
+        <div class="pipeline-stage-name">Execute</div>
+        <div class="pipeline-stage-instr" id="pipe-execute-instr">&mdash;</div>
+        <div class="pipeline-stage-src" id="pipe-execute-src">&nbsp;</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// =============================================================================
+// UniLogic Execution REPL — Step-Through Debugger with Visualization
+// Lexer -> Parser -> AST -> Generator-based stepping evaluator
+// =============================================================================
+
+(function() {
+"use strict";
+
+// ── DOM refs ─────────────────────────────────────────────────────────────
+const gutterEl     = document.getElementById("gutter");
+const codeLinesEl  = document.getElementById("code-lines");
+const outputEl     = document.getElementById("output-panel");
+const callstackEl  = document.getElementById("callstack-body");
+const dsEl         = document.getElementById("datastruct-body");
+const regEl        = document.getElementById("regview-body");
+const flowEl       = document.getElementById("flow-graph-body");
+const statusEl     = document.getElementById("status-ind");
+const curLineDisp  = document.getElementById("cur-line-disp");
+
+// ── Sample programs ──────────────────────────────────────────────────────
+const LEVELS = [
+  {
+    name: "Level 1: Arithmetic",
+    code:
+`int a = 10
+int b = 25
+int sum = a + b
+int delta = a - b
+int product = a * b
+print sum
+print delta
+print product`
+  },
+  {
+    name: "Level 2: Functions",
+    code:
+`function square(int x) returns int
+  return x * x
+end function
+
+function add(int a, int b) returns int
+  return a + b
+end function
+
+int a = 3
+int b = 4
+int sq = square(a)
+int total = add(sq, b)
+print sq
+print total`
+  },
+  {
+    name: "Level 3: Loops & Arrays",
+    code:
+`array int nums = [5, 3, 8, 1, 9, 2]
+int n = size(nums)
+int i = 0
+while i < n - 1
+  int j = 0
+  while j < n - 1 - i
+    if nums[j] > nums[j + 1]
+      int tmp = nums[j]
+      nums[j] = nums[j + 1]
+      nums[j + 1] = tmp
+    end if
+    j = j + 1
+  end while
+  i = i + 1
+end while
+print nums`
+  },
+  {
+    name: "Level 4: Linked List",
+    code:
+`// Simulate linked list with parallel arrays
+array int val = [10, 20, 30, 40, 50]
+array int nxt = [1, 2, 3, 4, -1]
+int head = 0
+
+// Traverse and print
+int cur = head
+while cur != -1
+  print val[cur]
+  cur = nxt[cur]
+end while
+
+// Insert 25 between 20 and 30
+array int val2 = [10, 20, 30, 40, 50, 25]
+array int nxt2 = [1, 5, 3, 4, -1, 2]
+int head2 = 0
+
+// Traverse after insert
+int cur2 = head2
+while cur2 != -1
+  print val2[cur2]
+  cur2 = nxt2[cur2]
+end while`
+  }
+];
+
+// ── Interpreter state ────────────────────────────────────────────────────
+let currentSource = "";
+let sourceLines = [];
+let breakpoints = new Set();
+let dbgState = "idle"; // idle, running, stepping, paused, done
+let stepResolver = null;
+let stepMode = "step"; // "step", "stepin", "stepout", "run"
+let stepOutDepth = 0;
+
+// Per-execution state
+let globals = {};
+let functions = {};
+let callStack = [];     // array of { name, env, line }
+let callGraph = {};     // { callerName: { calleeName: count } }
+let printBuffer = [];
+let prevRegSnapshot = {};
+let pipelineHistory = []; // last 3 instructions for pipeline viz
+
+// Control flow signals
+class ReturnValue  { constructor(v) { this.value = v; } }
+class BreakSignal  {}
+class ContinueSignal {}
+class RuntimeErr extends Error { constructor(m) { super(m); this.name = "RuntimeErr"; } }
+class StepAbort extends Error { constructor() { super("aborted"); } }
+
+// ==========================================================================
+//  LEXER — copied from repl.html
+// ==========================================================================
+
+const KEYWORDS = new Set([
+  "function","end","returns","return",
+  "if","else","while","do","for","each","in",
+  "match","iterate","default","escape","continue",
+  "type","forks","new","fixed","constant",
+  "import","from","export","print","prompt",
+  "parallel","killswitch","goto","portal",
+  "nocache","yield","inline","pack",
+  "true","false","empty",
+  "and","or","not","equals",
+  "both1","both0","either1","diff","bitflip","negate","left","right",
+  "address","deref","memmove","memcopy","memset","memtake","memgive",
+  "size","change","absval",
+  "int","integer","float","double","string","bool","none","complex",
+  "int8","int16","int32","int64",
+  "uint8","uint16","uint32","uint64",
+  "array","list","map","arena","file",
+  "ok","error","some"
+]);
+
+function tokenize(src) {
+  const tokens = [];
+  let pos = 0, line = 1, col = 1;
+  const n = src.length;
+
+  function peek(off) { const i = pos + (off||0); return i < n ? src[i] : null; }
+  function advance() {
+    const ch = src[pos++];
+    if (ch === "\n") { line++; col = 1; } else { col++; }
+    return ch;
+  }
+  function add(kind, value) { tokens.push([kind, value, line, col]); }
+  function err(msg) { throw new SyntaxError("<repl>:" + line + ":" + col + " \u2014 " + msg); }
+
+  while (pos < n) {
+    while (pos < n && " \t\r\n".includes(src[pos])) advance();
+    if (pos >= n) break;
+    if (peek() === "/" && peek(1) === "/") {
+      while (pos < n && peek() !== "\n") advance();
+      continue;
+    }
+    const ch = peek();
+    if (ch === '"') {
+      advance();
+      let buf = "";
+      while (pos < n && peek() !== '"') {
+        if (peek() === "\\") {
+          advance();
+          const esc = advance();
+          const map = {"n":"\n","t":"\t",'"':'"',"\\":"\\"};
+          buf += (esc in map) ? map[esc] : esc;
+        } else if (peek() === "\n") {
+          err("unterminated string");
+        } else {
+          buf += advance();
+        }
+      }
+      if (pos >= n) err("unterminated string");
+      advance();
+      add("STRING", buf);
+    }
+    else if (ch === "0" && (peek(1) === "x" || peek(1) === "X")) {
+      let buf = advance() + advance();
+      while (peek() && "0123456789abcdefABCDEF".includes(peek())) buf += advance();
+      add("HEX", buf);
+    }
+    else if (ch >= "0" && ch <= "9") {
+      let buf = "";
+      while (peek() && peek() >= "0" && peek() <= "9") buf += advance();
+      if (peek() === "." && peek(1) && peek(1) >= "0" && peek(1) <= "9") {
+        buf += advance();
+        while (peek() && peek() >= "0" && peek() <= "9") buf += advance();
+        if (peek() === "e" || peek() === "E") {
+          buf += advance();
+          if (peek() === "+" || peek() === "-") buf += advance();
+          while (peek() && peek() >= "0" && peek() <= "9") buf += advance();
+        }
+        add("FLOAT", buf);
+      } else {
+        add("INT", buf);
+      }
+    }
+    else if ((ch >= "a" && ch <= "z") || (ch >= "A" && ch <= "Z") || ch === "_") {
+      let buf = "";
+      while (peek() && ((peek() >= "a" && peek() <= "z") || (peek() >= "A" && peek() <= "Z") || (peek() >= "0" && peek() <= "9") || peek() === "_")) buf += advance();
+      if (buf === "left" && peek() === "=") { advance(); add("OP", "left="); }
+      else if (buf === "right" && peek() === "=") { advance(); add("OP", "right="); }
+      else if (buf === "integer") { add("KW", "int"); }
+      else if (KEYWORDS.has(buf)) { add("KW", buf); }
+      else { add("IDENT", buf); }
+    }
+    else if (ch === "@") { advance(); add("AT", "@"); }
+    else if (ch === "#") { advance(); add("HASH", "#"); }
+    else if (ch === "+") { advance(); if (peek()==="+"){advance();add("OP","++");}else if(peek()==="="){advance();add("OP","+=");}else{add("OP","+");} }
+    else if (ch === "-") { advance(); if(peek()==="-"){advance();add("OP","--");}else if(peek()==="="){advance();add("OP","-=");}else if(peek()===">"){advance();add("OP","->");}else{add("OP","-");} }
+    else if (ch === "*") { advance(); if(peek()==="="){advance();add("OP","*=");}else{add("OP","*");} }
+    else if (ch === "/") { advance(); if(peek()==="="){advance();add("OP","/=");}else{add("OP","/");} }
+    else if (ch === "%") { advance(); if(peek()==="="){advance();add("OP","%=");}else{add("OP","%");} }
+    else if (ch === "=") { advance(); if(peek()==="="){advance();add("OP","==");}else{add("OP","=");} }
+    else if (ch === "!") { advance(); if(peek()==="="){advance();add("OP","!=");}else{err("unexpected '!' \u2014 did you mean 'not'?");} }
+    else if (ch === "<") { advance(); if(peek()==="="){advance();add("OP","<=");}else{add("OP","<");} }
+    else if (ch === ">") { advance(); if(peek()==="="){advance();add("OP",">=");}else{add("OP",">");} }
+    else if (ch === "(") { advance(); add("LPAREN","("); }
+    else if (ch === ")") { advance(); add("RPAREN",")"); }
+    else if (ch === "[") { advance(); add("LBRACKET","["); }
+    else if (ch === "]") { advance(); add("RBRACKET","]"); }
+    else if (ch === ",") { advance(); add("COMMA",","); }
+    else if (ch === ".") { advance(); add("DOT","."); }
+    else if (ch === ":") { advance(); add("COLON",":"); }
+    else if (ch === "?") { advance(); add("OP","?"); }
+    else { err("unexpected character " + JSON.stringify(ch)); }
+  }
+  tokens.push(["EOF","",line,col]);
+  return tokens;
+}
+
+// ==========================================================================
+//  PARSER — copied from repl.html
+// ==========================================================================
+
+const TYPE_KWS = new Set([
+  "int","float","double","string","bool","none","complex",
+  "int8","int16","int32","int64","uint8","uint16","uint32","uint64",
+  "auto","array","list","map","arena","file"
+]);
+
+class Parser {
+  constructor(tokens) { this.tokens = tokens; this.pos = 0; }
+  peek()    { return this.tokens[this.pos]; }
+  advance() { const t = this.tokens[this.pos]; if(t[0]!=="EOF") this.pos++; return t; }
+  atEnd()   { return this.peek()[0] === "EOF"; }
+  check(kind, value) {
+    const t = this.peek();
+    if (t[0] !== kind) return false;
+    if (value !== undefined && t[1] !== value) return false;
+    return true;
+  }
+  match(kind, value) { if (this.check(kind, value)) return this.advance(); return null; }
+  expect(kind, value) {
+    const t = this.match(kind, value);
+    if (!t) {
+      const got = this.peek();
+      const want = kind + (value !== undefined ? " '" + value + "'" : "");
+      throw new SyntaxError("<repl>:" + got[2] + ":" + got[3] + " \u2014 expected " + want + ", got " + got[0] + " '" + got[1] + "'");
+    }
+    return t;
+  }
+  parseType() {
+    let pointer = false;
+    if (this.match("OP","<")) pointer = true;
+    const tok = this.expect("KW");
+    if (pointer) this.expect("OP",">");
+    if (tok[1] === "array") {
+      const elem = this.expect("KW");
+      return {node:"TypeName",name:elem[1],pointer,isArray:true,arraySize:0,line:tok[2],col:tok[3]};
+    }
+    return {node:"TypeName",name:tok[1],pointer,isArray:false,arraySize:0,line:tok[2],col:tok[3]};
+  }
+  parseParam() {
+    const ty = this.parseType();
+    const nm = this.expect("IDENT");
+    return {node:"Param",type_:ty,name:nm[1],line:nm[2],col:nm[3]};
+  }
+  parseFunction() {
+    const tok = this.expect("KW","function");
+    const name = this.expect("IDENT")[1];
+    this.expect("LPAREN");
+    const params = [];
+    if (!this.check("RPAREN")) {
+      params.push(this.parseParam());
+      while (this.match("COMMA")) params.push(this.parseParam());
+    }
+    this.expect("RPAREN");
+    let returnType = null;
+    if (this.match("KW","returns")) returnType = this.parseType();
+    const body = this.parseBody();
+    this.expect("KW","end");
+    this.expect("KW","function");
+    return {node:"FunctionDecl",name,params,returnType,body,line:tok[2],col:tok[3]};
+  }
+  parseBody() {
+    const stmts = [];
+    while (!this.atEnd()) {
+      const tok = this.peek();
+      if (tok[0]==="KW" && (tok[1]==="end" || tok[1]==="else")) break;
+      stmts.push(this.parseStatement());
+    }
+    return stmts;
+  }
+  parseStatement() {
+    const tok = this.peek();
+    if (tok[0]==="KW") {
+      if (tok[1]==="if")       return this.parseIf();
+      if (tok[1]==="while")    return this.parseWhile();
+      if (tok[1]==="for")      return this.parseFor();
+      if (tok[1]==="return")   return this.parseReturn();
+      if (tok[1]==="print")    return this.parsePrint();
+      if (tok[1]==="escape")   { this.advance(); return {node:"Escape",line:tok[2],col:tok[3]}; }
+      if (tok[1]==="continue") { this.advance(); return {node:"Continue",line:tok[2],col:tok[3]}; }
+      if (tok[1]==="fixed")    return this.parseVarDecl();
+      if (tok[1]==="function") return this.parseFunctionStmt();
+      if (TYPE_KWS.has(tok[1])) return this.parseVarDecl();
+    }
+    return this.parseAssignOrExpr();
+  }
+  parseFunctionStmt() {
+    const decl = this.parseFunction();
+    return {node:"FunctionDeclStmt", decl, line: decl.line, col: decl.col};
+  }
+  parseVarDecl() {
+    const tok = this.peek();
+    const fixed = !!this.match("KW","fixed");
+    const type_ = this.parseType();
+    const name = this.expect("IDENT")[1];
+    let init = null;
+    if (this.match("OP","=")) init = this.parseExpr();
+    return {node:"VarDecl",type_,name,init,fixed,line:tok[2],col:tok[3]};
+  }
+  parseIf() {
+    const tok = this.expect("KW","if");
+    const condition = this.parseExpr();
+    const thenBody = this.parseBody();
+    let elseBody = [];
+    if (this.match("KW","else")) elseBody = this.parseBody();
+    this.expect("KW","end");
+    this.expect("KW","if");
+    return {node:"If",condition,thenBody,elseBody,line:tok[2],col:tok[3]};
+  }
+  parseWhile() {
+    const tok = this.expect("KW","while");
+    const condition = this.parseExpr();
+    const body = this.parseBody();
+    this.expect("KW","end");
+    this.expect("KW","while");
+    return {node:"While",condition,body,line:tok[2],col:tok[3]};
+  }
+  parseFor() {
+    const tok = this.expect("KW","for");
+    this.expect("KW","each");
+    const varName = this.expect("IDENT")[1];
+    this.expect("KW","in");
+    const iterable = this.parseExpr();
+    const body = this.parseBody();
+    this.expect("KW","end");
+    this.expect("KW","for");
+    return {node:"For",var:varName,iterable,body,line:tok[2],col:tok[3]};
+  }
+  parseReturn() {
+    const tok = this.expect("KW","return");
+    let value = null;
+    if (!this.atEnd() && !this.check("KW","end")) value = this.parseExpr();
+    return {node:"Return",value,line:tok[2],col:tok[3]};
+  }
+  parsePrint() {
+    const tok = this.expect("KW","print");
+    const value = this.parseExpr();
+    return {node:"Print",value,line:tok[2],col:tok[3]};
+  }
+  parseAssignOrExpr() {
+    const expr = this.parseExpr();
+    const tok = this.peek();
+    const ASSIGN_OPS = new Set(["=","+=","-=","*=","/=","%=","left=","right="]);
+    if (tok[0]==="OP" && ASSIGN_OPS.has(tok[1])) {
+      const op = this.advance()[1];
+      const value = this.parseExpr();
+      return {node:"Assign",target:expr,op,value,line:tok[2],col:tok[3]};
+    }
+    return {node:"ExprStmt",expr,line:tok[2],col:tok[3]};
+  }
+  parseExpr() { return this.parseOr(); }
+  parseOr() {
+    let left = this.parseAnd();
+    while (this.check("KW","or")) { const op = this.advance(); left = {node:"BinaryOp",op:"or",left,right:this.parseAnd(),line:op[2],col:op[3]}; }
+    return left;
+  }
+  parseAnd() {
+    let left = this.parseNot();
+    while (this.check("KW","and")) { const op = this.advance(); left = {node:"BinaryOp",op:"and",left,right:this.parseNot(),line:op[2],col:op[3]}; }
+    return left;
+  }
+  parseNot() {
+    if (this.check("KW","not")) { const op = this.advance(); return {node:"UnaryOp",op:"not",operand:this.parseNot(),line:op[2],col:op[3]}; }
+    return this.parseComparison();
+  }
+  parseComparison() {
+    let left = this.parseAddition();
+    const CMP = new Set(["==","!=","<",">","<=",">="]);
+    while (this.peek()[0]==="OP" && CMP.has(this.peek()[1])) { const op = this.advance(); left = {node:"BinaryOp",op:op[1],left,right:this.parseAddition(),line:op[2],col:op[3]}; }
+    return left;
+  }
+  parseAddition() {
+    let left = this.parseMultiplication();
+    while (this.peek()[0]==="OP" && (this.peek()[1]==="+" || this.peek()[1]==="-")) { const op = this.advance(); left = {node:"BinaryOp",op:op[1],left,right:this.parseMultiplication(),line:op[2],col:op[3]}; }
+    return left;
+  }
+  parseMultiplication() {
+    let left = this.parseUnary();
+    while (this.peek()[0]==="OP" && (this.peek()[1]==="*" || this.peek()[1]==="/" || this.peek()[1]==="%")) { const op = this.advance(); left = {node:"BinaryOp",op:op[1],left,right:this.parseUnary(),line:op[2],col:op[3]}; }
+    return left;
+  }
+  parseUnary() {
+    const tok = this.peek();
+    if (tok[0]==="OP" && tok[1]==="-") { this.advance(); return {node:"UnaryOp",op:"-",operand:this.parseUnary(),line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && tok[1]==="address") { this.advance(); return {node:"UnaryOp",op:"address",operand:this.parseUnary(),line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && tok[1]==="deref") { this.advance(); return {node:"UnaryOp",op:"deref",operand:this.parseUnary(),line:tok[2],col:tok[3]}; }
+    return this.parsePostfix();
+  }
+  parsePostfix() {
+    let expr = this.parsePrimary();
+    while (true) {
+      if (this.check("LPAREN")) {
+        const tok = this.advance();
+        const args = [];
+        if (!this.check("RPAREN")) { args.push(this.parseExpr()); while (this.match("COMMA")) args.push(this.parseExpr()); }
+        this.expect("RPAREN");
+        const name = (expr.node==="Identifier") ? expr.name : "__expr__";
+        expr = {node:"Call",name,args,line:tok[2],col:tok[3]};
+      } else if (this.check("LBRACKET")) {
+        const tok = this.advance();
+        const idx = this.parseExpr();
+        this.expect("RBRACKET");
+        expr = {node:"Index",target:expr,index:idx,line:tok[2],col:tok[3]};
+      } else if (this.check("OP","->")) {
+        const tok = this.advance();
+        const target = this.parseType();
+        expr = {node:"Cast",expr,targetType:target,line:tok[2],col:tok[3]};
+      } else if (this.check("OP","++")) {
+        const tok = this.advance();
+        expr = {node:"PostIncrement",operand:expr,line:tok[2],col:tok[3]};
+      } else if (this.check("OP","--")) {
+        const tok = this.advance();
+        expr = {node:"PostDecrement",operand:expr,line:tok[2],col:tok[3]};
+      } else break;
+    }
+    return expr;
+  }
+  parsePrimary() {
+    const tok = this.peek();
+    if (tok[0]==="INT")    { this.advance(); return {node:"IntLiteral",value:parseInt(tok[1],10),line:tok[2],col:tok[3]}; }
+    if (tok[0]==="HEX")    { this.advance(); return {node:"IntLiteral",value:parseInt(tok[1],16),line:tok[2],col:tok[3]}; }
+    if (tok[0]==="FLOAT")  { this.advance(); return {node:"FloatLiteral",value:parseFloat(tok[1]),line:tok[2],col:tok[3]}; }
+    if (tok[0]==="STRING") { this.advance(); return {node:"StringLiteral",value:tok[1],line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && tok[1]==="true")  { this.advance(); return {node:"BoolLiteral",value:true,line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && tok[1]==="false") { this.advance(); return {node:"BoolLiteral",value:false,line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && tok[1]==="empty") { this.advance(); return {node:"EmptyLiteral",line:tok[2],col:tok[3]}; }
+    if (tok[0]==="IDENT") { this.advance(); return {node:"Identifier",name:tok[1],line:tok[2],col:tok[3]}; }
+    if (tok[0]==="KW" && (tok[1]==="change" || tok[1]==="size" || tok[1]==="absval")) { this.advance(); return {node:"Identifier",name:tok[1],line:tok[2],col:tok[3]}; }
+    if (tok[0]==="LBRACKET") {
+      this.advance();
+      const elems = [];
+      if (!this.check("RBRACKET")) { elems.push(this.parseExpr()); while (this.match("COMMA")) elems.push(this.parseExpr()); }
+      this.expect("RBRACKET");
+      return {node:"ArrayLiteral",elements:elems,line:tok[2],col:tok[3]};
+    }
+    if (tok[0]==="LPAREN") {
+      this.advance();
+      const expr = this.parseExpr();
+      this.expect("RPAREN");
+      return expr;
+    }
+    throw new SyntaxError("<repl>:" + tok[2] + ":" + tok[3] + " \u2014 unexpected token " + tok[0] + " '" + tok[1] + "'");
+  }
+}
+
+// ==========================================================================
+//  STEPPING EVALUATOR — async/await based, yields at each statement
+// ==========================================================================
+
+// Wait for step permission
+function waitForStep() {
+  return new Promise((resolve, reject) => {
+    if (dbgState === "idle") { reject(new StepAbort()); return; }
+    stepResolver = { resolve, reject };
+  });
+}
+
+// Evaluate expression (synchronous — no stepping inside expressions)
+function evalExpr(nd, env) {
+  switch (nd.node) {
+    case "IntLiteral":    return nd.value;
+    case "FloatLiteral":  return nd.value;
+    case "StringLiteral": return nd.value;
+    case "BoolLiteral":   return nd.value;
+    case "EmptyLiteral":  return null;
+    case "ArrayLiteral":  return nd.elements.map(e => evalExpr(e, env));
+    case "Identifier":
+      if (nd.name in env) return env[nd.name];
+      if (nd.name in globals) return globals[nd.name];
+      throw new RuntimeErr("undefined variable '" + nd.name + "'");
+    case "BinaryOp": return evalBinop(nd, env);
+    case "UnaryOp": {
+      const val = evalExpr(nd.operand, env);
+      if (nd.op === "-")   return -val;
+      if (nd.op === "not") return !val;
+      throw new RuntimeErr("unknown unary op '" + nd.op + "'");
+    }
+    case "Cast": {
+      let inner = nd.expr;
+      if (inner.node === "Call" && inner.name === "change" && inner.args.length === 1) inner = inner.args[0];
+      const val = evalExpr(inner, env);
+      const t = nd.targetType.name;
+      if (["int","int8","int16","int32","int64","uint8","uint16","uint32","uint64"].includes(t)) return Math.trunc(Number(val));
+      if (t === "float" || t === "double") return Number(val);
+      if (t === "string") return String(val);
+      if (t === "bool") return Boolean(val);
+      return val;
+    }
+    case "Call": return "__async_call__"; // handled by async path
+    case "Index": {
+      const target = evalExpr(nd.target, env);
+      const index  = evalExpr(nd.index, env);
+      if (Array.isArray(target)) {
+        if (index < 0 || index >= target.length) throw new RuntimeErr("index " + index + " out of bounds (size " + target.length + ")");
+        return target[index];
+      }
+      if (typeof target === "string") return target[index] || "";
+      throw new RuntimeErr("cannot index type " + typeof target);
+    }
+    case "PostIncrement": {
+      const name = nd.operand.name;
+      const scope = (name in env) ? env : globals;
+      const val = scope[name];
+      scope[name] = val + 1;
+      return val;
+    }
+    case "PostDecrement": {
+      const name = nd.operand.name;
+      const scope = (name in env) ? env : globals;
+      const val = scope[name];
+      scope[name] = val - 1;
+      return val;
+    }
+    default: throw new RuntimeErr("unknown expression node: " + nd.node);
+  }
+}
+
+function evalBinop(nd, env) {
+  if (nd.op === "and") return evalExpr(nd.left, env) && evalExpr(nd.right, env);
+  if (nd.op === "or")  return evalExpr(nd.left, env) || evalExpr(nd.right, env);
+  const left  = evalExpr(nd.left, env);
+  const right = evalExpr(nd.right, env);
+  switch (nd.op) {
+    case "+":  return (typeof left === "string" || typeof right === "string") ? String(left) + String(right) : left + right;
+    case "-":  return left - right;
+    case "*":  return left * right;
+    case "/":
+      if (right === 0) throw new RuntimeErr("division by zero");
+      if (Number.isInteger(left) && Number.isInteger(right)) return Math.trunc(left / right);
+      return left / right;
+    case "%":
+      if (right === 0) throw new RuntimeErr("modulo by zero");
+      return left % right;
+    case "==": return left === right;
+    case "!=": return left !== right;
+    case "<":  return left < right;
+    case ">":  return left > right;
+    case "<=": return left <= right;
+    case ">=": return left >= right;
+    default: throw new RuntimeErr("unknown operator '" + nd.op + "'");
+  }
+}
+
+// Async eval for expressions that might contain calls
+async function evalExprAsync(nd, env) {
+  if (nd.node === "Call") return await evalCallAsync(nd, env);
+  // For binary ops, need to check if children have calls
+  if (nd.node === "BinaryOp") {
+    if (hasCall(nd)) {
+      if (nd.op === "and") {
+        const l = await evalExprAsync(nd.left, env);
+        if (!l) return l;
+        return await evalExprAsync(nd.right, env);
+      }
+      if (nd.op === "or") {
+        const l = await evalExprAsync(nd.left, env);
+        if (l) return l;
+        return await evalExprAsync(nd.right, env);
+      }
+      const left = await evalExprAsync(nd.left, env);
+      const right = await evalExprAsync(nd.right, env);
+      // replicate binop logic
+      switch (nd.op) {
+        case "+":  return (typeof left === "string" || typeof right === "string") ? String(left) + String(right) : left + right;
+        case "-":  return left - right;
+        case "*":  return left * right;
+        case "/":
+          if (right === 0) throw new RuntimeErr("division by zero");
+          if (Number.isInteger(left) && Number.isInteger(right)) return Math.trunc(left / right);
+          return left / right;
+        case "%":
+          if (right === 0) throw new RuntimeErr("modulo by zero");
+          return left % right;
+        case "==": return left === right;
+        case "!=": return left !== right;
+        case "<":  return left < right;
+        case ">":  return left > right;
+        case "<=": return left <= right;
+        case ">=": return left >= right;
+        default: throw new RuntimeErr("unknown operator '" + nd.op + "'");
+      }
+    }
+    return evalBinop(nd, env);
+  }
+  if (nd.node === "UnaryOp") {
+    const val = hasCall(nd.operand) ? await evalExprAsync(nd.operand, env) : evalExpr(nd.operand, env);
+    if (nd.op === "-") return -val;
+    if (nd.op === "not") return !val;
+    throw new RuntimeErr("unknown unary op '" + nd.op + "'");
+  }
+  if (nd.node === "Index" && hasCall(nd)) {
+    const target = await evalExprAsync(nd.target, env);
+    const index  = await evalExprAsync(nd.index, env);
+    if (Array.isArray(target)) {
+      if (index < 0 || index >= target.length) throw new RuntimeErr("index " + index + " out of bounds");
+      return target[index];
+    }
+    if (typeof target === "string") return target[index] || "";
+    throw new RuntimeErr("cannot index type " + typeof target);
+  }
+  if (nd.node === "ArrayLiteral" && nd.elements.some(e => hasCall(e))) {
+    const elems = [];
+    for (const e of nd.elements) elems.push(await evalExprAsync(e, env));
+    return elems;
+  }
+  if (nd.node === "Cast") {
+    let inner = nd.expr;
+    if (inner.node === "Call" && inner.name === "change" && inner.args.length === 1) inner = inner.args[0];
+    const val = hasCall(inner) ? await evalExprAsync(inner, env) : evalExpr(inner, env);
+    const t = nd.targetType.name;
+    if (["int","int8","int16","int32","int64","uint8","uint16","uint32","uint64"].includes(t)) return Math.trunc(Number(val));
+    if (t === "float" || t === "double") return Number(val);
+    if (t === "string") return String(val);
+    if (t === "bool") return Boolean(val);
+    return val;
+  }
+  return evalExpr(nd, env);
+}
+
+function hasCall(nd) {
+  if (!nd || typeof nd !== "object") return false;
+  if (nd.node === "Call") return true;
+  for (const key of Object.keys(nd)) {
+    if (key === "node" || key === "line" || key === "col") continue;
+    const v = nd[key];
+    if (Array.isArray(v)) { for (const item of v) { if (hasCall(item)) return true; } }
+    else if (v && typeof v === "object" && v.node) { if (hasCall(v)) return true; }
+  }
+  return false;
+}
+
+async function evalCallAsync(nd, env) {
+  const name = nd.name;
+  const args = [];
+  for (const a of nd.args) {
+    args.push(hasCall(a) ? await evalExprAsync(a, env) : evalExpr(a, env));
+  }
+
+  // Built-ins
+  if (name === "absval") return Math.abs(args[0]);
+  if (name === "size")   return (typeof args[0] === "string") ? args[0].length : (Array.isArray(args[0]) ? args[0].length : 0);
+  if (name === "change") return args[0];
+
+  // User-defined
+  if (!(name in functions)) throw new RuntimeErr("undefined function '" + name + "'");
+  const decl = functions[name];
+  if (args.length !== decl.params.length)
+    throw new RuntimeErr("'" + name + "' expects " + decl.params.length + " args, got " + args.length);
+
+  const local = {};
+  for (let i = 0; i < args.length; i++) local[decl.params[i].name] = args[i];
+
+  // Record call in graph
+  const callerName = callStack.length > 0 ? callStack[callStack.length - 1].name : "<main>";
+  if (!callGraph[callerName]) callGraph[callerName] = {};
+  if (!callGraph[callerName][name]) callGraph[callerName][name] = 0;
+  callGraph[callerName][name]++;
+
+  // Push call stack frame
+  callStack.push({ name, env: local, line: nd.line });
+  updateCallStack();
+  updateFlowGraph();
+
+  // If stepMode is "stepin", pause at function entry
+  // If stepMode is "step", skip function interior (execute without pausing)
+  const savedMode = stepMode;
+  const savedOutDepth = stepOutDepth;
+
+  if (savedMode === "step" || savedMode === "run") {
+    // For "step" over a call: run the function body without pausing inside
+    // unless breakpoints are hit. For "run": continue to next bp.
+    // We do this by temporarily suppressing step pauses for non-breakpoint lines
+  }
+
+  try {
+    await execBodyAsync(decl.body, local, savedMode === "step" ? "run-internal" : stepMode);
+  } catch (e) {
+    if (e instanceof ReturnValue) {
+      // Pop frame
+      const frame = callStack.pop();
+      updateCallStack();
+      return e.value;
+    }
+    if (e instanceof StepAbort) {
+      callStack.pop();
+      updateCallStack();
+      throw e;
+    }
+    throw e;
+  }
+  callStack.pop();
+  updateCallStack();
+  return null;
+}
+
+// Generate a bytecode-like instruction for the pipeline visualization
+function genBytecode(nd, env) {
+  const regIdx = (name) => {
+    const allVars = Object.keys(callStack.length > 0 ? callStack[callStack.length - 1].env : globals);
+    const idx = allVars.indexOf(name);
+    return idx >= 0 ? "r" + idx : "r?";
+  };
+
+  switch (nd.node) {
+    case "VarDecl": {
+      if (nd.init) {
+        if (nd.init.node === "BinaryOp") {
+          const op = nd.init.op === "+" ? "ADD" : nd.init.op === "-" ? "SUB" : nd.init.op === "*" ? "MUL" : nd.init.op === "/" ? "DIV" : nd.init.op === "%" ? "MOD" : nd.init.op === "==" ? "EQ" : nd.init.op;
+          return op.toUpperCase() + " " + regIdx(nd.name) + ", ...";
+        }
+        if (nd.init.node === "IntLiteral" || nd.init.node === "FloatLiteral") {
+          return "LOADI " + regIdx(nd.name) + ", " + nd.init.value;
+        }
+        if (nd.init.node === "Identifier") {
+          return "MOV " + regIdx(nd.name) + ", " + regIdx(nd.init.name);
+        }
+        if (nd.init.node === "Call") {
+          return "CALL " + nd.init.name;
+        }
+        if (nd.init.node === "ArrayLiteral") {
+          return "ALLOC " + regIdx(nd.name) + ", " + nd.init.elements.length;
+        }
+        return "STORE " + regIdx(nd.name) + ", [expr]";
+      }
+      return "LOADI " + regIdx(nd.name) + ", 0";
+    }
+    case "Assign": {
+      const tgt = nd.target.node === "Identifier" ? regIdx(nd.target.name) : nd.target.node === "Index" ? "mem[" + regIdx(nd.target.target.name) + "+idx]" : "mem";
+      if (nd.op === "=") return "STORE " + tgt + ", [expr]";
+      const op = nd.op === "+=" ? "ADD" : nd.op === "-=" ? "SUB" : nd.op === "*=" ? "MUL" : nd.op;
+      return op + " " + tgt + ", " + tgt + ", [expr]";
+    }
+    case "If":     return "JMPIFN [cond], ...";
+    case "While":  return "JMPIFN [cond], end_while";
+    case "For":    return "LOAD iter, [iterable]";
+    case "Return": return "RET" + (nd.value ? " [expr]" : "");
+    case "Print":  return "PRINTLN [expr]";
+    case "ExprStmt": {
+      if (nd.expr.node === "Call") return "CALL " + nd.expr.name;
+      return "EVAL [expr]";
+    }
+    case "Escape":  return "JMP end_loop";
+    case "Continue": return "JMP loop_start";
+    case "FunctionDeclStmt": return "DEF " + nd.decl.name;
+    default: return "NOP";
+  }
+}
+
+let stmtCounter = 0;
+
+async function pauseAtLine(line, nd, env, mode) {
+  if (dbgState === "idle") throw new StepAbort();
+
+  stmtCounter++;
+  const srcLine = (line >= 1 && line <= sourceLines.length) ? sourceLines[line - 1].trim() : "";
+  const bytecode = genBytecode(nd, env);
+
+  // Update pipeline (shift stages)
+  pipelineHistory.unshift({ bytecode, srcLine, line });
+  if (pipelineHistory.length > 3) pipelineHistory.pop();
+  updatePipeline();
+
+  // Update current frame's line number
+  if (callStack.length > 0) {
+    callStack[callStack.length - 1].line = line;
+  }
+
+  highlightLine(line);
+  updateRegView(env);
+  updateDataStructures();
+  updateCallStack();
+  curLineDisp.textContent = "Line " + line + ": " + srcLine;
+
+  // Determine if we should pause
+  let shouldPause = false;
+
+  if (mode === "run-internal") {
+    // Inside a "step over" call — only stop at breakpoints
+    shouldPause = breakpoints.has(line);
+  } else if (stepMode === "run") {
+    shouldPause = breakpoints.has(line);
+  } else if (stepMode === "stepout") {
+    shouldPause = breakpoints.has(line) || callStack.length < stepOutDepth;
+  } else {
+    // step or stepin
+    shouldPause = true;
+  }
+
+  if (shouldPause) {
+    dbgState = "paused";
+    statusEl.textContent = "Paused at line " + line;
+    statusEl.className = "status-indicator stepping";
+    await waitForStep();
+  } else {
+    // Yield to UI briefly to allow updates
+    await new Promise(r => setTimeout(r, 0));
+  }
+}
+
+async function execStmtAsync(nd, env, mode) {
+  if (dbgState === "idle") throw new StepAbort();
+
+  const line = nd.line || 0;
+
+  switch (nd.node) {
+    case "FunctionDeclStmt": {
+      await pauseAtLine(line, nd, env, mode);
+      functions[nd.decl.name] = nd.decl;
+      return undefined;
+    }
+    case "VarDecl": {
+      await pauseAtLine(line, nd, env, mode);
+      let val;
+      if (nd.init) {
+        val = hasCall(nd.init) ? await evalExprAsync(nd.init, env) : evalExpr(nd.init, env);
+      } else {
+        val = null;
+      }
+      env[nd.name] = val;
+      updateRegView(env);
+      updateDataStructures();
+      return undefined;
+    }
+    case "Assign": {
+      await pauseAtLine(line, nd, env, mode);
+      const val = hasCall(nd.value) ? await evalExprAsync(nd.value, env) : evalExpr(nd.value, env);
+      if (nd.target.node === "Identifier") {
+        const name = nd.target.name;
+        const scope = (name in env) ? env : (name in globals) ? globals : env;
+        if (nd.op === "=") { scope[name] = val; }
+        else {
+          const cur = scope[name] || 0;
+          const ops = { "+=": (a,b)=>a+b, "-=": (a,b)=>a-b, "*=": (a,b)=>a*b,
+                        "/=": (a,b)=> Number.isInteger(a)&&Number.isInteger(b) ? Math.trunc(a/b) : a/b,
+                        "%=": (a,b)=>a%b };
+          scope[name] = ops[nd.op](cur, val);
+        }
+      } else if (nd.target.node === "Index") {
+        const target = hasCall(nd.target.target) ? await evalExprAsync(nd.target.target, env) : evalExpr(nd.target.target, env);
+        const index  = hasCall(nd.target.index) ? await evalExprAsync(nd.target.index, env) : evalExpr(nd.target.index, env);
+        target[index] = val;
+      }
+      updateRegView(env);
+      updateDataStructures();
+      return undefined;
+    }
+    case "If": {
+      await pauseAtLine(line, nd, env, mode);
+      const cond = hasCall(nd.condition) ? await evalExprAsync(nd.condition, env) : evalExpr(nd.condition, env);
+      if (cond) await execBodyAsync(nd.thenBody, env, mode);
+      else if (nd.elseBody.length) await execBodyAsync(nd.elseBody, env, mode);
+      return undefined;
+    }
+    case "While": {
+      let guard = 0;
+      while (true) {
+        await pauseAtLine(line, nd, env, mode);
+        const cond = hasCall(nd.condition) ? await evalExprAsync(nd.condition, env) : evalExpr(nd.condition, env);
+        if (!cond) break;
+        if (++guard > 100000) throw new RuntimeErr("infinite loop detected");
+        try { await execBodyAsync(nd.body, env, mode); }
+        catch (e) {
+          if (e instanceof BreakSignal) break;
+          if (e instanceof ContinueSignal) continue;
+          throw e;
+        }
+      }
+      return undefined;
+    }
+    case "For": {
+      await pauseAtLine(line, nd, env, mode);
+      const iter = hasCall(nd.iterable) ? await evalExprAsync(nd.iterable, env) : evalExpr(nd.iterable, env);
+      if (!Array.isArray(iter) && typeof iter !== "string")
+        throw new RuntimeErr("cannot iterate over " + typeof iter);
+      let guard = 0;
+      for (const item of iter) {
+        if (++guard > 100000) throw new RuntimeErr("infinite loop detected");
+        env[nd.var] = item;
+        try { await execBodyAsync(nd.body, env, mode); }
+        catch (e) {
+          if (e instanceof BreakSignal) break;
+          if (e instanceof ContinueSignal) continue;
+          throw e;
+        }
+      }
+      return undefined;
+    }
+    case "Return": {
+      await pauseAtLine(line, nd, env, mode);
+      const val = nd.value ? (hasCall(nd.value) ? await evalExprAsync(nd.value, env) : evalExpr(nd.value, env)) : null;
+      throw new ReturnValue(val);
+    }
+    case "Print": {
+      await pauseAtLine(line, nd, env, mode);
+      const val = hasCall(nd.value) ? await evalExprAsync(nd.value, env) : evalExpr(nd.value, env);
+      let s;
+      if (typeof val === "boolean") s = val ? "1" : "0";
+      else if (typeof val === "number" && !Number.isInteger(val)) s = val.toFixed(6);
+      else if (val === null) s = "empty";
+      else if (Array.isArray(val)) s = "[" + val.join(", ") + "]";
+      else s = String(val);
+      appendOutput(s);
+      return undefined;
+    }
+    case "ExprStmt": {
+      await pauseAtLine(line, nd, env, mode);
+      const result = hasCall(nd.expr) ? await evalExprAsync(nd.expr, env) : evalExpr(nd.expr, env);
+      return result;
+    }
+    case "Escape":  { await pauseAtLine(line, nd, env, mode); throw new BreakSignal(); }
+    case "Continue": { await pauseAtLine(line, nd, env, mode); throw new ContinueSignal(); }
+    default: throw new RuntimeErr("unknown statement node: " + nd.node);
+  }
+}
+
+async function execBodyAsync(stmts, env, mode) {
+  for (const s of stmts) {
+    await execStmtAsync(s, env, mode || stepMode);
+  }
+}
+
+// ==========================================================================
+//  MAIN EXECUTION DRIVER
+// ==========================================================================
+
+let executionPromise = null;
+
+async function startExecution() {
+  const src = currentSource;
+  globals = {};
+  functions = {};
+  callStack = [];
+  callGraph = {};
+  printBuffer = [];
+  pipelineHistory = [];
+  stmtCounter = 0;
+  prevRegSnapshot = {};
+
+  outputEl.innerHTML = "";
+  callstackEl.innerHTML = "";
+  dsEl.innerHTML = '<div class="ds-empty">No data structures yet.</div>';
+  regEl.innerHTML = '<div class="reg-empty">No variables in scope.</div>';
+  flowEl.innerHTML = '<div class="fg-empty">Call graph appears after execution begins.</div>';
+  updatePipeline();
+
+  dbgState = "stepping";
+  statusEl.textContent = "Running...";
+  statusEl.className = "status-indicator stepping";
+
+  try {
+    const tokens = tokenize(src);
+    const parser = new Parser(tokens);
+    const stmts = [];
+
+    // Parse all top-level statements and function decls
+    while (!parser.atEnd()) {
+      if (parser.check("KW", "function")) {
+        const decl = parser.parseFunction();
+        stmts.push({node: "FunctionDeclStmt", decl, line: decl.line, col: decl.col});
+      } else {
+        stmts.push(parser.parseStatement());
+      }
+    }
+
+    // Set up main frame on the call stack
+    callStack.push({ name: "<main>", env: globals, line: 1 });
+    updateCallStack();
+
+    await execBodyAsync(stmts, globals, stepMode);
+
+    callStack.pop();
+    updateCallStack();
+
+  } catch (e) {
+    if (e instanceof StepAbort) {
+      // User reset
+    } else if (e instanceof ReturnValue) {
+      appendOutput("(returned: " + formatValue(e.value) + ")", "info");
+    } else {
+      appendOutput("Error: " + (e.message || String(e)), "error");
+    }
+  }
+
+  dbgState = "done";
+  highlightLine(-1);
+  statusEl.textContent = "Done (" + stmtCounter + " steps)";
+  statusEl.className = "status-indicator";
+  updateFlowGraph();
+}
+
+// ==========================================================================
+//  DEBUGGER CONTROLS
+// ==========================================================================
+
+window.dbgRun = function() {
+  if (dbgState === "idle" || dbgState === "done") {
+    stepMode = "run";
+    executionPromise = startExecution();
+  } else if (dbgState === "paused") {
+    stepMode = "run";
+    if (stepResolver) { stepResolver.resolve(); stepResolver = null; }
+  }
+};
+
+window.dbgStep = function() {
+  if (dbgState === "idle" || dbgState === "done") {
+    stepMode = "step";
+    executionPromise = startExecution();
+  } else if (dbgState === "paused") {
+    stepMode = "step";
+    if (stepResolver) { stepResolver.resolve(); stepResolver = null; }
+  }
+};
+
+window.dbgStepIn = function() {
+  if (dbgState === "idle" || dbgState === "done") {
+    stepMode = "stepin";
+    executionPromise = startExecution();
+  } else if (dbgState === "paused") {
+    stepMode = "stepin";
+    if (stepResolver) { stepResolver.resolve(); stepResolver = null; }
+  }
+};
+
+window.dbgStepOut = function() {
+  if (dbgState === "paused") {
+    stepMode = "stepout";
+    stepOutDepth = callStack.length;
+    if (stepResolver) { stepResolver.resolve(); stepResolver = null; }
+  }
+};
+
+window.dbgReset = function() {
+  dbgState = "idle";
+  if (stepResolver) { stepResolver.reject(new StepAbort()); stepResolver = null; }
+  highlightLine(-1);
+  outputEl.innerHTML = "";
+  callstackEl.innerHTML = "";
+  dsEl.innerHTML = '<div class="ds-empty">No data structures yet.</div>';
+  regEl.innerHTML = '<div class="reg-empty">No variables in scope.</div>';
+  flowEl.innerHTML = '<div class="fg-empty">Call graph appears after execution begins.</div>';
+  pipelineHistory = [];
+  updatePipeline();
+  statusEl.textContent = "Ready";
+  statusEl.className = "status-indicator";
+  curLineDisp.textContent = "";
+  prevRegSnapshot = {};
+};
+
+// Keyboard shortcuts
+document.addEventListener("keydown", function(e) {
+  if (e.key === "F5") { e.preventDefault(); dbgRun(); }
+  if (e.key === "F10") { e.preventDefault(); dbgStep(); }
+  if (e.key === "F11" && !e.shiftKey) { e.preventDefault(); dbgStepIn(); }
+  if (e.key === "F11" && e.shiftKey) { e.preventDefault(); dbgStepOut(); }
+  if (e.key === "Escape") { e.preventDefault(); dbgReset(); }
+});
+
+// ==========================================================================
+//  EDITOR — Line display, highlighting, breakpoints
+// ==========================================================================
+
+function loadSource(src) {
+  currentSource = src;
+  sourceLines = src.split("\n");
+  breakpoints.clear();
+  renderEditor();
+}
+
+function renderEditor() {
+  gutterEl.innerHTML = "";
+  codeLinesEl.innerHTML = "";
+
+  sourceLines.forEach((line, i) => {
+    const lineNum = i + 1;
+
+    // Gutter
+    const gl = document.createElement("div");
+    gl.className = "gutter-line";
+    gl.dataset.line = lineNum;
+    gl.innerHTML = '<span class="bp-dot"></span>' + lineNum;
+    gl.addEventListener("click", () => toggleBreakpoint(lineNum));
+    gutterEl.appendChild(gl);
+
+    // Code line
+    const cl = document.createElement("div");
+    cl.className = "code-line";
+    cl.dataset.line = lineNum;
+    cl.innerHTML = syntaxHighlight(escapeHtml(line));
+    codeLinesEl.appendChild(cl);
+  });
+}
+
+function syntaxHighlight(text) {
+  // Simple keyword/number/string highlighting
+  return text
+    .replace(/\b(function|end|returns|return|if|else|while|do|for|each|in|match|iterate|default|escape|continue|print|prompt|fixed|constant|import|from|export|and|or|not|true|false|empty)\b/g, '<span class="kw">$1</span>')
+    .replace(/\b(int|float|double|string|bool|none|complex|int8|int16|int32|int64|uint8|uint16|uint32|uint64|array|list|map|arena|file)\b/g, '<span class="ty">$1</span>')
+    .replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>')
+    .replace(/(\/\/.*)/g, '<span class="cm">$1</span>');
+}
+
+function highlightLine(lineNum) {
+  document.querySelectorAll(".code-line.highlight").forEach(el => el.classList.remove("highlight"));
+  document.querySelectorAll(".gutter-line.current-line").forEach(el => el.classList.remove("current-line"));
+
+  if (lineNum > 0 && lineNum <= sourceLines.length) {
+    const codeLine = codeLinesEl.querySelector('[data-line="' + lineNum + '"]');
+    const gutterLine = gutterEl.querySelector('[data-line="' + lineNum + '"]');
+    if (codeLine) { codeLine.classList.add("highlight"); codeLine.scrollIntoView({ block: "nearest" }); }
+    if (gutterLine) gutterLine.classList.add("current-line");
+  }
+}
+
+function toggleBreakpoint(lineNum) {
+  const gl = gutterEl.querySelector('[data-line="' + lineNum + '"]');
+  if (breakpoints.has(lineNum)) {
+    breakpoints.delete(lineNum);
+    if (gl) gl.classList.remove("has-bp");
+  } else {
+    breakpoints.add(lineNum);
+    if (gl) gl.classList.add("has-bp");
+  }
+}
+
+// ==========================================================================
+//  OUTPUT PANEL
+// ==========================================================================
+
+function appendOutput(text, cls) {
+  const div = document.createElement("div");
+  div.className = "output-line" + (cls ? " " + cls : "");
+  div.textContent = text;
+  outputEl.appendChild(div);
+  outputEl.scrollTop = outputEl.scrollHeight;
+}
+
+function formatValue(val) {
+  if (val === null || val === undefined) return "empty";
+  if (typeof val === "boolean") return val ? "1" : "0";
+  if (typeof val === "number" && !Number.isInteger(val)) return val.toFixed(6);
+  if (Array.isArray(val)) return "[" + val.map(formatValue).join(", ") + "]";
+  return String(val);
+}
+
+function escapeHtml(s) { return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+// ==========================================================================
+//  CALL STACK VISUALIZER
+// ==========================================================================
+
+function updateCallStack() {
+  callstackEl.innerHTML = "";
+  if (callStack.length === 0) return;
+
+  for (let i = callStack.length - 1; i >= 0; i--) {
+    const frame = callStack[i];
+    const el = document.createElement("div");
+    el.className = "stack-frame";
+
+    let html = '<div class="frame-name">' + escapeHtml(frame.name) + '</div>';
+    html += '<div class="frame-line">line ' + frame.line + '</div>';
+    html += '<div class="frame-vars">';
+
+    const env = frame.env;
+    const keys = Object.keys(env);
+    if (keys.length === 0) {
+      html += '<span style="color:#585b70; font-style:italic;">no locals</span>';
+    } else {
+      for (const k of keys) {
+        html += '<div class="frame-var-entry"><span class="frame-var-name">' + escapeHtml(k) + '</span> = <span class="frame-var-val">' + escapeHtml(formatValue(env[k])) + '</span></div>';
+      }
+    }
+    html += '</div>';
+    el.innerHTML = html;
+    callstackEl.appendChild(el);
+  }
+}
+
+// ==========================================================================
+//  REGISTER / FRAME VIEW
+// ==========================================================================
+
+function updateRegView(env) {
+  if (!env) env = callStack.length > 0 ? callStack[callStack.length - 1].env : globals;
+  const keys = Object.keys(env);
+
+  if (keys.length === 0) {
+    regEl.innerHTML = '<div class="reg-empty">No variables in scope.</div>';
+    return;
+  }
+
+  let html = '<table class="reg-table"><tr><th>Slot</th><th>Name</th><th>Type</th><th>Value</th></tr>';
+
+  const changedVars = new Set();
+  keys.forEach((k, i) => {
+    const val = env[k];
+    const valStr = formatValue(val);
+    const prevStr = prevRegSnapshot[k];
+    const changed = prevStr !== undefined && prevStr !== valStr;
+    if (changed) changedVars.add(k);
+
+    const typeStr = val === null ? "empty" : Array.isArray(val) ? "array" : typeof val === "boolean" ? "bool" : typeof val === "number" ? (Number.isInteger(val) ? "int" : "float") : typeof val;
+
+    html += '<tr' + (changed ? ' class="flash"' : '') + '>';
+    html += '<td class="reg-slot">r' + i + '</td>';
+    html += '<td class="reg-name">' + escapeHtml(k) + '</td>';
+    html += '<td class="reg-type">' + typeStr + '</td>';
+    html += '<td class="reg-value">' + escapeHtml(valStr) + '</td>';
+    html += '</tr>';
+  });
+
+  html += '</table>';
+  regEl.innerHTML = html;
+
+  // Update snapshot
+  prevRegSnapshot = {};
+  keys.forEach(k => { prevRegSnapshot[k] = formatValue(env[k]); });
+
+  // Remove flash after animation
+  if (changedVars.size > 0) {
+    setTimeout(() => {
+      regEl.querySelectorAll("tr.flash").forEach(tr => tr.classList.remove("flash"));
+    }, 500);
+  }
+}
+
+// ==========================================================================
+//  DATA STRUCTURE VISUALIZER
+// ==========================================================================
+
+function updateDataStructures() {
+  const env = callStack.length > 0 ? callStack[callStack.length - 1].env : globals;
+  // Also check globals
+  const allEnv = { ...globals };
+  if (callStack.length > 0) Object.assign(allEnv, callStack[callStack.length - 1].env);
+
+  const arrays = [];
+  const linkedLists = [];
+
+  for (const [name, val] of Object.entries(allEnv)) {
+    if (Array.isArray(val)) {
+      arrays.push({ name, val });
+    }
+  }
+
+  if (arrays.length === 0) {
+    dsEl.innerHTML = '<div class="ds-empty">No data structures to display.</div>';
+    return;
+  }
+
+  let html = "";
+
+  // Detect linked list patterns: parallel val/nxt arrays
+  const detected = detectLinkedList(allEnv);
+
+  if (detected) {
+    for (const ll of detected) {
+      html += '<div class="ds-array-label">' + escapeHtml(ll.label) + ' (linked list)</div>';
+      html += '<div class="ds-linked-row">';
+      let cur = ll.head;
+      let guard = 0;
+      while (cur !== -1 && cur !== null && cur !== undefined && guard < 50) {
+        if (guard > 0) html += '<div class="ds-arrow">&rarr;</div>';
+        const v = ll.values[cur];
+        html += '<div class="ds-node"><div class="ds-node-val">' + escapeHtml(formatValue(v)) + '</div><div class="ds-node-label">[' + cur + ']</div></div>';
+        cur = ll.nexts[cur];
+        guard++;
+      }
+      html += '<div class="ds-arrow">&rarr;</div><div class="ds-null">null</div>';
+      html += '</div>';
+    }
+  }
+
+  // Regular arrays
+  for (const { name, val } of arrays) {
+    html += '<div class="ds-array-label">' + escapeHtml(name) + ' [' + val.length + ']</div>';
+    html += '<div class="ds-array-row">';
+    for (let i = 0; i < val.length && i < 30; i++) {
+      html += '<div class="ds-cell"><div class="ds-cell-val">' + escapeHtml(formatValue(val[i])) + '</div><div class="ds-cell-idx">' + i + '</div></div>';
+    }
+    if (val.length > 30) html += '<div class="ds-cell"><div class="ds-cell-val">...</div><div class="ds-cell-idx"></div></div>';
+    html += '</div>';
+  }
+
+  dsEl.innerHTML = html;
+}
+
+function detectLinkedList(env) {
+  // Look for parallel arrays named val/nxt, val2/nxt2, values/nexts, etc.
+  const lists = [];
+  const used = new Set();
+
+  const pairs = [
+    ["val", "nxt"],
+    ["val2", "nxt2"],
+    ["values", "nexts"],
+    ["data", "next"],
+  ];
+
+  for (const [vName, nName] of pairs) {
+    if (env[vName] && env[nName] && Array.isArray(env[vName]) && Array.isArray(env[nName])) {
+      // Find corresponding head variable
+      let head = 0;
+      for (const [k, v] of Object.entries(env)) {
+        if (k.startsWith("head") && typeof v === "number" && !Array.isArray(v)) {
+          // Match head to the right pair
+          if ((vName === "val2" && k === "head2") || (vName === "val" && k === "head") ||
+              (vName === "values" && k === "head") || (vName === "data" && k === "head")) {
+            head = v;
+            break;
+          }
+        }
+      }
+
+      lists.push({
+        label: vName + " / " + nName,
+        values: env[vName],
+        nexts: env[nName],
+        head
+      });
+      used.add(vName);
+      used.add(nName);
+    }
+  }
+
+  return lists.length > 0 ? lists : null;
+}
+
+// ==========================================================================
+//  EXECUTION FLOW GRAPH
+// ==========================================================================
+
+function updateFlowGraph() {
+  const callers = Object.keys(callGraph);
+  if (callers.length === 0) {
+    flowEl.innerHTML = '<div class="fg-empty">Call graph appears after execution begins.</div>';
+    return;
+  }
+
+  // Collect all unique nodes
+  const nodes = new Set();
+  const edges = [];
+
+  for (const caller of callers) {
+    nodes.add(caller);
+    for (const [callee, count] of Object.entries(callGraph[caller])) {
+      nodes.add(callee);
+      edges.push({ from: caller, to: callee, count });
+    }
+  }
+
+  const nodeArr = Array.from(nodes);
+  // Simple top-down tree layout
+  // Build layers: root = nodes that are never called (or <main>), then their callees, etc.
+  const layers = [];
+  const placed = new Set();
+  const childMap = {};
+
+  for (const caller of callers) {
+    if (!childMap[caller]) childMap[caller] = [];
+    for (const callee of Object.keys(callGraph[caller])) {
+      childMap[caller].push(callee);
+    }
+  }
+
+  // Root layer: <main> or nodes that nothing calls
+  const called = new Set();
+  edges.forEach(e => called.add(e.to));
+  const roots = nodeArr.filter(n => !called.has(n));
+  if (roots.length === 0) roots.push(nodeArr[0]);
+  layers.push(roots);
+  roots.forEach(n => placed.add(n));
+
+  // BFS layers
+  let frontier = [...roots];
+  while (frontier.length > 0) {
+    const nextLayer = [];
+    for (const n of frontier) {
+      const children = childMap[n] || [];
+      for (const c of children) {
+        if (!placed.has(c)) {
+          nextLayer.push(c);
+          placed.add(c);
+        }
+      }
+    }
+    if (nextLayer.length > 0) layers.push(nextLayer);
+    frontier = nextLayer;
+  }
+
+  // Add unplaced
+  for (const n of nodeArr) {
+    if (!placed.has(n)) {
+      if (layers.length === 0) layers.push([]);
+      layers[layers.length - 1].push(n);
+    }
+  }
+
+  // Compute positions
+  const nodeWidth = 100;
+  const nodeHeight = 32;
+  const layerGap = 60;
+  const nodeGap = 20;
+  const positions = {};
+
+  const totalHeight = layers.length * (nodeHeight + layerGap);
+  const graphWidth = Math.max(...layers.map(l => l.length)) * (nodeWidth + nodeGap);
+
+  layers.forEach((layer, li) => {
+    const layerWidth = layer.length * (nodeWidth + nodeGap) - nodeGap;
+    const startX = (graphWidth - layerWidth) / 2;
+    layer.forEach((n, ni) => {
+      positions[n] = {
+        x: startX + ni * (nodeWidth + nodeGap),
+        y: li * (nodeHeight + layerGap) + 10
+      };
+    });
+  });
+
+  // Determine current function
+  const currentFn = callStack.length > 0 ? callStack[callStack.length - 1].name : null;
+
+  // Render
+  let html = "";
+
+  // Draw edges (lines)
+  for (const edge of edges) {
+    const fromPos = positions[edge.from];
+    const toPos = positions[edge.to];
+    if (!fromPos || !toPos) continue;
+
+    const x1 = fromPos.x + nodeWidth / 2;
+    const y1 = fromPos.y + nodeHeight;
+    const x2 = toPos.x + nodeWidth / 2;
+    const y2 = toPos.y;
+
+    // Vertical line
+    const midY = (y1 + y2) / 2;
+
+    // Vertical from source
+    html += '<div class="fg-edge-line" style="left:' + x1 + 'px; top:' + y1 + 'px; width:1px; height:' + (midY - y1) + 'px;"></div>';
+
+    // Horizontal connector
+    const lx = Math.min(x1, x2);
+    const rx = Math.max(x1, x2);
+    if (rx - lx > 1) {
+      html += '<div class="fg-edge-line" style="left:' + lx + 'px; top:' + midY + 'px; width:' + (rx - lx) + 'px; height:1px;"></div>';
+    }
+
+    // Vertical to target
+    html += '<div class="fg-edge-line" style="left:' + x2 + 'px; top:' + midY + 'px; width:1px; height:' + (y2 - midY) + 'px;"></div>';
+
+    // Count label
+    const labelX = (x1 + x2) / 2 - 8;
+    const labelY = midY - 8;
+    html += '<div class="fg-edge-label" style="left:' + labelX + 'px; top:' + labelY + 'px;">' + edge.count + 'x</div>';
+  }
+
+  // Draw nodes
+  for (const [name, pos] of Object.entries(positions)) {
+    const isActive = name === currentFn;
+    html += '<div class="fg-node' + (isActive ? ' active' : '') + '" style="left:' + pos.x + 'px; top:' + pos.y + 'px; width:' + nodeWidth + 'px; height:' + nodeHeight + 'px; line-height:' + nodeHeight + 'px;">' + escapeHtml(name) + '</div>';
+  }
+
+  flowEl.style.minHeight = (totalHeight + 40) + "px";
+  flowEl.innerHTML = html;
+}
+
+// ==========================================================================
+//  CPU PIPELINE VISUALIZER
+// ==========================================================================
+
+window.togglePipeline = function() {
+  const toggle = document.getElementById("pipeline-toggle");
+  const body = document.getElementById("pipeline-body");
+  toggle.classList.toggle("open");
+  body.classList.toggle("open");
+};
+
+function updatePipeline() {
+  const stages = ["fetch", "decode", "execute"];
+  stages.forEach((stage, i) => {
+    const instrEl = document.getElementById("pipe-" + stage + "-instr");
+    const srcEl = document.getElementById("pipe-" + stage + "-src");
+    const stageEl = document.getElementById("pipe-" + stage);
+
+    // Pipeline history: index 0 = newest (currently executing), 1 = just decoded, 2 = just fetched
+    // Map: execute = [0], decode = [1], fetch = [2]
+    // Actually for a 3-stage pipeline stepping one at a time:
+    // execute shows what was 2 steps ago, decode shows 1 step ago, fetch shows current
+    // But we simplify: execute = index 2 (oldest), decode = index 1, fetch = index 0 (newest)
+    const histIdx = (stages.length - 1) - i; // fetch=newest=idx0, decode=idx1, execute=idx2
+    // Actually reverse: execute = 0 (most recent completed), decode = 1, fetch = 2
+    // Let's do: fetch=2, decode=1, execute=0 — showing pipeline flow
+    const entry = pipelineHistory[2 - i]; // fetch gets oldest of the 3, execute gets newest
+
+    if (entry) {
+      instrEl.textContent = entry.bytecode;
+      srcEl.textContent = entry.srcLine || "(line " + entry.line + ")";
+      stageEl.classList.add("active");
+    } else {
+      instrEl.innerHTML = "&mdash;";
+      srcEl.innerHTML = "&nbsp;";
+      stageEl.classList.remove("active");
+    }
+  });
+}
+
+// ==========================================================================
+//  LEVEL SELECTOR
+// ==========================================================================
+
+window.loadLevel = function(idx) {
+  if (idx < 0 || idx >= LEVELS.length) return;
+  dbgReset();
+  loadSource(LEVELS[idx].code);
+
+  // Update button states
+  document.querySelectorAll(".level-btn").forEach((btn, i) => {
+    btn.classList.toggle("active", i === idx);
+  });
+};
+
+// ==========================================================================
+//  STARTUP
+// ==========================================================================
+
+loadSource(LEVELS[0].code);
+
+})();
+</script>
+
+</body>
+</html>

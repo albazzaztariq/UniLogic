@@ -1,0 +1,30 @@
+// Temperature Converter
+// Converts Celsius to Fahrenheit and Kelvin
+// Concepts: variables, print, basic math
+
+function main() returns int
+  // Define temperatures to convert
+  array float[4] temps_c = [0.0, 20.0, 37.0, 100.0]
+  int count = 4
+
+  print "=== Temperature Converter ==="
+  print ""
+
+  // Convert each temperature
+  for int i = 0 while i < count do i++
+    float c = temps_c[i]
+    // Celsius to Fahrenheit: F = C * 9/5 + 32
+    float f = c * 9.0 / 5.0 + 32.0
+    // Celsius to Kelvin: K = C + 273.15
+    float k = c + 273.15
+
+    print cast(c, string, "%.1f") + " C = " + cast(f, string, "%.1f") + " F = " + cast(k, string, "%.2f") + " K"
+  end for
+
+  print ""
+  print "Freezing point of water: 0.0 C"
+  print "Boiling point of water:  100.0 C"
+  print "Normal body temperature: 37.0 C"
+
+  return 0
+end function

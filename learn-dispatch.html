@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dispatch, Threading, and Superinstructions — How Interpreters Execute Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;600&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Georgia', serif; font-size: 16px; line-height: 1.7; color: #1a1a1a; background: #fafaf8; display: flex; }
+nav { position: fixed; top: 0; left: 0; width: 230px; height: 100vh; overflow-y: auto; padding: 24px 0 40px; z-index: 100; background: #1e1e2e; border-right: 1px solid #313244; }
+.nav-logo { font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; padding: 0 20px 16px; color: #5b8fc9; border-bottom: 1px solid #313244; margin-bottom: 8px; display: block; text-decoration: none; }
+.nav-section { margin-top: 14px; padding: 3px 20px; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; font-family: sans-serif; font-weight: bold; color: #585b70; }
+nav a { display: block; padding: 5px 20px 5px 23px; text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 13px; color: #a6adc8; border-left: 3px solid transparent; transition: background 0.12s, color 0.12s; }
+nav a:hover { background: #313244; color: #cdd6f4; border-left-color: #7ab3e0; }
+main { margin-left: 230px; padding: 56px 80px 100px 72px; max-width: 920px; width: 100%; }
+h1 { font-size: 2.2rem; font-weight: normal; margin-bottom: 8px; padding-bottom: 14px; color: #1a1a1a; border-bottom: 2px solid #e0d8f0; }
+.subtitle { font-size: 1rem; margin-bottom: 32px; font-style: italic; color: #666; }
+h2 { font-size: 1.5rem; font-weight: normal; margin-top: 48px; margin-bottom: 4px; padding-bottom: 6px; scroll-margin-top: 32px; color: #2d1b69; border-bottom: 1px solid #e0d8f0; }
+h3 { font-size: 1.05rem; font-weight: bold; margin-top: 28px; margin-bottom: 8px; color: #333; }
+p { margin-bottom: 14px; color: #2a2a2a; }
+pre { padding: 18px 22px; border-radius: 6px; white-space: pre-wrap; word-break: break-word; font-family: 'Share Tech Mono', monospace; font-size: 13px; line-height: 1.6; margin: 14px 0 20px; background: #1e1e2e; color: #cdd6f4; border-left: 3px solid #7ab3e0; }
+code { padding: 1px 6px; border-radius: 3px; font-family: 'Share Tech Mono', monospace; font-size: 14px; background: #ede8f5; color: #1a3a7a; }
+pre code { background: none; color: inherit; padding: 0; }
+.note { padding: 12px 16px; margin: 16px 0; border-radius: 0 4px 4px 0; font-size: 15px; background: #f0f4ff; border-left: 4px solid #6c7ef7; }
+.note strong { display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #4a5fcc; }
+.warn { padding: 12px 16px; margin: 16px 0; border-radius: 0 4px 4px 0; font-size: 15px; background: #fff8e8; border-left: 4px solid #f5a623; }
+.warn strong { display: block; margin-bottom: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: #c07820; }
+.link-card { display: inline-block; margin-top: 16px; margin-right: 8px; padding: 10px 24px; background: #1e1e2e; color: #7ab3e0; border: 1px solid #313244; border-radius: 5px; text-decoration: none; font-family: 'Share Tech Mono', monospace; font-size: 13px; letter-spacing: 0.08em; transition: background 0.15s; }
+.link-card:hover { background: #0a1f5e; }
+@media (max-width: 700px) { nav { display: none; } main { margin-left: 0; padding: 20px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="learn-bytecode.html" class="nav-logo">&larr; Back to Bytecode Tutorial</a>
+  <div class="nav-section">On This Page</div>
+  <a href="#dispatch">The Dispatch Loop</a>
+  <a href="#threading">Threading Techniques</a>
+  <a href="#super">Superinstructions</a>
+  <a href="#gil">The GIL</a>
+  <div class="nav-section">Also</div>
+  <a href="interpreter.html">UBI Technical Reference</a>
+  <a href="learn-bytecode.html">Bytecode Interpreters</a>
+  <a href="language-main.html">Syntax Reference</a>
+</nav>
+
+<main>
+
+<h1>Dispatch, Threading, and Superinstructions</h1>
+<p class="subtitle">The mechanics of how an interpreter turns bytecode into action &mdash; and why the naive way is slow.</p>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="dispatch">The Dispatch Loop</h2>
+
+<p>An interpreter does the same thing over and over: read the next instruction, figure out what it means, do it, advance to the next one. That's the dispatch loop. It's the heartbeat of every bytecode interpreter ever built.</p>
+
+<p>The "figuring out what it means" step is called <em>dispatch</em>, and it's where interpreters spend most of their time &mdash; not doing the actual work (adding numbers, loading variables), but deciding <em>which</em> work to do. The simplest way to implement dispatch is a switch statement:</p>
+
+<pre><code>while (running) {
+    opcode = bytecode[pc++];
+    switch (opcode) {
+        case ADD:  reg[a] = reg[b] + reg[c];  break;
+        case SUB:  reg[a] = reg[b] - reg[c];  break;
+        case LOAD: reg[a] = constants[b];      break;
+        case JMP:  pc = target;                break;
+        // ... 100+ more cases
+    }
+}</code></pre>
+
+<p>This works, but it's slow. The reason is the CPU's branch predictor. Modern CPUs guess which instruction comes next so they can start executing it before the current one finishes. For a normal <code>if/else</code>, the predictor is excellent. But a single switch statement shared across 100+ opcodes? The predictor sees one branch point that could go 100 different directions. It's terrible at this. Every misprediction costs 15&ndash;20 CPU cycles &mdash; wasted work that has to be thrown away.</p>
+
+<div class="note">
+<strong>Did you know?</strong>
+The CPU's branch predictor is right about 95% of the time for normal code. But a switch statement with 100+ cases (like an interpreter dispatch) drops it to around 50% &mdash; basically a coin flip. That's why dispatch technique matters so much.
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="threading">Threading Techniques</h2>
+
+<p>First, a clarification: "threading" here has <em>nothing</em> to do with multi-threading or parallelism. It's an older usage of the word &mdash; it means how instruction handlers are "threaded" together, connected in a chain, like beads on a string. The term predates multi-threaded programming by decades.</p>
+
+<h3>Direct threading (computed goto)</h3>
+
+<p>Instead of every handler jumping back to one central switch statement, each handler jumps <em>directly</em> to the next handler. Think of it like a relay race: each runner hands the baton straight to the next, instead of everyone running back to the starting line between legs. In C, this uses GCC's <code>goto *label_table[opcode]</code> extension. Because each handler is its own branch point, the CPU's branch predictor now has 100+ separate sites to learn patterns for, instead of one overloaded site. Performance improves 15&ndash;25% over a switch.</p>
+
+<h3>Context threading</h3>
+
+<p>Context threading takes a different approach entirely. Instead of using branch prediction (which is mediocre for interpreters), it uses the CPU's <em>return address predictor</em> &mdash; a dedicated piece of hardware designed to predict where <code>call</code>/<code>return</code> pairs will go. This predictor is extremely accurate because call/return patterns are inherently more predictable than arbitrary jumps. Each bytecode handler becomes a tiny function that gets called and returns. The CPU hardware that tracks return addresses handles dispatch almost for free. Research shows this is 19&ndash;37% faster than direct threading.</p>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="super">Superinstructions</h2>
+
+<p>Some instruction sequences appear together so often that dispatching them individually is wasteful. <code>COMPARE</code> followed by <code>JUMP_IF_TRUE</code> is a classic example &mdash; virtually every <code>if</code> statement and loop generates this pair. A superinstruction fuses them into one: <code>COMPARE_AND_JUMP</code>. One dispatch instead of two. One trip through the loop instead of two.</p>
+
+<p>The analogy: you don't spell out "do not" every time you speak &mdash; you say "don't." Same meaning, fewer steps. Superinstructions are contractions for bytecode.</p>
+
+<p>UBI does this at load time. When a <code>.ubi</code> file is loaded into memory, the interpreter scans the bytecode, identifies common patterns, and rewrites them into fused superinstructions before execution starts. The program runs faster without the compiler having to know anything about which fusions exist &mdash; and new superinstructions can be added to the runtime without changing the bytecode format.</p>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+
+<h2 id="gil">The GIL (and Why It Matters)</h2>
+
+<p>GIL stands for Global Interpreter Lock. CPython has one. UBI does not.</p>
+
+<p>Here's what it is: a lock that says "only one thread can execute Python bytecode at a time." Even if your machine has 16 CPU cores, CPython uses exactly 1 of them for bytecode execution. If you write a multi-threaded Python program expecting it to run in parallel, it doesn't. The threads take turns, one at a time, passing the lock back and forth.</p>
+
+<p>Why does it exist? CPython manages memory with reference counting &mdash; every object has a counter tracking how many things point to it, and when the counter hits zero, the object is freed. Reference counting is simple and predictable, but it's not thread-safe. Two threads incrementing the same counter at the same time can corrupt it. The GIL is the simplest possible fix: don't let two threads run at the same time, and the problem disappears.</p>
+
+<p>UBI avoids the GIL because each of its memory management modes was designed to be thread-aware from the start. Reference counting uses atomic operations (hardware-guaranteed single-step increments that can't be corrupted by concurrent access). The garbage collector can run concurrently with program threads. There's no single lock because there doesn't need to be one &mdash; the thread safety is built into each individual operation rather than bolted on at the top.</p>
+
+<div class="note">
+<strong>Did you know?</strong>
+The word "bytecode" comes from the fact that each instruction's opcode fits in one byte (8 bits), giving a maximum of 256 different instructions. UBI uses exactly this: opcodes 0x00 through 0xFF.
+</div>
+
+<hr style="border:none; border-top:1px solid #e8e4f0; margin:40px 0;">
+
+<div style="display:flex; justify-content:space-between;">
+<a href="learn-bytecode.html" class="link-card">&larr; Previous: Bytecode Interpreters</a>
+<a href="learn-ubi-format.html" class="link-card">Next: Inside the .ubi File &rarr;</a>
+</div>
+
+</main>
+
+</body>
+</html>

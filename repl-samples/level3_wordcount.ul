@@ -1,0 +1,60 @@
+// Word Counter
+// Counts word frequencies in a text string
+// Concepts: maps, string manipulation, sorting
+
+function main() returns int
+  print "=== Word Counter ==="
+  print ""
+
+  string text = "the cat sat on the mat the cat liked the mat"
+  print "Text: " + text
+  print ""
+
+  // Convert to lowercase for consistent counting
+  text = text.lower()
+
+  // Split on spaces
+  list string words = text.split(" ")
+
+  // Count each word using a map
+  map [string,int] counts
+  int total_words = 0
+
+  for each word in words
+    if word == ""
+      continue
+    end if
+    total_words++
+    if word in counts
+      counts[word] += 1
+    else
+      counts[word] = 1
+    end if
+  end for
+
+  // Get keys and sort alphabetically
+  list string keys = counts.keys()
+  keys.sort()
+
+  // Display results
+  print "Word frequencies:"
+  for each word in keys
+    int count = counts[word]
+    string bar = ""
+    for int j = 0 while j < count do j++
+      bar += "*"
+    end for
+    // Pad word to 8 characters
+    string padded = word
+    while padded.length < 8 do
+      padded += " "
+    end do
+    print "  " + padded + " " + cast(count, string) + " " + bar
+  end for
+
+  print ""
+  print "Unique words: " + cast(keys.length, string)
+  print "Total words:  " + cast(total_words, string)
+
+  return 0
+end function
