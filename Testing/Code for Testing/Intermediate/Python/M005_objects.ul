@@ -1,0 +1,60 @@
+// M005: Types, objects, inheritance (forks), method override
+type Point
+    int x
+    int y
+end type
+
+object Animal
+    string name
+    int age
+
+    function speak() returns string
+        return self.name + " makes a sound"
+    end function
+end object
+
+object Dog forks Animal
+    string breed
+
+    function speak() returns string
+        return self.name + " barks"
+    end function
+
+    function fetch() returns string
+        return self.name + " fetches the ball"
+    end function
+end object
+
+object Cat forks Animal
+    function speak() returns string
+        return self.name + " meows"
+    end function
+end object
+
+function main() returns int
+    // type (struct)
+    Point p = new Point[10, 20]
+    print p.x
+    print p.y
+
+    // object with methods
+    Animal a
+    a.name = "Generic"
+    a.age = 5
+    print a.speak()
+
+    // inheritance
+    Dog d
+    d.name = "Rex"
+    d.age = 3
+    d.breed = "Labrador"
+    print d.speak()
+    print d.fetch()
+
+    Cat c
+    c.name = "Whiskers"
+    c.age = 7
+    print c.speak()
+
+    return 0
+end function

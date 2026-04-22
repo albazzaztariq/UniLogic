@@ -1,0 +1,33 @@
+// M008: Enums (fixed), constants, module-level vars
+constant int VERSION = 1
+constant string APP = "TestApp"
+
+fixed Priority
+    low = 1
+    medium = 2
+    high = 3
+end fixed
+
+fixed Color
+    red = 10
+    green = 20
+    blue = 30
+end fixed
+
+function main() returns int
+    print VERSION
+    print APP
+
+    int p = Priority.high
+    print p
+
+    int c = Color.green
+    print c
+
+    // use in comparison
+    if p == 3
+        print "high priority confirmed"
+    end if
+
+    return 0
+end function

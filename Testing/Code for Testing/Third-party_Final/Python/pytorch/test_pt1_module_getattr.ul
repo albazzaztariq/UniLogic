@@ -1,0 +1,142 @@
+@dr python_compat = true
+
+object Module
+  int _parameters
+  int _buffers
+  int _modules
+  bool _training
+  
+  function __init__()
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict0 = map_new()
+    self._parameters = _dict0
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict1 = map_new()
+    self._buffers = _dict1
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict2 = map_new()
+    self._modules = _dict2
+    self._training = true
+  end function
+  
+  
+  function register_parameter(int name, int value)
+    self._parameters[name] = value
+  end function
+  
+  
+  function register_buffer(int name, int value)
+    self._buffers[name] = value
+  end function
+  
+  
+  function register_module(int name, int module)
+    self._modules[name] = module
+  end function
+  
+  
+  function __getattr__(int name)
+    if self._parameters.contains(name)
+      return self._parameters[name]
+    end if
+    if self._buffers.contains(name)
+      return self._buffers[name]
+    end if
+    if self._modules.contains(name)
+      return self._modules[name]
+    end if
+    return empty
+  end function
+  
+  
+  function training_mode(int mode)
+    self._training = mode
+    return self
+  end function
+  
+  
+  function is_training()
+    return self._training
+  end function
+  
+  
+  function parameter_count()
+    return self._parameters.len()
+  end function
+  
+  
+  function buffer_count()
+    return self._buffers.len()
+  end function
+  
+  
+  function module_count()
+    return self._modules.len()
+  end function
+  
+end object
+
+object Linear forks Module
+  int in_features
+  int out_features
+  
+  function __init__(int in_features, int out_features)
+    Module.__init__(self)
+    self.in_features = in_features
+    self.out_features = out_features
+    self.register_parameter("weight", in_features * out_features)
+    self.register_parameter("bias", out_features)
+  end function
+  
+  
+  function forward(int x)
+    return x * self.in_features + self.out_features
+  end function
+  
+end object
+
+object Sequential forks Module
+  
+  function __init__()
+    Module.__init__(self)
+  end function
+  
+  
+  function add(int name, int layer)
+    self.register_module(name, layer)
+  end function
+  
+  
+  function forward(int x)
+    result = x
+    for each key in self._modules
+      m = self._modules[key]
+      result = m.forward(result)
+    end for
+    return result
+  end function
+  
+end object
+
+function main()
+  m = Module()
+  m.register_parameter("weight", 42)
+  m.register_parameter("bias", 7)
+  m.register_buffer("running_mean", 0)
+  m.register_buffer("running_var", 1)
+  print "parameter_count: " + cast(m.parameter_count(), string)
+  print "buffer_count: " + cast(m.buffer_count(), string)
+  print "weight via getattr: " + cast(m.__getattr__("weight"), string)
+  print "running_mean via getattr: " + cast(m.__getattr__("running_mean"), string)
+  print "training default: " + cast(m.is_training(), string)
+  m.training_mode(false)
+  print "training after eval: " + cast(m.is_training(), string)
+  lin = Linear(4, 8)
+  print "Linear param count: " + cast(lin.parameter_count(), string)
+  print "Linear forward(2): " + cast(lin.forward(2), string)
+  seq = Sequential()
+  seq.add("layer0", lin)
+  print "Sequential module count: " + cast(seq.module_count(), string)
+  print "Sequential forward(3): " + cast(seq.forward(3), string)
+end function
+

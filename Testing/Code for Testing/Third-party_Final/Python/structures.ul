@@ -1,0 +1,107 @@
+@dr python_compat = true
+
+@dr pyimport_0 = collections__OrderedDict
+@dr pyimport_1 = compat__Mapping
+@dr pyimport_2 = compat__MutableMapping
+
+// TRANSPILER: stub for imported base type 'MutableMapping'
+object MutableMapping
+end object
+
+// TRANSPILER: stub for imported base type 'dict'
+object dict
+end object
+
+// TRANSPILER WARNING line 8: from collections import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 10: from compat import ... — convert to UL import syntax — manual conversion required
+object CaseInsensitiveDict forks MutableMapping
+  int _store
+  
+  function __init__(int data = empty)
+    self._store = OrderedDict()
+    if data == empty
+      // TRANSPILER: dict values cast to string — may lose type information
+      map _dict0 = map_new()
+      data = _dict0
+    end if
+    self.update(data)
+  end function
+  
+  
+  function __setitem__(int key, int value)
+    self._store[key.lower()] = [key, value]
+  end function
+  
+  
+  function __getitem__(int key)
+    return self._store[key.lower()][1]
+  end function
+  
+  
+  function __delitem__(int key)
+    // TRANSPILER WARNING line 55: del statement — manual conversion required
+  end function
+  
+  
+  function __iter__()
+    return 0 // unknown expr: GeneratorExp
+  end function
+  
+  
+  function __len__()
+    return self._store.len()
+  end function
+  
+  
+  function lower_items()
+    // Like iteritems(), but with all lowercase keys.
+    return 0 // unknown expr: GeneratorExp
+  end function
+  
+  
+  function __eq__(int other)
+    if isinstance(other, Mapping)
+      other = CaseInsensitiveDict(other)
+    else
+      return NotImplemented
+    end if
+    return dict(self.lower_items()) == dict(other.lower_items())
+  end function
+  
+  
+  function copy()
+    return CaseInsensitiveDict(self._store.values())
+  end function
+  
+  
+  function __repr__()
+    return cast(dict(self.items()), string)
+  end function
+  
+end object
+
+object LookupDict forks dict
+  int name
+  
+  function __init__(int name = empty)
+    self.name = name
+    super().__init__()
+  end function
+  
+  
+  function __repr__()
+    return "<lookup '" + cast(self.name, string) + "'>"
+  end function
+  
+  
+  function __getitem__(int key)
+    return self.__dict__.get(key, empty)
+  end function
+  
+  
+  function get(int key, int _py_default = empty)
+    return self.__dict__.get(key, _py_default)
+  end function
+  
+end object
+

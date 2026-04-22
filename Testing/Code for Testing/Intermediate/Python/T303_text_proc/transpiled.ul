@@ -1,0 +1,74 @@
+// Text processing utilities — word count, reverse, palindrome check.
+function reverse_string(string s) returns string
+  string result = ""
+  int i = s.len() - 1
+  while i >= 0
+    result = result + s[i]
+    i = i - 1
+  end while
+  return result
+end function
+
+function is_palindrome(string s) returns bool
+  return s == reverse_string(s)
+end function
+
+function count_char(string s, string ch) returns int
+  int count = 0
+  int i = 0
+  while i < s.len()
+    if s[i] == ch
+      count = count + 1
+    end if
+    i = i + 1
+  end while
+  return count
+end function
+
+function to_upper(string s) returns string
+  string result = ""
+  int i = 0
+  while i < s.len()
+    int c = char_code(s, i)
+    if c >= 97 and c <= 122
+      result = result + char_from_code(c - 32)
+    else
+      result = result + s[i]
+    end if
+    i = i + 1
+  end while
+  return result
+end function
+
+function repeat_string(string s, int times) returns string
+  string result = ""
+  int i = 0
+  while i < times
+    result = result + s
+    i = i + 1
+  end while
+  return result
+end function
+
+function main() returns int
+  print reverse_string("hello")
+  print reverse_string("abcdef")
+  if is_palindrome("racecar")
+    print "racecar is palindrome"
+  else
+    print "racecar is not palindrome"
+  end if
+  if is_palindrome("hello")
+    print "hello is palindrome"
+  else
+    print "hello is not palindrome"
+  end if
+  print count_char("mississippi", "s")
+  print count_char("abcabc", "a")
+  print to_upper("hello world")
+  print to_upper("Python 3.12")
+  print repeat_string("ab", 4)
+  print repeat_string("xyz", 2)
+  return 0
+end function
+

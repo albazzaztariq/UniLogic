@@ -1,0 +1,68 @@
+// Translated from test_pointer_basic.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function swap(int <a>, int <b>)
+  int tmp = deref(<a>)
+  deref(<a>) = deref(<b>)
+  deref(<b>) = tmp
+end function
+
+function increment(int <val>)
+  deref(<val>) = (deref(<val>) + 1)
+end function
+
+function sum_array(int <arr>, int n) returns int
+  int total = 0
+  int i = 0
+  i = 0
+  while (i < n)
+    total = (total + arr[i])
+    i = i + 1
+  end while
+  return total
+end function
+
+function main() returns int
+  int x = 10
+  int y = 20
+  print "before swap: x=" + cast(x, string) + " y=" + cast(y, string)
+  swap(address(x), address(y))
+  print "after swap: x=" + cast(x, string) + " y=" + cast(y, string)
+  int val = 5
+  increment(address(val))
+  print "after increment: val=" + cast(val, string)
+  array int nums = [1, 2, 3, 4, 5]
+  int s = sum_array(nums, 5)
+  print "sum: " + cast(s, string)
+  int <ptr> = address(x)
+  print "ptr deref: " + cast(deref(<ptr>), string)
+  deref(<ptr>) = 99
+  print "after deref assign: x=" + cast(x, string)
+  return 0
+end function
+

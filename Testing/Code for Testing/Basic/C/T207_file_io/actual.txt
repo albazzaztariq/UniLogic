@@ -1,0 +1,6 @@
+line one
+header
+body
+footer
+path: output.txt
+10,20,30

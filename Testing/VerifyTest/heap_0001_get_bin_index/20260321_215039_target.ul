@@ -1,0 +1,59 @@
+// Translated from test_heap_0001_get_bin_index.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function get_bin_index(uint64 sz) returns uint32
+  uint32 index = 0
+  auto _tern_1 = sz
+  if (sz < 4)
+    _tern_1 = 4
+  end if
+  sz = _tern_1
+  while sz = (sz right 1)
+    index = index + 1
+  end while
+  index = index - 2
+  if (index > (9 - 1))
+    index = (9 - 1)
+  end if
+  return index
+end function
+
+function main() returns int
+  int i = 0
+  i = 1
+  while (i <= 2048)
+    print "size: " + cast(i, string) + " -> bin: " + cast(get_bin_index(cast(i, uint64)), string)
+    i = i + i
+  end while
+  print "size: 4 -> bin: " + cast(get_bin_index(4), string)
+  print "size: 8 -> bin: " + cast(get_bin_index(8), string)
+  print "size: 128 -> bin: " + cast(get_bin_index(128), string)
+  print "size: 65536 -> bin: " + cast(get_bin_index(65536), string)
+  return 0
+end function
+

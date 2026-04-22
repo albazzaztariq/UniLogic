@@ -1,0 +1,20 @@
+// test_bitfield.ul — bit fields in type declarations
+
+type StatusFlags
+    uint8.bits=1 ready
+    uint8.bits=1 fault
+    uint8.bits=3 mode
+    uint8.bits=3 priority
+end type
+
+function main() returns none
+    StatusFlags flags
+    flags.ready = 1
+    flags.fault = 0
+    flags.mode = 5
+    flags.priority = 3
+    print flags.ready
+    print flags.fault
+    print flags.mode
+    print flags.priority
+end function

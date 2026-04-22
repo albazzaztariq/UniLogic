@@ -1,0 +1,21 @@
+// test_bounded_array.ul — bounded array syntax with [N] size
+
+function main() returns none
+    // bounded array with initializer
+    array int[5] nums = [10, 20, 30, 40, 50]
+    print nums[0]
+    print nums[4]
+
+    // bounded array without initializer
+    array int[3] buf
+    buf[0] = 100
+    buf[1] = 200
+    buf[2] = 300
+    print buf[0]
+    print buf[2]
+
+    // unsized array (existing syntax, still works)
+    array int vals = [1, 2, 3]
+    print vals[0]
+    print vals[2]
+end function

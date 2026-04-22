@@ -1,0 +1,37 @@
+=== 1. Bit Rotation ===
+rotr32(305419896,4)=2166572391 PASS
+rotl32(305419896,4)=591751041 PASS
+rotr32(rotl32(x,7),7)==x: PASS
+
+=== 2a. SHA-256 sigma functions ===
+sigma0=625091328 PASS
+sigma1=7196372 PASS
+gamma0=1844333773 PASS
+gamma1=1246368740 PASS
+sigma0 deterministic: PASS
+
+=== 2b. AES S-box lookup ===
+FSb[0]=99 PASS
+FSb[1]=124 PASS
+FSb[255]=22 PASS
+SubWord(66051)=1669101435 PASS
+FSb bijective: PASS
+
+=== 2c. XOR checksum ===
+xor_checksum(0,3)=1274 PASS
+xor_checksum deterministic: PASS
+
+=== 3. Constant-time compare ===
+ct_memcmp_words(57005,57005)=0 PASS
+ct_memcmp_words(57005,48879)!=0: PASS
+ct_count_matches(8,51966)=8 PASS
+
+=== 4. SHA-256 message schedule ===
+msg_sched_expand=3357343958 PASS
+sched deterministic: PASS
+
+=== 5. SHA-256 Ch/Maj/round ===
+sha_ch=528861580 PASS
+sha_maj=980412007 PASS
+sha_round=1567154774 PASS
+sha_round deterministic: PASS

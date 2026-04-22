@@ -1,7 +1,0 @@
-function main() returns none
-  int total = 0
-  parallel for each i in range(100)
-    total = total + i
-  end for
-  print total
-end function

@@ -1,0 +1,58 @@
+// T108: String operations — slice, concatenation, length, comparisons
+
+import "string" function strlen(string s) returns int
+import "string" function str_char_at(string s, int i) returns string
+import "string" function str_substr(string s, int start, int len) returns string
+
+function main() returns int
+    // Test 1: string concatenation
+    string hello = "Hello" + " " + "World"
+    print hello
+
+    // Test 2: string length
+    int len = strlen(hello)
+    print len
+
+    // Test 3: character access
+    string first = str_char_at(hello, 0)
+    print first
+
+    // Test 4: substring
+    string sub = str_substr(hello, 0, 5)
+    print sub
+
+    // Test 5: string slice syntax
+    string greeting = "Good Morning"
+    string part = greeting[0:4]
+    print part
+
+    // Test 6: string comparison
+    string a = "abc"
+    string b = "abc"
+    if a == b
+        print "equal"
+    end if
+
+    // Test 7: string not equal
+    string c = "xyz"
+    if a != c
+        print "not equal"
+    end if
+
+    // Test 8: string in string
+    string sentence = "the quick brown fox"
+    if "quick" in sentence
+        print "found quick"
+    end if
+
+    // Test 9: build string in loop
+    string result = ""
+    int i = 0
+    while i < 3
+        result = result + cast(i, string)
+        i = i + 1
+    end while
+    print result
+
+    return 0
+end function

@@ -1,0 +1,153 @@
+// Translated from test_zutil.c by c2ul
+type Point
+  int x
+  int y
+end type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+array char errmsg = ["ok", "stream error", "data error", "mem error", "buf error"]
+
+function get_err_msg(int code) returns <char>
+  int idx = 0
+  if ((code < 0) or (code > 4))
+    idx = 4
+  else
+    idx = code
+  end if
+  return errmsg[idx]
+end function
+
+constant string MYLIB_VERSION = "1.2.3.4"
+
+function my_version() returns <char>
+  return MYLIB_VERSION
+end function
+
+function size_flag(int sz) returns int
+  int flag = 0
+  if sz == 2
+  else if sz == 4
+    flag = 1
+  else if sz == 8
+    flag = 2
+  else
+    flag = 3
+  end if
+  return flag
+end function
+
+function category(int c) returns int
+  int result = 0
+  if c == 1 or c == 2 or c == 3
+    result = 10
+  else if c == 4 or c == 5
+    result = 20
+  else
+    result = 99
+  end if
+  return result
+end function
+
+function decode_code(int code) returns <char>
+  if (code == 0)
+    return "ok"
+  else if (code == 1)
+    return "stream end"
+  else if (code == -1)
+    return "errno"
+  else if (code == -2)
+    return "stream error"
+  else if (code == -3)
+    return "data error"
+  else
+    return "unknown"
+  end if
+end function
+
+function sum_bytes_dowhile(int count) returns int
+  int n = 0
+  int sum = 0
+  do
+    sum = (sum + n)
+    n = (n + 1)
+  while (n < count) end do
+  return sum
+end function
+
+function point_dist_sq(Point p) returns int
+  return ((p.x * p.x) + (p.y * p.y))
+end function
+
+function point_add(Point a, Point b) returns Point
+  Point result = 0
+  result.x = (a.x + b.x)
+  result.y = (a.y + b.y)
+  return result
+end function
+
+function combine_flags(__unknown_uInt a, __unknown_uInt b) returns __unknown_uLong
+  return (cast(a, __unknown_uLong) + cast(b, __unknown_uLong))
+end function
+
+function main() returns int
+  print "version: " + my_version()
+  print "errmsg[0]: " + get_err_msg(0)
+  print "errmsg[2]: " + get_err_msg(2)
+  print "errmsg[-1]: " + get_err_msg(-1)
+  print "size_flag(2)=" + cast(size_flag(2), string)
+  print "size_flag(4)=" + cast(size_flag(4), string)
+  print "size_flag(8)=" + cast(size_flag(8), string)
+  print "size_flag(1)=" + cast(size_flag(1), string)
+  print "category(1)=" + cast(category(1), string)
+  print "category(2)=" + cast(category(2), string)
+  print "category(4)=" + cast(category(4), string)
+  print "category(9)=" + cast(category(9), string)
+  print "decode(0): " + decode_code(0)
+  print "decode(1): " + decode_code(1)
+  print "decode(-2): " + decode_code(-2)
+  print "decode(99): " + decode_code(99)
+  print "sum_bytes_dowhile(5) = " + cast(sum_bytes_dowhile(5), string)
+  print "sum_bytes_dowhile(1) = " + cast(sum_bytes_dowhile(1), string)
+  Point p = 0
+  p.x = 3
+  p.y = 4
+  print "dist_sq(3,4) = " + cast(point_dist_sq(p), string)
+  Point a = 0
+  a.x = 1
+  a.y = 2
+  Point b = 0
+  b.x = 10
+  b.y = 20
+  Point c = point_add(a, b)
+  print "point_add: (" + cast(c.x, string) + "," + cast(c.y, string) + ")"
+  __unknown_uLong flags = combine_flags(100, 200)
+  print "combine_flags(100,200) = " + cast(flags, string)
+  return 0
+end function
+

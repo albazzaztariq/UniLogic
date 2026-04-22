@@ -1,4 +1,0 @@
-{"event":"enter","func":"main","time_ns":14080500,"line":10}
-{"event":"enter","func":"validate","time_ns":14104700,"line":3}
-{"event":"exit","func":"validate","time_ns":14121300,"elapsed_ns":16600,"line":3}
-{"event":"exit","func":"main","time_ns":15412300,"elapsed_ns":1331800,"line":10}

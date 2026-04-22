@@ -1,3 +1,0 @@
-C:\Users\azt12\mingw64\bin\cmake.exe -E rm -f CMakeFiles\UniLogicProjectManager.dir/objects.a
-C:\Qt\Tools\mingw1310_64\bin\ar.exe qc CMakeFiles\UniLogicProjectManager.dir/objects.a @CMakeFiles\UniLogicProjectManager.dir\objects1.rsp
-C:\Qt\Tools\mingw1310_64\bin\g++.exe -O3 -DNDEBUG -mwindows -s -static-libgcc -static-libstdc++ -Wl,--whole-archive CMakeFiles\UniLogicProjectManager.dir/objects.a -Wl,--no-whole-archive -o UniLogicProjectManager.exe -Wl,--out-implib,libUniLogicProjectManager.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\UniLogicProjectManager.dir\linkLibs.rsp

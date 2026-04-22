@@ -1,0 +1,61 @@
+// T115: Pipe operator, killswitch, bitwise operations
+
+@dr safety = checked
+
+function triple(int x) returns int
+    return x * 3
+end function
+
+function add_ten(int x) returns int
+    return x + 10
+end function
+
+function flip_sign(int x) returns int
+    return 0 - x
+end function
+
+function main() returns int
+    // Test 1: single pipe
+    int a = 5 |> triple
+    print a
+
+    // Test 2: chained pipes
+    int b = 5 |> triple |> add_ten
+    print b
+
+    // Test 3: triple chain
+    int c = 2 |> triple |> add_ten |> flip_sign
+    print c
+
+    // Test 4: killswitch — condition true, should pass
+    int x = 10
+    killswitch x > 0
+    print "killswitch passed"
+
+    killswitch x == 10
+    print "killswitch 2 passed"
+
+    // Test 5: both1 (bitwise and)
+    int r1 = 0xFF both1 0x0F
+    print r1
+
+    // Test 6: either1 (bitwise or)
+    int r2 = 0xF0 either1 0x0F
+    print r2
+
+    // Test 7: diff (bitwise xor)
+    int r3 = 0xFF diff 0x0F
+    print r3
+
+    // Test 8: left / right (shifts)
+    int r4 = 1 left 4
+    print r4
+    int r5 = 256 right 4
+    print r5
+
+    // Test 9: bitflip
+    int r6 = bitflip 0
+    print r6
+
+    return 0
+end function

@@ -1,0 +1,13 @@
+// task_format.ul — output formatting for task display (stateless)
+
+function format_task_line(int index, string name, int done) returns string
+    string status = "[ ]"
+    if done == 1
+        status = "[x]"
+    end if
+    return cast(index, string) + ". " + status + " " + name
+end function
+
+function format_summary(int total, int completed) returns string
+    return cast(completed, string) + "/" + cast(total, string) + " completed"
+end function

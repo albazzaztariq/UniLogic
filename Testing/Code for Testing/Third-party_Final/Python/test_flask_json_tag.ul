@@ -1,0 +1,249 @@
+@dr python_compat = true
+
+@dr pyimport_0 = json___whole_
+
+// TRANSPILER WARNING line 10: import json — convert to UL import syntax — manual conversion required
+object JSONTag
+  int serializer
+  int key
+  
+  function __init__(int serializer, int key = "")
+    self.serializer = serializer
+    self.key = key
+  end function
+  
+  
+  function check(int value)
+    throw NotImplementedError "check not implemented"
+  end function
+  
+  
+  function to_json(int value)
+    throw NotImplementedError "to_json not implemented"
+  end function
+  
+  
+  function to_python(int value)
+    throw NotImplementedError "to_python not implemented"
+  end function
+  
+  
+  function tag(int value)
+    // TRANSPILER: dict values cast to string — may lose type information
+    map result = map_new()
+    result[self.key] = self.to_json(value)
+    return result
+  end function
+  
+end object
+
+object TagStr forks JSONTag
+  
+  function __init__(int serializer)
+    super().__init__(serializer, " s")
+  end function
+  
+  
+  function check(int value)
+    return isinstance(value, str)
+  end function
+  
+  
+  function to_json(int value)
+    return value
+  end function
+  
+  
+  function to_python(int value)
+    return value
+  end function
+  
+end object
+
+object PassDict forks JSONTag
+  
+  function __init__(int serializer)
+    super().__init__(serializer, "")
+  end function
+  
+  
+  function check(int value)
+    return isinstance(value, dict)
+  end function
+  
+  
+  function to_json(int value)
+    // TRANSPILER: dict values cast to string — may lose type information
+    map result = map_new()
+    for each k in value
+      result[k] = cast(self.serializer.tag(value[k]), string)
+    end for
+    return result
+  end function
+  
+  
+  function tag(int value)
+    return self.to_json(value)
+  end function
+  
+end object
+
+object PassList forks JSONTag
+  
+  function __init__(int serializer)
+    super().__init__(serializer, "")
+  end function
+  
+  
+  function check(int value)
+    return isinstance(value, _py_list)
+  end function
+  
+  
+  function to_json(int value)
+    result = []
+    for each item in value
+      result.append(self.serializer.tag(item))
+    end for
+    return result
+  end function
+  
+  
+  function tag(int value)
+    return self.to_json(value)
+  end function
+  
+end object
+
+object CustomTag forks JSONTag
+  
+  function __init__(int serializer)
+    super().__init__(serializer, " cx")
+  end function
+  
+  
+  function check(int value)
+    return false
+  end function
+  
+  
+  function to_json(int value)
+    return value
+  end function
+  
+  
+  function to_python(int value)
+    return value
+  end function
+  
+end object
+
+object TaggedJSONSerializer
+  int tags
+  array int order
+  
+  function __init__()
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict0 = map_new()
+    self.tags = _dict0
+    self.order = []
+    self.register(TagStr)
+    self.register(PassDict)
+    self.register(PassList)
+  end function
+  
+  
+  function register(int tag_class, int force = false, int index = empty)
+    tag = tag_class(self)
+    key = tag.key
+    if key
+      if not force and self.tags.contains(key)
+        throw KeyError "Tag already registered: " + key
+      end if
+      self.tags[key] = tag
+    end if
+    if index == empty
+      self.order.append(tag)
+    else
+      self.order.insert(index, tag)
+    end if
+  end function
+  
+  
+  function tag(int value)
+    for each t in self.order
+      if t.check(value)
+        return t.tag(value)
+      end if
+    end for
+    return value
+  end function
+  
+  
+  function untag(int value)
+    if value.len() != 1
+      return value
+    end if
+    key = next(iter(value))
+    if not self.tags.contains(key)
+      return value
+    end if
+    return self.tags[key].to_python(value[key])
+  end function
+  
+  
+  function _untag_scan(int value)
+    if isinstance(value, dict)
+      // TRANSPILER: dict values cast to string — may lose type information
+      map scanned = map_new()
+      for each k in value
+        scanned[k] = self._untag_scan(value[k])
+      end for
+      value = self.untag(scanned)
+    else if isinstance(value, _py_list)
+      result = []
+      for each item in value
+        result.append(self._untag_scan(item))
+      end for
+      value = result
+    end if
+    return value
+  end function
+  
+  
+  function dumps(int value)
+    return json.dumps(self.tag(value))
+  end function
+  
+  
+  function loads(int value)
+    return self._untag_scan(json.loads(value))
+  end function
+  
+end object
+
+function main()
+  s = TaggedJSONSerializer()
+  print cast("registered tags:", string) + " " + cast(sorted(s.tags.keys()), string)
+  print cast("order length:", string) + " " + cast(s.order.len(), string)
+  print cast("tag int:", string) + " " + cast(s.tag(42), string)
+  print cast("tag str:", string) + " " + cast(s.tag("hello"), string)
+  print cast("tag list:", string) + " " + cast(s.tag(["a", "b", "c"]), string)
+  // TRANSPILER: dict values cast to string — may lose type information
+  map d = map_new()
+  d["x"] = "val"
+  print cast("tag dict:", string) + " " + cast(s.tag(d), string)
+  try
+    s.register(TagStr)
+    print "no error -- UNEXPECTED"
+  catch KeyError as e
+    print cast("duplicate registration raises KeyError:", string) + " " + cast(true, string)
+  end try
+  s.register(TagStr, true, empty)
+  print cast("force overwrite ok:", string) + " " + cast(true, string)
+  s.register(CustomTag, false, 0)
+  print cast("custom tag at front:", string) + " " + cast(s.order[0].key == " cx", string)
+  print cast("custom in tags:", string) + " " + cast(s.tags.contains(" cx"), string)
+end function
+
+// UL runtime invokes main() automatically

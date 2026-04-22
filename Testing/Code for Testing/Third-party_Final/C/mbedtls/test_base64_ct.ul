@@ -1,0 +1,213 @@
+// Translated from test_base64_ct.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function mbedtls_ct_uchar_in_range_if(uint8 lo, uint8 hi, uint8 c, uint8 val) returns uint8
+  auto _tern_1 = 0
+  if (cast(((1 + hi) - lo), uint8) > cast((c - lo), uint8))
+    _tern_1 = 255
+  end if
+  uint8 in_range = _tern_1
+  return cast((in_range bit_and val), uint8)
+end function
+
+function mbedtls_ct_base64_enc_char(uint8 value) returns uint8
+  uint8 digit = 0
+  digit = (digit bit_or mbedtls_ct_uchar_in_range_if(0, 25, value, cast((65 + value), uint8)))
+  digit = (digit bit_or mbedtls_ct_uchar_in_range_if(26, 51, value, cast(((97 + value) - 26), uint8)))
+  digit = (digit bit_or mbedtls_ct_uchar_in_range_if(52, 61, value, cast(((48 + value) - 52), uint8)))
+  digit = (digit bit_or mbedtls_ct_uchar_in_range_if(62, 62, value, 43))
+  digit = (digit bit_or mbedtls_ct_uchar_in_range_if(63, 63, value, 47))
+  return digit
+end function
+
+function mbedtls_ct_base64_dec_value(uint8 c) returns int
+  uint8 val = 0
+  val = (val bit_or mbedtls_ct_uchar_in_range_if(65, 90, c, cast((((c - 65) + 0) + 1), uint8)))
+  val = (val bit_or mbedtls_ct_uchar_in_range_if(97, 122, c, cast((((c - 97) + 26) + 1), uint8)))
+  val = (val bit_or mbedtls_ct_uchar_in_range_if(48, 57, c, cast((((c - 48) + 52) + 1), uint8)))
+  val = (val bit_or mbedtls_ct_uchar_in_range_if(43, 43, c, cast((((c - 43) + 62) + 1), uint8)))
+  val = (val bit_or mbedtls_ct_uchar_in_range_if(47, 47, c, cast((((c - 47) + 63) + 1), uint8)))
+  return cast((val - 1), int)
+end function
+
+function mbedtls_base64_encode(<uint8> dst, int dlen, <int> olen, <uint8> src, int slen) returns int
+  int i = 0
+  int n = 0
+  int C1 = 0
+  int C2 = 0
+  int C3 = 0
+  <uint8> p = 0
+  if (slen == 0)
+    deref olen = 0
+    return 0
+  end if
+  n = ((slen / 3) + ((slen % 3) != 0))
+  if (n > ((2147483647 - 1) / 4))
+    deref olen = 2147483647
+    return -40
+  end if
+  n = n * 4
+  if ((dlen < (n + 1)) or (dst == 0))
+    deref olen = (n + 1)
+    return -40
+  end if
+  n = ((slen / 3) * 3)
+  i = 0
+  p = dst
+  while (i < n)
+    C1 = deref src
+    C2 = deref src
+    C3 = deref src
+    deref p = mbedtls_ct_base64_enc_char(cast(((C1 bit_right 2) bit_and 63), uint8))
+    deref p = mbedtls_ct_base64_enc_char(cast(((((C1 bit_and 3) bit_left 4) + (C2 bit_right 4)) bit_and 63), uint8))
+    deref p = mbedtls_ct_base64_enc_char(cast(((((C2 bit_and 15) bit_left 2) + (C3 bit_right 6)) bit_and 63), uint8))
+    deref p = mbedtls_ct_base64_enc_char(cast((C3 bit_and 63), uint8))
+    i = i + 3
+  end while
+  if (i < slen)
+    C1 = deref src
+    auto _tern_2 = 0
+    if ((i + 1) < slen)
+      _tern_2 = cast(deref src, int)
+    end if
+    C2 = _tern_2
+    deref p = mbedtls_ct_base64_enc_char(cast(((C1 bit_right 2) bit_and 63), uint8))
+    deref p = mbedtls_ct_base64_enc_char(cast(((((C1 bit_and 3) bit_left 4) + (C2 bit_right 4)) bit_and 63), uint8))
+    if ((i + 1) < slen)
+      deref p = mbedtls_ct_base64_enc_char(cast((((C2 bit_and 15) bit_left 2) bit_and 63), uint8))
+    else
+      deref p = 61
+    end if
+    deref p = 61
+  end if
+  deref olen = cast((p - dst), int)
+  deref p = 0
+  return 0
+end function
+
+function main() returns int
+  int i = 0
+  int ret = 0
+  int dec = 0
+  print "=== mbedtls_ct_base64_enc_char ==="
+  string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  int pass = 1
+  i = 0
+  while (i < 64)
+    uint8 got = mbedtls_ct_base64_enc_char(cast(i, uint8))
+    if (got != cast(alphabet[i], uint8))
+      print "FAIL enc_char(" + cast(i, string) + "): got " + cast(got, string) + " expected " + cast(alphabet[i], string)
+      pass = 0
+    end if
+    i = i + 1
+  end while
+  auto _tern_3 = "FAIL"
+  if pass
+    _tern_3 = "PASS"
+  end if
+  print "enc_char 0..63: " + _tern_3
+  print "\n=== mbedtls_ct_base64_dec_value ==="
+  pass = 1
+  i = 0
+  while (i < 64)
+    uint8 ch = cast(alphabet[i], uint8)
+    dec = mbedtls_ct_base64_dec_value(ch)
+    if (cast(dec, int) != i)
+      print "FAIL dec_value('" + cast(ch, string) + "'=" + cast(ch, string) + "): got " + cast(dec, string) + " expected " + cast(i, string)
+      pass = 0
+    end if
+    i = i + 1
+  end while
+  auto _tern_4 = "FAIL"
+  if pass
+    _tern_4 = "PASS"
+  end if
+  print "dec_value round-trip: " + _tern_4
+  print "\n=== dec_value invalid chars ==="
+  array uint8 invalid = [33, 64, 35, 32, 10, 0, 128, 255]
+  pass = 1
+  i = 0
+  while (i < cast(size(invalid), int))
+    dec = mbedtls_ct_base64_dec_value(invalid[i])
+    if (dec != -1)
+      print "FAIL dec_value(0x" + cast(invalid[i], string) + "): got " + cast(dec, string) + " expected -1"
+      pass = 0
+    end if
+    i = i + 1
+  end while
+  auto _tern_5 = "FAIL"
+  if pass
+    _tern_5 = "PASS"
+  end if
+  print "dec_value invalid: " + _tern_5
+  print "\n=== mbedtls_base64_encode ==="
+  array uint8 src = [0, 1, 2, 3, 4, 5]
+  array uint8 dst = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  int olen = 0
+  ret = mbedtls_base64_encode(dst, size(dst), address olen, src, 6)
+  print "encode ret=" + cast(ret, string) + " olen=" + cast(olen, string) + " out=" + dst
+  int _tern_6 = 1
+  if cast(dst, string) == "AAECAwQF"
+    _tern_6 = 0
+  end if
+  auto _tern_7 = "FAIL"
+  if (((ret == 0) and (olen == 8)) and (_tern_6 == 0))
+    _tern_7 = "PASS"
+  end if
+  print "encode 6 bytes: " + _tern_7
+  dst = [0, 0, 0, 0, 0, 0, 0, 0]
+  olen = 0
+  ret = mbedtls_base64_encode(dst, size(dst), address olen, cast("", <uint8>), 0)
+  auto _tern_8 = "FAIL"
+  if ((ret == 0) and (olen == 0))
+    _tern_8 = "PASS"
+  end if
+  print "encode empty: ret=" + cast(ret, string) + " olen=" + cast(olen, string) + " " + _tern_8
+  dst = [0, 0, 0, 0]
+  olen = 0
+  ret = mbedtls_base64_encode(dst, 4, address olen, cast("Hello", <uint8>), 5)
+  auto _tern_9 = "FAIL"
+  if (ret == -40)
+    _tern_9 = "PASS"
+  end if
+  print "encode too-small: ret=" + cast(ret, string) + " olen=" + cast(olen, string) + " " + _tern_9
+  dst = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  olen = 0
+  ret = mbedtls_base64_encode(dst, size(dst), address olen, cast("Man", <uint8>), 3)
+  int _tern_10 = 1
+  if cast(dst, string) == "TWFu"
+    _tern_10 = 0
+  end if
+  auto _tern_11 = "FAIL"
+  if ((ret == 0) and (_tern_10 == 0))
+    _tern_11 = "PASS"
+  end if
+  print "encode 'Man': ret=" + cast(ret, string) + " olen=" + cast(olen, string) + " out=" + dst + " " + _tern_11
+  return 0
+end function
+

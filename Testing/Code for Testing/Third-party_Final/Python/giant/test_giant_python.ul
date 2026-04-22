@@ -1,0 +1,2137 @@
+@dr python_compat = true
+
+// TRANSPILER: stub for imported base type 'Exception'
+object Exception
+end object
+
+function split_by_char(int s, string sep) returns array int
+  array int parts = []
+  string current = ""
+  int i = 0
+  while i < s.len()
+    string c = s[i]
+    if c == sep
+      parts.append(current)
+      current = ""
+    else
+      current = current + c
+    end if
+    i = i + 1
+  end while
+  parts.append(current)
+  return parts
+end function
+
+function split_by_space(int s) returns array int
+  array int words = []
+  string current = ""
+  int i = 0
+  while i < s.len()
+    string c = s[i]
+    if c == " " or c == "\t" or c == "\n"
+      if current != ""
+        words.append(current)
+        current = ""
+      end if
+    else
+      current = current + c
+    end if
+    i = i + 1
+  end while
+  if current != ""
+    words.append(current)
+  end if
+  return words
+end function
+
+function char_to_lower(string c) returns string
+  int code = char_code(c, 0)
+  if code >= 65 and code <= 90
+    return char_from_code(code + 32)
+  end if
+  return c
+end function
+
+function str_to_lower(int s) returns string
+  string result = ""
+  int i = 0
+  while i < s.len()
+    result = result + char_to_lower(s[i])
+    i = i + 1
+  end while
+  return result
+end function
+
+function sqrt_approx(float x) returns float
+  if x <= 0.0
+    return 0.0
+  end if
+  float guess = x / 2.0
+  int i = 0
+  while i < 50
+    float gx = x / guess
+    float ng_sum = guess + gx
+    float new_guess = ng_sum / 2.0
+    float _py_diff = new_guess - guess
+    if _py_diff < 0.0
+      _py_diff = -_py_diff
+    end if
+    if _py_diff < 0.0001
+      escape
+    end if
+    guess = new_guess
+    i = i + 1
+  end while
+  return new_guess
+end function
+
+object Node
+  int val
+  int next
+  
+  function __init__(int val)
+    self.val = val
+    self.next = empty
+  end function
+  
+end object
+
+object LinkedList
+  int head
+  int sz
+  
+  function __init__()
+    self.head = empty
+    self.sz = 0
+  end function
+  
+  
+  function insert(int val)
+    Node n = Node(val)
+    n.next = self.head
+    self.head = n
+    self.sz = self.sz + 1
+  end function
+  
+  
+  function find(int val) returns bool
+    cur = self.head
+    while cur != empty
+      if cur.val == val
+        return true
+      end if
+      cur = cur.next
+    end while
+    return false
+  end function
+  
+  
+  function delete(int val) returns bool
+    if self.head == empty
+      return false
+    end if
+    if self.head.val == val
+      self.head = self.head.next
+      self.sz = self.sz - 1
+      return true
+    end if
+    cur = self.head
+    while cur.next != empty
+      if cur.next.val == val
+        cur.next = cur.next.next
+        self.sz = self.sz - 1
+        return true
+      end if
+      cur = cur.next
+    end while
+    return false
+  end function
+  
+  
+  function to_string() returns string
+    string parts = ""
+    cur = self.head
+    bool first = true
+    while cur != empty
+      if first
+        parts = cast(cur.val, string)
+        first = false
+      else
+        parts = parts + " -> " + cast(cur.val, string)
+      end if
+      cur = cur.next
+    end while
+    return parts
+  end function
+  
+  
+  function reverse()
+    prev = empty
+    cur = self.head
+    while cur != empty
+      nxt = cur.next
+      cur.next = prev
+      prev = cur
+      cur = nxt
+    end while
+    self.head = prev
+  end function
+  
+end object
+
+function test_linked_list()
+  print "--- LinkedList ---"
+  LinkedList ll = LinkedList()
+  ll.insert(10)
+  ll.insert(20)
+  ll.insert(30)
+  ll.insert(40)
+  print "List: " + ll.to_string()
+  print "Find 20: " + cast(ll.find(20), string)
+  print "Find 99: " + cast(ll.find(99), string)
+  ll.delete(20)
+  print "After delete 20: " + ll.to_string()
+  ll.reverse()
+  print "Reversed: " + ll.to_string()
+  print "Size: " + cast(ll.sz, string)
+end function
+
+object BSTNode
+  int val
+  int _py_left
+  int _py_right
+  
+  function __init__(int val)
+    self.val = val
+    self.left = empty
+    self.right = empty
+  end function
+  
+end object
+
+object BST
+  int root
+  
+  function __init__()
+    self.root = empty
+  end function
+  
+  
+  function insert(int val)
+    if self.root == empty
+      self.root = BSTNode(val)
+      return
+    end if
+    cur = self.root
+    while true
+      if val < cur.val
+        if cur.left == empty
+          cur.left = BSTNode(val)
+          return
+        end if
+        cur = cur.left
+      else
+        if cur.right == empty
+          cur.right = BSTNode(val)
+          return
+        end if
+        cur = cur.right
+      end if
+    end while
+  end function
+  
+  
+  function search(int val) returns bool
+    cur = self.root
+    while cur != empty
+      if cur.val == val
+        return true
+      end if
+      if val < cur.val
+        cur = cur.left
+      else
+        cur = cur.right
+      end if
+    end while
+    return false
+  end function
+  
+  
+  function inorder() returns string
+    string result = ""
+    array int stack = []
+    cur = self.root
+    while cur != empty or stack.len() > 0
+      while cur != empty
+        stack.append(cur)
+        cur = cur.left
+      end while
+      cur = stack.pop()
+      if result == ""
+        result = cast(cur.val, string)
+      else
+        result = result + " " + cast(cur.val, string)
+      end if
+      cur = cur.right
+    end while
+    return result
+  end function
+  
+end object
+
+function test_bst()
+  print "--- BST ---"
+  BST bst = BST()
+  bst.insert(5)
+  bst.insert(3)
+  bst.insert(7)
+  bst.insert(1)
+  bst.insert(4)
+  bst.insert(6)
+  bst.insert(8)
+  print "Inorder: " + bst.inorder()
+  print "Search 4: " + cast(bst.search(4), string)
+  print "Search 9: " + cast(bst.search(9), string)
+end function
+
+object Stack
+  array int data
+  int top_idx
+  
+  function __init__()
+    self.data = []
+    self.top_idx = -1
+  end function
+  
+  
+  function push(int val)
+    self.data.append(val)
+    self.top_idx = self.top_idx + 1
+  end function
+  
+  
+  function pop() returns int
+    if self.top_idx < 0
+      return -1
+    end if
+    int val = self.data[self.top_idx]
+    self.data.pop()
+    self.top_idx = self.top_idx - 1
+    return val
+  end function
+  
+  
+  function peek() returns int
+    if self.top_idx < 0
+      return -1
+    end if
+    return self.data[self.top_idx]
+  end function
+  
+  
+  function is_empty() returns bool
+    return self.top_idx < 0
+  end function
+  
+  
+  function get_size() returns int
+    return self.top_idx + 1
+  end function
+  
+end object
+
+object Queue
+  array int data
+  int front
+  
+  function __init__()
+    self.data = []
+    self.front = 0
+  end function
+  
+  
+  function enqueue(int val)
+    self.data.append(val)
+  end function
+  
+  
+  function dequeue() returns int
+    if self.front >= self.data.len()
+      return -1
+    end if
+    int val = self.data[self.front]
+    self.front = self.front + 1
+    return val
+  end function
+  
+  
+  function is_empty() returns bool
+    return self.front >= self.data.len()
+  end function
+  
+  
+  function get_size() returns int
+    return self.data.len() - self.front
+  end function
+  
+end object
+
+function test_stack_queue()
+  print "--- Stack ---"
+  Stack s = Stack()
+  s.push(1)
+  s.push(2)
+  s.push(3)
+  print "Top: " + cast(s.peek(), string)
+  print "Pop: " + cast(s.pop(), string)
+  print "Pop: " + cast(s.pop(), string)
+  print "Size: " + cast(s.get_size(), string)
+  print "Empty: " + cast(s.is_empty(), string)
+  print "--- Queue ---"
+  Queue q = Queue()
+  q.enqueue(10)
+  q.enqueue(20)
+  q.enqueue(30)
+  print "Dequeue: " + cast(q.dequeue(), string)
+  print "Dequeue: " + cast(q.dequeue(), string)
+  print "Size: " + cast(q.get_size(), string)
+  print "Empty: " + cast(q.is_empty(), string)
+end function
+
+object PriorityQueue
+  array int data
+  
+  function __init__()
+    self.data = []
+  end function
+  
+  
+  function insert(int val)
+    self.data.append(val)
+    int i = self.data.len() - 1
+    while i > 0
+      int i_minus_1 = i - 1
+      int parent = i_minus_1 / 2
+      if self.data[i] < self.data[parent]
+        int tmp = self.data[i]
+        self.data[i] = self.data[parent]
+        self.data[parent] = tmp
+        i = parent
+      else
+        escape
+      end if
+    end while
+  end function
+  
+  
+  function extract_min() returns int
+    if self.data.len() == 0
+      return -1
+    end if
+    int min_val = self.data[0]
+    int last = self.data.pop()
+    if self.data.len() > 0
+      self.data[0] = last
+      int i = 0
+      int n = self.data.len()
+      while true
+        int _py_left = 2 * i + 1
+        int _py_right = 2 * i + 2
+        int smallest = i
+        if _py_left < n and self.data[_py_left] < self.data[smallest]
+          smallest = _py_left
+        end if
+        if _py_right < n and self.data[_py_right] < self.data[smallest]
+          smallest = _py_right
+        end if
+        if smallest == i
+          escape
+        end if
+        int tmp2 = self.data[i]
+        self.data[i] = self.data[smallest]
+        self.data[smallest] = tmp2
+        i = smallest
+      end while
+    end if
+    return min_val
+  end function
+  
+  
+  function get_size() returns int
+    return self.data.len()
+  end function
+  
+end object
+
+function test_priority_queue()
+  print "--- PriorityQueue ---"
+  PriorityQueue pq = PriorityQueue()
+  pq.insert(5)
+  pq.insert(2)
+  pq.insert(8)
+  pq.insert(1)
+  pq.insert(9)
+  pq.insert(3)
+  string result = ""
+  while pq.get_size() > 0
+    int v = pq.extract_min()
+    if result == ""
+      result = cast(v, string)
+    else
+      result = result + " " + cast(v, string)
+    end if
+  end while
+  print "Sorted: " + result
+end function
+
+function bubble_sort(array int arr, int n)
+  int i = 0
+  while i < n - 1
+    int j = 0
+    while j < n - 1 - i
+      if arr[j] > arr[j + 1]
+        int tmp = arr[j]
+        arr[j] = arr[j + 1]
+        arr[j + 1] = tmp
+      end if
+      j = j + 1
+    end while
+    i = i + 1
+  end while
+end function
+
+function merge_arrays(array int arr, int _py_left, int mid, int _py_right)
+  array int tmp = []
+  int i = _py_left
+  int j = mid + 1
+  while i <= mid and j <= _py_right
+    if arr[i] <= arr[j]
+      tmp.append(arr[i])
+      i = i + 1
+    else
+      tmp.append(arr[j])
+      j = j + 1
+    end if
+  end while
+  while i <= mid
+    tmp.append(arr[i])
+    i = i + 1
+  end while
+  while j <= _py_right
+    tmp.append(arr[j])
+    j = j + 1
+  end while
+  int k = 0
+  while k < tmp.len()
+    arr[_py_left + k] = tmp[k]
+    k = k + 1
+  end while
+end function
+
+function merge_sort(array int arr, int _py_left, int _py_right)
+  if _py_left >= _py_right
+    return
+  end if
+  int lr_sum = _py_left + _py_right
+  int mid = lr_sum / 2
+  merge_sort(arr, _py_left, mid)
+  merge_sort(arr, mid + 1, _py_right)
+  merge_arrays(arr, _py_left, mid, _py_right)
+end function
+
+function partition(array int arr, int low, int high) returns int
+  int pivot = arr[high]
+  int i = low - 1
+  int j = low
+  while j < high
+    if arr[j] <= pivot
+      i = i + 1
+      int tmp = arr[i]
+      arr[i] = arr[j]
+      arr[j] = tmp
+    end if
+    j = j + 1
+  end while
+  int tmp2 = arr[i + 1]
+  arr[i + 1] = arr[high]
+  arr[high] = tmp2
+  return i + 1
+end function
+
+function quicksort(array int arr, int low, int high)
+  if low >= high
+    return
+  end if
+  int pivot_idx = partition(arr, low, high)
+  quicksort(arr, low, pivot_idx - 1)
+  quicksort(arr, pivot_idx + 1, high)
+end function
+
+function binary_search(array int arr, int target, int n) returns int
+  int lo = 0
+  int hi = n - 1
+  while lo <= hi
+    int lohi_sum = lo + hi
+    int mid = lohi_sum / 2
+    if arr[mid] == target
+      return mid
+    end if
+    if arr[mid] < target
+      lo = mid + 1
+    else
+      hi = mid - 1
+    end if
+  end while
+  return -1
+end function
+
+function linear_search(array int arr, int target, int n) returns int
+  int i = 0
+  while i < n
+    if arr[i] == target
+      return i
+    end if
+    i = i + 1
+  end while
+  return -1
+end function
+
+function arr_to_string(array int arr, int n) returns string
+  string result = "["
+  int i = 0
+  while i < n
+    if i > 0
+      result = result + ", "
+    end if
+    result = result + cast(arr[i], string)
+    i = i + 1
+  end while
+  result = result + "]"
+  return result
+end function
+
+function test_sorting_searching()
+  print "--- Sorting & Searching ---"
+  array int a1 = [64, 25, 12, 22, 11]
+  bubble_sort(a1, 5)
+  print "Bubble sort: " + arr_to_string(a1, 5)
+  array int a2 = [38, 27, 43, 3, 9, 82, 10]
+  merge_sort(a2, 0, 6)
+  print "Merge sort: " + arr_to_string(a2, 7)
+  array int a3 = [10, 80, 30, 90, 40, 50, 70]
+  quicksort(a3, 0, 6)
+  print "Quicksort: " + arr_to_string(a3, 7)
+  array int a4 = [2, 4, 6, 8, 10, 12, 14, 16]
+  print "Binary search 10: " + cast(binary_search(a4, 10, 8), string)
+  print "Binary search 7: " + cast(binary_search(a4, 7, 8), string)
+  print "Linear search 6: " + cast(linear_search(a4, 6, 8), string)
+  print "Linear search 99: " + cast(linear_search(a4, 99, 8), string)
+end function
+
+function bfs(array int graph, int start, int n) returns string
+  array int visited = []
+  int i = 0
+  while i < n
+    visited.append(false)
+    i = i + 1
+  end while
+  Queue q = Queue()
+  q.enqueue(start)
+  visited[start] = true
+  string result = ""
+  while not q.is_empty()
+    int node = q.dequeue()
+    if result == ""
+      result = cast(node, string)
+    else
+      result = result + " " + cast(node, string)
+    end if
+    int j = 0
+    while j < n
+      if graph[node * n + j] == 1 and not visited[j]
+        visited[j] = true
+        q.enqueue(j)
+      end if
+      j = j + 1
+    end while
+  end while
+  return result
+end function
+
+function dfs(array int graph, int start, array int visited, int n, array int result)
+  visited[start] = true
+  result.append(start)
+  int j = 0
+  while j < n
+    if graph[start * n + j] == 1 and not visited[j]
+      dfs(graph, j, visited, n, result)
+    end if
+    j = j + 1
+  end while
+end function
+
+function test_graph_algorithms()
+  print "--- Graph BFS/DFS ---"
+  int n = 6
+  int graph_size = n * n
+  array int graph = [0] * graph_size
+  graph[0 * n + 1] = 1
+  graph[1 * n + 0] = 1
+  graph[0 * n + 2] = 1
+  graph[2 * n + 0] = 1
+  graph[1 * n + 3] = 1
+  graph[3 * n + 1] = 1
+  graph[1 * n + 4] = 1
+  graph[4 * n + 1] = 1
+  graph[2 * n + 4] = 1
+  graph[4 * n + 2] = 1
+  graph[3 * n + 5] = 1
+  graph[5 * n + 3] = 1
+  print "BFS from 0: " + bfs(graph, 0, n)
+  array int visited = [false, false, false, false, false, false]
+  array int result = []
+  dfs(graph, 0, visited, n, result)
+  string dfs_str = ""
+  int k = 0
+  while k < result.len()
+    if k == 0
+      dfs_str = cast(result[k], string)
+    else
+      dfs_str = dfs_str + " " + cast(result[k], string)
+    end if
+    k = k + 1
+  end while
+  print "DFS from 0: " + dfs_str
+end function
+
+function is_palindrome(string s) returns bool
+  int n = s.len()
+  int i = 0
+  while i < n / 2
+    if s[i] != s[n - 1 - i]
+      return false
+    end if
+    i = i + 1
+  end while
+  return true
+end function
+
+function is_anagram(string s1, string s2) returns bool
+  if s1.len() != s2.len()
+    return false
+  end if
+  array int counts = [0] * 26
+  int i = 0
+  while i < s1.len()
+    int idx1 = char_code(s1, i) - char_code("a", 0)
+    if idx1 >= 0 and idx1 < 26
+      counts[idx1] = counts[idx1] + 1
+    end if
+    i = i + 1
+  end while
+  int j = 0
+  while j < s2.len()
+    int idx2 = char_code(s2, j) - char_code("a", 0)
+    if idx2 >= 0 and idx2 < 26
+      counts[idx2] = counts[idx2] - 1
+    end if
+    j = j + 1
+  end while
+  int k = 0
+  while k < 26
+    if counts[k] != 0
+      return false
+    end if
+    k = k + 1
+  end while
+  return true
+end function
+
+function string_reverse(string s) returns string
+  int n = s.len()
+  array int chars = []
+  int i = 0
+  while i < n
+    chars.append(s[i])
+    i = i + 1
+  end while
+  int _py_left = 0
+  int _py_right = n - 1
+  while _py_left < _py_right
+    string tmp = chars[_py_left]
+    chars[_py_left] = chars[_py_right]
+    chars[_py_right] = tmp
+    _py_left = _py_left + 1
+    _py_right = _py_right - 1
+  end while
+  string result = ""
+  int k = 0
+  while k < n
+    result = result + chars[k]
+    k = k + 1
+  end while
+  return result
+end function
+
+function test_string_algorithms()
+  print "--- String Algorithms ---"
+  print "Is palindrome 'racecar': " + cast(is_palindrome("racecar"), string)
+  print "Is palindrome 'hello': " + cast(is_palindrome("hello"), string)
+  print "Is anagram 'listen' 'silent': " + cast(is_anagram("listen", "silent"), string)
+  print "Is anagram 'hello' 'world': " + cast(is_anagram("hello", "world"), string)
+  print "Reverse 'UniLogic': " + string_reverse("UniLogic")
+  print "Reverse 'abcdef': " + string_reverse("abcdef")
+end function
+
+object Shape
+  string name
+  
+  function __init__(string name)
+    self.name = name
+  end function
+  
+  
+  function area() returns float
+    return 0.0
+  end function
+  
+  
+  function perimeter() returns float
+    return 0.0
+  end function
+  
+  
+  function get_name() returns string
+    return self.name
+  end function
+  
+end object
+
+object Circle forks Shape
+  float radius
+  
+  function __init__(float radius)
+    super().__init__("Circle")
+    self.radius = radius
+  end function
+  
+  
+  function area() returns float
+    return 3.14159 * self.radius * self.radius
+  end function
+  
+  
+  function perimeter() returns float
+    return 2.0 * 3.14159 * self.radius
+  end function
+  
+end object
+
+object Rectangle forks Shape
+  float width
+  float height
+  
+  function __init__(float width, float height)
+    super().__init__("Rectangle")
+    self.width = width
+    self.height = height
+  end function
+  
+  
+  function area() returns float
+    return self.width * self.height
+  end function
+  
+  
+  function perimeter() returns float
+    float wh_sum = self.width + self.height
+    return 2.0 * wh_sum
+  end function
+  
+end object
+
+object Triangle forks Shape
+  float a
+  float b
+  float c
+  
+  function __init__(float a, float b, float c)
+    super().__init__("Triangle")
+    self.a = a
+    self.b = b
+    self.c = c
+  end function
+  
+  
+  function area() returns float
+    float abc_sum = self.a + self.b + self.c
+    float s = abc_sum / 2.0
+    float sa = s - self.a
+    float sb = s - self.b
+    float sc = s - self.c
+    float val = s * sa * sb * sc
+    if val <= 0.0
+      return 0.0
+    end if
+    return sqrt_approx(val)
+  end function
+  
+  
+  function perimeter() returns float
+    return self.a + self.b + self.c
+  end function
+  
+end object
+
+function shape_describe(Shape sh) returns string
+  float a = sh.area()
+  float p = sh.perimeter()
+  string a_str = cast(round(a, 4), string)
+  string p_str = cast(round(p, 4), string)
+  return sh.get_name() + " area=" + a_str + " perimeter=" + p_str
+end function
+
+function test_shapes()
+  print "--- Shapes ---"
+  array int shapes = []
+  Circle c = Circle(5.0)
+  Rectangle r = Rectangle(4.0, 6.0)
+  Triangle t = Triangle(3.0, 4.0, 5.0)
+  shapes.append(c)
+  shapes.append(r)
+  shapes.append(t)
+  int i = 0
+  while i < shapes.len()
+    print shape_describe(shapes[i])
+    i = i + 1
+  end while
+end function
+
+object Animal
+  string name
+  
+  function __init__(string name)
+    self.name = name
+  end function
+  
+  
+  function speak() returns string
+    return self.name + " says ..."
+  end function
+  
+end object
+
+object Dog forks Animal
+  
+  function __init__(string name)
+    super().__init__(name)
+  end function
+  
+  
+  function speak() returns string
+    return self.name + " says Woof!"
+  end function
+  
+end object
+
+object Cat forks Animal
+  
+  function __init__(string name)
+    super().__init__(name)
+  end function
+  
+  
+  function speak() returns string
+    return self.name + " says Meow!"
+  end function
+  
+end object
+
+object Duck forks Animal
+  
+  function __init__(string name)
+    super().__init__(name)
+  end function
+  
+  
+  function speak() returns string
+    return self.name + " says Quack!"
+  end function
+  
+end object
+
+function test_animals()
+  print "--- Animals ---"
+  array int animals = []
+  Dog d = Dog("Rex")
+  Cat c = Cat("Whiskers")
+  Duck du = Duck("Donald")
+  animals.append(d)
+  animals.append(c)
+  animals.append(du)
+  int i = 0
+  while i < animals.len()
+    print animals[i].speak()
+    i = i + 1
+  end while
+end function
+
+object PersonBuilder
+  string first_name
+  string last_name
+  int age
+  string email
+  
+  function __init__()
+    self.first_name = ""
+    self.last_name = ""
+    self.age = 0
+    self.email = ""
+  end function
+  
+  
+  function set_first(string name) returns int
+    self.first_name = name
+    return self
+  end function
+  
+  
+  function set_last(string name) returns int
+    self.last_name = name
+    return self
+  end function
+  
+  
+  function set_age(int age) returns int
+    self.age = age
+    return self
+  end function
+  
+  
+  function set_email(string email) returns int
+    self.email = email
+    return self
+  end function
+  
+  
+  function build() returns string
+    return self.first_name + " " + self.last_name + " age=" + cast(self.age, string) + " email=" + self.email
+  end function
+  
+end object
+
+function test_builder()
+  print "--- Builder ---"
+  PersonBuilder pb = PersonBuilder()
+  string result = pb.set_first("Alice").set_last("Smith").set_age(30).set_email("alice@example.com").build()
+  print result
+  PersonBuilder pb2 = PersonBuilder()
+  string result2 = pb2.set_first("Bob").set_last("Jones").set_age(25).set_email("bob@example.com").build()
+  print result2
+end function
+
+object EventObserver
+  string name
+  array int events
+  
+  function __init__(string name)
+    self.name = name
+    self.events = []
+  end function
+  
+  
+  function on_event(string event)
+    self.events.append(event)
+  end function
+  
+  
+  function get_events() returns string
+    string result = ""
+    int i = 0
+    while i < self.events.len()
+      if i == 0
+        result = self.events[i]
+      else
+        result = result + ", " + self.events[i]
+      end if
+      i = i + 1
+    end while
+    return result
+  end function
+  
+end object
+
+object EventPublisher
+  array int observers
+  
+  function __init__()
+    self.observers = []
+  end function
+  
+  
+  function subscribe(int obs)
+    self.observers.append(obs)
+  end function
+  
+  
+  function publish(string event)
+    int i = 0
+    while i < self.observers.len()
+      self.observers[i].on_event(event)
+      i = i + 1
+    end while
+  end function
+  
+end object
+
+function test_observer()
+  print "--- Observer ---"
+  EventPublisher pub = EventPublisher()
+  EventObserver obs1 = EventObserver("Logger")
+  EventObserver obs2 = EventObserver("Notifier")
+  pub.subscribe(obs1)
+  pub.subscribe(obs2)
+  pub.publish("start")
+  pub.publish("process")
+  pub.publish("stop")
+  print "Logger events: " + obs1.get_events()
+  print "Notifier events: " + obs2.get_events()
+end function
+
+object AppError forks Exception
+  string message
+  
+  function __init__(string message)
+    self.message = message
+    super().__init__(message)
+  end function
+  
+end object
+
+object ValidationError forks AppError
+  
+  function __init__(string message)
+    super().__init__("ValidationError: " + message)
+  end function
+  
+end object
+
+object NetworkError forks AppError
+  
+  function __init__(string message)
+    super().__init__("NetworkError: " + message)
+  end function
+  
+end object
+
+object DatabaseError forks AppError
+  
+  function __init__(string message)
+    super().__init__("DatabaseError: " + message)
+  end function
+  
+end object
+
+function validate_age(int age) returns int
+  if age < 0
+    throw ValidationError "age must be non-negative"
+  end if
+  if age > 150
+    throw ValidationError "age unrealistic value"
+  end if
+  return age
+end function
+
+function fetch_data(string url) returns string
+  if url == ""
+    throw NetworkError "400 empty URL"
+  end if
+  if url == "bad"
+    throw NetworkError "404 not found"
+  end if
+  return "data from " + url
+end function
+
+function str_contains_sub(string haystack, string needle) returns bool
+  int hlen = haystack.len()
+  int nlen = needle.len()
+  if nlen > hlen
+    return false
+  end if
+  int i = 0
+  while i <= hlen - nlen
+    bool _py_match = true
+    int j = 0
+    while j < nlen
+      if haystack[i + j] != needle[j]
+        _py_match = false
+        escape
+      end if
+      j = j + 1
+    end while
+    if _py_match
+      return true
+    end if
+    i = i + 1
+  end while
+  return false
+end function
+
+function query_db(string sql) returns string
+  if str_contains_sub(sql, "DROP")
+    throw DatabaseError "DROP in query: " + sql
+  end if
+  return "rows for: " + sql
+end function
+
+function test_exceptions()
+  print "--- Exceptions ---"
+  try
+    int result = validate_age(25)
+    print "Age 25 valid: " + cast(result, string)
+  catch ValidationError as e
+    print "Error: " + e.message
+  end try
+  try
+    int result2 = validate_age(-5)
+    print "Should not reach here"
+  catch ValidationError as e
+    print "Caught: " + e.message
+  end try
+  try
+    int result3 = validate_age(200)
+  catch ValidationError as e
+    print "Caught: " + e.message
+  end try
+  try
+    string s = fetch_data("http://example.com")
+    print "Fetched: " + s
+  catch NetworkError as e
+    print "Network error: " + e.message
+  end try
+  try
+    string s2 = fetch_data("")
+  catch NetworkError as e
+    print "Caught network: " + e.message
+  end try
+  try
+    string s3 = fetch_data("bad")
+  catch NetworkError as e
+    print "Caught network: " + e.message
+  end try
+  try
+    string r = query_db("SELECT * FROM users")
+    print "DB result: " + r
+  catch DatabaseError as e
+    print "DB error: " + e.message
+  end try
+  try
+    string r2 = query_db("DROP TABLE users")
+  catch DatabaseError as e
+    print "Caught DB: " + e.message
+  end try
+  print "Finally test:"
+  try
+    throw AppError "test error"
+  catch AppError as e
+    print "Caught app: " + e.message
+  finally
+    print "Finally executed"
+  end try
+  print "Nested exception handling:"
+  try
+    try
+      throw NetworkError "500 server error"
+    catch ValidationError as e
+      print "Wrong handler"
+    catch NetworkError as e
+      print "Inner caught: " + e.message
+      throw AppError "re-wrapped: " + e.message
+    end try
+  catch AppError as e
+    print "Outer caught: " + e.message
+  end try
+end function
+
+function parse_csv_line(string line) returns array int
+  array int fields = []
+  string current = ""
+  int i = 0
+  while i < line.len()
+    string c = line[i]
+    if c == ","
+      fields.append(current)
+      current = ""
+    else
+      current = current + c
+    end if
+    i = i + 1
+  end while
+  fields.append(current)
+  return fields
+end function
+
+function csv_to_table(int csv_data) returns array int
+  array int rows = []
+  array int lines = split_by_char(csv_data, "\n")
+  int i = 0
+  while i < lines.len()
+    string line = lines[i]
+    if line != ""
+      array int row = parse_csv_line(line)
+      rows.append(row)
+    end if
+    i = i + 1
+  end while
+  return rows
+end function
+
+function test_csv_parser()
+  print "--- CSV Parser ---"
+  string csv_str = "name,age,city\nAlice,30,London\nBob,25,Paris\nCarol,35,Berlin"
+  array int table = csv_to_table(csv_str)
+  int i = 0
+  while i < table.len()
+    array int row = table[i]
+    int j = 0
+    string row_str = ""
+    while j < row.len()
+      if j > 0
+        row_str = row_str + " | "
+      end if
+      row_str = row_str + row[j]
+      j = j + 1
+    end while
+    print row_str
+    i = i + 1
+  end while
+end function
+
+function count_words(int text) returns map
+  // TRANSPILER: dict values cast to string — may lose type information
+  map _dict0 = map_new()
+  map counts = _dict0
+  array int words = split_by_space(text)
+  int i = 0
+  while i < words.len()
+    string word = str_to_lower(words[i])
+    if counts.contains(word)
+      counts[word] = counts[word] + 1
+    else
+      counts[word] = 1
+    end if
+    i = i + 1
+  end while
+  return counts
+end function
+
+function test_word_frequency()
+  print "--- Word Frequency ---"
+  string text = "the quick brown fox jumps over the lazy dog the fox"
+  map counts = count_words(text)
+  array int sorted_words = sorted(counts.keys())
+  int i = 0
+  while i < sorted_words.len()
+    string w = sorted_words[i]
+    print w + ": " + cast(counts[w], string)
+    i = i + 1
+  end while
+end function
+
+function wrap_text(int text, int width) returns string
+  array int words = split_by_space(text)
+  array int lines = []
+  string current_line = ""
+  int i = 0
+  while i < words.len()
+    string word = words[i]
+    if current_line == ""
+      current_line = word
+    else if current_line.len() + 1 + word.len() <= width
+      current_line = current_line + " " + word
+    else
+      lines.append(current_line)
+      current_line = word
+    end if
+    i = i + 1
+  end while
+  if current_line != ""
+    lines.append(current_line)
+  end if
+  string result = ""
+  int j = 0
+  while j < lines.len()
+    if j > 0
+      result = result + "\n"
+    end if
+    result = result + lines[j]
+    j = j + 1
+  end while
+  return result
+end function
+
+function test_text_formatter()
+  print "--- Text Formatter ---"
+  string text = "The quick brown fox jumps over the lazy dog near the river bank"
+  string wrapped = wrap_text(text, 30)
+  print "Wrapped at 30:"
+  array int lines = split_by_char(wrapped, "\n")
+  int i = 0
+  while i < lines.len()
+    print lines[i]
+    i = i + 1
+  end while
+end function
+
+object Matrix
+  int rows
+  int cols
+  array int data
+  
+  function __init__(int rows, int cols)
+    self.rows = rows
+    self.cols = cols
+    int mat_size = rows * cols
+    self.data = [0] * mat_size
+  end function
+  
+  
+  function mat_get(int r, int c) returns int
+    return self.data[r * self.cols + c]
+  end function
+  
+  
+  function set_val(int r, int c, int val)
+    self.data[r * self.cols + c] = val
+  end function
+  
+  
+  function add(int other) returns int
+    Matrix mres = Matrix(self.rows, self.cols)
+    int i = 0
+    while i < self.rows
+      int j = 0
+      while j < self.cols
+        int av = self.mat_get(i, j)
+        int bv = other.mat_get(i, j)
+        mres.set_val(i, j, av + bv)
+        j = j + 1
+      end while
+      i = i + 1
+    end while
+    return mres
+  end function
+  
+  
+  function multiply(int other) returns int
+    Matrix mres = Matrix(self.rows, other.cols)
+    int i = 0
+    while i < self.rows
+      int j = 0
+      while j < other.cols
+        int s = 0
+        int k = 0
+        while k < self.cols
+          int av2 = self.mat_get(i, k)
+          int bv2 = other.mat_get(k, j)
+          s = s + av2 * bv2
+          k = k + 1
+        end while
+        mres.set_val(i, j, s)
+        j = j + 1
+      end while
+      i = i + 1
+    end while
+    return mres
+  end function
+  
+  
+  function transpose() returns int
+    Matrix mres = Matrix(self.cols, self.rows)
+    int i = 0
+    while i < self.rows
+      int j = 0
+      while j < self.cols
+        int tv = self.mat_get(i, j)
+        mres.set_val(j, i, tv)
+        j = j + 1
+      end while
+      i = i + 1
+    end while
+    return mres
+  end function
+  
+  
+  function to_string() returns string
+    string mat_result = ""
+    int i = 0
+    while i < self.rows
+      string row_str = ""
+      int j = 0
+      while j < self.cols
+        if j > 0
+          row_str = row_str + " "
+        end if
+        int mat_val = self.mat_get(i, j)
+        row_str = row_str + cast(mat_val, string)
+        j = j + 1
+      end while
+      if i > 0
+        mat_result = mat_result + "\n"
+      end if
+      mat_result = mat_result + row_str
+      i = i + 1
+    end while
+    return mat_result
+  end function
+  
+end object
+
+function determinant2x2(int a, int b, int c, int d) returns int
+  return a * d - b * c
+end function
+
+function test_matrix()
+  print "--- Matrix ---"
+  Matrix m1 = Matrix(2, 2)
+  m1.set_val(0, 0, 1)
+  m1.set_val(0, 1, 2)
+  m1.set_val(1, 0, 3)
+  m1.set_val(1, 1, 4)
+  Matrix m2 = Matrix(2, 2)
+  m2.set_val(0, 0, 5)
+  m2.set_val(0, 1, 6)
+  m2.set_val(1, 0, 7)
+  m2.set_val(1, 1, 8)
+  print "M1:"
+  print m1.to_string()
+  print "M2:"
+  print m2.to_string()
+  Matrix m3 = m1.add(m2)
+  print "M1 + M2:"
+  print m3.to_string()
+  Matrix m4 = m1.multiply(m2)
+  print "M1 * M2:"
+  print m4.to_string()
+  Matrix m5 = m1.transpose()
+  print "M1 transposed:"
+  print m5.to_string()
+  int da = m1.mat_get(0, 0)
+  int db = m1.mat_get(0, 1)
+  int dc = m1.mat_get(1, 0)
+  int dd = m1.mat_get(1, 1)
+  int det = determinant2x2(da, db, dc, dd)
+  print "Det M1: " + cast(det, string)
+end function
+
+object ComplexNumber
+  float real
+  float imag
+  
+  function __init__(float real, float imag)
+    self.real = real
+    self.imag = imag
+  end function
+  
+  
+  function add(int other) returns int
+    return ComplexNumber(self.real + other.real, self.imag + other.imag)
+  end function
+  
+  
+  function multiply(int other) returns int
+    float r = self.real * other.real - self.imag * other.imag
+    float imag_part = self.real * other.imag + self.imag * other.real
+    return ComplexNumber(r, imag_part)
+  end function
+  
+  
+  function magnitude() returns float
+    return sqrt_approx(self.real * self.real + self.imag * self.imag)
+  end function
+  
+  
+  function conjugate() returns int
+    return ComplexNumber(self.real, -self.imag)
+  end function
+  
+  
+  function to_string() returns string
+    if self.imag >= 0.0
+      return cast(round(self.real, 4), string) + "+" + cast(round(self.imag, 4), string) + "i"
+    end if
+    return cast(round(self.real, 4), string) + cast(round(self.imag, 4), string) + "i"
+  end function
+  
+end object
+
+function test_complex()
+  print "--- Complex Numbers ---"
+  ComplexNumber c1 = ComplexNumber(3.0, 4.0)
+  ComplexNumber c2 = ComplexNumber(1.0, -2.0)
+  print "c1 = " + c1.to_string()
+  print "c2 = " + c2.to_string()
+  print "c1 + c2 = " + c1.add(c2).to_string()
+  print "c1 * c2 = " + c1.multiply(c2).to_string()
+  print "|c1| = " + cast(round(c1.magnitude(), 4), string)
+  print "conj(c1) = " + c1.conjugate().to_string()
+end function
+
+function calc_mean(array int data) returns float
+  float total = 0.0
+  int i = 0
+  while i < data.len()
+    total = total + data[i]
+    i = i + 1
+  end while
+  return total / data.len()
+end function
+
+function calc_median(array int data) returns float
+  int n = data.len()
+  array int sorted_data = sorted(data)
+  int mid = n / 2
+  if n % 2 == 0
+    int mid_minus_1 = mid - 1
+    float pair_sum = sorted_data[mid_minus_1] + sorted_data[mid]
+    return pair_sum / 2.0
+  end if
+  return _py_float(sorted_data[mid])
+end function
+
+function calc_mode(array int data) returns int
+  // TRANSPILER: dict values cast to string — may lose type information
+  map _dict1 = map_new()
+  map counts = _dict1
+  int i = 0
+  while i < data.len()
+    int val = data[i]
+    if counts.contains(val)
+      counts[val] = counts[val] + 1
+    else
+      counts[val] = 1
+    end if
+    i = i + 1
+  end while
+  int max_count = 0
+  int mode_val = data[0]
+  array int keys = sorted(counts.keys())
+  int j = 0
+  while j < keys.len()
+    int k = keys[j]
+    if counts[k] > max_count
+      max_count = counts[k]
+      mode_val = k
+    end if
+    j = j + 1
+  end while
+  return mode_val
+end function
+
+function calc_variance(array int data) returns float
+  float mean = calc_mean(data)
+  float total = 0.0
+  int i = 0
+  while i < data.len()
+    float _py_diff = data[i] - mean
+    total = total + _py_diff * _py_diff
+    i = i + 1
+  end while
+  return total / data.len()
+end function
+
+function calc_std_dev(array int data) returns float
+  return sqrt_approx(calc_variance(data))
+end function
+
+function test_statistics()
+  print "--- Statistics ---"
+  array int data = [4, 7, 13, 2, 8, 4, 5, 4, 12, 9]
+  print "Data: " + arr_to_string(data, data.len())
+  print "Mean: " + cast(round(calc_mean(data), 4), string)
+  print "Median: " + cast(round(calc_median(data), 4), string)
+  print "Mode: " + cast(calc_mode(data), string)
+  print "Variance: " + cast(round(calc_variance(data), 4), string)
+  print "Std Dev: " + cast(round(calc_std_dev(data), 4), string)
+end function
+
+object TrafficLight
+  string state
+  int cycles
+  
+  function __init__()
+    self.state = "RED"
+    self.cycles = 0
+  end function
+  
+  
+  function next_state()
+    if self.state == "RED"
+      self.state = "GREEN"
+    else if self.state == "GREEN"
+      self.state = "YELLOW"
+    else if self.state == "YELLOW"
+      self.state = "RED"
+      self.cycles = self.cycles + 1
+    end if
+  end function
+  
+  
+  function get_state() returns string
+    return self.state
+  end function
+  
+end object
+
+function test_state_machine()
+  print "--- State Machine ---"
+  TrafficLight light = TrafficLight()
+  int i = 0
+  while i < 9
+    print "State: " + light.get_state()
+    light.next_state()
+    i = i + 1
+  end while
+  print "Cycles: " + cast(light.cycles, string)
+end function
+
+function fibonacci(int n) returns int
+  if n <= 1
+    return n
+  end if
+  return fibonacci(n - 1) + fibonacci(n - 2)
+end function
+
+function factorial(int n) returns int
+  if n <= 1
+    return 1
+  end if
+  return n * factorial(n - 1)
+end function
+
+function power(int base, int exp) returns int
+  if exp == 0
+    return 1
+  end if
+  if exp % 2 == 0
+    int half = power(base, exp / 2)
+    return half * half
+  end if
+  return base * power(base, exp - 1)
+end function
+
+function gcd(int a, int b) returns int
+  if b == 0
+    return a
+  end if
+  return gcd(b, a % b)
+end function
+
+function sum_digits(int n) returns int
+  if n < 10
+    return n
+  end if
+  return n % 10 + sum_digits(n / 10)
+end function
+
+function test_recursion()
+  print "--- Recursion ---"
+  string fib_str = ""
+  int i = 0
+  while i < 10
+    if i > 0
+      fib_str = fib_str + " "
+    end if
+    fib_str = fib_str + cast(fibonacci(i), string)
+    i = i + 1
+  end while
+  print "Fibonacci: " + fib_str
+  print "10! = " + cast(factorial(10), string)
+  print "2^10 = " + cast(power(2, 10), string)
+  print "GCD(48,18) = " + cast(gcd(48, 18), string)
+  print "Sum digits 12345 = " + cast(sum_digits(12345), string)
+end function
+
+function count_char(string s, string c) returns int
+  int count = 0
+  int i = 0
+  while i < s.len()
+    if s[i] == c
+      count = count + 1
+    end if
+    i = i + 1
+  end while
+  return count
+end function
+
+function replace_char(string s, string old, string new_char) returns string
+  string result = ""
+  int i = 0
+  while i < s.len()
+    if s[i] == old
+      result = result + new_char
+    else
+      result = result + s[i]
+    end if
+    i = i + 1
+  end while
+  return result
+end function
+
+function starts_with_str(string s, string prefix) returns bool
+  if prefix.len() > s.len()
+    return false
+  end if
+  int i = 0
+  while i < prefix.len()
+    if s[i] != prefix[i]
+      return false
+    end if
+    i = i + 1
+  end while
+  return true
+end function
+
+function ends_with_str(string s, string suffix) returns bool
+  if suffix.len() > s.len()
+    return false
+  end if
+  int offset = s.len() - suffix.len()
+  int i = 0
+  while i < suffix.len()
+    if s[offset + i] != suffix[i]
+      return false
+    end if
+    i = i + 1
+  end while
+  return true
+end function
+
+function trim_string(string s) returns string
+  int start = 0
+  while start < s.len() and s[start] == " "
+    start = start + 1
+  end while
+  int _py_end = s.len() - 1
+  while _py_end >= start and s[_py_end] == " "
+    _py_end = _py_end - 1
+  end while
+  string result = ""
+  int i = start
+  while i <= _py_end
+    result = result + s[i]
+    i = i + 1
+  end while
+  return result
+end function
+
+function to_upper(string s) returns string
+  string result = ""
+  int i = 0
+  while i < s.len()
+    string c = s[i]
+    int code = char_code(c, 0)
+    if code >= 97 and code <= 122
+      result = result + char_from_code(code - 32)
+    else
+      result = result + c
+    end if
+    i = i + 1
+  end while
+  return result
+end function
+
+function to_lower(string s) returns string
+  string result = ""
+  int i = 0
+  while i < s.len()
+    string c = s[i]
+    int code = char_code(c, 0)
+    if code >= 65 and code <= 90
+      result = result + char_from_code(code + 32)
+    else
+      result = result + c
+    end if
+    i = i + 1
+  end while
+  return result
+end function
+
+function test_string_manipulation()
+  print "--- String Manipulation ---"
+  string s = "  Hello World  "
+  print "Trimmed: '" + trim_string(s) + "'"
+  print "Upper: " + to_upper("hello world")
+  print "Lower: " + to_lower("HELLO WORLD")
+  print "Count 'l' in 'hello world': " + cast(count_char("hello world", "l"), string)
+  print "Replace 'o' with '0' in 'hello world': " + replace_char("hello world", "o", "0")
+  print "Starts with 'hel': " + cast(starts_with_str("hello", "hel"), string)
+  print "Starts with 'abc': " + cast(starts_with_str("hello", "abc"), string)
+  print "Ends with 'llo': " + cast(ends_with_str("hello", "llo"), string)
+  print "Ends with 'abc': " + cast(ends_with_str("hello", "abc"), string)
+end function
+
+object Student
+  string name
+  int grade
+  float score
+  
+  function __init__(string name, int grade, float score)
+    self.name = name
+    self.grade = grade
+    self.score = score
+  end function
+  
+  
+  function to_string() returns string
+    return self.name + " grade=" + cast(self.grade, string) + " score=" + cast(self.score, string)
+  end function
+  
+end object
+
+function sort_students_by_score(array int students, int n)
+  int i = 0
+  while i < n - 1
+    int j = 0
+    while j < n - 1 - i
+      s1 = students[j]
+      s2 = students[j + 1]
+      if s1.score < s2.score
+        students[j] = s2
+        students[j + 1] = s1
+      end if
+      j = j + 1
+    end while
+    i = i + 1
+  end while
+end function
+
+function average_score(array int students, int n) returns float
+  float total = 0.0
+  int i = 0
+  while i < n
+    total = total + students[i].score
+    i = i + 1
+  end while
+  return total / n
+end function
+
+function test_data_processing()
+  print "--- Data Processing ---"
+  array int students = []
+  students.append(Student("Alice", 10, 92.5))
+  students.append(Student("Bob", 11, 78.0))
+  students.append(Student("Carol", 10, 88.5))
+  students.append(Student("Dave", 12, 95.0))
+  students.append(Student("Eve", 11, 82.0))
+  int n = students.len()
+  print "Before sort:"
+  int i = 0
+  while i < n
+    print "  " + students[i].to_string()
+    i = i + 1
+  end while
+  sort_students_by_score(students, n)
+  print "After sort by score desc:"
+  int j = 0
+  while j < n
+    print "  " + students[j].to_string()
+    j = j + 1
+  end while
+  float avg = average_score(students, n)
+  print "Average score: " + cast(round(avg, 2), string)
+end function
+
+function is_prime(int n) returns bool
+  if n < 2
+    return false
+  end if
+  if n == 2
+    return true
+  end if
+  if n % 2 == 0
+    return false
+  end if
+  int i = 3
+  while i * i <= n
+    if n % i == 0
+      return false
+    end if
+    i = i + 2
+  end while
+  return true
+end function
+
+function sieve_of_eratosthenes(int limit) returns array int
+  int sieve_size = limit + 1
+  array int is_p = [true] * sieve_size
+  is_p[0] = false
+  if limit >= 1
+    is_p[1] = false
+  end if
+  int i = 2
+  while i * i <= limit
+    if is_p[i]
+      int j = i * i
+      while j <= limit
+        is_p[j] = false
+        j = j + i
+      end while
+    end if
+    i = i + 1
+  end while
+  array int primes = []
+  int k = 2
+  while k <= limit
+    if is_p[k]
+      primes.append(k)
+    end if
+    k = k + 1
+  end while
+  return primes
+end function
+
+function prime_factors(int n) returns array int
+  array int factors = []
+  int d = 2
+  while d * d <= n
+    while n % d == 0
+      factors.append(d)
+      n = n / d
+    end while
+    d = d + 1
+  end while
+  if n > 1
+    factors.append(n)
+  end if
+  return factors
+end function
+
+function test_number_theory()
+  print "--- Number Theory ---"
+  array int primes = sieve_of_eratosthenes(50)
+  string primes_str = ""
+  int i = 0
+  while i < primes.len()
+    if i > 0
+      primes_str = primes_str + " "
+    end if
+    primes_str = primes_str + cast(primes[i], string)
+    i = i + 1
+  end while
+  print "Primes <= 50: " + primes_str
+  print "Is prime 97: " + cast(is_prime(97), string)
+  print "Is prime 100: " + cast(is_prime(100), string)
+  array int factors = prime_factors(360)
+  string factors_str = ""
+  int j = 0
+  while j < factors.len()
+    if j > 0
+      factors_str = factors_str + " "
+    end if
+    factors_str = factors_str + cast(factors[j], string)
+    j = j + 1
+  end while
+  print "Prime factors of 360: " + factors_str
+end function
+
+function evaluate_rpn(array int tokens) returns float
+  array int stk = []
+  int i = 0
+  while i < tokens.len()
+    string tok = tokens[i]
+    if tok == "+"
+      float b = stk.pop()
+      float a = stk.pop()
+      stk.append(a + b)
+    else if tok == "-"
+      float b2 = stk.pop()
+      float a2 = stk.pop()
+      stk.append(a2 - b2)
+    else if tok == "*"
+      float b3 = stk.pop()
+      float a3 = stk.pop()
+      stk.append(a3 * b3)
+    else if tok == "/"
+      float b4 = stk.pop()
+      float a4 = stk.pop()
+      if b4 == 0.0
+        stk.append(0.0)
+      else
+        stk.append(a4 / b4)
+      end if
+    else
+      stk.append(_py_float(tok))
+    end if
+    i = i + 1
+  end while
+  if stk.len() == 0
+    return 0.0
+  end if
+  return stk[0]
+end function
+
+function test_rpn_evaluator()
+  print "--- RPN Evaluator ---"
+  array int expr1 = ["3", "4", "+", "2", "*"]
+  print "(3+4)*2 = " + cast(evaluate_rpn(expr1), string)
+  array int expr2 = ["15", "7", "1", "1", "+", "-", "/", "3", "*", "2", "1", "1", "+", "+", "-"]
+  print "Complex RPN = " + cast(evaluate_rpn(expr2), string)
+  array int expr3 = ["2", "3", "4", "*", "+"]
+  print "2+3*4 = " + cast(evaluate_rpn(expr3), string)
+end function
+
+function main()
+  print "=== GIANT PYTHON TEST ==="
+  print ""
+  print "== SECTION 1: DATA STRUCTURES =="
+  test_linked_list()
+  test_bst()
+  test_stack_queue()
+  test_priority_queue()
+  print ""
+  print "== SECTION 2: ALGORITHMS =="
+  test_sorting_searching()
+  test_graph_algorithms()
+  test_string_algorithms()
+  print ""
+  print "== SECTION 3: OOP PATTERNS =="
+  test_shapes()
+  test_animals()
+  test_builder()
+  test_observer()
+  print ""
+  print "== SECTION 4: EXCEPTION HANDLING =="
+  test_exceptions()
+  print ""
+  print "== SECTION 5: STRING PROCESSING =="
+  test_csv_parser()
+  test_word_frequency()
+  test_text_formatter()
+  print ""
+  print "== SECTION 6: MATH =="
+  test_matrix()
+  test_complex()
+  test_statistics()
+  print ""
+  print "== SECTION 7: STATE MACHINE =="
+  test_state_machine()
+  print ""
+  print "== SECTION 8: RECURSION =="
+  test_recursion()
+  print ""
+  print "== SECTION 9: STRING MANIPULATION =="
+  test_string_manipulation()
+  print ""
+  print "== SECTION 10: DATA PROCESSING =="
+  test_data_processing()
+  print ""
+  print "== SECTION 11: NUMBER THEORY =="
+  test_number_theory()
+  print ""
+  print "== SECTION 12: RPN EVALUATOR =="
+  test_rpn_evaluator()
+  print ""
+  print "=== ALL TESTS COMPLETE ==="
+end function
+

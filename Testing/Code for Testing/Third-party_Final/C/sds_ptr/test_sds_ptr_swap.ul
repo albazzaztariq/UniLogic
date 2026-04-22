@@ -1,0 +1,55 @@
+// Translated from test_sds_ptr_swap.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function reverse_buf(string s, string p)
+  int aux = 0
+  while (s < p)
+    aux = deref(<s>)
+    deref(<s>) = deref(<p>)
+    deref(<p>) = aux
+    s = s + 1
+    p = p - 1
+  end while
+end function
+
+function main() returns int
+  array int buf1 = [104, 101, 108, 108, 111, 0]
+  reverse_buf(buf1, (buf1 + 4))
+  print "reverse hello = " + buf1
+  array int buf2 = [97, 98, 99, 100, 101, 0]
+  reverse_buf(buf2, (buf2 + 4))
+  print "reverse abcde = " + buf2
+  array int buf3 = [122, 0]
+  reverse_buf(buf3, buf3)
+  print "reverse z = " + buf3
+  array int buf4 = [97, 98, 0]
+  reverse_buf(buf4, (buf4 + 1))
+  print "reverse ab = " + buf4
+  return 0
+end function
+

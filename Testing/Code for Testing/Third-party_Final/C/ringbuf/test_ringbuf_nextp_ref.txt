@@ -1,0 +1,8 @@
+buf=00000054915FFA83 size=5 end=00000054915FFA88
+nextp(offset=0) -> offset=1 (expected=1) OK
+nextp(offset=1) -> offset=2 (expected=2) OK
+nextp(offset=2) -> offset=3 (expected=3) OK
+nextp(offset=3) -> offset=4 (expected=4) OK
+nextp(offset=4) -> offset=0 (expected=0) OK
+before free: rbp=non-null
+after free: rbp=null

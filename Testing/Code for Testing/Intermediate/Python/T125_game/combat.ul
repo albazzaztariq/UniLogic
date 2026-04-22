@@ -1,0 +1,22 @@
+// combat.ul — deterministic combat system (stateless, no imports)
+// All data passed as parameters to avoid transitive import issues.
+
+// Fight a monster. Returns total damage taken by player.
+function fight_monster(string m_name, int m_hp, int m_atk, int player_atk) returns int
+    int total_damage = 0
+
+    print "  Fighting " + m_name + "!"
+
+    while m_hp > 0
+        // Player attacks first
+        m_hp = m_hp - player_atk
+        if m_hp <= 0
+            print "  " + m_name + " defeated!"
+            return total_damage
+        end if
+        // Monster attacks
+        total_damage = total_damage + m_atk
+    end while
+
+    return total_damage
+end function

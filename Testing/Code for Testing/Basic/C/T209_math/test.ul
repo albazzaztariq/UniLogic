@@ -1,0 +1,53 @@
+// T109: Math and stdlib functions — arithmetic, modulo, map_fn, filter_fn
+
+function double_it(int x) returns int
+    return x * 2
+end function
+
+function is_even(int x) returns bool
+    return x % 2 == 0
+end function
+
+function main() returns int
+    // Test 1: basic arithmetic
+    print 10 + 5
+    print 10 - 3
+    print 6 * 7
+    print 20 / 4
+
+    // Test 2: modulo
+    print 17 % 5
+
+    // Test 3: negative numbers
+    int neg = 0 - 42
+    print neg
+
+    // Test 4: integer division
+    print 7 / 2
+
+    // Test 5: order of operations
+    int result = 2 + 3 * 4
+    print result
+
+    // Test 6: map_fn
+    list int nums = [1, 2, 3, 4, 5]
+    list int doubled = map_fn(double_it, nums)
+    for each d in doubled
+        print d
+    end for
+
+    // Test 7: filter_fn
+    list int evens = filter_fn(is_even, nums)
+    for each e in evens
+        print e
+    end for
+
+    // Test 8: sort
+    list int unsorted = [5, 2, 8, 1, 9]
+    unsorted.sort()
+    for each s in unsorted
+        print s
+    end for
+
+    return 0
+end function

@@ -1,0 +1,5 @@
+after write 6: head_offset=6 used=6
+read 3: [ABC] tail_offset=3
+after write 5 (wrap): head_offset=2 used=8
+read 8 (across wrap): DEFGHIJK
+underflow read returns null: yes

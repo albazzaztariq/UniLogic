@@ -1,0 +1,7 @@
+function foo(uint32 a) returns uint32
+  uint32 x = 0
+  return x
+end function
+function main() returns int
+  return 0
+end function

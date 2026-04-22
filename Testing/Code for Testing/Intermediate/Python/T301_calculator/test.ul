@@ -1,0 +1,61 @@
+// Simple integer calculator with named operations.
+function add(int a, int b) returns int
+  return a + b
+end function
+
+function subtract(int a, int b) returns int
+  return a - b
+end function
+
+function multiply(int a, int b) returns int
+  return a * b
+end function
+
+function safe_divide(int a, int b) returns int
+  if b == 0
+    return -1
+  end if
+  return a / b
+end function
+
+function power(int base, int exp) returns int
+  int result = 1
+  int i = 0
+  while i < exp
+    result = result * base
+    i = i + 1
+  end while
+  return result
+end function
+
+function factorial(int n) returns int
+  if n <= 1
+    return 1
+  end if
+  return n * factorial(n - 1)
+end function
+
+function gcd(int a, int b) returns int
+  while b != 0
+    int temp = b
+    b = a % b
+    a = temp
+  end while
+  return a
+end function
+
+function main() returns int
+  print add(10, 25)
+  print subtract(100, 37)
+  print multiply(6, 7)
+  print safe_divide(100, 3)
+  print safe_divide(10, 0)
+  print power(2, 10)
+  print factorial(10)
+  print gcd(48, 18)
+  print gcd(100, 75)
+  int result = add(multiply(3, 4), subtract(20, 8))
+  print result
+  return 0
+end function
+

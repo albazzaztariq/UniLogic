@@ -1,0 +1,108 @@
+@dr python_compat = true
+
+object Value
+  int data
+  int grad
+  int grad_fn_name
+  array int _inputs
+  bool requires_grad
+  
+  function __init__(int data, int grad_fn_name)
+    self.data = data
+    self.grad = 0
+    self.grad_fn_name = grad_fn_name
+    self._inputs = []
+    self.requires_grad = true
+  end function
+  
+  
+  function set_inputs(int inputs)
+    self._inputs = inputs
+  end function
+  
+  
+  function add(int other)
+    result = Value(self.data + other.data, "AddBackward")
+    result.set_inputs([self, other])
+    return result
+  end function
+  
+  
+  function mul(int other)
+    result = Value(self.data * other.data, "MulBackward")
+    result.set_inputs([self, other])
+    return result
+  end function
+  
+  
+  function neg()
+    result = Value(-self.data, "NegBackward")
+    result.set_inputs([self])
+    return result
+  end function
+  
+  
+  function backward_add(int grad_output)
+    for each inp in self._inputs
+      inp.grad = inp.grad + grad_output
+    end for
+  end function
+  
+  
+  function backward_mul(int grad_output)
+    if self._inputs.len() == 2
+      self._inputs[0].grad = self._inputs[0].grad + grad_output * self._inputs[1].data
+      self._inputs[1].grad = self._inputs[1].grad + grad_output * self._inputs[0].data
+    end if
+  end function
+  
+  
+  function backward_neg(int grad_output)
+    if self._inputs.len() == 1
+      self._inputs[0].grad = self._inputs[0].grad + -grad_output
+    end if
+  end function
+  
+  
+  function backward()
+    self.grad = 1
+    stack = [self]
+    while stack.len() > 0
+      node = stack[stack.len() - 1]
+      stack = stack[0:stack.len() - 1]
+      if node.grad_fn_name == "AddBackward"
+        node.backward_add(node.grad)
+      else if node.grad_fn_name == "MulBackward"
+        node.backward_mul(node.grad)
+      else if node.grad_fn_name == "NegBackward"
+        node.backward_neg(node.grad)
+      end if
+      for each inp in node._inputs
+        if inp.requires_grad
+          stack.append(inp)
+        end if
+      end for
+    end while
+  end function
+  
+end object
+
+function main()
+  x = Value(3, "leaf")
+  y = Value(4, "leaf")
+  x.requires_grad = true
+  y.requires_grad = true
+  z = x.mul(y)
+  w = z.add(x)
+  print "w.data (3*4+3=15): " + cast(w.data, string)
+  w.backward()
+  print "x.grad (y+1=5): " + cast(x.grad, string)
+  print "y.grad (x=3): " + cast(y.grad, string)
+  x2 = Value(5, "leaf")
+  x2.requires_grad = true
+  q = x2.neg()
+  print "q.data (-5): " + cast(q.data, string)
+  q.backward()
+  print "x2.grad (-1): " + cast(x2.grad, string)
+end function
+

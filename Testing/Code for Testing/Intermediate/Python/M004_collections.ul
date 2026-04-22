@@ -1,0 +1,27 @@
+// M004: Arrays, lists, for each, size
+function main() returns int
+    // array
+    array int[5] scores = [95, 87, 72, 100, 63]
+    print scores[0]
+    print scores[4]
+
+    // list
+    list string[3] names = ["Alice", "Bob", "Carol"]
+    names.add("Dave")
+    print names[0]
+    print names[3]
+
+    // iterate array
+    int total = 0
+    for each s in scores
+        total += s
+    end for
+    print total
+
+    // iterate list
+    for each name in names
+        print name
+    end for
+
+    return 0
+end function

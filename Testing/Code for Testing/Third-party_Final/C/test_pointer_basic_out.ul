@@ -1,0 +1,164 @@
+// Translated from test_pointer_basic_out.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function str_char_at(char <s>, int i) returns <char>
+  char <r> = cast(memtake(2), char)
+  if ((i >= 0) and (i < cast(size(s), int)))
+    r[0] = s[i]
+    r[1] = 0
+  else
+    r[0] = 0
+  end if
+  return r
+end function
+
+function __ul_char_from_code(int code) returns <char>
+  char <r> = cast(memtake(2), char)
+  r[0] = cast(code, char)
+  r[1] = 0
+  return r
+end function
+
+function __ul_strcat(char <a>, char <b>) returns <char>
+  int la = cast(size(a), int)
+  int lb = cast(size(b), int)
+  char <r> = cast(memtake(((la + lb) + 1)), char)
+  memcopy(r, a, la)
+  memcopy((r + la), b, lb)
+  r[(la + lb)] = 0
+  return r
+end function
+
+function __ul_cmp_int(none <a>, none <b>) returns int
+  return (deref(cast(a, int)) - deref(cast(b, int)))
+end function
+
+function __ul_cmp_float(none <a>, none <b>) returns int
+  float fa = deref(cast(a, float))
+  float fb = deref(cast(b, float))
+  return ((fa > fb) - (fa < fb))
+end function
+
+function __ul_cmp_double(none <a>, none <b>) returns int
+  float da = deref(cast(a, float))
+  float db = deref(cast(b, float))
+  return ((da > db) - (da < db))
+end function
+
+function __ul_cmp_string(none <a>, none <b>) returns int
+  int _tern_1 = 1
+  if deref(cast(a, char)) == deref(cast(b, char))
+    _tern_1 = 0
+  end if
+  return _tern_1
+end function
+
+function __ul_print_float(float v)
+  array char _buf = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_buf, size(_buf), "%.10g", v)
+  int _has_dot = 0
+  int _brk_0 = 0
+  int _i = 0
+  while (_buf[_i] and not _brk_0)
+    if ((_buf[_i] == 46) or (_buf[_i] == 101))
+      _has_dot = 1
+      _brk_0 = 1
+    end if
+    if not _brk_0
+      _i = _i + 1
+    end if
+  end while
+  if not _has_dot
+    int _l = cast(size(_buf), int)
+    _buf[_l] = 46
+    _buf[(_l + 1)] = 48
+    _buf[(_l + 2)] = 0
+  end if
+  print _buf
+end function
+
+
+
+
+
+function swap(int <a>, int <b>)
+  int tmp = deref(<a>)
+  deref(<a>) = deref(<b>)
+  deref(<b>) = tmp
+end function
+
+function increment(int <val>)
+  deref(<val>) = (deref(<val>) + 1)
+end function
+
+function sum_array(int <arr>, int n) returns int
+  int total = 0
+  int i = 0
+  i = 0
+  while (i < n)
+    total = (total + arr[i])
+    i = (i + 1)
+  end while
+  return total
+end function
+
+function main() returns int
+  int x = 10
+  int y = 20
+  array char _cast_buf_0 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_0, size(_cast_buf_0), "%d", x)
+  array char _cast_buf_1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_1, size(_cast_buf_1), "%d", y)
+  print __ul_strcat(__ul_strcat(__ul_strcat("before swap: x=", _cast_buf_0), " y="), _cast_buf_1)
+  swap(address(x), address(y))
+  array char _cast_buf_2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_2, size(_cast_buf_2), "%d", x)
+  array char _cast_buf_3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_3, size(_cast_buf_3), "%d", y)
+  print __ul_strcat(__ul_strcat(__ul_strcat("after swap: x=", _cast_buf_2), " y="), _cast_buf_3)
+  int val = 5
+  increment(address(val))
+  array char _cast_buf_4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_4, size(_cast_buf_4), "%d", val)
+  print __ul_strcat("after increment: val=", _cast_buf_4)
+  array int nums = [1, 2, 3, 4, 5]
+  int s = sum_array(nums, 5)
+  array char _cast_buf_5 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_5, size(_cast_buf_5), "%d", s)
+  print __ul_strcat("sum: ", _cast_buf_5)
+  int <ptr> = address(x)
+  array char _cast_buf_6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_6, size(_cast_buf_6), "%d", deref(<ptr>))
+  print __ul_strcat("ptr deref: ", _cast_buf_6)
+  deref(<ptr>) = 99
+  array char _cast_buf_7 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_7, size(_cast_buf_7), "%d", x)
+  print __ul_strcat("after deref assign: x=", _cast_buf_7)
+  return 0
+end function
+

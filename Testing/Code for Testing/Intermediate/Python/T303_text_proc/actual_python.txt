@@ -1,0 +1,8 @@
+olleh
+fedcba
+racecar is palindrome
+hello is not palindrome
+4
+2
+abababab
+xyzxyz

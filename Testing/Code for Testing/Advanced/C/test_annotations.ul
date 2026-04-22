@@ -1,0 +1,6 @@
+// tests/test_annotations.ul — basic annotation parsing test
+
+function main() returns int
+  print "annotations test"
+  return 0
+end function

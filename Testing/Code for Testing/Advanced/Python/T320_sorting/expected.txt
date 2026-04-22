@@ -1,0 +1,18 @@
+--- Dataset 1 ---
+64 34 25 12 22 11 90 45
+Bubble: comps=28 sorted=True sum=303
+Selection: comps=28 sorted=True sum=303
+Insertion: comps=19 sorted=True sum=303
+--- Dataset 2 ---
+5 1 4 2 8 3 7 6 9 10
+Bubble: comps=45 sorted=True sum=55
+Selection: comps=45 sorted=True sum=55
+Insertion: comps=18 sorted=True sum=55
+--- Already sorted ---
+Bubble: comps=28 sorted=True sum=36
+Insertion: comps=7 sorted=True sum=36
+--- Reverse sorted ---
+Bubble: comps=28 sorted=True sum=36
+Insertion: comps=28 sorted=True sum=36
+--- Single ---
+Bubble: comps=0 sorted=True sum=42

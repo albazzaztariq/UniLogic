@@ -1,0 +1,95 @@
+@dr python_compat = true
+
+// TRANSPILER: stub for imported base type 'Exception'
+object Exception
+end object
+
+function _ul_sort(int arr, int n)
+  arr[0:n] = sorted(arr[0:n])
+end function
+
+object _ul_Exception forks Exception
+  int type_name
+  int message
+  
+  function __init__(int type_name, int message)
+    self.type_name = type_name
+    self.message = message
+    super().__init__(message)
+  end function
+  
+end object
+
+// TRANSPILER: module-level variable _py_list — verify type is correct
+auto _py_list = empty
+// TRANSPILER: module-level variable _py_map — verify type is correct
+auto _py_map = empty
+// TRANSPILER: module-level variable _py_type — verify type is correct
+auto _py_type = empty
+// TRANSPILER: module-level variable _py_int — verify type is correct
+auto _py_int = empty
+// TRANSPILER: module-level variable _py_float — verify type is correct
+auto _py_float = empty
+// TRANSPILER: module-level variable _py_string — verify type is correct
+auto _py_string = empty
+// TRANSPILER: module-level variable _py_bool — verify type is correct
+auto _py_bool = empty
+// TRANSPILER: module-level variable _py_object — verify type is correct
+auto _py_object = empty
+// TRANSPILER: inferred type for HOOKS — verify this is correct
+array string HOOKS = ["response", "error", "redirect"]
+function default_hooks()
+  // global HOOKS
+  // TRANSPILER: dict values cast to string — may lose type information
+  map _dict0 = map_new()
+  result = _dict0
+  for each event in HOOKS
+    result[event] = []
+  end for
+  return result
+end function
+
+function dispatch_hook(int key, int hooks, int hook_data)
+  if not hooks
+    return hook_data
+  end if
+  handler_list = hooks.get(key)
+  if handler_list
+    for each hook in handler_list
+      new_data = hook(hook_data)
+      if new_data != empty
+        hook_data = new_data
+      end if
+    end for
+  end if
+  return hook_data
+end function
+
+function add_one(int x)
+  return x + 1
+end function
+
+function _py_double(int x)
+  return x * 2
+end function
+
+function main()
+  hooks = default_hooks()
+  print cast("default_hooks keys:", string) + " " + cast(_py_list(hooks.keys()), string)
+  hooks["response"].append(add_one)
+  hooks["response"].append(_py_double)
+  result = dispatch_hook("response", hooks, 5)
+  print cast("dispatch_hook result:", string) + " " + cast(result, string)
+  result2 = dispatch_hook("error", hooks, 99)
+  print cast("dispatch_hook empty key:", string) + " " + cast(result2, string)
+  result3 = dispatch_hook("response", empty, 10)
+  print cast("dispatch_hook None hooks:", string) + " " + cast(result3, string)
+  return 0
+end function
+
+
+function __module_init__() returns none
+  _py_map = dict
+  _py_string = str
+end function
+

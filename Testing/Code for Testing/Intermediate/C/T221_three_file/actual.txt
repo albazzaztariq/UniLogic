@@ -1,0 +1,8 @@
+Area: 15
+Perimeter: 16
+Triangle area: 30
+2m in cm: 200
+15cm in mm: 150
+3kg in grams: 3000
+Rectangle: 5 x 3
+Area in mm^2: 600

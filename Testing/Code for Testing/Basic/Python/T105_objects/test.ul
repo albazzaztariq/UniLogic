@@ -1,0 +1,59 @@
+// T105: Objects — methods, inheritance (inherits), vtable dispatch
+
+object Animal
+    string name
+    int age
+
+    function speak() returns string
+        return self.name + " makes a sound"
+    end function
+
+    function describe() returns string
+        return self.name + " age " + cast(self.age, string)
+    end function
+end object
+
+object Dog inherits Animal
+    string breed
+
+    function speak() returns string
+        return self.name + " barks"
+    end function
+
+    function fetch() returns string
+        return self.name + " fetches the ball"
+    end function
+end object
+
+object Cat inherits Animal
+    function speak() returns string
+        return self.name + " meows"
+    end function
+end object
+
+function main() returns int
+    // Test 1: create object and call methods
+    Animal a
+    a.name = "Generic"
+    a.age = 5
+    print a.speak()
+    print a.describe()
+
+    // Test 2: inheritance - Dog inherits Animal
+    Dog d
+    d.name = "Rex"
+    d.age = 3
+    d.breed = "Labrador"
+    print d.speak()
+    print d.describe()
+    print d.fetch()
+
+    // Test 3: Cat inherits Animal
+    Cat c
+    c.name = "Whiskers"
+    c.age = 7
+    print c.speak()
+    print c.describe()
+
+    return 0
+end function

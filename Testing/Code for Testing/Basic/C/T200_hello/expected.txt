@@ -1,0 +1,8 @@
+Hello, UniLogic!
+42
+3.14
+UniLogic
+True
+30
+Hello World
+15

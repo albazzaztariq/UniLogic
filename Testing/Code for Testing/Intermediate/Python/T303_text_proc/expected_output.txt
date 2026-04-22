@@ -1,0 +1,10 @@
+olleh
+fedcba
+racecar is palindrome
+hello is not palindrome
+4
+2
+HELLO WORLD
+PYTHON 3.12
+abababab
+xyzxyz

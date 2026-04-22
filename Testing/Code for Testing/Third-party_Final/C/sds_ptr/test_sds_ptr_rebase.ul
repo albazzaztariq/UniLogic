@@ -1,0 +1,74 @@
+// Translated from test_sds_ptr_rebase.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function grow_buf(string buf, int oldlen, int newcap) returns string
+  string newbuf = cast(memtake(newcap), string)
+  if not newbuf
+    return cast(0, none)
+  end if
+  memset((newbuf + oldlen), 0, (newcap - oldlen))
+  return newbuf
+end function
+
+function buf_append(string dst, int <dstlen>, int <dstcap>, string src, int srclen) returns string
+  int needed = ((deref(<dstlen>) + srclen) + 1)
+  if (needed > deref(<dstcap>))
+    int newcap = (needed * 2)
+    string newdst = cast(memtake(newcap), string)
+    if not newdst
+      return dst
+    end if
+    dst = newdst
+    deref(<dstcap>) = newcap
+  end if
+  memcopy((dst + deref(<dstlen>)), src, srclen)
+  deref(<dstlen>) = deref(<dstlen>) + srclen
+  dst[deref(<dstlen>)] = 0
+  return dst
+end function
+
+function main() returns int
+  string buf = cast(memtake(8), string)
+  memcopy(buf, "hello", 6)
+  buf = grow_buf(buf, 5, 32)
+  print "after grow: \"" + buf +
+  // free(buf) - UL handles memory
+  int dstlen = 0
+  int dstcap = 8
+  string dst = cast(memtake(dstcap), string)
+  dst[0] = 0
+  dst = buf_append(dst, address(dstlen), address(dstcap), "hello", 5)
+  print "after append 1: \"" + dst + "\" len=" + cast(dstlen, string) + " cap=" + cast(dstcap, string)
+  dst = buf_append(dst, address(dstlen), address(dstcap), " world", 6)
+  print "after append 2: \"" + dst + "\" len=" + cast(dstlen, string)
+  dst = buf_append(dst, address(dstlen), address(dstcap), "! more text here to force realloc", 33)
+  print "after append 3: \"" + dst + "\" len=" + cast(dstlen, string)
+  // free(dst) - UL handles memory
+  return 0
+end function
+

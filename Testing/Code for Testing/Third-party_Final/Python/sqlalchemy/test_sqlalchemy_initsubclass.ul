@@ -1,0 +1,175 @@
+@dr python_compat = true
+
+// TRANSPILER: dict values cast to string — may lose type information
+map _registry = map_new()
+object Base
+  string tablename
+  string primary_key
+  
+  function __init__()
+    self.tablename = ""
+    self.primary_key = ""
+  end function
+  
+  
+  function get_tablename()
+    return self.tablename
+  end function
+  
+  
+  function get_primary_key()
+    return self.primary_key
+  end function
+  
+  
+  function __repr__()
+    return self.__class__.__name__ + "(tablename=" + self.tablename + ")"
+  end function
+  
+end object
+
+object User forks Base
+  string tablename
+  string primary_key
+  int user_id
+  int username
+  
+  function __init__(int user_id, int username)
+    self.tablename = "users"
+    self.primary_key = "user_id"
+    self.user_id = user_id
+    self.username = username
+  end function
+  
+  
+  function __repr__()
+    return "User(id=" + cast(self.user_id, string) + ", name=" + self.username + ")"
+  end function
+  
+end object
+
+object Article forks Base
+  string tablename
+  string primary_key
+  int article_id
+  int title
+  
+  function __init__(int article_id, int title)
+    self.tablename = "articles"
+    self.primary_key = "article_id"
+    self.article_id = article_id
+    self.title = title
+  end function
+  
+  
+  function __repr__()
+    return "Article(id=" + cast(self.article_id, string) + ", title=" + self.title + ")"
+  end function
+  
+end object
+
+object Comment forks Base
+  string tablename
+  string primary_key
+  int comment_id
+  int body
+  
+  function __init__(int comment_id, int body)
+    self.tablename = "comments"
+    self.primary_key = "comment_id"
+    self.comment_id = comment_id
+    self.body = body
+  end function
+  
+  
+  function __repr__()
+    return "Comment(id=" + cast(self.comment_id, string) + ")"
+  end function
+  
+end object
+
+object AdminUser forks User
+  string tablename
+  string primary_key
+  int admin_id
+  int username
+  int user_id
+  int level
+  
+  function __init__(int admin_id, int username, int level)
+    self.tablename = "admin_users"
+    self.primary_key = "admin_id"
+    self.admin_id = admin_id
+    self.username = username
+    self.user_id = admin_id
+    self.level = level
+  end function
+  
+  
+  function __repr__()
+    return "AdminUser(id=" + cast(self.admin_id, string) + ", level=" + cast(self.level, string) + ")"
+  end function
+  
+end object
+
+function register_all()
+  // Populate registry with all known classes.
+  _registry["User"] = User
+  _registry["Article"] = Article
+  _registry["Comment"] = Comment
+  _registry["AdminUser"] = AdminUser
+end function
+
+function lookup(int name)
+  // Look up a class by name from the registry.
+  if _registry.contains(name)
+    return _registry[name]
+  end if
+  return empty
+end function
+
+function main()
+  register_all()
+  print cast("User in registry:", string) + " " + cast(_registry.contains("User"), string)
+  print cast("Article in registry:", string) + " " + cast(_registry.contains("Article"), string)
+  print cast("Comment in registry:", string) + " " + cast(_registry.contains("Comment"), string)
+  print cast("AdminUser in registry:", string) + " " + cast(_registry.contains("AdminUser"), string)
+  print cast("Base in registry:", string) + " " + cast(_registry.contains("Base"), string)
+  print cast("registry size:", string) + " " + cast(_registry.len(), string)
+  u = User(1, "alice")
+  a = Article(10, "Hello World")
+  c = Comment(100, "Great post")
+  admin = AdminUser(99, "root", 5)
+  print cast("User.tablename:", string) + " " + cast(u.tablename, string)
+  print cast("Article.tablename:", string) + " " + cast(a.tablename, string)
+  print cast("Comment.tablename:", string) + " " + cast(c.tablename, string)
+  print cast("AdminUser.tablename:", string) + " " + cast(admin.tablename, string)
+  print cast("User.primary_key:", string) + " " + cast(u.primary_key, string)
+  print cast("AdminUser.primary_key:", string) + " " + cast(admin.primary_key, string)
+  print cast("user repr:", string) + " " + cast(repr(u), string)
+  print cast("article repr:", string) + " " + cast(repr(a), string)
+  print cast("comment repr:", string) + " " + cast(repr(c), string)
+  print cast("admin repr:", string) + " " + cast(repr(admin), string)
+  print cast("AdminUser inherits User:", string) + " " + cast(issubclass(AdminUser, User), string)
+  print cast("User inherits Base:", string) + " " + cast(issubclass(User, Base), string)
+  print cast("AdminUser inherits Base:", string) + " " + cast(issubclass(AdminUser, Base), string)
+  print cast("u is User:", string) + " " + cast(isinstance(u, User), string)
+  print cast("admin is User:", string) + " " + cast(isinstance(admin, User), string)
+  print cast("admin is AdminUser:", string) + " " + cast(isinstance(admin, AdminUser), string)
+  print cast("u is AdminUser:", string) + " " + cast(isinstance(u, AdminUser), string)
+  UserClass = lookup("User")
+  print cast("lookup User found:", string) + " " + cast(UserClass != empty, string)
+  ArticleClass = lookup("Article")
+  print cast("lookup Article found:", string) + " " + cast(ArticleClass != empty, string)
+  missing = lookup("Missing")
+  print cast("lookup Missing:", string) + " " + cast(missing, string)
+  FoundUser = lookup("User")
+  u2 = FoundUser(2, "bob")
+  print cast("from registry:", string) + " " + cast(repr(u2), string)
+  print cast("admin.username:", string) + " " + cast(admin.username, string)
+  print cast("admin.level:", string) + " " + cast(admin.level, string)
+  print cast("get_tablename:", string) + " " + cast(u.get_tablename(), string)
+  print cast("get_primary_key:", string) + " " + cast(u.get_primary_key(), string)
+end function
+
+// UL runtime invokes main() automatically

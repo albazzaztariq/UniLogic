@@ -1,0 +1,282 @@
+// Translated from test_bitops.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function rotr32(uint32 x, int n) returns uint32
+  return ((x right n) either1 (x left (32 - n)))
+end function
+
+function rotl32(uint32 x, int n) returns uint32
+  return ((x left n) either1 (x right (32 - n)))
+end function
+
+function sigma0(uint32 x) returns uint32
+  return ((rotr32(x, 2) diff rotr32(x, 13)) diff rotr32(x, 22))
+end function
+
+function sigma1(uint32 x) returns uint32
+  return ((rotr32(x, 6) diff rotr32(x, 11)) diff rotr32(x, 25))
+end function
+
+function gamma0(uint32 x) returns uint32
+  return ((rotr32(x, 7) diff rotr32(x, 18)) diff (x right 3))
+end function
+
+function gamma1(uint32 x) returns uint32
+  return ((rotr32(x, 17) diff rotr32(x, 19)) diff (x right 10))
+end function
+
+array uint8 FSb = [99, 124, 119, 123, 242, 107, 111, 197, 48, 1, 103, 43, 254, 215, 171, 118, 202, 130, 201, 125, 250, 89, 71, 240, 173, 212, 162, 175, 156, 164, 114, 192, 183, 253, 147, 38, 54, 63, 247, 204, 52, 165, 229, 241, 113, 216, 49, 21, 4, 199, 35, 195, 24, 150, 5, 154, 7, 18, 128, 226, 235, 39, 178, 117, 9, 131, 44, 26, 27, 110, 90, 160, 82, 59, 214, 179, 41, 227, 47, 132, 83, 209, 0, 237, 32, 252, 177, 91, 106, 203, 190, 57, 74, 76, 88, 207, 208, 239, 170, 251, 67, 77, 51, 133, 69, 249, 2, 127, 80, 60, 159, 168, 81, 163, 64, 143, 146, 157, 56, 245, 188, 182, 218, 33, 16, 255, 243, 210, 205, 12, 19, 236, 95, 151, 68, 23, 196, 167, 126, 61, 100, 93, 25, 115, 96, 129, 79, 220, 34, 42, 144, 136, 70, 238, 184, 20, 222, 94, 11, 219, 224, 50, 58, 10, 73, 6, 36, 92, 194, 211, 172, 98, 145, 149, 228, 121, 231, 200, 55, 109, 141, 213, 78, 169, 108, 86, 244, 234, 101, 122, 174, 8, 186, 120, 37, 46, 28, 166, 180, 198, 232, 221, 116, 31, 75, 189, 139, 138, 112, 62, 181, 102, 72, 3, 246, 14, 97, 53, 87, 185, 134, 193, 29, 158, 225, 248, 152, 17, 105, 217, 142, 148, 155, 30, 135, 233, 206, 85, 40, 223, 140, 161, 137, 13, 191, 230, 66, 104, 65, 153, 45, 15, 176, 84, 187, 22]
+
+function SubWord(uint32 x) returns uint32
+  return (((cast(FSb[(x both1 255)], uint32) either1 (cast(FSb[((x right 8) both1 255)], uint32) left 8)) either1 (cast(FSb[((x right 16) both1 255)], uint32) left 16)) either1 (cast(FSb[((x right 24) both1 255)], uint32) left 24))
+end function
+
+function fsb_is_bijective() returns int
+  array int counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  int i = 0
+  i = 0
+  while (i < 256)
+    counts[i] = 0
+    i = i + 1
+  end while
+  i = 0
+  while (i < 256)
+    counts[FSb[i]] = counts[FSb[i]] + 1
+    i = i + 1
+  end while
+  i = 0
+  while (i < 256)
+    if (counts[i] != 1)
+      return 0
+    end if
+    i = i + 1
+  end while
+  return 1
+end function
+
+function xor_checksum(int lo, int hi) returns uint32
+  int i = 0
+  uint32 acc = 0
+  i = lo
+  while (i <= hi)
+    acc = (acc diff cast(FSb[i], uint32))
+    acc = rotl32(acc, 1)
+    i = i + 1
+  end while
+  return acc
+end function
+
+function ct_memcmp_words(uint32 a, uint32 b) returns int
+  uint32 diff_c = (a diff b)
+  return cast(diff_c, int)
+end function
+
+function ct_count_matches(int n, uint32 val) returns int
+  int i = 0
+  int count = 0
+  uint32 x = val
+  i = 0
+  while (i < n)
+    if ((x diff val) == 0)
+      count = count + 1
+    end if
+    x = val
+    i = i + 1
+  end while
+  return count
+end function
+
+function sched_step(uint32 w0, uint32 w2, uint32 w7, uint32 w15) returns uint32
+  return (((gamma1(w2) + w7) + gamma0(w15)) + w0)
+end function
+
+function msg_sched_expand(uint32 w0) returns uint32
+  uint32 w16 = sched_step(w0, gamma1(w0), gamma0(w0), w0)
+  return w16
+end function
+
+function sha_ch(uint32 e, uint32 f, uint32 g) returns uint32
+  return ((e both1 f) diff (bitflip e both1 g))
+end function
+
+function sha_maj(uint32 a, uint32 b, uint32 c) returns uint32
+  return (((a both1 b) diff (a both1 c)) diff (b both1 c))
+end function
+
+function sha_round(uint32 a, uint32 b, uint32 c, uint32 d, uint32 e, uint32 f, uint32 g, uint32 h, uint32 w, uint32 k) returns uint32
+  uint32 t1 = ((((h + sigma1(e)) + sha_ch(e, f, g)) + k) + w)
+  uint32 t2 = (sigma0(a) + sha_maj(a, b, c))
+  return (t1 + t2)
+end function
+
+function main() returns int
+  uint32 x = 0
+  print "=== 1. Bit Rotation ==="
+  x = 305419896
+  auto _tern_1 = "FAIL"
+  if (rotr32(x, 4) == 2166572391)
+    _tern_1 = "PASS"
+  end if
+  print "rotr32(305419896,4)=" + cast(rotr32(x, 4), string) + " " + _tern_1
+  auto _tern_2 = "FAIL"
+  if (rotl32(x, 4) == 591751041)
+    _tern_2 = "PASS"
+  end if
+  print "rotl32(305419896,4)=" + cast(rotl32(x, 4), string) + " " + _tern_2
+  auto _tern_3 = "FAIL"
+  if (rotr32(rotl32(x, 7), 7) == x)
+    _tern_3 = "PASS"
+  end if
+  print "rotr32(rotl32(x,7),7)==x: " + _tern_3
+  print "\n=== 2a. SHA-256 sigma functions ==="
+  x = 2882400001
+  auto _tern_4 = "FAIL"
+  if (sigma0(x) == 625091328)
+    _tern_4 = "PASS"
+  end if
+  print "sigma0=" + cast(sigma0(x), string) + " " + _tern_4
+  auto _tern_5 = "FAIL"
+  if (sigma1(x) == 7196372)
+    _tern_5 = "PASS"
+  end if
+  print "sigma1=" + cast(sigma1(x), string) + " " + _tern_5
+  auto _tern_6 = "FAIL"
+  if (gamma0(x) == 1844333773)
+    _tern_6 = "PASS"
+  end if
+  print "gamma0=" + cast(gamma0(x), string) + " " + _tern_6
+  auto _tern_7 = "FAIL"
+  if (gamma1(x) == 1246368740)
+    _tern_7 = "PASS"
+  end if
+  print "gamma1=" + cast(gamma1(x), string) + " " + _tern_7
+  auto _tern_8 = "FAIL"
+  if (sigma0(x) == sigma0(x))
+    _tern_8 = "PASS"
+  end if
+  print "sigma0 deterministic: " + _tern_8
+  print "\n=== 2b. AES S-box lookup ==="
+  auto _tern_9 = "FAIL"
+  if (FSb[0] == 99)
+    _tern_9 = "PASS"
+  end if
+  print "FSb[0]=" + cast(FSb[0], string) + " " + _tern_9
+  auto _tern_10 = "FAIL"
+  if (FSb[1] == 124)
+    _tern_10 = "PASS"
+  end if
+  print "FSb[1]=" + cast(FSb[1], string) + " " + _tern_10
+  auto _tern_11 = "FAIL"
+  if (FSb[255] == 22)
+    _tern_11 = "PASS"
+  end if
+  print "FSb[255]=" + cast(FSb[255], string) + " " + _tern_11
+  auto _tern_12 = "FAIL"
+  if (SubWord(66051) == 1669101435)
+    _tern_12 = "PASS"
+  end if
+  print "SubWord(66051)=" + cast(SubWord(66051), string) + " " + _tern_12
+  auto _tern_13 = "FAIL"
+  if fsb_is_bijective()
+    _tern_13 = "PASS"
+  end if
+  print "FSb bijective: " + _tern_13
+  print "\n=== 2c. XOR checksum ==="
+  auto _tern_14 = "FAIL"
+  if (xor_checksum(0, 3) == 1274)
+    _tern_14 = "PASS"
+  end if
+  print "xor_checksum(0,3)=" + cast(xor_checksum(0, 3), string) + " " + _tern_14
+  auto _tern_15 = "FAIL"
+  if (xor_checksum(0, 255) == xor_checksum(0, 255))
+    _tern_15 = "PASS"
+  end if
+  print "xor_checksum deterministic: " + _tern_15
+  print "\n=== 3. Constant-time compare ==="
+  auto _tern_16 = "FAIL"
+  if (ct_memcmp_words(57005, 57005) == 0)
+    _tern_16 = "PASS"
+  end if
+  print "ct_memcmp_words(57005,57005)=" + cast(ct_memcmp_words(57005, 57005), string) + " " + _tern_16
+  auto _tern_17 = "FAIL"
+  if (ct_memcmp_words(57005, 48879) != 0)
+    _tern_17 = "PASS"
+  end if
+  print "ct_memcmp_words(57005,48879)!=0: " + _tern_17
+  auto _tern_18 = "FAIL"
+  if (ct_count_matches(8, 51966) == 8)
+    _tern_18 = "PASS"
+  end if
+  print "ct_count_matches(8,51966)=" + cast(ct_count_matches(8, 51966), string) + " " + _tern_18
+  print "\n=== 4. SHA-256 message schedule ==="
+  x = 1633837952
+  auto _tern_19 = "FAIL"
+  if (msg_sched_expand(x) == 3357343958)
+    _tern_19 = "PASS"
+  end if
+  print "msg_sched_expand=" + cast(msg_sched_expand(x), string) + " " + _tern_19
+  auto _tern_20 = "FAIL"
+  if (msg_sched_expand(x) == msg_sched_expand(x))
+    _tern_20 = "PASS"
+  end if
+  print "sched deterministic: " + _tern_20
+  print "\n=== 5. SHA-256 Ch/Maj/round ==="
+  uint32 a = 1779033703
+  uint32 b = 3144134277
+  uint32 c = 1013904242
+  uint32 d = 2773480762
+  uint32 e = 1359893119
+  uint32 f = 2600822924
+  uint32 g = 528734635
+  uint32 h = 1541325730
+  uint32 w = 1633837952
+  uint32 k = 1116352408
+  uint32 new_a = sha_round(a, b, c, d, e, f, g, h, w, k)
+  auto _tern_21 = "FAIL"
+  if (sha_ch(e, f, g) == 528861580)
+    _tern_21 = "PASS"
+  end if
+  print "sha_ch=" + cast(sha_ch(e, f, g), string) + " " + _tern_21
+  auto _tern_22 = "FAIL"
+  if (sha_maj(a, b, c) == 980412007)
+    _tern_22 = "PASS"
+  end if
+  print "sha_maj=" + cast(sha_maj(a, b, c), string) + " " + _tern_22
+  auto _tern_23 = "FAIL"
+  if (new_a == 1567154774)
+    _tern_23 = "PASS"
+  end if
+  print "sha_round=" + cast(new_a, string) + " " + _tern_23
+  auto _tern_24 = "FAIL"
+  if (sha_round(a, b, c, d, e, f, g, h, w, k) == new_a)
+    _tern_24 = "PASS"
+  end if
+  print "sha_round deterministic: " + _tern_24
+  return 0
+end function
+

@@ -1,0 +1,38 @@
+// T205: Objects — methods, inheritance, C target
+// Avoids string concatenation with self.name (C codegen bug)
+
+object Counter
+    int count
+
+    function get_count() returns int
+        return self.count
+    end function
+
+    function increment() returns int
+        self.count = self.count + 1
+        return self.count
+    end function
+end object
+
+object DoubleCounter inherits Counter
+    function double_increment() returns int
+        self.count = self.count + 2
+        return self.count
+    end function
+end object
+
+function main() returns int
+    Counter c
+    c.count = 0
+    print c.get_count()
+    print c.increment()
+    print c.increment()
+    print c.get_count()
+
+    DoubleCounter dc
+    dc.count = 10
+    print dc.get_count()
+    print dc.double_increment()
+
+    return 0
+end function

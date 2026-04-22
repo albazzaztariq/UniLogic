@@ -1,0 +1,13 @@
+// convert.ul — unit conversion helpers
+
+function cm_to_mm(int cm) returns int
+    return cm * 10
+end function
+
+function m_to_cm(int m) returns int
+    return m * 100
+end function
+
+function kg_to_grams(int kg) returns int
+    return kg * 1000
+end function

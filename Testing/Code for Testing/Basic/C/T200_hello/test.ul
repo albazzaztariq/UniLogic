@@ -1,0 +1,38 @@
+// T100: Hello world, variables, print
+
+function main() returns int
+    // Test 1: print a string
+    print "Hello, UniLogic!"
+
+    // Test 2: integer variable
+    int x = 42
+    print x
+
+    // Test 3: float variable
+    float pi = 3.14
+    print pi
+
+    // Test 4: string variable
+    string name = "UniLogic"
+    print name
+
+    // Test 5: bool variable
+    bool flag = true
+    print flag
+
+    // Test 6: arithmetic in variable
+    int sum = 10 + 20
+    print sum
+
+    // Test 7: string concatenation
+    string greeting = "Hello " + "World"
+    print greeting
+
+    // Test 8: multiple assignments
+    int a = 5
+    int b = 10
+    int c = a + b
+    print c
+
+    return 0
+end function

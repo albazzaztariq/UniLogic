@@ -1,0 +1,272 @@
+@dr python_compat = true
+
+// TRANSPILER: stub for imported base type 'dict'
+object dict
+end object
+
+object MockRequest
+  int _url
+  int _headers
+  int _new_headers
+  int _py_type
+  
+  function __init__(int url, int headers = empty)
+    self._url = url
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict0 = map_new()
+    self._headers = headers or _dict0
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict1 = map_new()
+    self._new_headers = _dict1
+    auto _tern0 = empty
+    if url.contains("://")
+      _tern0 = url.split("://")[0]
+    else
+      _tern0 = "http"
+    end if
+    scheme = _tern0
+    self.type = scheme
+  end function
+  
+  
+  function get_type()
+    return self.type
+  end function
+  
+  
+  function get_host()
+    after_scheme = self._url.split("://", 1)[-1]
+    return after_scheme.split("/")[0]
+  end function
+  
+  
+  function get_origin_req_host()
+    return self.get_host()
+  end function
+  
+  
+  function get_full_url()
+    if not self._headers.get("Host")
+      return self._url
+    end if
+    host = self._headers["Host"]
+    scheme = self.get_type()
+    path = "/" + "/".join(self._url.split("://", 1)[-1].split("/")[1:self._url.split("://", 1)[-1].split("/").len()])
+    return scheme + "://" + host + path
+  end function
+  
+  
+  function is_unverifiable()
+    return true
+  end function
+  
+  
+  function has_header(int name)
+    return self._headers.contains(name) or self._new_headers.contains(name)
+  end function
+  
+  
+  function get_header(int name, int _py_default = empty)
+    if self._headers.contains(name)
+      return self._headers[name]
+    end if
+    if self._new_headers.contains(name)
+      return self._new_headers[name]
+    end if
+    return _py_default
+  end function
+  
+  
+  function add_unredirected_header(int name, int value)
+    self._new_headers[name] = value
+  end function
+  
+end object
+
+object MockResponse
+  int _headers
+  
+  function __init__(int headers)
+    self._headers = headers
+  end function
+  
+  
+  function info()
+    return self
+  end function
+  
+  
+  function get_all(int name, int _py_default = empty)
+    if self._headers.contains(name)
+      return self._headers[name]
+    end if
+    if _py_default == empty
+      return []
+    end if
+    return _py_default
+  end function
+  
+end object
+
+object RequestsCookieJar forks dict
+  int _cookies
+  
+  function __init__()
+    super().__init__()
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict2 = map_new()
+    self._cookies = _dict2
+  end function
+  
+  
+  function set(int name, int value, int domain = "", int path = "/")
+    if not self._cookies.contains(domain)
+      // TRANSPILER: dict values cast to string — may lose type information
+      map _dict3 = map_new()
+      self._cookies[domain] = _dict3
+    end if
+    if not self._cookies[domain].contains(path)
+      // TRANSPILER: dict values cast to string — may lose type information
+      map _dict4 = map_new()
+      self._cookies[domain][path] = _dict4
+    end if
+    self._cookies[domain][path][name] = value
+    self[name] = value
+  end function
+  
+  
+  function get(int name, int _py_default = empty, int domain = empty, int path = empty)
+    if domain != empty
+      if self._cookies.contains(domain)
+        d = self._cookies[domain]
+      else
+        // TRANSPILER: dict values cast to string — may lose type information
+        map d = map_new()
+      end if
+      auto _tern1 = empty
+      if path
+        _tern1 = path
+      else
+        _tern1 = "/"
+      end if
+      p_key = _tern1
+      if d.contains(p_key)
+        p = d[p_key]
+      else
+        // TRANSPILER: dict values cast to string — may lose type information
+        map p = map_new()
+      end if
+      if p.contains(name)
+        return p[name]
+      end if
+      return _py_default
+    end if
+    if self.contains(name)
+      return self[name]
+    end if
+    return _py_default
+  end function
+  
+  
+  function keys()
+    return super().keys()
+  end function
+  
+  
+  function values()
+    return super().values()
+  end function
+  
+  
+  function items()
+    return super().items()
+  end function
+  
+  
+  function list_domains()
+    return _py_list(self._cookies.keys())
+  end function
+  
+  
+  function list_paths()
+    paths = set()
+    for each domain_data in self._cookies.values()
+      for each path in domain_data
+        paths.add(path)
+      end for
+    end for
+    return sorted(paths)
+  end function
+  
+  
+  function __repr__()
+    return "<RequestsCookieJar [" + cast(dict(self), string) + "]>"
+  end function
+  
+end object
+
+function merge_cookies(int cookiejar, int cookies)
+  // Merge cookies into cookiejar.
+  if cookies == empty
+    return cookiejar
+  end if
+  if isinstance(cookies, dict)
+    for each __pair0 in cookies.items()
+      auto name = __pair0[0]
+      auto value = __pair0[1]
+      cookiejar.set(name, value)
+    end for
+  end if
+  return cookiejar
+end function
+
+function main()
+  // TRANSPILER: dict values cast to string — may lose type information
+  map _dict5 = map_new()
+  map_set(_dict5, "Accept", cast("application/json", string))
+  req = MockRequest("https://httpbin.org/get", _dict5)
+  print cast("type:", string) + " " + cast(req.get_type(), string)
+  print cast("host:", string) + " " + cast(req.get_host(), string)
+  print cast("origin_host:", string) + " " + cast(req.get_origin_req_host(), string)
+  print cast("full_url:", string) + " " + cast(req.get_full_url(), string)
+  print cast("is_unverifiable:", string) + " " + cast(req.is_unverifiable(), string)
+  print cast("has Accept header:", string) + " " + cast(req.has_header("Accept"), string)
+  print cast("has Cookie header:", string) + " " + cast(req.has_header("Cookie"), string)
+  print cast("get Accept:", string) + " " + cast(req.get_header("Accept"), string)
+  print cast("get missing:", string) + " " + cast(req.get_header("X-Missing", "none"), string)
+  req.add_unredirected_header("Cookie", "session=abc123")
+  print cast("new Cookie header:", string) + " " + cast(req.get_header("Cookie"), string)
+  // TRANSPILER: dict values cast to string — may lose type information
+  map _dict6 = map_new()
+  map_set(_dict6, "Host", cast("override.example.com", string))
+  req2 = MockRequest("https://example.com/path/to/page", _dict6)
+  print cast("full_url with Host:", string) + " " + cast(req2.get_full_url(), string)
+  // TRANSPILER: dict values cast to string — may lose type information
+  map _dict7 = map_new()
+  map_set(_dict7, "Set-Cookie", cast("name=value; Path=/", string))
+  resp = MockResponse(_dict7)
+  print cast("cookies from response:", string) + " " + cast(resp.get_all("Set-Cookie"), string)
+  print cast("missing header:", string) + " " + cast(resp.get_all("X-Missing"), string)
+  jar = RequestsCookieJar()
+  jar.set("session", "abc123", "example.com", "/")
+  jar.set("token", "xyz789", "example.com", "/api")
+  jar.set("pref", "dark", "other.com", "/")
+  print cast("jar repr:", string) + " " + cast(repr(jar), string)
+  print cast("get session:", string) + " " + cast(jar.get("session"), string)
+  print cast("get session by domain:", string) + " " + cast(jar.get("session", empty, "example.com", "/"), string)
+  print cast("get token:", string) + " " + cast(jar.get("token"), string)
+  print cast("domains:", string) + " " + cast(sorted(jar.list_domains()), string)
+  print cast("paths:", string) + " " + cast(jar.list_paths(), string)
+  print cast("jar keys:", string) + " " + cast(sorted(jar.keys()), string)
+  jar2 = RequestsCookieJar()
+  // TRANSPILER: dict values cast to string — may lose type information
+  map _dict8 = map_new()
+  map_set(_dict8, "a", cast("1", string))
+  map_set(_dict8, "b", cast("2", string))
+  merge_cookies(jar2, _dict8)
+  print cast("merged jar:", string) + " " + cast(sorted(jar2.items()), string)
+  merge_cookies(jar2, empty)
+  print cast("merged with None:", string) + " " + cast(sorted(jar2.items()), string)
+end function
+
+// UL runtime invokes main() automatically

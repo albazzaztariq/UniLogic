@@ -1,0 +1,93 @@
+// Translated from test_nested_if2.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function str_char_at(char <s>, int i) returns <char>
+  char <r> = cast(memtake(2), char)
+  if ((i >= 0) and (i < cast(size(s), int)))
+    r[0] = s[i]
+    r[1] = 0
+  else
+    r[0] = 0
+  end if
+  return r
+end function
+
+function __ul_char_from_code(int code) returns <char>
+  char <r> = cast(memtake(2), char)
+  r[0] = cast(code, char)
+  r[1] = 0
+  return r
+end function
+
+function __ul_strcat(char <a>, char <b>) returns <char>
+  int la = cast(size(a), int)
+  int lb = cast(size(b), int)
+  char <r> = cast(memtake(((la + lb) + 1)), char)
+  memcopy(r, a, la)
+  memcopy((r + la), b, lb)
+  r[(la + lb)] = 0
+  return r
+end function
+
+function __ul_cmp_int(none <a>, none <b>) returns int
+  return (deref(cast(a, int)) - deref(cast(b, int)))
+end function
+
+function __ul_cmp_float(none <a>, none <b>) returns int
+  float fa = deref(cast(a, float))
+  float fb = deref(cast(b, float))
+  return ((fa > fb) - (fa < fb))
+end function
+
+function __ul_cmp_double(none <a>, none <b>) returns int
+  float da = deref(cast(a, float))
+  float db = deref(cast(b, float))
+  return ((da > db) - (da < db))
+end function
+
+function __ul_cmp_string(none <a>, none <b>) returns int
+  int _tern_1 = 1
+  if deref(cast(a, char)) == deref(cast(b, char))
+    _tern_1 = 0
+  end if
+  return _tern_1
+end function
+
+
+function test(int a, int b, int c, int d) returns int
+  if (a == b)
+    if (c == d)
+      a = 1
+    end if
+    b = 2
+  else if (d != 0)
+    d = 4
+  end if
+  return a
+end function
+

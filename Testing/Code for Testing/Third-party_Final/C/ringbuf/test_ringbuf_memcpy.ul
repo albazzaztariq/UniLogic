@@ -1,0 +1,137 @@
+// Translated from test_ringbuf_memcpy.c by c2ul
+type ringbuf_t
+  uint8 <buf>
+  uint8 <head>
+  uint8 <tail>
+  int size_c
+end type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function ringbuf_end(ringbuf_t <rb>) returns uint8
+  return (rb.buf + rb.size_c)
+end function
+
+function ringbuf_capacity(ringbuf_t <rb>) returns int
+  return (rb.size_c - 1)
+end function
+
+function ringbuf_bytes_free(ringbuf_t <rb>) returns int
+  if (rb.head >= rb.tail)
+    return (ringbuf_capacity(rb) - (rb.head - rb.tail))
+  else
+    return ((rb.tail - rb.head) - 1)
+  end if
+end function
+
+function ringbuf_bytes_used(ringbuf_t <rb>) returns int
+  return (ringbuf_capacity(rb) - ringbuf_bytes_free(rb))
+end function
+
+function rb_memcpy_into(ringbuf_t <dst>, none <src>, int count)
+  uint8 <u8src> = cast(src, uint8)
+  uint8 <bufend> = ringbuf_end(dst)
+  int nread = 0
+  while (nread != count)
+    auto _tern_1 = (count - nread)
+    if (cast((bufend - dst.head), int) < (count - nread))
+      _tern_1 = cast((bufend - dst.head), int)
+    end if
+    int n = _tern_1
+    memcopy(dst.head, (u8src + nread), n)
+    dst.head = dst.head + n
+    nread = nread + n
+    if (dst.head == bufend)
+      dst.head = dst.buf
+    end if
+  end while
+  return dst.head
+end function
+
+function rb_memcpy_from(none <dst>, ringbuf_t <src>, int count)
+  int bytes_used = ringbuf_bytes_used(src)
+  if (count > bytes_used)
+    return 0
+  end if
+  uint8 <u8dst> = cast(dst, uint8)
+  uint8 <bufend> = ringbuf_end(src)
+  int nwritten = 0
+  while (nwritten != count)
+    auto _tern_2 = (count - nwritten)
+    if (cast((bufend - src.tail), int) < (count - nwritten))
+      _tern_2 = cast((bufend - src.tail), int)
+    end if
+    int n = _tern_2
+    memcopy((u8dst + nwritten), src.tail, n)
+    src.tail = src.tail + n
+    nwritten = nwritten + n
+    if (src.tail == bufend)
+      src.tail = src.buf
+    end if
+  end while
+  return src.tail
+end function
+
+function main() returns int
+  array uint8 storage = []
+  array uint8 out = [0, 0, 0, 0, 0, 0, 0, 0]
+  ringbuf_t rb = 0
+  rb.buf = storage
+  rb.size_c = (8 + 1)
+  rb.head = storage
+  rb.tail = storage
+  array uint8 data_in = [65, 66, 67, 68, 69, 70]
+  rb_memcpy_into(address(rb), data_in, 6)
+  print "after write 6: head_offset=" + cast(cast((rb.head - rb.buf), int), string) + " used=" + cast(cast(ringbuf_bytes_used(address(rb)), int), string)
+  memset(out, 0, size(out))
+  rb_memcpy_from(out, address(rb), 3)
+  print "read 3: [" + cast(out[0], string) + cast(out[1], string) + cast(out[2], string) + "] tail_offset=" + cast(cast((rb.tail - rb.buf), int), string)
+  array uint8 data_in2 = [71, 72, 73, 74, 75]
+  rb_memcpy_into(address(rb), data_in2, 5)
+  print "after write 5 (wrap): head_offset=" + cast(cast((rb.head - rb.buf), int), string) + " used=" + cast(cast(ringbuf_bytes_used(address(rb)), int), string)
+  int used = ringbuf_bytes_used(address(rb))
+  memset(out, 0, size(out))
+  rb_memcpy_from(out, address(rb), used)
+  print "read " + cast(cast(used, int), string) + " (across wrap): "
+  int i = 0
+  i = 0
+  while (i < used)
+    print cast(out[i], string)
+    i = i + 1
+  end while
+  print ""
+  none <ret> = rb_memcpy_from(out, address(rb), 1)
+  auto _tern_3 = "no"
+  if (ret == 0)
+    _tern_3 = "yes"
+  end if
+  print "underflow read returns null: " + _tern_3
+  return 0
+end function
+

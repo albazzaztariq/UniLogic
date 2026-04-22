@@ -1,0 +1,16 @@
+// test_dowhile.ul — do/while loop
+
+function main() returns none
+    int count = 0
+    do
+        print count
+        count += 1
+    while count < 5 end do
+
+    // verify body runs at least once even if condition is false
+    int x = 100
+    do
+        print x
+        x += 1
+    while x < 0 end do
+end function

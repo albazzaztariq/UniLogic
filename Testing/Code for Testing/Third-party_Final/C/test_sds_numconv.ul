@@ -1,0 +1,105 @@
+// Translated from test_sds_numconv.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function sds_ll2str(char <s>, int64 value) returns int
+  char <p> = 0
+  char aux = 0
+  uint64 v = 0
+  int l = 0
+  if (value < 0)
+    if (value != (-9223372036854775807 - 1))
+      v = cast(-value, uint64)
+    else
+      v = (cast(9223372036854775807, uint64) + 1)
+    end if
+  else
+    v = cast(value, uint64)
+  end if
+  p = s
+  do
+    deref(<p>) = (48 + cast((v % 10), int))
+    v = v / 10
+  while v end do
+  if (value < 0)
+    deref(<p>) = 45
+  end if
+  l = cast((p - s), int)
+  deref(<p>) = 0
+  p = p - 1
+  while (s < p)
+    aux = deref(<s>)
+    deref(<s>) = deref(<p>)
+    deref(<p>) = aux
+    s = s + 1
+    p = p - 1
+  end while
+  return l
+end function
+
+function sds_ull2str(char <s>, uint64 v) returns int
+  char <p> = 0
+  char aux = 0
+  int l = 0
+  p = s
+  do
+    deref(<p>) = (48 + cast((v % 10), int))
+    v = v / 10
+  while v end do
+  l = cast((p - s), int)
+  deref(<p>) = 0
+  p = p - 1
+  while (s < p)
+    aux = deref(<s>)
+    deref(<s>) = deref(<p>)
+    deref(<p>) = aux
+    s = s + 1
+    p = p - 1
+  end while
+  return l
+end function
+
+function main() returns int
+  array char buf = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  int len = 0
+  len = sds_ll2str(buf, 0)
+  print "ll2str(0) = \"" + buf + "\" len=" + cast(len, string)
+  len = sds_ll2str(buf, 42)
+  print "ll2str(42) = \"" + buf + "\" len=" + cast(len, string)
+  len = sds_ll2str(buf, -42)
+  print "ll2str(-42) = \"" + buf + "\" len=" + cast(len, string)
+  len = sds_ll2str(buf, 1234567890)
+  print "ll2str(1234567890) = \"" + buf + "\" len=" + cast(len, string)
+  len = sds_ll2str(buf, -9999)
+  print "ll2str(-9999) = \"" + buf + "\" len=" + cast(len, string)
+  len = sds_ull2str(buf, 0)
+  print "ull2str(0) = \"" + buf + "\" len=" + cast(len, string)
+  len = sds_ull2str(buf, 18446744073709551615)
+  print "ull2str(ULLONG_MAX) = \"" + buf + "\" len=" + cast(len, string)
+  return 0
+end function
+

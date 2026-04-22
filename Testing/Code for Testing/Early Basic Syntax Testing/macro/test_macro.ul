@@ -1,0 +1,20 @@
+// test_macro.ul — #function expression macros
+
+#function twice(x) = x * 2
+#function add(a, b) = a + b
+#function square(n) = n * n
+
+function main() returns none
+    int a = twice(5)
+    print a
+
+    int b = add(3, 7)
+    print b
+
+    int c = square(6)
+    print c
+
+    // nested macro usage
+    int d = add(twice(2), square(3))
+    print d
+end function

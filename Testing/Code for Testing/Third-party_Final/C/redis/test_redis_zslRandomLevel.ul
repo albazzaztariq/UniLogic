@@ -1,0 +1,70 @@
+// Translated from test_redis_zslRandomLevel.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function zslRandomLevel() returns int
+  int threshold = cast((0.25 * 32767), int)
+  int level = 1
+  while (rand_c() < threshold)
+    level = level + 1
+  end while
+  auto _tern_1 = 32
+  if (level < 32)
+    _tern_1 = level
+  end if
+  return _tern_1
+end function
+
+function main() returns int
+  int i = 0
+  array int counts = []
+  i = 0
+  while (i <= 32)
+    counts[i] = 0
+    i = i + 1
+  end while
+  srand(42)
+  i = 0
+  while (i < 10000)
+    int lvl = zslRandomLevel()
+    counts[lvl] = counts[lvl] + 1
+    i = i + 1
+  end while
+  i = 1
+  while (i <= 8)
+    print "level " + cast(i, string) + ": " + cast(counts[i], string)
+    i = i + 1
+  end while
+  srand(42)
+  i = 0
+  while (i < 10)
+    print cast(zslRandomLevel(), string)
+    i = i + 1
+  end while
+  return 0
+end function
+

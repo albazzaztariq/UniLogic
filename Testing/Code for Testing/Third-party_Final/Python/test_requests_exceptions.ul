@@ -1,0 +1,107 @@
+@dr python_compat = true
+
+// TRANSPILER: stub for imported base type 'IOError'
+object IOError
+end object
+
+// TRANSPILER: stub for imported base type 'Warning'
+object Warning
+end object
+
+object RequestException forks IOError
+  int response
+  int request
+  
+  function __init__(int message = "", int response = empty, int request = empty)
+    self.response = response
+    self.request = request
+    super().__init__(message)
+  end function
+  
+end object
+
+object HTTPError forks RequestException
+  // pass
+end object
+
+object ConnectionError forks RequestException
+  // pass
+end object
+
+object ProxyError forks ConnectionError
+  // pass
+end object
+
+object SSLError forks ConnectionError
+  // pass
+end object
+
+object Timeout forks RequestException
+  // pass
+end object
+
+object ConnectTimeout forks ConnectionError
+  // pass
+end object
+
+object ReadTimeout forks Timeout
+  // pass
+end object
+
+object URLRequired forks RequestException
+  // pass
+end object
+
+object TooManyRedirects forks RequestException
+  // pass
+end object
+
+object MissingSchema forks RequestException
+  // pass
+end object
+
+object InvalidURL forks RequestException
+  // pass
+end object
+
+object RequestsWarning forks Warning
+  // pass
+end object
+
+function main()
+  e = HTTPError("HTTP 404")
+  print cast("HTTPError is RequestException:", string) + " " + cast(isinstance(e, RequestException), string)
+  print cast("HTTPError is IOError:", string) + " " + cast(isinstance(e, IOError), string)
+  e2 = ProxyError("proxy failed")
+  print cast("ProxyError is ConnectionError:", string) + " " + cast(isinstance(e2, ConnectionError), string)
+  print cast("ProxyError is RequestException:", string) + " " + cast(isinstance(e2, RequestException), string)
+  e3 = ConnectTimeout("timed out")
+  print cast("ConnectTimeout is ConnectionError:", string) + " " + cast(isinstance(e3, ConnectionError), string)
+  print cast("ConnectTimeout is RequestException:", string) + " " + cast(isinstance(e3, RequestException), string)
+  e4 = MissingSchema("no schema", empty)
+  print cast("MissingSchema is RequestException:", string) + " " + cast(isinstance(e4, RequestException), string)
+  print cast("MissingSchema response:", string) + " " + cast(e4.response, string)
+  e5 = SSLError("ssl error", "resp_obj")
+  print cast("SSLError response:", string) + " " + cast(e5.response, string)
+  try
+    throw TooManyRedirects "too many"
+  catch RequestException as ex
+    print cast("Caught TooManyRedirects as RequestException:", string) + " " + cast(cast(ex, string), string)
+  end try
+  try
+    throw SSLError "ssl error"
+  catch ConnectionError as ex
+    print cast("Caught SSLError as ConnectionError:", string) + " " + cast(cast(ex, string), string)
+  end try
+  try
+    throw ReadTimeout "read timeout"
+  catch RequestException as ex
+    print cast("Caught ReadTimeout as RequestException:", string) + " " + cast(cast(ex, string), string)
+  end try
+  print cast("ConnectTimeout inherits ConnectionError:", string) + " " + cast(issubclass(ConnectTimeout, ConnectionError), string)
+  print cast("ConnectTimeout inherits RequestException:", string) + " " + cast(issubclass(ConnectTimeout, RequestException), string)
+  print cast("ReadTimeout inherits Timeout:", string) + " " + cast(issubclass(ReadTimeout, Timeout), string)
+  print cast("ProxyError inherits ConnectionError:", string) + " " + cast(issubclass(ProxyError, ConnectionError), string)
+end function
+
+// UL runtime invokes main() automatically

@@ -1,0 +1,173 @@
+@dr python_compat = true
+
+object SessionTransaction
+  int session
+  bool is_active
+  array int operations
+  
+  function __init__(int session)
+    self.session = session
+    self.is_active = true
+    self.operations = []
+  end function
+  
+  
+  function add_operation(int op)
+    if self.is_active
+      self.operations.append(op)
+    else
+      throw RuntimeError "transaction is not active"
+    end if
+  end function
+  
+  
+  function commit()
+    if not self.is_active
+      throw RuntimeError "already committed or rolled back"
+    end if
+    self.is_active = false
+    self.session.committed_ops = self.operations[0:self.operations.len()]
+    self.session.state = "committed"
+  end function
+  
+  
+  function rollback()
+    if not self.is_active
+      throw RuntimeError "already committed or rolled back"
+    end if
+    self.is_active = false
+    self.operations = []
+    self.session.state = "rolled_back"
+  end function
+  
+  
+  function __repr__()
+    status = "active"
+    if not self.is_active
+      status = "inactive"
+    end if
+    return "Transaction(status=" + status + ", ops=" + cast(self.operations.len(), string) + ")"
+  end function
+  
+end object
+
+object Session
+  int name
+  string state
+  int transaction
+  array int committed_ops
+  
+  function __init__(int name)
+    self.name = name
+    self.state = "closed"
+    self.transaction = empty
+    self.committed_ops = []
+  end function
+  
+  
+  function open()
+    self.state = "open"
+    self.transaction = SessionTransaction(self)
+  end function
+  
+  
+  function close()
+    if self.transaction != empty
+      if self.transaction.is_active
+        self.transaction.rollback()
+      end if
+    end if
+    self.state = "closed"
+    self.transaction = empty
+  end function
+  
+  
+  function __enter__()
+    self.open()
+    return self
+  end function
+  
+  
+  function __exit__(int exc_type, int exc_val, int exc_tb)
+    if exc_type != empty
+      self.close()
+      return false
+    end if
+    self.transaction.commit()
+    self.state = "closed"
+    self.transaction = empty
+    return false
+  end function
+  
+  
+  function add(int item)
+    if self.transaction == empty
+      throw RuntimeError "no active transaction"
+    end if
+    self.transaction.add_operation("add:" + cast(item, string))
+  end function
+  
+  
+  function flush()
+    if self.transaction == empty
+      throw RuntimeError "no active transaction"
+    end if
+    self.transaction.add_operation("flush")
+  end function
+  
+  
+  function __repr__()
+    return "Session(" + self.name + ", state=" + self.state + ")"
+  end function
+  
+end object
+
+function main()
+  s1 = Session("db1")
+  print cast("before:", string) + " " + cast(s1.state, string)
+  s1.open()
+  s1.add("user_1")
+  s1.add("user_2")
+  s1.flush()
+  s1.transaction.commit()
+  print cast("after commit:", string) + " " + cast(s1.state, string)
+  print cast("committed ops:", string) + " " + cast(s1.committed_ops, string)
+  s2 = Session("db2")
+  entered = s2.__enter__()
+  print cast("entered:", string) + " " + cast(entered == s2, string)
+  print cast("state after enter:", string) + " " + cast(s2.state, string)
+  s2.add("article_1")
+  s2.add("article_2")
+  s2.__exit__(empty, empty, empty)
+  print cast("state after normal exit:", string) + " " + cast(s2.state, string)
+  print cast("committed ops count:", string) + " " + cast(s2.committed_ops.len(), string)
+  s3 = Session("db3")
+  s3.__enter__()
+  print cast("state in exception path:", string) + " " + cast(s3.state, string)
+  s3.add("comment_1")
+  s3.__exit__(ValueError, "some error", empty)
+  print cast("state after exception exit:", string) + " " + cast(s3.state, string)
+  print cast("committed ops after rollback:", string) + " " + cast(s3.committed_ops.len(), string)
+  s4 = Session("db4")
+  s4.open()
+  s4.add("item_1")
+  print cast("tx repr:", string) + " " + cast(repr(s4.transaction), string)
+  s4.transaction.commit()
+  print cast("tx repr after commit:", string) + " " + cast(repr(s4.transaction), string)
+  s5 = Session("db5")
+  s5.open()
+  s5.add("item_a")
+  s5.add("item_b")
+  s5.transaction.rollback()
+  print cast("state after rollback:", string) + " " + cast(s5.state, string)
+  print cast("ops after rollback:", string) + " " + cast(s5.transaction.operations.len(), string)
+  s6 = Session("db6")
+  s6.open()
+  s6.add("x")
+  print cast("before close:", string) + " " + cast(s6.state, string)
+  s6.close()
+  print cast("after close:", string) + " " + cast(s6.state, string)
+  print cast("transaction after close:", string) + " " + cast(s6.transaction, string)
+end function
+
+// UL runtime invokes main() automatically

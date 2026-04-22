@@ -1,0 +1,183 @@
+@dr python_compat = true
+
+// TRANSPILER: stub for imported base type 'Exception'
+object Exception
+end object
+
+object CeleryWarning forks Exception
+end object
+
+object AlwaysEagerIgnored forks CeleryWarning
+end object
+
+object DuplicateNodenameWarning forks CeleryWarning
+end object
+
+object CeleryError forks Exception
+end object
+
+object TaskPredicate forks CeleryError
+end object
+
+object Ignore forks TaskPredicate
+end object
+
+object Reject forks TaskPredicate
+  int reason
+  int requeue
+  
+  function __init__(int reason = "", int requeue = false)
+    self.reason = reason
+    self.requeue = requeue
+    super().__init__(reason)
+  end function
+  
+  
+  function __repr__()
+    return "reject requeue=" + cast(self.requeue, string) + ": " + cast(self.reason, string)
+  end function
+  
+end object
+
+object Retry forks TaskPredicate
+  // class field default: message = ""
+  string message
+  // class field default: when = ""
+  string when
+  
+  function __init__(int message = "", int when = "")
+    self.message = message
+    self.when = when
+    super().__init__(message)
+  end function
+  
+  
+  function humanize()
+    if self.when
+      return "in " + self.when
+    end if
+    return "unknown"
+  end function
+  
+  
+  function __str__()
+    if self.message
+      return self.message
+    end if
+    return "Retry " + self.humanize()
+  end function
+  
+end object
+
+object TaskError forks CeleryError
+end object
+
+object IncompleteStream forks TaskError
+end object
+
+object NotRegistered forks TaskError
+  
+  function __repr__()
+    return "Task never registered"
+  end function
+  
+end object
+
+object AlreadyRegistered forks TaskError
+end object
+
+object TimeoutError forks TaskError
+end object
+
+object MaxRetriesExceededError forks TaskError
+  int message
+  
+  function __init__(int message = "")
+    self.message = message
+    super().__init__(message)
+  end function
+  
+end object
+
+object ChordError forks TaskError
+end object
+
+object BackendError forks Exception
+end object
+
+object BackendGetMetaError forks BackendError
+  int task_id
+  
+  function __init__(int task_id = "")
+    self.task_id = task_id
+    super().__init__(task_id)
+  end function
+  
+end object
+
+object BackendStoreError forks BackendError
+  int state
+  int task_id
+  
+  function __init__(int state = "", int task_id = "")
+    self.state = state
+    self.task_id = task_id
+    super().__init__(state)
+  end function
+  
+end object
+
+function main()
+  print cast("CeleryError is Exception:", string) + " " + cast(issubclass(CeleryError, Exception), string)
+  print cast("TaskPredicate is CeleryError:", string) + " " + cast(issubclass(TaskPredicate, CeleryError), string)
+  print cast("Ignore is TaskPredicate:", string) + " " + cast(issubclass(Ignore, TaskPredicate), string)
+  print cast("Retry is TaskPredicate:", string) + " " + cast(issubclass(Retry, TaskPredicate), string)
+  print cast("TaskError is CeleryError:", string) + " " + cast(issubclass(TaskError, CeleryError), string)
+  print cast("ChordError is TaskError:", string) + " " + cast(issubclass(ChordError, TaskError), string)
+  print cast("BackendGetMetaError is BackendError:", string) + " " + cast(issubclass(BackendGetMetaError, BackendError), string)
+  r = Reject("bad message", true)
+  print cast("Reject reason:", string) + " " + cast(r.reason, string)
+  print cast("Reject requeue:", string) + " " + cast(r.requeue, string)
+  print cast("Reject repr:", string) + " " + cast(repr(r), string)
+  ret = Retry("try again", "5s")
+  print cast("Retry message:", string) + " " + cast(ret.message, string)
+  print cast("Retry humanize:", string) + " " + cast(ret.humanize(), string)
+  print cast("Retry str:", string) + " " + cast(cast(ret, string), string)
+  ret_no_msg = Retry("", "10s")
+  print cast("Retry no-msg str:", string) + " " + cast(cast(ret_no_msg, string), string)
+  m = MaxRetriesExceededError("max exceeded")
+  print cast("MaxRetries message:", string) + " " + cast(m.message, string)
+  bg = BackendGetMetaError("task-abc")
+  print cast("BackendGetMetaError task_id:", string) + " " + cast(bg.task_id, string)
+  bs = BackendStoreError("FAILURE", "task-xyz")
+  print cast("BackendStoreError state:", string) + " " + cast(bs.state, string)
+  print cast("BackendStoreError task_id:", string) + " " + cast(bs.task_id, string)
+  try
+    throw ChordError "chord failed"
+  catch TaskError as e
+    print cast("Caught ChordError as TaskError:", string) + " " + cast(cast(e, string), string)
+  end try
+  try
+    throw BackendGetMetaError "t-001"
+  catch BackendError as e
+    print cast("Caught BackendGetMetaError as BackendError:", string) + " " + cast(e.task_id, string)
+  end try
+  try
+    throw Ignore "ignored"
+  catch TaskPredicate as e
+    print "Caught Ignore as TaskPredicate: ok"
+  end try
+  try
+    throw AlwaysEagerIgnored "eager ignored"
+  catch CeleryWarning as e
+    print "Caught AlwaysEagerIgnored as CeleryWarning: ok"
+  end try
+  ig = Ignore("x")
+  print cast("isinstance Ignore/TaskPredicate:", string) + " " + cast(isinstance(ig, TaskPredicate), string)
+  print cast("isinstance Ignore/CeleryError:", string) + " " + cast(isinstance(ig, CeleryError), string)
+  not_reg = NotRegistered()
+  print cast("isinstance NotRegistered/TaskError:", string) + " " + cast(isinstance(not_reg, TaskError), string)
+  print cast("NotRegistered repr:", string) + " " + cast(repr(not_reg), string)
+end function
+
+// UL runtime invokes main() automatically

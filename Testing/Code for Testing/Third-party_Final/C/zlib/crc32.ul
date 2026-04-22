@@ -1,0 +1,127 @@
+// Translated from test_crc32.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+array uint64 crc32_table = [0, 1996959894, 3993919788, 2567524794, 124634137, 1886057615, 3915621685, 2657392035, 249268274, 2044508325, 3772115227, 2547177864, 162941995, 2125683900, 3887607049, 2428443839]
+
+function crc32_byte(uint64 crc, int byte) returns uint64
+  uint64 idx = 0
+  uint64 entry = 0
+  idx = ((crc diff byte) both1 15)
+  entry = crc32_table[idx]
+  crc = ((crc right 4) diff entry)
+  return crc
+end function
+
+function get_crc_entry(int idx) returns uint64
+  if (idx < 0)
+    return 0
+  end if
+  if (idx > 15)
+    return 0
+  end if
+  return crc32_table[idx]
+end function
+
+function crc32_xor_fold(uint64 a, uint64 b) returns uint64
+  return (a diff b)
+end function
+
+function crc32_loop_test(uint64 init) returns uint64
+  uint64 result = init
+  int n = 0
+  int found = 0
+  while (n < 16)
+    result = (result diff crc32_table[n])
+    if (result == 0)
+      found = 1
+      n = 16
+    else
+      n = (n + 1)
+    end if
+  end while
+  return result
+end function
+
+function fib(int n) returns int
+  int a = 0
+  int b = 1
+  int tmp = 0
+  while (n > 0)
+    tmp = b
+    b = (a + b)
+    a = tmp
+    n = (n - 1)
+  end while
+  return a
+end function
+
+function reflect8(uint64 v) returns uint64
+  uint64 result = 0
+  int i = 0
+  while (i < 8)
+    result = ((result left 1) either1 (v both1 1))
+    v = (v right 1)
+    i = (i + 1)
+  end while
+  return result
+end function
+
+function main() returns int
+  int i = 0
+  uint64 r = 0
+  print "crc32_table[0] = " + cast(crc32_table[0], string)
+  print "crc32_table[1] = " + cast(crc32_table[1], string)
+  print "crc32_table[7] = " + cast(crc32_table[7], string)
+  print "crc32_table[15] = " + cast(crc32_table[15], string)
+  print "entry[0] = " + cast(get_crc_entry(0), string)
+  print "entry[8] = " + cast(get_crc_entry(8), string)
+  print "entry[-1] = " + cast(get_crc_entry(-1), string)
+  print "entry[16] = " + cast(get_crc_entry(16), string)
+  print "xor_fold(0xDEAD, 0xBEEF) = " + cast(crc32_xor_fold(57005, 48879), string)
+  print "xor_fold(0, 0) = " + cast(crc32_xor_fold(0, 0), string)
+  print "xor_fold(0xFFFF, 0xFFFF) = " + cast(crc32_xor_fold(65535, 65535), string)
+  r = crc32_byte(4294967295, 0)
+  print "crc32_byte(0xFFFFFFFF, 0) = " + cast(r, string)
+  r = crc32_byte(0, 1)
+  print "crc32_byte(0, 1) = " + cast(r, string)
+  r = crc32_loop_test(305419896)
+  print "crc32_loop_test(0x12345678) = " + cast(r, string)
+  print "fib(0)=" + cast(fib(0), string) + " fib(1)=" + cast(fib(1), string) + " fib(5)=" + cast(fib(5), string) + " fib(10)=" + cast(fib(10), string)
+  print "reflect8(0x01) = " + cast(reflect8(1), string)
+  print "reflect8(0x80) = " + cast(reflect8(128), string)
+  print "reflect8(0xAB) = " + cast(reflect8(171), string)
+  r = 0
+  i = 0
+  while (i < 8)
+    r = (r diff crc32_table[i])
+    i = (i + 1)
+  end while
+  print "xor_chain[0..7] = " + cast(r, string)
+  return 0
+end function
+

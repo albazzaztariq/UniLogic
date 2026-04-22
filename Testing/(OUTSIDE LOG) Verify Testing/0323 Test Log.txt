@@ -1,0 +1,1781 @@
+============================================================
+XPile Verification Pipeline
+Time: 2026-03-23 04:18 AM
+Source: test_sqlite_01_intmath.c (C)
+Target: ul
+============================================================
+Original hash: ad1957d6b4487c32...
+
+--- STEP 1: C -> UL ---
+Converting...
+  Conversion: PASS (Translated: 126 lines
+Warnings: 0
+Output: C:\Users\azt12\OneDrive\Documents\Computing\LANG\UniLogic\)
+  Original integrity: PASS (unchanged)
+  UL Error Scan: PASS (clean)
+  Comparing types...
+  Type Comparison: PASS (0 types match)
+  Comparing functions...
+  Function Comparison: FAIL (1 issues)
+    FUNC PARAMS: 'main' has 1 params in C but 0 in UL
+  Compile & Run...
+  FAIL: UL won't compile to C: Traceback (most recent call last):
+  File "C:\Users\azt12\OneDrive\Documents\Computing\LANG\UniLogic\CURRENT\XPile\Main.py", line 23, in <module>
+    from lexer    import tokenize
+ModuleNotFoundError:
+
+
+============================================================
+TESTCHAIN CONVERT: test_sqlite_01_intmath.c -> tc_test.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: FAIL (1)
+    FUNC PARAMS: 'main' 1 params in C, 0 in UL
+
+
+============================================================
+TESTCHAIN BUILD: tc_test.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (62 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: tc_test.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  [WinError 2] The system cannot find the file specified
+
+
+============================================================
+TESTCHAIN BUILD: tc_test.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\tc_test_built.ll:192:17: error: invalid cast opcode for cast from 'i32' to 'ptr'
+  192 |   %t1 = bitcast i32 %t0 to i8*
+      |                 ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32_arith.c -> test_adler32_arith_tc.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: FAIL (6)
+    FUNC PARAMS: 'adler32_hello_world' 1 params in C, 0 in UL
+    FUNC PARAMS: 'adler32_empty' 1 params in C, 0 in UL
+    FUNC PARAMS: 'adler32_abc' 1 params in C, 0 in UL
+    FUNC PARAMS: 'adler32_hello' 1 params in C, 0 in UL
+    FUNC PARAMS: 'adler32_world' 1 params in C, 0 in UL
+
+
+============================================================
+TESTCHAIN BUILD: test_adler32_arith_tc.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: test_adler32_arith_tc.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\OneDrive\Documents\Computing\LANG\UniLogic\CURRENT\XPile\Testing\Code for Testing\Third-party_Final\C\zlib\test_adler32_arith_tc_built.ll:598:18: error: invalid cast opcode for cast from 'i64' to 'ptr'
+  598 |   %t10 = bitcast i64 %t9 to i8*
+      |                  ^
+1 error generate
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32_arith_tc.ul -> test_adler32_arith_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: FAIL (7)
+    FUNC PARAMS: 'adler32_hello_world' 0 params in UL, 1 in C
+    FUNC PARAMS: 'adler32_empty' 0 params in UL, 1 in C
+    FUNC PARAMS: 'adler32_abc' 0 params in UL, 1 in C
+    FUNC PARAMS: 'adler32_hello' 0 params in UL, 1 in C
+    FUNC PARAMS: 'adler32_world' 0 params in UL, 1 in C
+
+
+============================================================
+TESTCHAIN BUILD: test_adler32_arith_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32_arith.c -> tc_zlib.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: tc_zlib.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: tc_zlib.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\tc_zlib_built.ll:599:14: error: invalid operand type for instruction
+  599 |   %t11 = add i8* %t8, %t10
+      |              ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: tc_zlib.ul -> tc_zlib_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: FAIL (1)
+    FUNC EXTRA: 'str_char_at' in C not in UL
+
+
+============================================================
+TESTCHAIN BUILD: tc_zlib_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32_arith.c -> tc2.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: tc2.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: tc2.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\tc2_built.ll:599:37: error: getelementptr index must be an integer
+  599 |   %t11 = getelementptr i8, i8* %t8, i8* %t10
+      |                                     ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN BUILD: tc2.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\tc2_built.ll:599:37: error: getelementptr index must be an integer
+  599 |   %t11 = getelementptr i8, i8* %t8, i8* %t10
+      |                                     ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32_arith.c -> tc3.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: tc3.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\tc3_built.ll:599:37: error: getelementptr index must be an integer
+  599 |   %t11 = getelementptr i8, i8* %t8, i8* %t10
+      |                                     ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: tc3.ul -> tc3_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: tc3_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32_arith.c -> tc4.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: tc4.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  warning: overriding the module target triple with x86_64-pc-windows-msvc19.50.35722 [-Woverride-module]
+1 warning generated.
+clang: error: linker command failed with exit code 1181 (use -v to see invocation)
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32_arith.c -> tc5.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: tc5.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: tc5.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (211 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: tc5.ul -> tc5_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: tc5_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32_arith.c -> tc6.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: tc6.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32_arith.c -> tc7.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: tc7.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (298 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32_arith.c -> tc8.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: tc8.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32_arith.c -> final.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: final.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: final.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: final.ul -> final_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: final_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (288 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_http_status.c -> curl_hs_.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: FAIL (1)
+    FUNC EXTRA: 'http_status_category' in UL not in C
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_http_status.c -> curl_hs.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: FAIL (1)
+    FUNC EXTRA: 'http_status_category' in UL not in C
+
+
+============================================================
+TESTCHAIN BUILD: curl_hs.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1591 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: curl_hs.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\curl_hs_built.ll:76:12: error: integer constant must have integer type
+   76 |   ret i32* 0
+      |            ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: curl_hs.ul -> curl_hs_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (6)
+
+
+============================================================
+TESTCHAIN BUILD: curl_hs_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1591 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_http_status.c -> curl2.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: FAIL (1)
+    FUNC EXTRA: 'http_status_category' in UL not in C
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_http_status.c -> curl_final.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (6)
+
+
+============================================================
+TESTCHAIN BUILD: curl_final.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1591 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: curl_final.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1591 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: curl_final.ul -> curl_final_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (6)
+
+
+============================================================
+TESTCHAIN BUILD: curl_final_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1591 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_ctype.c -> curl_ct.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (14)
+
+
+============================================================
+TESTCHAIN BUILD: curl_ct.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1581 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: curl_ct.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\curl_ct_built.ll:56:15: error: '%t1' defined with type 'i32' but expected 'i1'
+   56 |   %t4 = or i1 %t1, %t3
+      |               ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: curl_ct.ul -> curl_ct_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (14)
+
+
+============================================================
+TESTCHAIN BUILD: curl_ct_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1581 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_ctype.c -> ct_ctype.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (14)
+
+
+============================================================
+TESTCHAIN BUILD: ct_ctype.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1581 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: ct_ctype.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\ct_ctype_built.ll:56:15: error: '%t1' defined with type 'i32' but expected 'i1'
+   56 |   %t4 = or i1 %t1, %t3
+      |               ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: ct_ctype.ul -> ct_ctype_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (14)
+
+
+============================================================
+TESTCHAIN BUILD: ct_ctype_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1581 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_endian.c -> ct_endian.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: ct_endian.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (406 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: ct_endian.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\ct_endian_built.ll:144:18: error: invalid cast opcode for cast from '[4 x i32]' to 'ptr'
+  144 |   %t20 = bitcast [4 x i32] %t19 to i32*
+      |                  ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: ct_endian.ul -> ct_endian_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: ct_endian_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (406 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_hexval.c -> ct_hexval.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: ct_hexval.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (631 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: ct_hexval.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\ct_hexval_built.ll:156:17: error: '%t19' defined with type 'i32' but expected 'i1'
+  156 |   %t20 = and i1 %t19, %t18
+      |                 ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: ct_hexval.ul -> ct_hexval_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: ct_hexval_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (631 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_statemachine.c -> ct_statemachine.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: ct_statemachine.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (825 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: ct_statemachine.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (575 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: ct_statemachine.ul -> ct_statemachine_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: ct_statemachine_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (825 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_http_status.c -> fin_http_status.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (6)
+
+
+============================================================
+TESTCHAIN BUILD: fin_http_status.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1591 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: fin_http_status.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1591 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: fin_http_status.ul -> fin_http_status_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (6)
+
+
+============================================================
+TESTCHAIN BUILD: fin_http_status_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1591 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_ctype.c -> fin_ctype.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (14)
+
+
+============================================================
+TESTCHAIN BUILD: fin_ctype.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1581 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: fin_ctype.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1581 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: fin_ctype.ul -> fin_ctype_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (14)
+
+
+============================================================
+TESTCHAIN BUILD: fin_ctype_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (1581 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_endian.c -> fin_endian.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: fin_endian.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (406 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: fin_endian.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (406 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: fin_endian.ul -> fin_endian_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: fin_endian_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (406 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_hexval.c -> fin_hexval.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: fin_hexval.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (631 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: fin_hexval.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (631 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: fin_hexval.ul -> fin_hexval_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: fin_hexval_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (631 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_curl_statemachine.c -> fin_statemachine.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: fin_statemachine.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (825 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: fin_statemachine.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (825 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: fin_statemachine.ul -> fin_statemachine_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: fin_statemachine_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (825 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_bitops.c -> mb_bit.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (17)
+
+
+============================================================
+TESTCHAIN CONVERT: test_adler32.c -> zl_a32.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (3)
+
+
+============================================================
+TESTCHAIN CONVERT: test_sqlite_01_intmath.c -> sq01.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN CONVERT: test_sha256_core.c -> mb_sha.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (1)
+  FUNCTIONS: PASS (11)
+
+
+============================================================
+TESTCHAIN CONVERT: test_crc32.c -> zl_crc.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (7)
+
+
+============================================================
+TESTCHAIN CONVERT: test_sqlite_02_switch.c -> sq02.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN CONVERT: test_macro_expand.c -> zl_mac.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (7)
+
+
+============================================================
+TESTCHAIN BUILD: mb_bit.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (865 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_sqlite_03_arrays.c -> sq03.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (6)
+
+
+============================================================
+TESTCHAIN CONVERT: test_zutil.c -> zl_util.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: FAIL (3 errors)
+    L114: UNMAPPED TYPE: function combine_flags(__unknown_uInt a, __unknown_uInt b) returns __unknown_uLo
+    L115: UNMAPPED TYPE: return (cast(a, __unknown_uLong) + cast(b, __unknown_uLong))
+    L149: UNMAPPED TYPE: __unknown_uLong flags = combine_flags(100, 200)
+  TYPES: PASS (1)
+  FUNCTIONS: PASS (10)
+
+
+============================================================
+TESTCHAIN BUILD: mb_sha.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (664 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: sq01.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (62 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: mb_bit.ul (backend: llvm)
+============================================================
+  UL->LLVM: FAIL
+  error: 'VarDecl' object has no attribute 'is_generator'
+
+
+============================================================
+TESTCHAIN BUILD: zl_a32.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (234 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: sq02.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (59 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: zl_crc.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (475 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: mb_sha.ul (backend: llvm)
+============================================================
+  UL->LLVM: FAIL
+  error: 'VarDecl' object has no attribute 'is_generator'
+
+
+============================================================
+TESTCHAIN BUILD: sq03.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (35 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: zl_mac.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (256 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: mb_bit.ul -> mb_bit_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (17)
+
+
+============================================================
+TESTCHAIN BUILD: zl_util.ul (backend: c)
+============================================================
+  UL->C: FAIL
+  error: zl_util.ul:114:38 — expected KW, got IDENT '__unknown_uInt'
+
+
+============================================================
+TESTCHAIN BUILD: sq01.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (62 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: mb_sha.ul -> mb_sha_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (1)
+  FUNCTIONS: PASS (11)
+
+
+============================================================
+TESTCHAIN BUILD: sq02.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (59 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: zl_a32.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\zl_a32_built.ll:34:27: error: integer constant must have integer type
+   34 |   %t10 = icmp eq i8* %t9, 0
+      |                           ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN BUILD: mb_bit_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (865 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: sq03.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (30 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: zl_crc.ul (backend: llvm)
+============================================================
+  UL->LLVM: FAIL
+  error: 'VarDecl' object has no attribute 'is_generator'
+
+
+============================================================
+TESTCHAIN BUILD: mb_sha_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (664 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: sq01.ul -> sq01_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: zl_mac.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (256 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: sq02.ul -> sq02_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: zl_util.ul (backend: llvm)
+============================================================
+  UL->LLVM: FAIL
+  error: zl_util.ul:114:38 — expected KW, got IDENT '__unknown_uInt'
+
+
+============================================================
+TESTCHAIN CONVERT: sq03.ul -> sq03_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (6)
+
+
+============================================================
+TESTCHAIN CONVERT: zl_a32.ul -> zl_a32_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (3)
+
+
+============================================================
+TESTCHAIN BUILD: sq01_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (62 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: zl_crc.ul -> zl_crc_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (7)
+
+
+============================================================
+TESTCHAIN CONVERT: test_sqlite_04_structs.c -> sq04.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (3)
+  FUNCTIONS: PASS (7)
+
+
+============================================================
+TESTCHAIN BUILD: sq04.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (29 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: sq04.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\sq04_built.ll:16:17: error: invalid cast opcode for cast from 'i32' to '%Point = type { i32, i32 }'
+   16 |   %t0 = bitcast i32 0 to %Point
+      |                 ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: sq04.ul -> sq04_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (3)
+  FUNCTIONS: PASS (7)
+
+
+============================================================
+TESTCHAIN BUILD: sq04_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (29 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_sqlite_05_dowhile.c -> sq05.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (8)
+
+
+============================================================
+TESTCHAIN BUILD: sq05.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (59 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: sq05.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (59 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: sq05.ul -> sq05_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (8)
+
+
+============================================================
+TESTCHAIN BUILD: sq05_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (59 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_sqlite_06_loops.c -> sq06.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (8)
+
+
+============================================================
+TESTCHAIN BUILD: sq06.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (55 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: sq06.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (55 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: sq06.ul -> sq06_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (8)
+
+
+============================================================
+TESTCHAIN BUILD: sq06_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (55 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_sqlite_07_break.c -> sq07.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: sq07.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (36 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: sq07.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: PASS
+  INTEGRITY: PASS
+  RUN: PASS (39 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: sq07.ul -> sq07_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (5)
+
+
+============================================================
+TESTCHAIN BUILD: sq07_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (36 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: synth_bench.c -> giant.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: FAIL (8)
+    TYPE FIELDS: 'Point' has 1 in C, 2 in UL
+    TYPE FIELDS: 'Rect' has 1 in C, 4 in UL
+    TYPE FIELDS: 'Triangle' has 1 in C, 6 in UL
+    TYPE FIELDS: 'Stack' has 1 in C, 2 in UL
+    TYPE FIELDS: 'Queue' has 1 in C, 4 in UL
+  FUNCTIONS: PASS (81)
+
+
+============================================================
+TESTCHAIN BUILD: giant.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (2947 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: giant.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\giant_built.ll:887:29: error: base of getelementptr must be a pointer
+  887 |   %t12 = getelementptr i32, i32 %t11, i32 %t10
+      |                             ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: giant.ul -> giant_rt.c (target: c)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  TYPES: PASS (8)
+  FUNCTIONS: PASS (81)
+
+
+============================================================
+TESTCHAIN BUILD: giant_rt.c (backend: c)
+============================================================
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (2947 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN BUILD: sq04.ul (backend: llvm)
+============================================================
+  UL->LLVM: PASS
+  CLANG: FAIL (is clang installed?)
+  C:\Users\azt12\AppData\Local\Temp\sq04_built.ll:16:17: error: invalid cast opcode for cast from 'i32' to '%Point = type { i32, i32 }'
+   16 |   %t0 = bitcast i32 0 to %Point
+      |                 ^
+1 error generated.
+
+
+============================================================
+TESTCHAIN CONVERT: test_sqlite_01_intmath.c -> reg_01.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (9)
+
+
+============================================================
+TESTCHAIN BUILD: reg_01.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (62 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_sqlite_05_dowhile.c -> reg_05.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (8)
+
+
+============================================================
+TESTCHAIN BUILD: reg_05.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (59 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+
+
+============================================================
+TESTCHAIN CONVERT: test_sqlite_06_loops.c -> reg_06.ul (target: ul)
+============================================================
+  CONVERT: PASS
+  INTEGRITY: PASS
+  UL SCAN: PASS
+  TYPES: PASS (0)
+  FUNCTIONS: PASS (8)
+
+
+============================================================
+TESTCHAIN BUILD: reg_06.ul (backend: c)
+============================================================
+  UL->C: PASS
+  GCC: PASS
+  INTEGRITY: PASS
+  RUN: PASS (55 bytes output)
+  FUZZ (20 rounds)...
+  FUZZ: PASS
+

@@ -1,0 +1,138 @@
+// Translated from test_cmark_utf8_space_rt.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function str_char_at(char <s>, int i) returns <char>
+  char <r> = cast(memtake(2), char)
+  if ((i >= 0) and (i < cast(size(s), int)))
+    r[0] = s[i]
+    r[1] = 0
+  else
+    r[0] = 0
+  end if
+  return r
+end function
+
+function __ul_char_from_code(int code) returns <char>
+  char <r> = cast(memtake(2), char)
+  r[0] = cast(code, char)
+  r[1] = 0
+  return r
+end function
+
+function __ul_strcat(char <a>, char <b>) returns <char>
+  int la = cast(size(a), int)
+  int lb = cast(size(b), int)
+  char <r> = cast(memtake(((la + lb) + 1)), char)
+  memcopy(r, a, la)
+  memcopy((r + la), b, lb)
+  r[(la + lb)] = 0
+  return r
+end function
+
+function __ul_cmp_int(none <a>, none <b>) returns int
+  return (deref(cast(a, int)) - deref(cast(b, int)))
+end function
+
+function __ul_cmp_float(none <a>, none <b>) returns int
+  float fa = deref(cast(a, float))
+  float fb = deref(cast(b, float))
+  return ((fa > fb) - (fa < fb))
+end function
+
+function __ul_cmp_double(none <a>, none <b>) returns int
+  float da = deref(cast(a, float))
+  float db = deref(cast(b, float))
+  return ((da > db) - (da < db))
+end function
+
+function __ul_cmp_string(none <a>, none <b>) returns int
+  int _tern_1 = 1
+  if deref(cast(a, char)) == deref(cast(b, char))
+    _tern_1 = 0
+  end if
+  return _tern_1
+end function
+
+
+
+function cmark_utf8proc_is_space(int uc) returns int
+  return (((((((((((uc == 9) or (uc == 10)) or (uc == 12)) or (uc == 13)) or (uc == 32)) or (uc == 160)) or (uc == 5760)) or ((uc >= 8192) and (uc <= 8202))) or (uc == 8239)) or (uc == 8287)) or (uc == 12288))
+end function
+
+function main() returns int
+  array char _cast_buf_0 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_0, size(_cast_buf_0), "%d", cmark_utf8proc_is_space(9))
+  print __ul_strcat("is_space(9)  = ", _cast_buf_0)
+  array char _cast_buf_1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_1, size(_cast_buf_1), "%d", cmark_utf8proc_is_space(10))
+  print __ul_strcat("is_space(10) = ", _cast_buf_1)
+  array char _cast_buf_2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_2, size(_cast_buf_2), "%d", cmark_utf8proc_is_space(12))
+  print __ul_strcat("is_space(12) = ", _cast_buf_2)
+  array char _cast_buf_3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_3, size(_cast_buf_3), "%d", cmark_utf8proc_is_space(13))
+  print __ul_strcat("is_space(13) = ", _cast_buf_3)
+  array char _cast_buf_4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_4, size(_cast_buf_4), "%d", cmark_utf8proc_is_space(32))
+  print __ul_strcat("is_space(32) = ", _cast_buf_4)
+  array char _cast_buf_5 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_5, size(_cast_buf_5), "%d", cmark_utf8proc_is_space(160))
+  print __ul_strcat("is_space(160) = ", _cast_buf_5)
+  array char _cast_buf_6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_6, size(_cast_buf_6), "%d", cmark_utf8proc_is_space(5760))
+  print __ul_strcat("is_space(5760) = ", _cast_buf_6)
+  array char _cast_buf_7 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_7, size(_cast_buf_7), "%d", cmark_utf8proc_is_space(8192))
+  print __ul_strcat("is_space(8192) = ", _cast_buf_7)
+  array char _cast_buf_8 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_8, size(_cast_buf_8), "%d", cmark_utf8proc_is_space(8202))
+  print __ul_strcat("is_space(8202) = ", _cast_buf_8)
+  array char _cast_buf_9 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_9, size(_cast_buf_9), "%d", cmark_utf8proc_is_space(8239))
+  print __ul_strcat("is_space(8239) = ", _cast_buf_9)
+  array char _cast_buf_10 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_10, size(_cast_buf_10), "%d", cmark_utf8proc_is_space(8287))
+  print __ul_strcat("is_space(8287) = ", _cast_buf_10)
+  array char _cast_buf_11 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_11, size(_cast_buf_11), "%d", cmark_utf8proc_is_space(12288))
+  print __ul_strcat("is_space(12288) = ", _cast_buf_11)
+  array char _cast_buf_12 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_12, size(_cast_buf_12), "%d", cmark_utf8proc_is_space(65))
+  print __ul_strcat("is_space(65) = ", _cast_buf_12)
+  array char _cast_buf_13 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_13, size(_cast_buf_13), "%d", cmark_utf8proc_is_space(0))
+  print __ul_strcat("is_space(0) = ", _cast_buf_13)
+  array char _cast_buf_14 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_14, size(_cast_buf_14), "%d", cmark_utf8proc_is_space(8191))
+  print __ul_strcat("is_space(8191) = ", _cast_buf_14)
+  array char _cast_buf_15 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_15, size(_cast_buf_15), "%d", cmark_utf8proc_is_space(8203))
+  print __ul_strcat("is_space(8203) = ", _cast_buf_15)
+  return 0
+end function
+

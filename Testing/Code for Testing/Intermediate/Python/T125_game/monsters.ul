@@ -1,0 +1,21 @@
+// monsters.ul — monster data access
+
+function monster_name(int id) returns string
+    array string names = ["Goblin", "Skeleton", "Spider", "Orc", "Dragon"]
+    return names[id]
+end function
+
+function monster_hp(int id) returns int
+    array int hp = [20, 30, 15, 50, 100]
+    return hp[id]
+end function
+
+function monster_attack(int id) returns int
+    array int atk = [5, 8, 3, 12, 25]
+    return atk[id]
+end function
+
+function monster_gold(int id) returns int
+    array int gold = [10, 15, 5, 30, 100]
+    return gold[id]
+end function

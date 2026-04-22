@@ -1,0 +1,130 @@
+// Translated from test_curl_statemachine.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function state_name(int s) returns <char>
+  if s == 0
+    return "INIT"
+  else if s == 1
+    return "CONNECT"
+  else if s == 2
+    return "RESOLVING"
+  else if s == 3
+    return "CONNECTING"
+  else if s == 4
+    return "CONNECTED"
+  else if s == 5
+    return "SENDPROTOCONNECT"
+  else if s == 6
+    return "PROTOCONNECT"
+  else if s == 7
+    return "DO"
+  else if s == 8
+    return "DOING"
+  else if s == 9
+    return "DID"
+  else if s == 10
+    return "PERFORMING"
+  else if s == 11
+    return "RATELIMITING"
+  else if s == 12
+    return "DONE"
+  else if s == 13
+    return "COMPLETED"
+  else if s == 14
+    return "MSGSENT"
+  else
+    return "UNKNOWN"
+  end if
+end function
+
+function next_state(int current) returns int
+  if current == 0
+    return 1
+  else if current == 1
+    return 2
+  else if current == 2
+    return 3
+  else if current == 3
+    return 4
+  else if current == 4
+    return 5
+  else if current == 5
+    return 6
+  else if current == 6
+    return 7
+  else if current == 7
+    return 8
+  else if current == 8
+    return 9
+  else if current == 9
+    return 10
+  else if current == 10
+    return 12
+  else if current == 12
+    return 13
+  else if current == 13
+    return 14
+  else
+    return 15
+  end if
+end function
+
+function state_is_terminal(int s) returns int
+  return (((s == 13) or (s == 14)) or (s == 15))
+end function
+
+function run_statemachine(int initial, int max_steps) returns int
+  int state = initial
+  int steps = 0
+  int done = 0
+  do
+    print "  step " + cast(steps, string) + ": " + state_name(state)
+    if state_is_terminal(state)
+      done = 1
+    else
+      state = next_state(state)
+      steps = steps + 1
+    end if
+  while ((done == 0) and (steps < max_steps)) end do
+  print "  final: " + state_name(state) + " steps=" + cast(steps, string)
+  return steps
+end function
+
+function main() returns int
+  int i = 0
+  print "=== State Machine Traversal ==="
+  run_statemachine(0, 20)
+  print "=== State Names ==="
+  i = 0
+  while (i < 15)
+    print "state=" + cast(i, string) + " name=" + state_name(i) + " terminal=" + cast(state_is_terminal(i), string)
+    i = i + 1
+  end while
+  return 0
+end function
+

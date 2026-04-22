@@ -1,0 +1,1054 @@
+// Translated from sds.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+string SDS_NOINIT = 0
+
+
+
+
+
+
+
+function sdslen(int s) returns int
+  int flags = s[-1]
+  if (flags bit_and 7) == 0
+    return (flags bit_right 3)
+  else if (flags bit_and 7) == 1
+    return cast((s - 0), int).len
+  else if (flags bit_and 7) == 2
+    return cast((s - 0), int).len
+  else if (flags bit_and 7) == 3
+    return cast((s - 0), int).len
+  else if (flags bit_and 7) == 4
+    return cast((s - 0), int).len
+  end if
+  return 0
+end function
+
+function sdsavail(int s) returns int
+  int flags = s[-1]
+  if (flags bit_and 7) == 0
+    return 0
+  else if (flags bit_and 7) == 1
+    int sh = cast((s - 0), int)
+    return (sh.alloc - sh.len)
+  else if (flags bit_and 7) == 2
+    int sh = cast((s - 0), int)
+    return (sh.alloc - sh.len)
+  else if (flags bit_and 7) == 3
+    int sh = cast((s - 0), int)
+    return (sh.alloc - sh.len)
+  else if (flags bit_and 7) == 4
+    int sh = cast((s - 0), int)
+    return (sh.alloc - sh.len)
+  end if
+  return 0
+end function
+
+function sdssetlen(int s, int newlen)
+  int flags = s[-1]
+  if (flags bit_and 7) == 0
+    string fp = (cast(s, int) - 1)
+    fp = (0 bit_or (newlen bit_left 3))
+  else if (flags bit_and 7) == 1
+    cast((s - 0), int).len = newlen
+  else if (flags bit_and 7) == 2
+    cast((s - 0), int).len = newlen
+  else if (flags bit_and 7) == 3
+    cast((s - 0), int).len = newlen
+  else if (flags bit_and 7) == 4
+    cast((s - 0), int).len = newlen
+  end if
+end function
+
+function sdsinclen(int s, int inc)
+  int flags = s[-1]
+  if (flags bit_and 7) == 0
+    string fp = (cast(s, int) - 1)
+    int newlen = ((flags bit_right 3) + inc)
+    fp = (0 bit_or (newlen bit_left 3))
+  else if (flags bit_and 7) == 1
+    cast((s - 0), int).len = cast((s - 0), int).len + inc
+  else if (flags bit_and 7) == 2
+    cast((s - 0), int).len = cast((s - 0), int).len + inc
+  else if (flags bit_and 7) == 3
+    cast((s - 0), int).len = cast((s - 0), int).len + inc
+  else if (flags bit_and 7) == 4
+    cast((s - 0), int).len = cast((s - 0), int).len + inc
+  end if
+end function
+
+function sdsalloc(int s) returns int
+  int flags = s[-1]
+  if (flags bit_and 7) == 0
+    return (flags bit_right 3)
+  else if (flags bit_and 7) == 1
+    return cast((s - 0), int).alloc
+  else if (flags bit_and 7) == 2
+    return cast((s - 0), int).alloc
+  else if (flags bit_and 7) == 3
+    return cast((s - 0), int).alloc
+  else if (flags bit_and 7) == 4
+    return cast((s - 0), int).alloc
+  end if
+  return 0
+end function
+
+function sdssetalloc(int s, int newlen)
+  int flags = s[-1]
+  if (flags bit_and 7) == 0 or (flags bit_and 7) == 1
+    cast((s - 0), int).alloc = newlen
+  else if (flags bit_and 7) == 2
+    cast((s - 0), int).alloc = newlen
+  else if (flags bit_and 7) == 3
+    cast((s - 0), int).alloc = newlen
+  else if (flags bit_and 7) == 4
+    cast((s - 0), int).alloc = newlen
+  end if
+end function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+constant string SDS_NOINIT = "SDS_NOINIT"
+
+function sdsHdrSize(int type_c) returns int
+  if (type_c bit_and 7) == 0
+    return 0
+  else if (type_c bit_and 7) == 1
+    return 0
+  else if (type_c bit_and 7) == 2
+    return 0
+  else if (type_c bit_and 7) == 3
+    return 0
+  else if (type_c bit_and 7) == 4
+    return 0
+  end if
+  return 0
+end function
+
+function sdsReqType(int string_size) returns int
+  if (string_size < (1 bit_left 5))
+    return 0
+  end if
+  if (string_size < (1 bit_left 8))
+    return 1
+  end if
+  if (string_size < (1 bit_left 16))
+    return 2
+  end if
+  return 3
+end function
+
+function sdsnewlen(none init, int initlen) returns int
+  none sh = 0
+  int s = 0
+  int type_c = sdsReqType(initlen)
+  if ((type_c == 0) and (initlen == 0))
+    type_c = 1
+  end if
+  int hdrlen = sdsHdrSize(type_c)
+  string fp = ""
+  sh = 0
+  if (sh == cast(0, int))
+    return cast(0, int)
+  end if
+  if (init == SDS_NOINIT)
+    init = cast(0, int)
+  else if not init
+    memset(sh, 0, ((hdrlen + initlen) + 1))
+  end if
+  s = (cast(sh, int) + hdrlen)
+  fp = (cast(s, int) - 1)
+  if type_c == 0
+    fp = (type_c bit_or (initlen bit_left 3))
+  else if type_c == 1
+    int sh = cast((s - 0), int)
+    sh.len = initlen
+    sh.alloc = initlen
+    fp = type_c
+  else if type_c == 2
+    int sh = cast((s - 0), int)
+    sh.len = initlen
+    sh.alloc = initlen
+    fp = type_c
+  else if type_c == 3
+    int sh = cast((s - 0), int)
+    sh.len = initlen
+    sh.alloc = initlen
+    fp = type_c
+  else if type_c == 4
+    int sh = cast((s - 0), int)
+    sh.len = initlen
+    sh.alloc = initlen
+    fp = type_c
+  end if
+  if (initlen and init)
+    memcopy(s, init, initlen)
+  end if
+  s[initlen] = 0
+  return s
+end function
+
+function sdsempty() returns int
+  return sdsnewlen("", 0)
+end function
+
+function sdsnew(string init) returns int
+  int initlen = 0
+  return sdsnewlen(init, initlen)
+end function
+
+function sdsdup(int s) returns int
+  return sdsnewlen(s, sdslen(s))
+end function
+
+function sdsfree(int s)
+  if (s == cast(0, int))
+    return
+  end if
+  // free((cast(s, int) - sdsHdrSize(s[-1]))) - UL handles memory
+end function
+
+function sdsupdatelen(int s)
+  int reallen = size(s)
+  sdssetlen(s, reallen)
+end function
+
+function sdsclear(int s)
+  sdssetlen(s, 0)
+  s[0] = 0
+end function
+
+function sdsMakeRoomFor(int s, int addlen) returns int
+  none sh = 0
+  none newsh = 0
+  int avail = sdsavail(s)
+  int len = 0
+  int newlen = 0
+  int reqlen = 0
+  int type_c = 0
+  int oldtype = (s[-1] bit_and 7)
+  int hdrlen = 0
+  if (avail >= addlen)
+    return s
+  end if
+  len = sdslen(s)
+  sh = (cast(s, int) - sdsHdrSize(oldtype))
+  newlen = (len + addlen)
+  reqlen = newlen
+  if (newlen < (1024 * 1024))
+    newlen = newlen * 2
+  else
+    newlen = newlen + (1024 * 1024)
+  end if
+  type_c = sdsReqType(newlen)
+  if (type_c == 0)
+    type_c = 1
+  end if
+  hdrlen = sdsHdrSize(type_c)
+  cast((not not (((hdrlen + newlen) + 1) > reqlen) or 0), int)
+  if (oldtype == type_c)
+    newsh = 0
+    if (newsh == cast(0, int))
+      return cast(0, int)
+    end if
+    s = (cast(newsh, int) + hdrlen)
+  else
+    newsh = 0
+    if (newsh == cast(0, int))
+      return cast(0, int)
+    end if
+    memcopy((cast(newsh, int) + hdrlen), s, (len + 1))
+    // free(sh) - UL handles memory
+    s = (cast(newsh, int) + hdrlen)
+    s[-1] = type_c
+    sdssetlen(s, len)
+  end if
+  sdssetalloc(s, newlen)
+  return s
+end function
+
+function sdsRemoveFreeSpace(int s) returns int
+  none sh = 0
+  none newsh = 0
+  int type_c = 0
+  int oldtype = (s[-1] bit_and 7)
+  int hdrlen = 0
+  int oldhdrlen = sdsHdrSize(oldtype)
+  int len = sdslen(s)
+  int avail = sdsavail(s)
+  sh = (cast(s, int) - oldhdrlen)
+  if (avail == 0)
+    return s
+  end if
+  type_c = sdsReqType(len)
+  hdrlen = sdsHdrSize(type_c)
+  if ((oldtype == type_c) or (type_c > 1))
+    newsh = 0
+    if (newsh == cast(0, int))
+      return cast(0, int)
+    end if
+    s = (cast(newsh, int) + oldhdrlen)
+  else
+    newsh = 0
+    if (newsh == cast(0, int))
+      return cast(0, int)
+    end if
+    memcopy((cast(newsh, int) + hdrlen), s, (len + 1))
+    // free(sh) - UL handles memory
+    s = (cast(newsh, int) + hdrlen)
+    s[-1] = type_c
+    sdssetlen(s, len)
+  end if
+  sdssetalloc(s, len)
+  return s
+end function
+
+function sdsAllocSize(int s) returns int
+  int alloc = sdsalloc(s)
+  return ((sdsHdrSize(s[-1]) + alloc) + 1)
+end function
+
+function sdsAllocPtr(int s)
+  return cast((s - sdsHdrSize(s[-1])), int)
+end function
+
+function sdsIncrLen(int s, int incr)
+  int flags = s[-1]
+  int len = 0
+  if (flags bit_and 7) == 0
+    string fp = (cast(s, int) - 1)
+    int oldlen = (flags bit_right 3)
+    cast((not not (((incr > 0) and ((oldlen + incr) < 32)) or ((incr < 0) and (oldlen >= cast(-incr, int)))) or 0), int)
+    fp = (0 bit_or ((oldlen + incr) bit_left 3))
+    len = (oldlen + incr)
+  else if (flags bit_and 7) == 1
+    int sh = cast((s - 0), int)
+    cast((not not (((incr >= 0) and ((sh.alloc - sh.len) >= incr)) or ((incr < 0) and (sh.len >= cast(-incr, int)))) or 0), int)
+    sh.len = sh.len + incr
+    len = sh.len
+  else if (flags bit_and 7) == 2
+    int sh = cast((s - 0), int)
+    cast((not not (((incr >= 0) and ((sh.alloc - sh.len) >= incr)) or ((incr < 0) and (sh.len >= cast(-incr, int)))) or 0), int)
+    sh.len = sh.len + incr
+    len = sh.len
+  else if (flags bit_and 7) == 3
+    int sh = cast((s - 0), int)
+    cast((not not (((incr >= 0) and ((sh.alloc - sh.len) >= cast(incr, int))) or ((incr < 0) and (sh.len >= cast(-incr, int)))) or 0), int)
+    sh.len = sh.len + incr
+    len = sh.len
+  else if (flags bit_and 7) == 4
+    int sh = cast((s - 0), int)
+    cast((not not (((incr >= 0) and ((sh.alloc - sh.len) >= cast(incr, int))) or ((incr < 0) and (sh.len >= cast(-incr, int)))) or 0), int)
+    sh.len = sh.len + incr
+    len = sh.len
+  else
+    len = 0
+  end if
+  s[len] = 0
+end function
+
+function sdsgrowzero(int s, int len) returns int
+  int curlen = sdslen(s)
+  if (len <= curlen)
+    return s
+  end if
+  s = sdsMakeRoomFor(s, (len - curlen))
+  if (s == cast(0, int))
+    return cast(0, int)
+  end if
+  memset((s + curlen), 0, ((len - curlen) + 1))
+  sdssetlen(s, len)
+  return s
+end function
+
+function sdscatlen(int s, none t, int len) returns int
+  int curlen = sdslen(s)
+  s = sdsMakeRoomFor(s, len)
+  if (s == cast(0, int))
+    return cast(0, int)
+  end if
+  memcopy((s + curlen), t, len)
+  sdssetlen(s, (curlen + len))
+  s[(curlen + len)] = 0
+  return s
+end function
+
+function sdscat(int s, string t) returns int
+  return sdscatlen(s, t, size(t))
+end function
+
+function sdscatsds(int s, int t) returns int
+  return sdscatlen(s, t, sdslen(t))
+end function
+
+function sdscpylen(int s, string t, int len) returns int
+  if (sdsalloc(s) < len)
+    s = sdsMakeRoomFor(s, (len - sdslen(s)))
+    if (s == cast(0, int))
+      return cast(0, int)
+    end if
+  end if
+  memcopy(s, t, len)
+  s[len] = 0
+  sdssetlen(s, len)
+  return s
+end function
+
+function sdscpy(int s, string t) returns int
+  return sdscpylen(s, t, size(t))
+end function
+
+function sdsll2str(string s, int value) returns int
+  string p = ""
+  int aux = 0
+  int v = 0
+  int l = 0
+  if (value < 0)
+    if (value != (-9223372036854775807 - 1))
+      v = -value
+    else
+      v = (cast(9223372036854775807, int) + 1)
+    end if
+  else
+    v = value
+  end if
+  p = s
+  do
+    p = (48 + (v % 10))
+    v = v / 10
+  while v end do
+  if (value < 0)
+    p = 45
+  end if
+  l = (p - s)
+  p = 0
+  p = p - 1
+  while (s < p)
+    aux = s
+    s = p
+    p = aux
+    s = s + 1
+    p = p - 1
+  end while
+  return l
+end function
+
+function sdsull2str(string s, int v) returns int
+  string p = ""
+  int aux = 0
+  int l = 0
+  p = s
+  do
+    p = (48 + (v % 10))
+    v = v / 10
+  while v end do
+  l = (p - s)
+  p = 0
+  p = p - 1
+  while (s < p)
+    aux = s
+    s = p
+    p = aux
+    s = s + 1
+    p = p - 1
+  end while
+  return l
+end function
+
+function sdsfromlonglong(int value) returns int
+  array int buf = 0
+  int len = sdsll2str(buf, value)
+  return sdsnewlen(buf, len)
+end function
+
+function sdscatvprintf(int s, string fmt, int ap) returns int
+  int cpy = 0
+  array int staticbuf = 0
+  string buf = staticbuf
+  string t = ""
+  int buflen = (size(fmt) * 2)
+  int bufstrlen = 0
+  if (buflen > 0)
+    buf = 0
+    if (buf == cast(0, int))
+      return cast(0, int)
+    end if
+  else
+    buflen = 0
+  end if
+  while 1
+    0
+    bufstrlen = 0
+    0
+    if (bufstrlen < 0)
+      if (buf != staticbuf)
+        // free(buf) - UL handles memory
+      end if
+      return cast(0, int)
+    end if
+    if (cast(bufstrlen, int) >= buflen)
+      if (buf != staticbuf)
+        // free(buf) - UL handles memory
+      end if
+      buflen = (cast(bufstrlen, int) + 1)
+      buf = 0
+      if (buf == cast(0, int))
+        return cast(0, int)
+      end if
+      continue
+    end if
+  end while
+  t = sdscatlen(s, buf, bufstrlen)
+  if (buf != staticbuf)
+    // free(buf) - UL handles memory
+  end if
+  return t
+end function
+
+function sdscatprintf(int s, string fmt, ...) returns int
+  int ap = 0
+  string t = ""
+  0
+  t = sdscatvprintf(s, fmt, ap)
+  0
+  return t
+end function
+
+function sdscatfmt(int s, string fmt, ...) returns int
+  int initlen = sdslen(s)
+  string f = fmt
+  int i = 0
+  int ap = 0
+  s = sdsMakeRoomFor(s, (initlen + (size(fmt) * 2)))
+  0
+  f = fmt
+  i = initlen
+  while f
+    int next = 0
+    string str = ""
+    int l = 0
+    int num = 0
+    int unum = 0
+    if (sdsavail(s) == 0)
+      s = sdsMakeRoomFor(s, 1)
+    end if
+    if f == 37
+      next = (f + 1)
+      if (next == 0)
+      end if
+      f = f + 1
+      if next == 115 or next == 83
+        str = 0
+        l = size(str)
+        if (sdsavail(s) < l)
+          s = sdsMakeRoomFor(s, l)
+        end if
+        memcopy((s + i), str, l)
+        sdsinclen(s, l)
+        i = i + l
+      else if next == 105 or next == 73
+        if (next == 105)
+          num = 0
+        else
+          num = 0
+        end if
+        array int buf = 0
+        l = sdsll2str(buf, num)
+        if (sdsavail(s) < l)
+          s = sdsMakeRoomFor(s, l)
+        end if
+        memcopy((s + i), buf, l)
+        sdsinclen(s, l)
+        i = i + l
+      else if next == 117 or next == 85
+        if (next == 117)
+          unum = 0
+        else
+          unum = 0
+        end if
+        array int buf = 0
+        l = sdsull2str(buf, unum)
+        if (sdsavail(s) < l)
+          s = sdsMakeRoomFor(s, l)
+        end if
+        memcopy((s + i), buf, l)
+        sdsinclen(s, l)
+        i = i + l
+      else
+        s[i] = next
+        sdsinclen(s, 1)
+      end if
+    else
+      s[i] = f
+      sdsinclen(s, 1)
+    end if
+    f = f + 1
+  end while
+  0
+  s[i] = 0
+  return s
+end function
+
+function sdstrim(int s, string cset) returns int
+  string end_c = ""
+  string sp = ""
+  string ep = ""
+  int len = 0
+  sp = s
+  end_c = ((s + sdslen(s)) - 1)
+  ep = end_c
+  while ((sp <= end_c) and 0)
+    sp = sp + 1
+  end while
+  while ((ep > sp) and 0)
+    ep = ep - 1
+  end while
+  len = ((ep - sp) + 1)
+  if (s != sp)
+    memmove(s, sp, len)
+  end if
+  s[len] = 0
+  sdssetlen(s, len)
+  return s
+end function
+
+function sdsrange(int s, int start, int end_c)
+  int newlen = 0
+  int len = sdslen(s)
+  if (len == 0)
+    return
+  end if
+  if (start < 0)
+    start = (len + start)
+    if (start < 0)
+      start = 0
+    end if
+  end if
+  if (end_c < 0)
+    end_c = (len + end_c)
+    if (end_c < 0)
+      end_c = 0
+    end if
+  end if
+  newlen = 0
+  if (newlen != 0)
+    if (start >= cast(len, int))
+      newlen = 0
+    else if (end_c >= cast(len, int))
+      end_c = (len - 1)
+      newlen = ((end_c - start) + 1)
+    end if
+  end if
+  if (start and newlen)
+    memmove(s, (s + start), newlen)
+  end if
+  s[newlen] = 0
+  sdssetlen(s, newlen)
+end function
+
+function sdstolower(int s)
+  int len = sdslen(s)
+  int j = 0
+  j = 0
+  while (j < len)
+    s[j] = 0
+    j = j + 1
+  end while
+end function
+
+function sdstoupper(int s)
+  int len = sdslen(s)
+  int j = 0
+  j = 0
+  while (j < len)
+    s[j] = 0
+    j = j + 1
+  end while
+end function
+
+function sdscmp(int s1, int s2) returns int
+  int l1 = 0
+  int l2 = 0
+  int minlen = 0
+  int cmp = 0
+  l1 = sdslen(s1)
+  l2 = sdslen(s2)
+  minlen = l1
+  cmp = 0
+  if (cmp == 0)
+    return 1
+  end if
+  return cmp
+end function
+
+function sdssplitlen(string s, int len, string sep, int seplen, int count) returns int
+  int elements = 0
+  int slots = 5
+  int start = 0
+  int j = 0
+  int tokens = 0
+  if ((seplen < 1) or (len <= 0))
+    count = 0
+    return cast(0, int)
+  end if
+  tokens = 0
+  if (tokens == cast(0, int))
+    return cast(0, int)
+  end if
+  j = 0
+  while (j < (len - (seplen - 1)))
+    if (slots < (elements + 2))
+      int newtokens = 0
+      slots = slots * 2
+      newtokens = 0
+      if (newtokens == cast(0, int))
+        // goto cleanup - not supported in UL
+      end if
+      tokens = newtokens
+    end if
+    if (((seplen == 1) and ((s + j) == sep[0])) or (0 == 0))
+      tokens[elements] = sdsnewlen((s + start), (j - start))
+      if (tokens[elements] == cast(0, int))
+        // goto cleanup - not supported in UL
+      end if
+      elements = elements + 1
+      start = (j + seplen)
+      j = ((j + seplen) - 1)
+    end if
+    j = j + 1
+  end while
+  tokens[elements] = sdsnewlen((s + start), (len - start))
+  if (tokens[elements] == cast(0, int))
+    // goto cleanup - not supported in UL
+  end if
+  elements = elements + 1
+  count = elements
+  return tokens
+  // label: cleanup
+  int i = 0
+  i = 0
+  while (i < elements)
+    sdsfree(tokens[i])
+    i = i + 1
+  end while
+  // free(tokens) - UL handles memory
+  count = 0
+  return cast(0, int)
+end function
+
+function sdsfreesplitres(int tokens, int count)
+  if not tokens
+    return
+  end if
+  while count
+    sdsfree(tokens[count])
+  end while
+  // free(tokens) - UL handles memory
+end function
+
+function sdscatrepr(int s, string p, int len) returns int
+  s = sdscatlen(s, "\"", 1)
+  while len
+    if p == 92 or p == 34
+      s = sdscatprintf(s, "\\%c", p)
+    else if p == 10
+      s = sdscatlen(s, "\\n", 2)
+    else if p == 13
+      s = sdscatlen(s, "\\r", 2)
+    else if p == 9
+      s = sdscatlen(s, "\\t", 2)
+    else if p == 7
+      s = sdscatlen(s, "\\a", 2)
+    else if p == 8
+      s = sdscatlen(s, "\\b", 2)
+    else if 0
+      s = sdscatprintf(s, "%c", p)
+    else
+      s = sdscatprintf(s, "\\x%02x", cast(p, int))
+    end if
+    p = p + 1
+  end while
+  return sdscatlen(s, "\"", 1)
+end function
+
+function is_hex_digit(int c) returns int
+  return ((((c >= 48) and (c <= 57)) or ((c >= 97) and (c <= 102))) or ((c >= 65) and (c <= 70)))
+end function
+
+function hex_digit_to_int(int c) returns int
+  if c == 48
+    return 0
+  else if c == 49
+    return 1
+  else if c == 50
+    return 2
+  else if c == 51
+    return 3
+  else if c == 52
+    return 4
+  else if c == 53
+    return 5
+  else if c == 54
+    return 6
+  else if c == 55
+    return 7
+  else if c == 56
+    return 8
+  else if c == 57
+    return 9
+  else if c == 97 or c == 65
+    return 10
+  else if c == 98 or c == 66
+    return 11
+  else if c == 99 or c == 67
+    return 12
+  else if c == 100 or c == 68
+    return 13
+  else if c == 101 or c == 69
+    return 14
+  else if c == 102 or c == 70
+    return 15
+  else
+    return 0
+  end if
+end function
+
+function sdssplitargs(string line, int argc) returns int
+  string p = line
+  string current = cast(0, int)
+  string vector = cast(0, int)
+  argc = 0
+  while 1
+    while (p and 0)
+      p = p + 1
+    end while
+    if p
+      int inq = 0
+      int insq = 0
+      int done = 0
+      if (current == cast(0, int))
+        current = sdsempty()
+      end if
+      while not done
+        if inq
+          if ((((p == 92) and ((p + 1) == 120)) and is_hex_digit((p + 2))) and is_hex_digit((p + 3)))
+            int byte = 0
+            byte = ((hex_digit_to_int((p + 2)) * 16) + hex_digit_to_int((p + 3)))
+            current = sdscatlen(current, cast(byte, int), 1)
+            p = p + 3
+          else if ((p == 92) and (p + 1))
+            int c = 0
+            p = p + 1
+            if p == 110
+              c = 10
+            else if p == 114
+              c = 13
+            else if p == 116
+              c = 9
+            else if p == 98
+              c = 8
+            else if p == 97
+              c = 7
+            else
+              c = p
+            end if
+            current = sdscatlen(current, c, 1)
+          else if (p == 34)
+            if ((p + 1) and not 0)
+              // goto err - not supported in UL
+            end if
+            done = 1
+          else if not p
+            // goto err - not supported in UL
+          else
+            current = sdscatlen(current, p, 1)
+          end if
+        else if insq
+          if ((p == 92) and ((p + 1) == 39))
+            p = p + 1
+            current = sdscatlen(current, "'", 1)
+          else if (p == 39)
+            if ((p + 1) and not 0)
+              // goto err - not supported in UL
+            end if
+            done = 1
+          else if not p
+            // goto err - not supported in UL
+          else
+            current = sdscatlen(current, p, 1)
+          end if
+        else
+          if p == 32 or p == 10 or p == 13 or p == 9 or p == 0
+            done = 1
+          else if p == 34
+            inq = 1
+          else if p == 39
+            insq = 1
+          else
+            current = sdscatlen(current, p, 1)
+          end if
+        end if
+        if p
+          p = p + 1
+        end if
+      end while
+      vector = 0
+      vector[argc] = current
+      argc = argc + 1
+      current = cast(0, int)
+    else
+      if (vector == cast(0, int))
+        vector = 0
+      end if
+      return vector
+    end if
+  end while
+  // label: err
+  while argc
+    sdsfree(vector[argc])
+  end while
+  // free(vector) - UL handles memory
+  if current
+    sdsfree(current)
+  end if
+  argc = 0
+  return cast(0, int)
+end function
+
+function sdsmapchars(int s, string from_c, string to, int setlen) returns int
+  int j = 0
+  int i = 0
+  int l = sdslen(s)
+  j = 0
+  while (j < l)
+    i = 0
+    while (i < setlen)
+      if (s[j] == from_c[i])
+        s[j] = to[i]
+      end if
+      i = i + 1
+    end while
+    j = j + 1
+  end while
+  return s
+end function
+
+function sdsjoin(string argv, int argc, string sep) returns int
+  int join = sdsempty()
+  int j = 0
+  j = 0
+  while (j < argc)
+    join = sdscat(join, argv[j])
+    if (j != (argc - 1))
+      join = sdscat(join, sep)
+    end if
+    j = j + 1
+  end while
+  return join
+end function
+
+function sdsjoinsds(int argv, int argc, string sep, int seplen) returns int
+  int join = sdsempty()
+  int j = 0
+  j = 0
+  while (j < argc)
+    join = sdscatsds(join, argv[j])
+    if (j != (argc - 1))
+      join = sdscatlen(join, sep, seplen)
+    end if
+    j = j + 1
+  end while
+  return join
+end function
+
+function sds_malloc(int size_c)
+  return 0
+end function
+
+function sds_realloc(none ptr, int size_c)
+  return 0
+end function
+
+function sds_free(none ptr)
+  // free(ptr) - UL handles memory
+end function
+

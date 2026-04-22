@@ -1,0 +1,17 @@
+// rooms.ul — room data
+
+function room_name(int id) returns string
+    array string names = ["Entrance Hall", "Dark Corridor", "Treasure Room", "Monster Den", "Boss Chamber"]
+    return names[id]
+end function
+
+function room_monster(int id) returns int
+    // -1 means no monster
+    array int monsters = [-1, 0, -1, 1, 4]
+    return monsters[id]
+end function
+
+function room_treasure(int id) returns int
+    array int treasure = [0, 0, 50, 0, 0]
+    return treasure[id]
+end function

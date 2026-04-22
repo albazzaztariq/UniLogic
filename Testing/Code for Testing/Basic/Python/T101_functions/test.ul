@@ -1,0 +1,57 @@
+// T101: Functions with parameters and return values
+
+function add(int a, int b) returns int
+    return a + b
+end function
+
+function greet(string who) returns string
+    return "Hello " + who
+end function
+
+function square(int n) returns int
+    return n * n
+end function
+
+function is_positive(int n) returns bool
+    if n > 0
+        return true
+    end if
+    return false
+end function
+
+function factorial(int n) returns int
+    if n <= 1
+        return 1
+    end if
+    return n * factorial(n - 1)
+end function
+
+function no_return() returns none
+    print "side effect"
+end function
+
+function main() returns int
+    // Test 1: simple add
+    print add(3, 7)
+
+    // Test 2: string return
+    print greet("World")
+
+    // Test 3: square
+    print square(6)
+
+    // Test 4: bool return
+    print is_positive(5)
+    print is_positive(-3)
+
+    // Test 5: recursive function
+    print factorial(5)
+
+    // Test 6: void function
+    no_return()
+
+    // Test 7: nested function calls
+    print add(square(2), square(3))
+
+    return 0
+end function

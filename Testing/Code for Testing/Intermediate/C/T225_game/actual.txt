@@ -1,0 +1,37 @@
+=== DUNGEON CRAWLER ===
+[Hero] HP:100 Gold:0 Lv:1
+---
+>> Entering: Entrance Hall
+  The room is quiet.
+[Hero] HP:100 Gold:0 Lv:1
+---
+>> Entering: Dark Corridor
+  Fighting Goblin!
+  Goblin defeated!
+  Gained 10 gold
+[Hero] HP:95 Gold:10 Lv:1
+---
+>> Entering: Treasure Room
+  Found treasure: 50 gold!
+  The room is quiet.
+[Hero] HP:95 Gold:60 Lv:1
+---
+>> Level Up! Now Lv:2
+---
+>> Entering: Monster Den
+  Fighting Skeleton!
+  Skeleton defeated!
+  Gained 15 gold
+[Hero] HP:87 Gold:75 Lv:2
+---
+>> Using healing potion...
+[Hero] HP:100 Gold:75 Lv:2
+---
+>> Entering: Boss Chamber
+  Fighting Dragon!
+  Dragon defeated!
+  Gained 100 gold
+[Hero] HP:0 Gold:175 Lv:2
+---
+=== GAME OVER ===
+Defeat!

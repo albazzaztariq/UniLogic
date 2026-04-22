@@ -1,0 +1,198 @@
+=== GIANT PYTHON TEST ===
+
+== SECTION 1: DATA STRUCTURES ==
+--- LinkedList ---
+List: 40 -> 30 -> 20 -> 10
+Find 20: True
+Find 99: False
+After delete 20: 40 -> 30 -> 10
+Reversed: 10 -> 30 -> 40
+Size: 3
+--- BST ---
+Inorder: 1 3 4 5 6 7 8
+Search 4: True
+Search 9: False
+--- Stack ---
+Top: 3
+Pop: 3
+Pop: 2
+Size: 1
+Empty: False
+--- Queue ---
+Dequeue: 10
+Dequeue: 20
+Size: 1
+Empty: False
+--- PriorityQueue ---
+Sorted: 1 2 3 5 8 9
+
+== SECTION 2: ALGORITHMS ==
+--- Sorting & Searching ---
+Bubble sort: [11, 12, 22, 25, 64]
+Merge sort: [3, 9, 10, 27, 38, 43, 82]
+Quicksort: [10, 30, 40, 50, 70, 80, 90]
+Binary search 10: 4
+Binary search 7: -1
+Linear search 6: 2
+Linear search 99: -1
+--- Graph BFS/DFS ---
+BFS from 0: 0 1 2 3 4 5
+DFS from 0: 0 1 3 5 4 2
+--- String Algorithms ---
+Is palindrome 'racecar': True
+Is palindrome 'hello': False
+Is anagram 'listen' 'silent': True
+Is anagram 'hello' 'world': False
+Reverse 'UniLogic': cigoLinU
+Reverse 'abcdef': fedcba
+
+== SECTION 3: OOP PATTERNS ==
+--- Shapes ---
+Circle area=78.5397 perimeter=31.4159
+Rectangle area=24.0 perimeter=20.0
+Triangle area=6.0 perimeter=12.0
+--- Animals ---
+Rex says Woof!
+Whiskers says Meow!
+Donald says Quack!
+--- Builder ---
+Alice Smith age=30 email=alice@example.com
+Bob Jones age=25 email=bob@example.com
+--- Observer ---
+Logger events: start, process, stop
+Notifier events: start, process, stop
+
+== SECTION 4: EXCEPTION HANDLING ==
+--- Exceptions ---
+Age 25 valid: 25
+Caught: ValidationError: age must be non-negative
+Caught: ValidationError: age unrealistic value
+Fetched: data from http://example.com
+Caught network: NetworkError: 400 empty URL
+Caught network: NetworkError: 404 not found
+DB result: rows for: SELECT * FROM users
+Caught DB: DatabaseError: DROP in query: DROP TABLE users
+Finally test:
+Caught app: test error
+Finally executed
+Nested exception handling:
+Inner caught: NetworkError: 500 server error
+Outer caught: re-wrapped: NetworkError: 500 server error
+
+== SECTION 5: STRING PROCESSING ==
+--- CSV Parser ---
+name | age | city
+Alice | 30 | London
+Bob | 25 | Paris
+Carol | 35 | Berlin
+--- Word Frequency ---
+brown: 1
+dog: 1
+fox: 2
+jumps: 1
+lazy: 1
+over: 1
+quick: 1
+the: 3
+--- Text Formatter ---
+Wrapped at 30:
+The quick brown fox jumps over
+the lazy dog near the river
+bank
+
+== SECTION 6: MATH ==
+--- Matrix ---
+M1:
+1 2
+3 4
+M2:
+5 6
+7 8
+M1 + M2:
+6 8
+10 12
+M1 * M2:
+19 22
+43 50
+M1 transposed:
+1 3
+2 4
+Det M1: -2
+--- Complex Numbers ---
+c1 = 3.0+4.0i
+c2 = 1.0-2.0i
+c1 + c2 = 4.0+2.0i
+c1 * c2 = 11.0-2.0i
+|c1| = 5.0
+conj(c1) = 3.0-4.0i
+--- Statistics ---
+Data: [4, 7, 13, 2, 8, 4, 5, 4, 12, 9]
+Mean: 6.8
+Median: 6.0
+Mode: 4
+Variance: 12.16
+Std Dev: 3.4871
+
+== SECTION 7: STATE MACHINE ==
+--- State Machine ---
+State: RED
+State: GREEN
+State: YELLOW
+State: RED
+State: GREEN
+State: YELLOW
+State: RED
+State: GREEN
+State: YELLOW
+Cycles: 3
+
+== SECTION 8: RECURSION ==
+--- Recursion ---
+Fibonacci: 0 1 1 2 3 5 8 13 21 34
+10! = 3628800
+2^10 = 1024
+GCD(48,18) = 6
+Sum digits 12345 = 15
+
+== SECTION 9: STRING MANIPULATION ==
+--- String Manipulation ---
+Trimmed: 'Hello World'
+Upper: HELLO WORLD
+Lower: hello world
+Count 'l' in 'hello world': 3
+Replace 'o' with '0' in 'hello world': hell0 w0rld
+Starts with 'hel': True
+Starts with 'abc': False
+Ends with 'llo': True
+Ends with 'abc': False
+
+== SECTION 10: DATA PROCESSING ==
+--- Data Processing ---
+Before sort:
+  Alice grade=10 score=92.5
+  Bob grade=11 score=78.0
+  Carol grade=10 score=88.5
+  Dave grade=12 score=95.0
+  Eve grade=11 score=82.0
+After sort by score desc:
+  Dave grade=12 score=95.0
+  Alice grade=10 score=92.5
+  Carol grade=10 score=88.5
+  Eve grade=11 score=82.0
+  Bob grade=11 score=78.0
+Average score: 87.2
+
+== SECTION 11: NUMBER THEORY ==
+--- Number Theory ---
+Primes <= 50: 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47
+Is prime 97: True
+Is prime 100: False
+Prime factors of 360: 2 2 2 3 3 5
+
+== SECTION 12: RPN EVALUATOR ==
+--- RPN Evaluator ---
+(3+4)*2 = 14.0
+Complex RPN = 5.0
+2+3*4 = 14.0
+
+=== ALL TESTS COMPLETE ===

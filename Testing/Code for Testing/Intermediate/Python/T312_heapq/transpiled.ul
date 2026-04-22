@@ -1,0 +1,417 @@
+// Heap queue algorithm (a.k.a. priority queue).
+// Python module metadata skipped: __about__
+// Python module metadata skipped: __all__
+function heappush(int heap, int item)
+  // Push item onto heap, maintaining the heap invariant.
+  heap.append(item)
+  _siftdown(heap, 0, heap.len() - 1)
+end function
+
+function heappop(int heap)
+  // Pop the smallest item off the heap, maintaining the heap invariant.
+  lastelt = heap.pop()
+  if heap
+    returnitem = heap[0]
+    heap[0] = lastelt
+    _siftup(heap, 0)
+    return returnitem
+  end if
+  return lastelt
+end function
+
+function heapreplace(int heap, int item)
+  // Pop and return the current smallest value, and add the new item.
+  returnitem = heap[0]
+  heap[0] = item
+  _siftup(heap, 0)
+  return returnitem
+end function
+
+function heappushpop(int heap, int item)
+  // Fast version of a heappush followed by a heappop.
+  if heap and heap[0] < item
+    auto __unpack_0_0 = heap[0]
+    auto __unpack_0_1 = item
+    item = __unpack_0_0
+    heap[0] = __unpack_0_1
+    _siftup(heap, 0)
+  end if
+  return item
+end function
+
+function heapify(int x)
+  // Transform list into a heap, in-place, in O(len(x)) time.
+  n = x.len()
+  for each i in reversed(range(n / 2))
+    _siftup(x, i)
+  end for
+end function
+
+function heappop_max(int heap)
+  // Maxheap version of a heappop.
+  lastelt = heap.pop()
+  if heap
+    returnitem = heap[0]
+    heap[0] = lastelt
+    _siftup_max(heap, 0)
+    return returnitem
+  end if
+  return lastelt
+end function
+
+function heapreplace_max(int heap, int item)
+  // Maxheap version of a heappop followed by a heappush.
+  returnitem = heap[0]
+  heap[0] = item
+  _siftup_max(heap, 0)
+  return returnitem
+end function
+
+function heappush_max(int heap, int item)
+  // Maxheap version of a heappush.
+  heap.append(item)
+  _siftdown_max(heap, 0, heap.len() - 1)
+end function
+
+function heappushpop_max(int heap, int item)
+  // Maxheap fast version of a heappush followed by a heappop.
+  if heap and item < heap[0]
+    auto __unpack_1_0 = heap[0]
+    auto __unpack_1_1 = item
+    item = __unpack_1_0
+    heap[0] = __unpack_1_1
+    _siftup_max(heap, 0)
+  end if
+  return item
+end function
+
+function heapify_max(int x)
+  // Transform list into a maxheap, in-place, in O(len(x)) time.
+  n = x.len()
+  for each i in reversed(range(n / 2))
+    _siftup_max(x, i)
+  end for
+end function
+
+function _siftdown(int heap, int startpos, int pos)
+  newitem = heap[pos]
+  while pos > startpos
+    parentpos = pos - 1 bit_right 1
+    parent = heap[parentpos]
+    if newitem < parent
+      heap[pos] = parent
+      pos = parentpos
+      continue
+    end if
+    escape
+  end while
+  heap[pos] = newitem
+end function
+
+function _siftup(int heap, int pos)
+  endpos = heap.len()
+  startpos = pos
+  newitem = heap[pos]
+  childpos = 2 * pos + 1
+  while childpos < endpos
+    rightpos = childpos + 1
+    if rightpos < endpos and not heap[childpos] < heap[rightpos]
+      childpos = rightpos
+    end if
+    heap[pos] = heap[childpos]
+    pos = childpos
+    childpos = 2 * pos + 1
+  end while
+  heap[pos] = newitem
+  _siftdown(heap, startpos, pos)
+end function
+
+function _siftdown_max(int heap, int startpos, int pos)
+  // Maxheap variant of _siftdown
+  newitem = heap[pos]
+  while pos > startpos
+    parentpos = pos - 1 bit_right 1
+    parent = heap[parentpos]
+    if parent < newitem
+      heap[pos] = parent
+      pos = parentpos
+      continue
+    end if
+    escape
+  end while
+  heap[pos] = newitem
+end function
+
+function _siftup_max(int heap, int pos)
+  // Maxheap variant of _siftup
+  endpos = heap.len()
+  startpos = pos
+  newitem = heap[pos]
+  childpos = 2 * pos + 1
+  while childpos < endpos
+    rightpos = childpos + 1
+    if rightpos < endpos and not heap[rightpos] < heap[childpos]
+      childpos = rightpos
+    end if
+    heap[pos] = heap[childpos]
+    pos = childpos
+    childpos = 2 * pos + 1
+  end while
+  heap[pos] = newitem
+  _siftdown_max(heap, startpos, pos)
+end function
+
+function merge(...)
+  // Merge multiple sorted inputs into a single sorted output.
+  h = []
+  h_append = h.append
+  if reverse
+    _heapify = heapify_max
+    _heappop = heappop_max
+    _heapreplace = heapreplace_max
+    direction = -1
+  else
+    _heapify = heapify
+    _heappop = heappop
+    _heapreplace = heapreplace
+    direction = 1
+  end if
+  if key == empty
+    int order = 0
+    for each it in _py_map(iter, iterables)
+      try
+        next = it.__next__
+        h_append([next(), order * direction, next])
+      catch StopIteration
+        // pass
+      end try
+      order = order + 1
+    end for
+    _heapify(h)
+    while h.len() > 1
+      try
+        while true
+          [value, order, next] = h[0]
+          s = h[0]
+          /* unknown expr: Yield */
+          s[0] = next()
+          _heapreplace(h, s)
+        end while
+      catch StopIteration
+        _heappop(h)
+      end try
+    end while
+    if h
+      value = h[0][0]
+      order = h[0][1]
+      next = h[0][2]
+      /* unknown expr: Yield */
+      /* unknown expr: YieldFrom */
+    end if
+    return
+  end if
+  int order = 0
+  for each it in _py_map(iter, iterables)
+    try
+      next = it.__next__
+      value = next()
+      h_append([key(value), order * direction, value, next])
+    catch StopIteration
+      // pass
+    end try
+    order = order + 1
+  end for
+  _heapify(h)
+  while h.len() > 1
+    try
+      while true
+        [key_value, order, value, next] = h[0]
+        s = h[0]
+        /* unknown expr: Yield */
+        value = next()
+        s[0] = key(value)
+        s[2] = value
+        _heapreplace(h, s)
+      end while
+    catch StopIteration
+      _heappop(h)
+    end try
+  end while
+  if h
+    key_value = h[0][0]
+    order = h[0][1]
+    value = h[0][2]
+    next = h[0][3]
+    /* unknown expr: Yield */
+    /* unknown expr: YieldFrom */
+  end if
+end function
+
+function nsmallest(int n, int iterable, int key)
+  // Find the n smallest elements in a dataset.
+  if n == 1
+    it = iter(iterable)
+    sentinel = _py_object()
+    result = min(it)
+    return /* [] if result == sentinel else [result] */
+  end if
+  try
+    size = iterable.len()
+  catch
+    // pass
+  end try
+  if key == empty
+    it = iter(iterable)
+    array array int _lc0
+    int __zip_i0 = 0
+    while __zip_i0 < range(n).len()
+      auto i = range(n)[__zip_i0]
+      auto elem = it[__zip_i0]
+      _lc0.push([elem, i])
+      __zip_i0 = __zip_i0 + 1
+    end while
+    result = _lc0
+    if not result
+      return result
+    end if
+    heapify_max(result)
+    top = result[0][0]
+    order = n
+    _heapreplace = heapreplace_max
+    for each elem in it
+      if elem < top
+        _heapreplace(result, [elem, order])
+        top = result[0][0]
+        order += 1
+      end if
+    end for
+    result.sort()
+    array int _lc1
+    for each [elem, order] in result
+      _lc1.push(elem)
+    end for
+    return _lc1
+  end if
+  it = iter(iterable)
+  array array int _lc2
+  int __zip_i1 = 0
+  while __zip_i1 < range(n).len()
+    auto i = range(n)[__zip_i1]
+    auto elem = it[__zip_i1]
+    _lc2.push([key(elem), i, elem])
+    __zip_i1 = __zip_i1 + 1
+  end while
+  result = _lc2
+  if not result
+    return result
+  end if
+  heapify_max(result)
+  top = result[0][0]
+  order = n
+  _heapreplace = heapreplace_max
+  for each elem in it
+    k = key(elem)
+    if k < top
+      _heapreplace(result, [k, order, elem])
+      top = result[0][0]
+      order += 1
+    end if
+  end for
+  result.sort()
+  array int _lc3
+  for each [k, order, elem] in result
+    _lc3.push(elem)
+  end for
+  return _lc3
+end function
+
+function nlargest(int n, int iterable, int key)
+  // Find the n largest elements in a dataset.
+  if n == 1
+    it = iter(iterable)
+    sentinel = _py_object()
+    result = max(it)
+    return /* [] if result == sentinel else [result] */
+  end if
+  try
+    size = iterable.len()
+  catch
+    // pass
+  end try
+  if key == empty
+    it = iter(iterable)
+    array array int _lc4
+    int __zip_i2 = 0
+    while __zip_i2 < range(0, -n, -1).len()
+      auto i = range(0, -n, -1)[__zip_i2]
+      auto elem = it[__zip_i2]
+      _lc4.push([elem, i])
+      __zip_i2 = __zip_i2 + 1
+    end while
+    result = _lc4
+    if not result
+      return result
+    end if
+    heapify(result)
+    top = result[0][0]
+    order = -n
+    _heapreplace = heapreplace
+    for each elem in it
+      if top < elem
+        _heapreplace(result, [elem, order])
+        top = result[0][0]
+        order -= 1
+      end if
+    end for
+    result.sort()
+    array int _lc5
+    for each [elem, order] in result
+      _lc5.push(elem)
+    end for
+    return _lc5
+  end if
+  it = iter(iterable)
+  array array int _lc6
+  int __zip_i3 = 0
+  while __zip_i3 < range(0, -n, -1).len()
+    auto i = range(0, -n, -1)[__zip_i3]
+    auto elem = it[__zip_i3]
+    _lc6.push([key(elem), i, elem])
+    __zip_i3 = __zip_i3 + 1
+  end while
+  result = _lc6
+  if not result
+    return result
+  end if
+  heapify(result)
+  top = result[0][0]
+  order = -n
+  _heapreplace = heapreplace
+  for each elem in it
+    k = key(elem)
+    if top < k
+      _heapreplace(result, [k, order, elem])
+      top = result[0][0]
+      order -= 1
+    end if
+  end for
+  result.sort()
+  array int _lc7
+  for each [k, order, elem] in result
+    _lc7.push(elem)
+  end for
+  return _lc7
+end function
+
+// TRANSPILER: module-level try/except block — try branch emitted
+// TRANSPILER WARNING line 597: from _heapq import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER: module-level variable _heappop_max — verify type is correct
+// Original: _heappop_max = ...
+// TRANSPILER: module-level variable _heapreplace_max — verify type is correct
+// Original: _heapreplace_max = ...
+// TRANSPILER: module-level variable _heappush_max — verify type is correct
+// Original: _heappush_max = ...
+// TRANSPILER: module-level variable _heappushpop_max — verify type is correct
+// Original: _heappushpop_max = ...
+// TRANSPILER: module-level variable _heapify_max — verify type is correct
+// Original: _heapify_max = ...

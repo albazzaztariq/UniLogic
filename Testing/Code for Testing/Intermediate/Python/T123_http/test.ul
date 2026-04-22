@@ -1,0 +1,68 @@
+// T123: HTTP-like data processing
+// Note: http.ul stdlib uses C implementation (WinHTTP/POSIX sockets).
+// Python target cannot use FFI to C. This test validates the
+// data processing pattern that would follow an HTTP fetch.
+
+import "string" function strlen(string s) returns int
+import "string" function str_char_at(string s, int i) returns string
+
+// Simulate parsing a CSV response from an HTTP API
+function parse_csv_line(string line) returns int
+    // Count fields (comma-separated values)
+    int fields = 1
+    int len = strlen(line)
+    int i = 0
+    while i < len
+        string ch = str_char_at(line, i)
+        if ch == ","
+            fields = fields + 1
+        end if
+        i = i + 1
+    end while
+    return fields
+end function
+
+function main() returns int
+    // Simulate HTTP response data (as if fetched from API)
+    string response_status = "200"
+    print "status: " + response_status
+
+    // Simulate parsing response body (CSV data)
+    string header = "name,age,city,score"
+    string row1 = "Alice,30,London,95"
+    string row2 = "Bob,25,Paris,88"
+    string row3 = "Charlie,35,Tokyo,92"
+
+    // Parse and count fields
+    int header_fields = parse_csv_line(header)
+    print "fields: " + cast(header_fields, string)
+
+    // Process rows
+    print "row1 fields: " + cast(parse_csv_line(row1), string)
+    print "row2 fields: " + cast(parse_csv_line(row2), string)
+    print "row3 fields: " + cast(parse_csv_line(row3), string)
+
+    // Simulate building a summary
+    int total_rows = 3
+    print "total rows: " + cast(total_rows, string)
+
+    // Verify all rows have same field count
+    bool valid = true
+    if parse_csv_line(row1) != header_fields
+        valid = false
+    end if
+    if parse_csv_line(row2) != header_fields
+        valid = false
+    end if
+    if parse_csv_line(row3) != header_fields
+        valid = false
+    end if
+
+    if valid
+        print "data valid"
+    else
+        print "data invalid"
+    end if
+
+    return 0
+end function

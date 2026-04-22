@@ -1,0 +1,126 @@
+// Translated from test_sqlite_01_intmath.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function clamp32(int v, int lo, int hi) returns int
+  if (v < lo)
+    return lo
+  end if
+  if (v > hi)
+    return hi
+  end if
+  return v
+end function
+
+function iabs(int x) returns int
+  if (x < 0)
+    return -x
+  end if
+  return x
+end function
+
+function ilog2(int n) returns int
+  int result = -1
+  int v = n
+  while (v > 0)
+    result = (result + 1)
+    v = (v / 2)
+  end while
+  return result
+end function
+
+function popcount32(int n) returns int
+  int count = 0
+  int v = n
+  while (v != 0)
+    count = (count + (v both1 1))
+    v = (v / 2)
+  end while
+  return count
+end function
+
+function gcd(int a, int b) returns int
+  int tmp = 0
+  while (b != 0)
+    tmp = b
+    b = (a % b)
+    a = tmp
+  end while
+  return a
+end function
+
+function sqlite_min(int a, int b) returns int
+  if (a < b)
+    return a
+  end if
+  return b
+end function
+
+function sqlite_max(int a, int b) returns int
+  if (a > b)
+    return a
+  end if
+  return b
+end function
+
+function safe_muladd(int a, int b, int c) returns int
+  int result = ((a * b) + c)
+  return result
+end function
+
+function main() returns int
+  print cast(clamp32(5, 0, 10), string)
+  print cast(clamp32(-3, 0, 10), string)
+  print cast(clamp32(15, 0, 10), string)
+  print cast(clamp32(0, 0, 0), string)
+  print cast(iabs(7), string)
+  print cast(iabs(-7), string)
+  print cast(iabs(0), string)
+  print cast(ilog2(1), string)
+  print cast(ilog2(2), string)
+  print cast(ilog2(4), string)
+  print cast(ilog2(8), string)
+  print cast(ilog2(16), string)
+  print cast(ilog2(0), string)
+  print cast(popcount32(0), string)
+  print cast(popcount32(1), string)
+  print cast(popcount32(3), string)
+  print cast(popcount32(7), string)
+  print cast(popcount32(255), string)
+  print cast(gcd(12, 8), string)
+  print cast(gcd(100, 75), string)
+  print cast(gcd(7, 3), string)
+  print cast(gcd(0, 5), string)
+  print cast(sqlite_min(3, 7), string)
+  print cast(sqlite_min(7, 3), string)
+  print cast(sqlite_max(3, 7), string)
+  print cast(sqlite_max(7, 3), string)
+  print cast(safe_muladd(3, 4, 5), string)
+  print cast(safe_muladd(10, 10, 0), string)
+  return 0
+end function
+

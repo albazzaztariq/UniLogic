@@ -1,0 +1,9 @@
+// display.ul — display helpers
+
+function show_enter(string name) returns none
+    print ">> Entering: " + name
+end function
+
+function show_divider() returns none
+    print "---"
+end function

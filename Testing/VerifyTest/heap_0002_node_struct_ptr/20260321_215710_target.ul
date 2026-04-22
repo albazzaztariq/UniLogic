@@ -1,0 +1,146 @@
+// Translated from test_heap_0002_node_struct_ptr.c by c2ul
+type node_t
+  uint32 hole
+  uint32 size_c
+  node_t <next>
+  node_t <prev>
+end type
+
+type bin_t
+  node_t <head>
+end type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function add_node(bin_t <bin>, node_t <node>)
+  node.next = cast(0, none)
+  node.prev = cast(0, none)
+  if (bin.head == cast(0, none))
+    bin.head = node
+    return
+  end if
+  node_t <current> = bin.head
+  node_t <previous> = cast(0, none)
+  while ((current != cast(0, none)) and (current.size_c <= node.size_c))
+    previous = current
+    current = current.next
+  end while
+  if (current == cast(0, none))
+    previous.next = node
+    node.prev = previous
+  else if (previous != cast(0, none))
+    node.next = current
+    previous.next = node
+    node.prev = previous
+    current.prev = node
+  else
+    node.next = bin.head
+    bin.head.prev = node
+    bin.head = node
+  end if
+end function
+
+function get_best_fit(bin_t <bin>, uint64 size_c) returns <node_t>
+  if (bin.head == cast(0, none))
+    return cast(0, none)
+  end if
+  node_t <temp> = bin.head
+  while (temp != cast(0, none))
+    if (temp.size_c >= size_c)
+      return temp
+    end if
+    temp = temp.next
+  end while
+  return cast(0, none)
+end function
+
+function get_last_node(bin_t <bin>) returns <node_t>
+  node_t <temp> = bin.head
+  while (temp.next != cast(0, none))
+    temp = temp.next
+  end while
+  return temp
+end function
+
+function main() returns int
+  node_t n1 = 0
+  node_t n2 = 0
+  node_t n3 = 0
+  node_t n4 = 0
+  bin_t bin = 0
+  bin.head = cast(0, none)
+  n1.hole = 0
+  n1.size_c = 32
+  n1.next = cast(0, none)
+  n1.prev = cast(0, none)
+  n2.hole = 0
+  n2.size_c = 8
+  n2.next = cast(0, none)
+  n2.prev = cast(0, none)
+  n3.hole = 0
+  n3.size_c = 128
+  n3.next = cast(0, none)
+  n3.prev = cast(0, none)
+  n4.hole = 0
+  n4.size_c = 64
+  n4.next = cast(0, none)
+  n4.prev = cast(0, none)
+  add_node(address(bin), address(n1))
+  add_node(address(bin), address(n2))
+  add_node(address(bin), address(n3))
+  add_node(address(bin), address(n4))
+  print "Sorted list (ascending size):"
+  node_t <cur> = bin.head
+  while (cur != cast(0, none))
+    print "  size=" + cast(cur.size_c, string) + " hole=" + cast(cur.hole, string)
+    cur = cur.next
+  end while
+  node_t <fit> = 0
+  fit = get_best_fit(address(bin), 10)
+  auto _tern_1 = 0
+  if fit
+    _tern_1 = fit.size_c
+  end if
+  print "best_fit(10): size=" + cast(_tern_1, string)
+  fit = get_best_fit(address(bin), 64)
+  auto _tern_2 = 0
+  if fit
+    _tern_2 = fit.size_c
+  end if
+  print "best_fit(64): size=" + cast(_tern_2, string)
+  fit = get_best_fit(address(bin), 200)
+  auto _tern_3 = "NULL"
+  if fit
+    _tern_3 = "found"
+  end if
+  print "best_fit(200): " + _tern_3
+  node_t <last> = get_last_node(address(bin))
+  print "last_node: size=" + cast(last.size_c, string)
+  return 0
+end function
+

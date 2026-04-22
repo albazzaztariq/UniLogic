@@ -1,0 +1,9 @@
+Hello World
+11
+H
+Hello
+Good
+equal
+not equal
+found quick
+012

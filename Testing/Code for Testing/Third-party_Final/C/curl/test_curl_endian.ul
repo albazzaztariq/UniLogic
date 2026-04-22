@@ -1,0 +1,73 @@
+// Translated from test_curl_endian.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function read16_le(int <buf>) returns int
+  return (buf[0] either1 (buf[1] left 8))
+end function
+
+function read16_be(int <buf>) returns int
+  return ((buf[0] left 8) either1 buf[1])
+end function
+
+function read32_le(int <buf>) returns int
+  return (((buf[0] either1 (buf[1] left 8)) either1 (buf[2] left 16)) either1 (buf[3] left 24))
+end function
+
+function read32_be(int <buf>) returns int
+  return ((((buf[0] left 24) either1 (buf[1] left 16)) either1 (buf[2] left 8)) either1 buf[3])
+end function
+
+function main() returns int
+  array int data1 = [1, 2, 3, 4]
+  array int data2 = [5, 0, 0, 0]
+  array int data3 = [0, 0, 0, 0]
+  array int data4 = [127, 127, 0, 0]
+  print "=== Endian Read Tests ==="
+  print "LE16 [01,02] = " + cast(read16_le(data1), string)
+  print "LE16 [05,00] = " + cast(read16_le(data2), string)
+  print "LE16 [00,00] = " + cast(read16_le(data3), string)
+  print "LE16 [7F,7F] = " + cast(read16_le(data4), string)
+  print "BE16 [01,02] = " + cast(read16_be(data1), string)
+  print "BE16 [05,00] = " + cast(read16_be(data2), string)
+  print "BE16 [00,00] = " + cast(read16_be(data3), string)
+  print "BE16 [7F,7F] = " + cast(read16_be(data4), string)
+  array int data5 = [1, 0, 0, 0]
+  array int data6 = [0, 0, 0, 1]
+  array int data7 = [1, 2, 3, 4]
+  array int data8 = [16, 32, 48, 64]
+  print "LE32 [01,00,00,00] = " + cast(read32_le(data5), string)
+  print "LE32 [00,00,00,01] = " + cast(read32_le(data6), string)
+  print "LE32 [01,02,03,04] = " + cast(read32_le(data7), string)
+  print "LE32 [10,20,30,40] = " + cast(read32_le(data8), string)
+  print "BE32 [01,00,00,00] = " + cast(read32_be(data5), string)
+  print "BE32 [00,00,00,01] = " + cast(read32_be(data6), string)
+  print "BE32 [01,02,03,04] = " + cast(read32_be(data7), string)
+  print "BE32 [10,20,30,40] = " + cast(read32_be(data8), string)
+  return 0
+end function
+

@@ -1,0 +1,39 @@
+=== Hex Char Value Tests ===
+code=48 val=0
+code=49 val=1
+code=50 val=2
+code=51 val=3
+code=52 val=4
+code=53 val=5
+code=54 val=6
+code=55 val=7
+code=56 val=8
+code=57 val=9
+code=97 val=10
+code=98 val=11
+code=99 val=12
+code=100 val=13
+code=101 val=14
+code=102 val=15
+code=65 val=10
+code=66 val=11
+code=67 val=12
+code=68 val=13
+code=69 val=14
+code=70 val=15
+code=103 val=-1
+code=71 val=-1
+code=32 val=-1
+=== Hex Pair Value Tests ===
+hi=50 lo=48 val=32
+hi=52 lo=49 val=65
+hi=70 lo=70 val=255
+hi=48 lo=48 val=0
+hi=97 lo=98 val=171
+hi=71 lo=48 val=-1
+=== Percent-Encoded Detection ===
+s1 count=1
+s2 count=3
+s3 count=0
+s4 count=0
+s5 count=3

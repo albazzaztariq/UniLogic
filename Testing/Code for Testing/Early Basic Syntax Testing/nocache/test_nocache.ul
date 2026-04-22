@@ -1,0 +1,11 @@
+// test_nocache.ul — nocache (volatile) variable keyword
+
+function main() returns none
+    nocache int sensor_value = 0
+    sensor_value = 42
+    print sensor_value
+
+    nocache int counter = 10
+    counter += 5
+    print counter
+end function

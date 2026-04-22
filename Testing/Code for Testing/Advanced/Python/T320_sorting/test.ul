@@ -1,0 +1,153 @@
+// Sorting algorithms — bubble, selection, insertion sort with comparison counting.
+function bubble_sort(array int arr, int count) returns int
+  int comparisons = 0
+  int i = 0
+  while i < count - 1
+    int j = 0
+    while j < count - 1 - i
+      comparisons = comparisons + 1
+      if arr[j] > arr[j + 1]
+        int temp = arr[j]
+        arr[j] = arr[j + 1]
+        arr[j + 1] = temp
+      end if
+      j = j + 1
+    end while
+    i = i + 1
+  end while
+  return comparisons
+end function
+
+function selection_sort(array int arr, int count) returns int
+  int comparisons = 0
+  int i = 0
+  while i < count - 1
+    int min_idx = i
+    int j = i + 1
+    while j < count
+      comparisons = comparisons + 1
+      if arr[j] < arr[min_idx]
+        min_idx = j
+      end if
+      j = j + 1
+    end while
+    if min_idx != i
+      int temp = arr[i]
+      arr[i] = arr[min_idx]
+      arr[min_idx] = temp
+    end if
+    i = i + 1
+  end while
+  return comparisons
+end function
+
+function insertion_sort(array int arr, int count) returns int
+  int comparisons = 0
+  int i = 1
+  while i < count
+    int key = arr[i]
+    int j = i - 1
+    bool done = false
+    while j >= 0 and not done
+      comparisons = comparisons + 1
+      if arr[j] > key
+        arr[j + 1] = arr[j]
+        j = j - 1
+      else
+        done = true
+      end if
+    end while
+    arr[j + 1] = key
+    i = i + 1
+  end while
+  return comparisons
+end function
+
+function array_copy(array int src, array int dst, int count)
+  int i = 0
+  while i < count
+    dst[i] = src[i]
+    i = i + 1
+  end while
+end function
+
+function is_sorted(array int arr, int count) returns bool
+  int i = 0
+  while i < count - 1
+    if arr[i] > arr[i + 1]
+      return false
+    end if
+    i = i + 1
+  end while
+  return true
+end function
+
+function print_array(array int arr, int count)
+  string result = ""
+  int i = 0
+  while i < count
+    if i > 0
+      result = result + " "
+    end if
+    result = result + cast(arr[i], string)
+    i = i + 1
+  end while
+  print result
+end function
+
+function array_sum(array int arr, int count) returns int
+  int total = 0
+  int i = 0
+  while i < count
+    total = total + arr[i]
+    i = i + 1
+  end while
+  return total
+end function
+
+function test_sort(string name, array int original, array int work, int count, int sort_type)
+  array_copy(original, work, count)
+  int comparisons = 0
+  if sort_type == 1
+    comparisons = bubble_sort(work, count)
+  end if
+  if sort_type == 2
+    comparisons = selection_sort(work, count)
+  end if
+  if sort_type == 3
+    comparisons = insertion_sort(work, count)
+  end if
+  print name + ": comps=" + cast(comparisons, string) + " sorted=" + cast(is_sorted(work, count), string) + " sum=" + cast(array_sum(work, count), string)
+end function
+
+function main() returns int
+  array int data = [64, 34, 25, 12, 22, 11, 90, 45, 0, 0]
+  int count = 8
+  array int work = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  print "--- Dataset 1 ---"
+  print_array(data, count)
+  test_sort("Bubble", data, work, count, 1)
+  test_sort("Selection", data, work, count, 2)
+  test_sort("Insertion", data, work, count, 3)
+  array int data2 = [5, 1, 4, 2, 8, 3, 7, 6, 9, 10]
+  int count2 = 10
+  print "--- Dataset 2 ---"
+  print_array(data2, count2)
+  test_sort("Bubble", data2, work, count2, 1)
+  test_sort("Selection", data2, work, count2, 2)
+  test_sort("Insertion", data2, work, count2, 3)
+  array int sorted_data = [1, 2, 3, 4, 5, 6, 7, 8, 0, 0]
+  int count3 = 8
+  print "--- Already sorted ---"
+  test_sort("Bubble", sorted_data, work, count3, 1)
+  test_sort("Insertion", sorted_data, work, count3, 3)
+  array int rev_data = [8, 7, 6, 5, 4, 3, 2, 1, 0, 0]
+  print "--- Reverse sorted ---"
+  test_sort("Bubble", rev_data, work, count3, 1)
+  test_sort("Insertion", rev_data, work, count3, 3)
+  array int single = [42, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  print "--- Single ---"
+  test_sort("Bubble", single, work, 1, 1)
+  return 0
+end function
+

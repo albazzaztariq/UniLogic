@@ -1,0 +1,28 @@
+=== HTTP Status Classification ===
+code=100 cat=informational redirect=0 info=1 success=0 retry=0
+code=101 cat=informational redirect=0 info=1 success=0 retry=0
+code=200 cat=success redirect=0 info=0 success=1 retry=0
+code=201 cat=success redirect=0 info=0 success=1 retry=0
+code=204 cat=success redirect=0 info=0 success=1 retry=0
+code=206 cat=success redirect=0 info=0 success=1 retry=0
+code=301 cat=redirect redirect=1 info=0 success=0 retry=0
+code=302 cat=redirect redirect=1 info=0 success=0 retry=0
+code=303 cat=redirect redirect=1 info=0 success=0 retry=0
+code=304 cat=redirect redirect=0 info=0 success=0 retry=0
+code=307 cat=redirect redirect=1 info=0 success=0 retry=0
+code=308 cat=redirect redirect=1 info=0 success=0 retry=0
+code=400 cat=client_error redirect=0 info=0 success=0 retry=0
+code=401 cat=client_error redirect=0 info=0 success=0 retry=0
+code=403 cat=client_error redirect=0 info=0 success=0 retry=0
+code=404 cat=client_error redirect=0 info=0 success=0 retry=0
+code=405 cat=client_error redirect=0 info=0 success=0 retry=0
+code=408 cat=client_error redirect=0 info=0 success=0 retry=0
+code=429 cat=client_error redirect=0 info=0 success=0 retry=1
+code=500 cat=server_error redirect=0 info=0 success=0 retry=0
+code=502 cat=server_error redirect=0 info=0 success=0 retry=0
+code=503 cat=server_error redirect=0 info=0 success=0 retry=1
+code=504 cat=server_error redirect=0 info=0 success=0 retry=0
+code=0 cat=unknown redirect=0 info=0 success=0 retry=0
+code=999 cat=unknown redirect=0 info=0 success=0 retry=0
+=== Range Tests ===
+199/100=1 200/100=2 299/100=2 300/100=3

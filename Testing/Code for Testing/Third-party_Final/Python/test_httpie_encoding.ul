@@ -1,0 +1,88 @@
+@dr python_compat = true
+
+const string UTF8 = "utf-8"
+const int TOO_SMALL_SEQUENCE = 32
+function detect_encoding(int content_len, int bom_type)
+  // Detect encoding based on content length and BOM type indicator.
+  if content_len <= TOO_SMALL_SEQUENCE
+    return UTF8
+  end if
+  if bom_type == "utf8sig"
+    return "utf-8-sig"
+  end if
+  if bom_type == "utf16"
+    return "utf-16"
+  end if
+  if bom_type == "utf32"
+    return "utf-32"
+  end if
+  return UTF8
+end function
+
+function smart_decode(int content, int encoding)
+  // Decode content using given encoding.
+  if not encoding
+    encoding = UTF8
+  end if
+  return [content, encoding]
+end function
+
+function smart_encode(int content, int target_encoding)
+  // Encode content into the target encoding name.
+  return target_encoding + ":" + content
+end function
+
+function normalize_encoding(int name)
+  // Normalize encoding name to canonical form.
+  if name == "utf8" or name == "UTF8"
+    return UTF8
+  end if
+  if name == "ascii" or name == "ASCII"
+    return "ascii"
+  end if
+  return name.lower()
+end function
+
+function main()
+  print cast("UTF8:", string) + " " + cast(UTF8, string)
+  print cast("TOO_SMALL_SEQUENCE:", string) + " " + cast(TOO_SMALL_SEQUENCE, string)
+  enc = detect_encoding(5, "none")
+  print cast("short detect:", string) + " " + cast(enc, string)
+  enc = detect_encoding(64, "none")
+  print cast("long utf-8 detect:", string) + " " + cast(enc, string)
+  print cast("utf-8-sig detect:", string) + " " + cast(detect_encoding(51, "utf8sig"), string)
+  print cast("utf-16 detect:", string) + " " + cast(detect_encoding(51, "utf16"), string)
+  print cast("utf-32 detect:", string) + " " + cast(detect_encoding(51, "utf32"), string)
+  print cast("no bom detect:", string) + " " + cast(detect_encoding(51, "none"), string)
+  text = smart_decode("hello world", "utf-8")[0]
+  used_enc = smart_decode("hello world", "utf-8")[1]
+  print cast("smart_decode:", string) + " " + cast(text, string) + " " + cast("encoding:", string) + " " + cast(used_enc, string)
+  text2 = smart_decode("auto detect me", "")[0]
+  used_enc2 = smart_decode("auto detect me", "")[1]
+  print cast("smart_decode auto:", string) + " " + cast(text2, string) + " " + cast("encoding:", string) + " " + cast(used_enc2, string)
+  text3 = smart_decode("another test", empty)[0]
+  used_enc3 = smart_decode("another test", empty)[1]
+  print cast("smart_decode none enc:", string) + " " + cast(text3, string) + " " + cast("encoding:", string) + " " + cast(used_enc3, string)
+  encoded = smart_encode("hello world", "utf-8")
+  print cast("smart_encode:", string) + " " + cast(encoded, string)
+  encoded_ascii = smart_encode("hello", "ascii")
+  print cast("smart_encode ascii:", string) + " " + cast(encoded_ascii, string)
+  original = "Testing round-trip encoding"
+  encoded2 = smart_encode(original, "utf-8")
+  content_part = encoded2.split(":", 1)[1]
+  print cast("round-trip ok:", string) + " " + cast(content_part == original, string)
+  print cast("round-trip encoding:", string) + " " + cast(encoded2.split(":")[0], string)
+  print cast("normalize utf8:", string) + " " + cast(normalize_encoding("utf8"), string)
+  print cast("normalize UTF8:", string) + " " + cast(normalize_encoding("UTF8"), string)
+  print cast("normalize ascii:", string) + " " + cast(normalize_encoding("ascii"), string)
+  print cast("normalize ASCII:", string) + " " + cast(normalize_encoding("ASCII"), string)
+  print cast("normalize latin-1:", string) + " " + cast(normalize_encoding("latin-1"), string)
+  result = smart_decode("tuple test", "ascii")
+  print cast("result len:", string) + " " + cast(result.len(), string)
+  print cast("result[0] type:", string) + " " + cast(_py_type(result[0]).__name__, string)
+  print cast("result[1] type:", string) + " " + cast(_py_type(result[1]).__name__, string)
+  print cast("at boundary:", string) + " " + cast(detect_encoding(32, "none"), string)
+  print cast("just over boundary:", string) + " " + cast(detect_encoding(33, "none"), string)
+end function
+
+// UL runtime invokes main() automatically

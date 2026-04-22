@@ -1,0 +1,440 @@
+// TRANSPILER WARNING line 66: import types — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 67: from _csv import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 72: from _csv import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 74: from io import ... — convert to UL import syntax — manual conversion required
+// Python module metadata skipped: __all__
+object Dialect
+  string _name = ""
+  bool _valid = false
+  int delimiter = empty
+  int quotechar = empty
+  int escapechar = empty
+  int doublequote = empty
+  int skipinitialspace = empty
+  int lineterminator = empty
+  int quoting = empty
+  
+  function __init__()
+    if self.__class__ != Dialect
+      self._valid = true
+    end if
+    self._validate()
+  end function
+  
+  
+  function _validate()
+    try
+      _Dialect(self)
+    catch TypeError as e
+      throw Error(cast(e, string))
+    end try
+  end function
+  
+end object
+
+object excel forks Dialect
+  string delimiter = ","
+  string quotechar = "\""
+  bool doublequote = true
+  bool skipinitialspace = false
+  string lineterminator = "\r\n"
+  int quoting = QUOTE_MINIMAL
+end object
+
+register_dialect("excel", excel)
+object excel_tab forks excel
+  string delimiter = "\t"
+end object
+
+register_dialect("excel-tab", excel_tab)
+object unix_dialect forks Dialect
+  string delimiter = ","
+  string quotechar = "\""
+  bool doublequote = true
+  bool skipinitialspace = false
+  string lineterminator = "\n"
+  int quoting = QUOTE_ALL
+end object
+
+register_dialect("unix", unix_dialect)
+object DictReader
+  
+  function __init__(int f, int fieldnames, int restkey, int restval, int dialect, ...)
+    if fieldnames != empty and iter(fieldnames) == fieldnames
+      fieldnames = _py_list(fieldnames)
+    end if
+    self._fieldnames = fieldnames
+    self.restkey = restkey
+    self.restval = restval
+    self.reader = reader(f, dialect, args)
+    self.dialect = dialect
+    self.line_num = 0
+  end function
+  
+  
+  function __iter__()
+    return self
+  end function
+  
+  
+  function fieldnames()
+    if self._fieldnames == empty
+      try
+        self._fieldnames = next(self.reader)
+      catch StopIteration
+        // pass
+      end try
+    end if
+    self.line_num = self.reader.line_num
+    return self._fieldnames
+  end function
+  
+  
+  // TRANSPILER WARNING line 167: decorator @setter — manual conversion required
+  function fieldnames(int value)
+    self._fieldnames = value
+  end function
+  
+  
+  function __next__()
+    if self.line_num == 0
+      self.fieldnames
+    end if
+    row = next(self.reader)
+    self.line_num = self.reader.line_num
+    while row == []
+      row = next(self.reader)
+    end while
+    d = dict(zip(self.fieldnames, row))
+    lf = self.fieldnames.len()
+    lr = row.len()
+    if lf < lr
+      d[self.restkey] = row[lf:row.len()]
+    else
+      if lf > lr
+        for each key in self.fieldnames[lr:self.fieldnames.len()]
+          d[key] = self.restval
+        end for
+      end if
+    end if
+    return d
+  end function
+  
+  // Python module metadata skipped: __class_getitem__
+end object
+
+object DictWriter
+  
+  function __init__(int f, int fieldnames, int restval, int extrasaction, int dialect, ...)
+    if fieldnames != empty and iter(fieldnames) == fieldnames
+      fieldnames = _py_list(fieldnames)
+    end if
+    self.fieldnames = fieldnames
+    self.restval = restval
+    extrasaction = extrasaction.lower()
+    if not ["raise", "ignore"].contains(extrasaction)
+      throw ValueError("extrasaction (%s) must be 'raise' or 'ignore'" % extrasaction)
+    end if
+    self.extrasaction = extrasaction
+    self.writer = writer(f, dialect, args)
+  end function
+  
+  
+  function writeheader()
+    header = dict(zip(self.fieldnames, self.fieldnames))
+    return self.writerow(header)
+  end function
+  
+  
+  function _dict_to_list(int rowdict)
+    if self.extrasaction == "raise"
+      wrong_fields = rowdict.keys() - self.fieldnames
+      if wrong_fields
+        array int _lc0
+        for each x in wrong_fields
+          _lc0.push(repr(x))
+        end for
+        throw ValueError("dict contains fields not in fieldnames: " + ", ".join(_lc0))
+      end if
+    end if
+    return /* unknown expr: GeneratorExp */
+  end function
+  
+  
+  function writerow(int rowdict)
+    return self.writer.writerow(self._dict_to_list(rowdict))
+  end function
+  
+  
+  function writerows(int rowdicts)
+    return self.writer.writerows(_py_map(self._dict_to_list, rowdicts))
+  end function
+  
+  // Python module metadata skipped: __class_getitem__
+end object
+
+object Sniffer
+  
+  function __init__()
+    self.preferred = [",", "\t", ";", " ", ":"]
+  end function
+  
+  
+  function sniff(int sample, int delimiters)
+    quotechar = self._guess_quote_and_delimiter(sample, delimiters)[0]
+    doublequote = self._guess_quote_and_delimiter(sample, delimiters)[1]
+    delimiter = self._guess_quote_and_delimiter(sample, delimiters)[2]
+    skipinitialspace = self._guess_quote_and_delimiter(sample, delimiters)[3]
+    if not delimiter
+      delimiter = self._guess_delimiter(sample, delimiters)[0]
+      skipinitialspace = self._guess_delimiter(sample, delimiters)[1]
+    end if
+    if not delimiter
+      throw Error("Could not determine delimiter")
+    end if
+    object dialect forks Dialect
+      _name = "sniffed"
+      lineterminator = "\r\n"
+      quoting = QUOTE_MINIMAL
+    end object
+    
+    dialect.doublequote = doublequote
+    dialect.delimiter = delimiter
+    dialect.quotechar = quotechar or "\""
+    dialect.skipinitialspace = skipinitialspace
+    return dialect
+  end function
+  
+  
+  function _guess_quote_and_delimiter(int data, int delimiters)
+    // TRANSPILER WARNING line 281: import re — convert to UL import syntax — manual conversion required
+    matches = []
+    for each restr in ["(?P<delim>[^\\w\\n\"\\'])(?P<space> ?)(?P<quote>[\"\\']).*?(?P=quote)(?P=delim)", "(?:^|\\n)(?P<quote>[\"\\']).*?(?P=quote)(?P<delim>[^\\w\\n\"\\'])(?P<space> ?)", "(?P<delim>[^\\w\\n\"\\'])(?P<space> ?)(?P<quote>[\"\\']).*?(?P=quote)(?:$|\\n)", "(?:^|\\n)(?P<quote>[\"\\']).*?(?P=quote)(?:$|\\n)"]
+      regexp = re.compile(restr, re.DOTALL bit_or re.MULTILINE)
+      matches = regexp.findall(data)
+      if matches
+        escape
+      end if
+    end for
+    if not matches
+      return ["", false, empty, 0]
+    end if
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict0 = map_new()
+    quotes = _dict0
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict1 = map_new()
+    delims = _dict1
+    spaces = 0
+    groupindex = regexp.groupindex
+    for each m in matches
+      n = groupindex["quote"] - 1
+      key = m[n]
+      if key
+        quotes[key] = quotes.get(key, 0) + 1
+      end if
+      try
+        n = groupindex["delim"] - 1
+        key = m[n]
+      catch KeyError
+        continue
+      end try
+      if key and delimiters == empty or delimiters.contains(key)
+        delims[key] = delims.get(key, 0) + 1
+      end if
+      try
+        n = groupindex["space"] - 1
+      catch KeyError
+        continue
+      end try
+      if m[n]
+        spaces += 1
+      end if
+    end for
+    quotechar = max(quotes)
+    if delims
+      delim = max(delims)
+      skipinitialspace = delims[delim] == spaces
+      if delim == "\n"
+        delim = ""
+      end if
+    else
+      delim = ""
+      skipinitialspace = 0
+    end if
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict2 = map_new()
+    map_set(_dict2, "delim", cast(re.escape(delim), string))
+    map_set(_dict2, "quote", cast(quotechar, string))
+    dq_regexp = re.compile("((%(delim)s)|^)\\W*%(quote)s[^%(delim)s\\n]*%(quote)s[^%(delim)s\\n]*%(quote)s\\W*((%(delim)s)|$)" % _dict2, re.MULTILINE)
+    if dq_regexp.search(data)
+      doublequote = true
+    else
+      doublequote = false
+    end if
+    return [quotechar, doublequote, delim, skipinitialspace]
+  end function
+  
+  
+  function _guess_delimiter(int data, int delimiters)
+    // TRANSPILER WARNING line 365: from collections import ... — convert to UL import syntax — manual conversion required
+    data = _py_list(filter(empty, data.split("\n")))
+    chunkLength = min(10, data.len())
+    iteration = 0
+    num_lines = 0
+    char_frequency = defaultdict(Counter)
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict3 = map_new()
+    modes = _dict3
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict4 = map_new()
+    delims = _dict4
+    auto __unpack_0_0 = 0
+    auto __unpack_0_1 = chunkLength
+    start = __unpack_0_0
+    _py_end = __unpack_0_1
+    while start < data.len()
+      iteration += 1
+      for each line in data[start:_py_end]
+        num_lines += 1
+        for each __pair0 in Counter(line).items()
+          auto char = __pair0[0]
+          auto count = __pair0[1]
+          if char.isascii()
+            char_frequency[char][count] += 1
+          end if
+        end for
+      end for
+      for each __pair1 in char_frequency.items()
+        auto char = __pair1[0]
+        auto counts = __pair1[1]
+        items = _py_list(counts.items())
+        missed_lines = num_lines - sum(counts.values())
+        if missed_lines
+          items.append([0, missed_lines])
+        end if
+        if items.len() == 1 and items[0][0] == 0
+          continue
+        end if
+        if items.len() > 1
+          modes[char] = max(items)
+          items.remove(modes[char])
+          modes[char] = [modes[char][0], modes[char][1] - sum(/* unknown expr: GeneratorExp */)]
+        else
+          modes[char] = items[0]
+        end if
+      end for
+      modeList = modes.items()
+      total = _py_float(min(chunkLength * iteration, data.len()))
+      consistency = 1.0
+      threshold = 0.9
+      while delims.len() == 0 and consistency >= threshold
+        for each __pair2 in modeList
+          auto k = __pair2[0]
+          auto v = __pair2[1]
+          if v[0] > 0 and v[1] > 0
+            if v[1] / total >= consistency and delimiters == empty or delimiters.contains(k)
+              delims[k] = v
+            end if
+          end if
+        end for
+        consistency -= 0.01
+      end while
+      if delims.len() == 1
+        delim = _py_list(delims.keys())[0]
+        skipinitialspace = data[0].count(delim) == data[0].count("%c " % delim)
+        return [delim, skipinitialspace]
+      end if
+      start = _py_end
+      _py_end += chunkLength
+    end while
+    if not delims
+      return ["", 0]
+    end if
+    if delims.len() > 1
+      for each d in self.preferred
+        if delims.keys().contains(d)
+          skipinitialspace = data[0].count(d) == data[0].count("%c " % d)
+          return [d, skipinitialspace]
+        end if
+      end for
+    end if
+    array array int _lc1
+    for each [k, v] in delims.items()
+      _lc1.push([v, k])
+    end for
+    items = _lc1
+    items.sort()
+    delim = items[-1][1]
+    skipinitialspace = data[0].count(delim) == data[0].count("%c " % delim)
+    return [delim, skipinitialspace]
+  end function
+  
+  
+  function has_header(int sample)
+    rdr = reader(StringIO(sample), self.sniff(sample))
+    header = next(rdr)
+    columns = header.len()
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict5 = map_new()
+    columnTypes = _dict5
+    for each i in range(columns)
+      columnTypes[i] = empty
+    end for
+    checked = 0
+    for each row in rdr
+      if checked > 20
+        escape
+      end if
+      checked += 1
+      if row.len() != columns
+        continue
+      end if
+      for each col in _py_list(columnTypes.keys())
+        thisType = complex
+        try
+          thisType(row[col])
+        catch
+          thisType = row[col].len()
+        end try
+        if thisType != columnTypes[col]
+          if columnTypes[col] == empty
+            columnTypes[col] = thisType
+          else
+            // TRANSPILER WARNING line 494: del statement — manual conversion required
+          end if
+        end if
+      end for
+    end for
+    hasHeader = 0
+    for each __pair3 in columnTypes.items()
+      auto col = __pair3[0]
+      auto colType = __pair3[1]
+      if isinstance(colType, _py_int)
+        if header[col].len() != colType
+          hasHeader += 1
+        else
+          hasHeader -= 1
+        end if
+      else
+        try
+          colType(header[col])
+        catch
+          hasHeader += 1
+        end try
+      end if
+    end for
+    return hasHeader > 0
+  end function
+  
+end object
+
+function __getattr__(int name)
+  if name == "__version__"
+    // TRANSPILER WARNING line 518: from warnings import ... — convert to UL import syntax — manual conversion required
+    _deprecated("__version__")
+    return "1.0"
+  end if
+  throw AttributeError("module " + cast(__name__, string) + " has no attribute " + cast(name, string))
+end function
+

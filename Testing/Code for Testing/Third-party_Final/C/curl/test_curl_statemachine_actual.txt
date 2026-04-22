@@ -1,0 +1,31 @@
+=== State Machine Traversal ===
+  step 0: INIT
+  step 1: CONNECT
+  step 2: RESOLVING
+  step 3: CONNECTING
+  step 4: CONNECTED
+  step 5: SENDPROTOCONNECT
+  step 6: PROTOCONNECT
+  step 7: DO
+  step 8: DOING
+  step 9: DID
+  step 10: PERFORMING
+  step 11: DONE
+  step 12: COMPLETED
+  final: COMPLETED steps=12
+=== State Names ===
+state=0 name=INIT terminal=0
+state=1 name=CONNECT terminal=0
+state=2 name=RESOLVING terminal=0
+state=3 name=CONNECTING terminal=0
+state=4 name=CONNECTED terminal=0
+state=5 name=SENDPROTOCONNECT terminal=0
+state=6 name=PROTOCONNECT terminal=0
+state=7 name=DO terminal=0
+state=8 name=DOING terminal=0
+state=9 name=DID terminal=0
+state=10 name=PERFORMING terminal=0
+state=11 name=RATELIMITING terminal=0
+state=12 name=DONE terminal=0
+state=13 name=COMPLETED terminal=1
+state=14 name=MSGSENT terminal=1

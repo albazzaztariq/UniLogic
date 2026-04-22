@@ -1,0 +1,20 @@
+// test_fixed_enum.ul — fixed enumerations
+
+fixed Priority
+    low    = 1
+    medium = 2
+    high   = 3
+end fixed
+
+function main() returns none
+    int p = Priority.high
+    print p
+
+    int q = Priority.low
+    print q
+
+    // compare enum values
+    if p > q
+        print "high > low"
+    end if
+end function

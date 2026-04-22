@@ -1,0 +1,247 @@
+@dr python_compat = true
+
+object Module
+  int _name
+  int _parameters
+  int _buffers
+  int _modules
+  
+  function __init__(int name)
+    self._name = name
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict0 = map_new()
+    self._parameters = _dict0
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict1 = map_new()
+    self._buffers = _dict1
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict2 = map_new()
+    self._modules = _dict2
+  end function
+  
+  
+  function register_parameter(int name, int value)
+    self._parameters[name] = value
+  end function
+  
+  
+  function register_buffer(int name, int value)
+    self._buffers[name] = value
+  end function
+  
+  
+  function add_module(int name, int module)
+    self._modules[name] = module
+  end function
+  
+  
+  function named_parameters(int prefix)
+    result = []
+    for each k in self._parameters
+      auto _tern0 = empty
+      if prefix != ""
+        _tern0 = prefix + "." + k
+      else
+        _tern0 = k
+      end if
+      full = _tern0
+      result.append([full, self._parameters[k]])
+    end for
+    for each k in self._modules
+      auto _tern1 = empty
+      if prefix != ""
+        _tern1 = prefix + "." + k
+      else
+        _tern1 = k
+      end if
+      child_prefix = _tern1
+      child_params = self._modules[k].named_parameters(child_prefix)
+      for each pair in child_params
+        result.append(pair)
+      end for
+    end for
+    return result
+  end function
+  
+  
+  function named_buffers(int prefix)
+    result = []
+    for each k in self._buffers
+      auto _tern2 = empty
+      if prefix != ""
+        _tern2 = prefix + "." + k
+      else
+        _tern2 = k
+      end if
+      full = _tern2
+      result.append([full, self._buffers[k]])
+    end for
+    for each k in self._modules
+      auto _tern3 = empty
+      if prefix != ""
+        _tern3 = prefix + "." + k
+      else
+        _tern3 = k
+      end if
+      child_prefix = _tern3
+      child_bufs = self._modules[k].named_buffers(child_prefix)
+      for each pair in child_bufs
+        result.append(pair)
+      end for
+    end for
+    return result
+  end function
+  
+  
+  function state_dict(int prefix)
+    // TRANSPILER: dict values cast to string — may lose type information
+    map sd = map_new()
+    for each k in self._parameters
+      auto _tern4 = empty
+      if prefix != ""
+        _tern4 = prefix + "." + k
+      else
+        _tern4 = k
+      end if
+      full = _tern4
+      sd[full] = self._parameters[k]
+    end for
+    for each k in self._buffers
+      auto _tern5 = empty
+      if prefix != ""
+        _tern5 = prefix + "." + k
+      else
+        _tern5 = k
+      end if
+      full = _tern5
+      sd[full] = self._buffers[k]
+    end for
+    for each k in self._modules
+      auto _tern6 = empty
+      if prefix != ""
+        _tern6 = prefix + "." + k
+      else
+        _tern6 = k
+      end if
+      child_prefix = _tern6
+      child_sd = self._modules[k].state_dict(child_prefix)
+      for each ck in child_sd
+        sd[ck] = child_sd[ck]
+      end for
+    end for
+    return sd
+  end function
+  
+  
+  function num_parameters()
+    params = self.named_parameters("")
+    return params.len()
+  end function
+  
+  
+  function num_buffers()
+    bufs = self.named_buffers("")
+    return bufs.len()
+  end function
+  
+end object
+
+object BatchNorm forks Module
+  int num_features
+  
+  function __init__(int num_features)
+    Module.__init__(self, "bn")
+    self.num_features = num_features
+    self.register_parameter("weight", num_features)
+    self.register_parameter("bias", num_features)
+    self.register_buffer("running_mean", 0)
+    self.register_buffer("running_var", 1)
+    self.register_buffer("num_batches_tracked", 0)
+  end function
+  
+  
+  function forward(int x)
+    return x
+  end function
+  
+end object
+
+object Conv2d forks Module
+  int in_ch
+  int out_ch
+  int kernel
+  
+  function __init__(int in_ch, int out_ch, int kernel)
+    Module.__init__(self, "conv")
+    self.in_ch = in_ch
+    self.out_ch = out_ch
+    self.kernel = kernel
+    weight_size = out_ch * in_ch * kernel * kernel
+    self.register_parameter("weight", weight_size)
+    self.register_parameter("bias", out_ch)
+  end function
+  
+  
+  function forward(int x)
+    return x
+  end function
+  
+end object
+
+object ResBlock forks Module
+  int channels
+  
+  function __init__(int channels)
+    Module.__init__(self, "resblock")
+    self.channels = channels
+    conv1 = Conv2d(channels, channels, 3)
+    bn1 = BatchNorm(channels)
+    conv2 = Conv2d(channels, channels, 3)
+    bn2 = BatchNorm(channels)
+    self.add_module("conv1", conv1)
+    self.add_module("bn1", bn1)
+    self.add_module("conv2", conv2)
+    self.add_module("bn2", bn2)
+  end function
+  
+  
+  function forward(int x)
+    return x
+  end function
+  
+end object
+
+function main()
+  conv = Conv2d(3, 64, 3)
+  print "Conv2d param count: " + cast(conv.num_parameters(), string)
+  print "Conv2d buffer count: " + cast(conv.num_buffers(), string)
+  bn = BatchNorm(64)
+  print "BatchNorm param count: " + cast(bn.num_parameters(), string)
+  print "BatchNorm buffer count: " + cast(bn.num_buffers(), string)
+  block = ResBlock(64)
+  print "ResBlock total params: " + cast(block.num_parameters(), string)
+  print "ResBlock total buffers: " + cast(block.num_buffers(), string)
+  params = block.named_parameters("")
+  names = []
+  for each pair in params
+    names.append(pair[0])
+  end for
+  print "First param name: " + cast(names[0], string)
+  print "Last param name: " + cast(names[names.len() - 1], string)
+  sd = bn.state_dict("")
+  print "BN state_dict size: " + cast(sd.len(), string)
+  root = Module("root")
+  root.add_module("block", block)
+  root.register_parameter("classifier_weight", 1000)
+  root.register_parameter("classifier_bias", 1000)
+  print "Root total params: " + cast(root.num_parameters(), string)
+  root_params = root.named_parameters("")
+  has_classifier = false
+  for each pair in root_params
+    if pair[0] == "classifier_weight"
+      has_classifier = true
+    end if
+  end for
+  print "Root has classifier_weight: " + cast(has_classifier, string)
+end function
+

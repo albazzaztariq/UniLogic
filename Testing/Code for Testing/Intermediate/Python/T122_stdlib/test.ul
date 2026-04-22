@@ -1,0 +1,73 @@
+// T122: Program using stdlib modules (string)
+// Note: math.ul uses FFI to C math.h which doesn't work on Python target.
+// string FFI functions (strlen, str_char_at, str_substr) work on Python target.
+// array.ul is pure UL so it should work.
+
+import "string" function strlen(string s) returns int
+import "string" function str_char_at(string s, int i) returns string
+import "string" function str_substr(string s, int start, int len) returns string
+
+function count_char(string s, string target) returns int
+    int len = strlen(s)
+    int count = 0
+    int i = 0
+    while i < len
+        string ch = str_char_at(s, i)
+        if ch == target
+            count = count + 1
+        end if
+        i = i + 1
+    end while
+    return count
+end function
+
+function first_word(string s) returns string
+    int len = strlen(s)
+    int i = 0
+    while i < len
+        string ch = str_char_at(s, i)
+        if ch == " "
+            return str_substr(s, 0, i)
+        end if
+        i = i + 1
+    end while
+    return s
+end function
+
+function main() returns int
+    string msg = "hello world"
+
+    // Test 1: strlen
+    print strlen(msg)
+
+    // Test 2: char_at
+    print str_char_at(msg, 0)
+    print str_char_at(msg, 6)
+
+    // Test 3: substr
+    print str_substr(msg, 0, 5)
+
+    // Test 4: count_char uses stdlib
+    print count_char(msg, "l")
+    print count_char(msg, "o")
+
+    // Test 5: first_word
+    print first_word("foo bar baz")
+    print first_word("single")
+
+    // Test 6: use array stdlib features (built-in)
+    array int data = [10, 20, 30, 40, 50]
+    int total = 0
+    for each val in data
+        total = total + val
+    end for
+    print total
+
+    // Test 7: list with sort (built-in)
+    list int nums = [9, 1, 5, 3, 7]
+    nums.sort()
+    print nums[0]
+    print nums[4]
+
+    return 0
+end function

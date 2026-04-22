@@ -1,0 +1,98 @@
+// Translated from test_ringbuf_nextp.c by c2ul
+type ringbuf_t
+  uint8 <buf>
+  uint8 <head>
+  uint8 <tail>
+  int size_c
+end type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function ringbuf_buffer_size(ringbuf_t <rb>) returns int
+  return rb.size_c
+end function
+
+function ringbuf_end(ringbuf_t <rb>) returns uint8
+  return (rb.buf + ringbuf_buffer_size(rb))
+end function
+
+function ringbuf_nextp(ringbuf_t <rb>, uint8 <p>) returns uint8
+  return (rb.buf + ((p - rb.buf) % ringbuf_buffer_size(rb)))
+end function
+
+function ringbuf_free_sim(ringbuf_t <rb>)
+  // free(deref(<rb>).buf) - UL handles memory
+  // free(deref(<rb>)) - UL handles memory
+  deref(<rb>) = 0
+end function
+
+function main() returns int
+  array uint8 storage = []
+  ringbuf_t rb = 0
+  rb.buf = storage
+  rb.head = storage
+  rb.tail = storage
+  rb.size_c = (4 + 1)
+  uint8 <end_c> = ringbuf_end(address(rb))
+  print "buf=%p size=" + cast(cast(rb.buf, none), string) + " end=%p"
+  int i = 0
+  i = 0
+  while (i < rb.size_c)
+    uint8 <p> = (rb.buf + i)
+    if (p < end_c)
+      uint8 <next> = ringbuf_nextp(address(rb), p)
+      int expected_offset = cast(((i + 1) % rb.size_c), int)
+      int actual_offset = cast((next - rb.buf), int)
+      auto _tern_1 = "FAIL"
+      if (actual_offset == expected_offset)
+        _tern_1 = "OK"
+      end if
+      print "nextp(offset=" + cast(cast(i, int), string) + ") -> offset=" + cast(actual_offset, string) + " (expected=" + cast(expected_offset, string) + ") " + _tern_1
+    end if
+    i = i + 1
+  end while
+  ringbuf_t <rbp> = cast(memtake(size(ringbuf_t)), ringbuf_t)
+  rbp.size_c = (4 + 1)
+  rbp.buf = cast(memtake(rbp.size_c), uint8)
+  rbp.head = rbp.buf
+  rbp.tail = rbp.buf
+  auto _tern_2 = "null"
+  if rbp
+    _tern_2 = "non-null"
+  end if
+  print "before free: rbp=" + _tern_2
+  ringbuf_free_sim(address(rbp))
+  auto _tern_3 = "non-null"
+  if (rbp == 0)
+    _tern_3 = "null"
+  end if
+  print "after free: rbp=" + _tern_3
+  return 0
+end function
+

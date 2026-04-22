@@ -1,0 +1,68 @@
+// Translated from cmark_ctype.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+array int cmark_ctype_class = 0
+
+function cmark_isspace(int c) returns int
+  return (cmark_ctype_class[cast(c, int)] == 1)
+end function
+
+function cmark_ispunct(int c) returns int
+  return (cmark_ctype_class[cast(c, int)] == 2)
+end function
+
+function cmark_isdigit(int c) returns int
+  return (cmark_ctype_class[cast(c, int)] == 3)
+end function
+
+function cmark_isalpha(int c) returns int
+  return (cmark_ctype_class[cast(c, int)] == 4)
+end function
+

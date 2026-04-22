@@ -1,0 +1,8 @@
+greater
+medium
+two
+10
+15
+60
+3
+5

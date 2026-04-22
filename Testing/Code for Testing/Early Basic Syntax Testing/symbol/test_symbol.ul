@@ -1,0 +1,28 @@
+// test_symbol.ul — @symbol operator overloading
+
+type Vec2
+    int x
+    int y
+end type
+
+@symbol(+)
+function vec_add(Vec2 a, Vec2 b) returns Vec2
+    Vec2 result
+    result.x = a.x + b.x
+    result.y = a.y + b.y
+    return result
+end function
+
+function main() returns none
+    Vec2 v1
+    v1.x = 1
+    v1.y = 2
+    Vec2 v2
+    v2.x = 3
+    v2.y = 4
+
+    // This should rewrite v1 + v2 to vec_add(v1, v2)
+    Vec2 v3 = v1 + v2
+    print v3.x
+    print v3.y
+end function

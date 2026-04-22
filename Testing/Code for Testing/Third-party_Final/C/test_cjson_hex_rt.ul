@@ -1,0 +1,140 @@
+// Translated from test_cjson_hex_rt.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function str_char_at(char <s>, int i) returns <char>
+  char <r> = cast(memtake(2), char)
+  if ((i >= 0) and (i < cast(size(s), int)))
+    r[0] = s[i]
+    r[1] = 0
+  else
+    r[0] = 0
+  end if
+  return r
+end function
+
+function __ul_char_from_code(int code) returns <char>
+  char <r> = cast(memtake(2), char)
+  r[0] = cast(code, char)
+  r[1] = 0
+  return r
+end function
+
+function __ul_strcat(char <a>, char <b>) returns <char>
+  int la = cast(size(a), int)
+  int lb = cast(size(b), int)
+  char <r> = cast(memtake(((la + lb) + 1)), char)
+  memcopy(r, a, la)
+  memcopy((r + la), b, lb)
+  r[(la + lb)] = 0
+  return r
+end function
+
+function __ul_cmp_int(none <a>, none <b>) returns int
+  return (deref(cast(a, int)) - deref(cast(b, int)))
+end function
+
+function __ul_cmp_float(none <a>, none <b>) returns int
+  float fa = deref(cast(a, float))
+  float fb = deref(cast(b, float))
+  return ((fa > fb) - (fa < fb))
+end function
+
+function __ul_cmp_double(none <a>, none <b>) returns int
+  float da = deref(cast(a, float))
+  float db = deref(cast(b, float))
+  return ((da > db) - (da < db))
+end function
+
+function __ul_cmp_string(none <a>, none <b>) returns int
+  int _tern_1 = 1
+  if deref(cast(a, char)) == deref(cast(b, char))
+    _tern_1 = 0
+  end if
+  return _tern_1
+end function
+
+
+
+function parse_hex4(char <input>) returns int
+  int h = 0
+  int i = 0
+  while (i < 4)
+    int c = cast(input[i], uint8)
+    if ((c >= 48) and (c <= 57))
+      h = (h + cast((c - 48), int))
+    else if ((c >= 65) and (c <= 70))
+      h = (h + cast(((10 + c) - 65), int))
+    else
+      if ((c >= 97) and (c <= 102))
+        h = (h + cast(((10 + c) - 97), int))
+      else
+        return 0
+      end if
+    end if
+    if (i < 3)
+      h = (h left 4)
+    end if
+    i = (i + 1)
+  end while
+  return h
+end function
+
+function main() returns int
+  array char _cast_buf_0 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_0, size(_cast_buf_0), "%d", parse_hex4("0000"))
+  print __ul_strcat("parse_hex4(\"0000\") = ", _cast_buf_0)
+  array char _cast_buf_1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_1, size(_cast_buf_1), "%d", parse_hex4("000F"))
+  print __ul_strcat("parse_hex4(\"000F\") = ", _cast_buf_1)
+  array char _cast_buf_2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_2, size(_cast_buf_2), "%d", parse_hex4("00FF"))
+  print __ul_strcat("parse_hex4(\"00FF\") = ", _cast_buf_2)
+  array char _cast_buf_3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_3, size(_cast_buf_3), "%d", parse_hex4("0FFF"))
+  print __ul_strcat("parse_hex4(\"0FFF\") = ", _cast_buf_3)
+  array char _cast_buf_4 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_4, size(_cast_buf_4), "%d", parse_hex4("FFFF"))
+  print __ul_strcat("parse_hex4(\"FFFF\") = ", _cast_buf_4)
+  array char _cast_buf_5 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_5, size(_cast_buf_5), "%d", parse_hex4("1A2B"))
+  print __ul_strcat("parse_hex4(\"1A2B\") = ", _cast_buf_5)
+  array char _cast_buf_6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_6, size(_cast_buf_6), "%d", parse_hex4("dead"))
+  print __ul_strcat("parse_hex4(\"dead\") = ", _cast_buf_6)
+  array char _cast_buf_7 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_7, size(_cast_buf_7), "%d", parse_hex4("BEEF"))
+  print __ul_strcat("parse_hex4(\"BEEF\") = ", _cast_buf_7)
+  array char _cast_buf_8 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_8, size(_cast_buf_8), "%d", parse_hex4("4E2D"))
+  print __ul_strcat("parse_hex4(\"4E2D\") = ", _cast_buf_8)
+  array char _cast_buf_9 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  snprintf(_cast_buf_9, size(_cast_buf_9), "%d", parse_hex4("00GG"))
+  print __ul_strcat("parse_hex4(\"00GG\") = ", _cast_buf_9)
+  return 0
+end function
+

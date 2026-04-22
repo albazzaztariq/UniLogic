@@ -1,0 +1,80 @@
+// Translated from test_ringbuf_wrap.c by c2ul
+type ringbuf_t
+  uint8 <buf>
+  uint8 <head>
+  uint8 <tail>
+  int size_c
+end type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function ringbuf_end(ringbuf_t <rb>) returns uint8
+  return (rb.buf + rb.size_c)
+end function
+
+function advance_head(ringbuf_t <rb>, int n)
+  int i = 0
+  uint8 <bufend> = ringbuf_end(rb)
+  i = 0
+  while (i < n)
+    rb.buf[(rb.head - rb.buf)] = cast((i + 1), uint8)
+    rb.head = rb.head + 1
+    if (rb.head == bufend)
+      rb.head = rb.buf
+    end if
+    i = i + 1
+  end while
+end function
+
+function main() returns int
+  array uint8 storage = []
+  ringbuf_t rb = 0
+  rb.buf = storage
+  rb.head = storage
+  rb.tail = storage
+  rb.size_c = (4 + 1)
+  uint8 <bufend> = ringbuf_end(address(rb))
+  print "buf=%p end=%p size=" + cast(cast(rb.buf, none), string)
+  advance_head(address(rb), 4)
+  print "after advance CAPACITY: head_offset=" + cast(cast((rb.head - rb.buf), int), string)
+  rb.head = (cast(bufend, uint8) - 1)
+  rb.head = rb.head + 1
+  if (rb.head == bufend)
+    rb.head = rb.buf
+  end if
+  print "after manual wrap: head_offset=" + cast(cast((rb.head - rb.buf), int), string)
+  rb.tail = (cast(bufend, uint8) - 1)
+  rb.tail = rb.tail + 1
+  if (rb.tail == bufend)
+    rb.tail = rb.buf
+  end if
+  print "after tail wrap: tail_offset=" + cast(cast((rb.tail - rb.buf), int), string)
+  return 0
+end function
+

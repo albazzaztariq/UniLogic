@@ -1,0 +1,22 @@
+// task_search.ul — search functions (stateless)
+
+import "string" function strlen(string s) returns int
+import "string" function str_char_at(string s, int i) returns string
+
+function starts_with(string s, string prefix) returns bool
+    int slen = strlen(s)
+    int plen = strlen(prefix)
+    if plen > slen
+        return false
+    end if
+    int i = 0
+    while i < plen
+        string sc = str_char_at(s, i)
+        string pc = str_char_at(prefix, i)
+        if sc != pc
+            return false
+        end if
+        i = i + 1
+    end while
+    return true
+end function

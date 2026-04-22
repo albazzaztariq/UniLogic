@@ -1,0 +1,203 @@
+@dr python_compat = true
+
+// TRANSPILER: dict values cast to string — may lose type information
+map _mapper_registry = map_new()
+object Column
+  int name
+  int col_type
+  
+  function __init__(int name, int col_type)
+    self.name = name
+    self.col_type = col_type
+  end function
+  
+  
+  function __repr__()
+    return "Column(" + self.name + ", " + self.col_type + ")"
+  end function
+  
+end object
+
+object MapperConfig
+  int cls_name
+  int tablename
+  int columns
+  
+  function __init__(int cls_name, int tablename, int columns)
+    self.cls_name = cls_name
+    self.tablename = tablename
+    self.columns = columns
+  end function
+  
+  
+  function column_names()
+    names = []
+    for each col in self.columns
+      names.append(col.name)
+    end for
+    return names
+  end function
+  
+  
+  function column_types()
+    types = []
+    for each col in self.columns
+      types.append(col.col_type)
+    end for
+    return types
+  end function
+  
+  
+  function __repr__()
+    return "MapperConfig(" + self.cls_name + ", table=" + self.tablename + ")"
+  end function
+  
+end object
+
+function register_class(int cls_name, int tablename, int columns)
+  // Register a mapped class with its column definitions.
+  config = MapperConfig(cls_name, tablename, columns)
+  _mapper_registry[cls_name] = config
+  return config
+end function
+
+function get_config(int cls_name)
+  // Retrieve mapper config by class name.
+  if _mapper_registry.contains(cls_name)
+    return _mapper_registry[cls_name]
+  end if
+  return empty
+end function
+
+object UserModel
+  int user_id
+  int username
+  int email
+  
+  function __init__(int user_id, int username, int email)
+    self.user_id = user_id
+    self.username = username
+    self.email = email
+  end function
+  
+  
+  function to_dict()
+    // TRANSPILER: dict values cast to string — may lose type information
+    map result = map_new()
+    result["user_id"] = cast(self.user_id, string)
+    result["username"] = self.username
+    result["email"] = self.email
+    return result
+  end function
+  
+  
+  function __repr__()
+    return "UserModel(id=" + cast(self.user_id, string) + ", name=" + self.username + ")"
+  end function
+  
+end object
+
+object ArticleModel
+  int article_id
+  int title
+  int author_id
+  
+  function __init__(int article_id, int title, int author_id)
+    self.article_id = article_id
+    self.title = title
+    self.author_id = author_id
+  end function
+  
+  
+  function to_dict()
+    // TRANSPILER: dict values cast to string — may lose type information
+    map result = map_new()
+    result["article_id"] = cast(self.article_id, string)
+    result["title"] = self.title
+    result["author_id"] = cast(self.author_id, string)
+    return result
+  end function
+  
+  
+  function __repr__()
+    return "ArticleModel(id=" + cast(self.article_id, string) + ", title=" + self.title + ")"
+  end function
+  
+end object
+
+object TagModel
+  int tag_id
+  int label
+  
+  function __init__(int tag_id, int label)
+    self.tag_id = tag_id
+    self.label = label
+  end function
+  
+  
+  function to_dict()
+    // TRANSPILER: dict values cast to string — may lose type information
+    map result = map_new()
+    result["tag_id"] = cast(self.tag_id, string)
+    result["label"] = self.label
+    return result
+  end function
+  
+  
+  function __repr__()
+    return "TagModel(id=" + cast(self.tag_id, string) + ", label=" + self.label + ")"
+  end function
+  
+end object
+
+function setup_registry()
+  // Simulate what a metaclass __new__ would do at class definition time.
+  register_class("UserModel", "users", [Column("user_id", "INTEGER"), Column("username", "VARCHAR"), Column("email", "VARCHAR")])
+  register_class("ArticleModel", "articles", [Column("article_id", "INTEGER"), Column("title", "VARCHAR"), Column("author_id", "INTEGER")])
+  register_class("TagModel", "tags", [Column("tag_id", "INTEGER"), Column("label", "VARCHAR")])
+end function
+
+function main()
+  setup_registry()
+  print cast("UserModel registered:", string) + " " + cast(_mapper_registry.contains("UserModel"), string)
+  print cast("ArticleModel registered:", string) + " " + cast(_mapper_registry.contains("ArticleModel"), string)
+  print cast("TagModel registered:", string) + " " + cast(_mapper_registry.contains("TagModel"), string)
+  print cast("Missing registered:", string) + " " + cast(_mapper_registry.contains("Missing"), string)
+  print cast("registry size:", string) + " " + cast(_mapper_registry.len(), string)
+  user_config = get_config("UserModel")
+  print cast("user config:", string) + " " + cast(repr(user_config), string)
+  print cast("user tablename:", string) + " " + cast(user_config.tablename, string)
+  print cast("user columns:", string) + " " + cast(user_config.column_names(), string)
+  article_config = get_config("ArticleModel")
+  print cast("article tablename:", string) + " " + cast(article_config.tablename, string)
+  print cast("article columns:", string) + " " + cast(article_config.column_names(), string)
+  print cast("article types:", string) + " " + cast(article_config.column_types(), string)
+  tag_config = get_config("TagModel")
+  print cast("tag tablename:", string) + " " + cast(tag_config.tablename, string)
+  print cast("tag column count:", string) + " " + cast(tag_config.columns.len(), string)
+  col = Column("id", "INTEGER")
+  print cast("column repr:", string) + " " + cast(repr(col), string)
+  missing = get_config("NoSuchModel")
+  print cast("missing config:", string) + " " + cast(missing, string)
+  u = UserModel(1, "alice", "alice@example.com")
+  a = ArticleModel(10, "My Post", 1)
+  t = TagModel(100, "python")
+  print cast("user repr:", string) + " " + cast(repr(u), string)
+  print cast("article repr:", string) + " " + cast(repr(a), string)
+  print cast("tag repr:", string) + " " + cast(repr(t), string)
+  ud = u.to_dict()
+  print cast("user dict user_id:", string) + " " + cast(ud["user_id"], string)
+  print cast("user dict username:", string) + " " + cast(ud["username"], string)
+  ad = a.to_dict()
+  print cast("article dict title:", string) + " " + cast(ad["title"], string)
+  print cast("article dict author_id:", string) + " " + cast(ad["author_id"], string)
+  td = t.to_dict()
+  print cast("tag dict label:", string) + " " + cast(td["label"], string)
+  configs = ["UserModel", "ArticleModel", "TagModel"]
+  for each name in configs
+    cfg = get_config(name)
+    print cast(name + " cols:", string) + " " + cast(cfg.columns.len(), string)
+  end for
+end function
+
+// UL runtime invokes main() automatically

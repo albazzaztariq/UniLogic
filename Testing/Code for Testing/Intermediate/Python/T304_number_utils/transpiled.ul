@@ -1,0 +1,101 @@
+// Number utilities — primes, fibonacci, digit operations.
+function is_prime(int n) returns bool
+  if n < 2
+    return false
+  end if
+  if n == 2
+    return true
+  end if
+  if n % 2 == 0
+    return false
+  end if
+  int i = 3
+  while i * i <= n
+    if n % i == 0
+      return false
+    end if
+    i = i + 2
+  end while
+  return true
+end function
+
+function fibonacci(int n) returns int
+  if n <= 0
+    return 0
+  end if
+  if n == 1
+    return 1
+  end if
+  int a = 0
+  int b = 1
+  int i = 2
+  while i <= n
+    int temp = a + b
+    a = b
+    b = temp
+    i = i + 1
+  end while
+  return b
+end function
+
+function count_digits(int n) returns int
+  if n == 0
+    return 1
+  end if
+  int count = 0
+  int val = n
+  if val < 0
+    val = 0 - val
+  end if
+  while val > 0
+    val = val / 10
+    count = count + 1
+  end while
+  return count
+end function
+
+function sum_digits(int n) returns int
+  int total = 0
+  int val = n
+  if val < 0
+    val = 0 - val
+  end if
+  while val > 0
+    total = total + val % 10
+    val = val / 10
+  end while
+  return total
+end function
+
+function reverse_number(int n) returns int
+  int result = 0
+  int val = n
+  while val > 0
+    result = result * 10 + val % 10
+    val = val / 10
+  end while
+  return result
+end function
+
+function main() returns int
+  int i = 2
+  while i <= 30
+    if is_prime(i)
+      print i
+    end if
+    i = i + 1
+  end while
+  int j = 0
+  while j <= 10
+    print fibonacci(j)
+    j = j + 1
+  end while
+  print count_digits(12345)
+  print count_digits(0)
+  print sum_digits(12345)
+  print sum_digits(9999)
+  print reverse_number(12345)
+  print reverse_number(100)
+  return 0
+end function
+

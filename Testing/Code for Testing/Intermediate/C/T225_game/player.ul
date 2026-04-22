@@ -1,0 +1,19 @@
+// player.ul — player utility functions (stateless)
+
+function clamp_hp(int hp) returns int
+    if hp < 0
+        return 0
+    end if
+    if hp > 100
+        return 100
+    end if
+    return hp
+end function
+
+function calc_attack(int level) returns int
+    return 10 + (level - 1) * 5
+end function
+
+function format_status(string name, int hp, int gold, int level) returns string
+    return "[" + name + "] HP:" + cast(hp, string) + " Gold:" + cast(gold, string) + " Lv:" + cast(level, string)
+end function

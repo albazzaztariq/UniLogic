@@ -1,0 +1,765 @@
+// Pythonic command-line interface parser that will make you smile.
+// TRANSPILER WARNING line 9: import sys — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 10: import re — convert to UL import syntax — manual conversion required
+// Python module metadata skipped: __all__
+// Python module metadata skipped: __version__
+object DocoptLanguageError forks Exception
+end object
+
+object DocoptExit forks SystemExit
+  string usage = ""
+  
+  function __init__(int message)
+    SystemExit.__init__(self, message + "\n" + self.usage.trim())
+  end function
+  
+end object
+
+object Pattern
+  
+  function __eq__(int other)
+    return repr(self) == repr(other)
+  end function
+  
+  
+  function __hash__()
+    return hash(repr(self))
+  end function
+  
+  
+  function fix()
+    self.fix_identities()
+    self.fix_repeating_arguments()
+    return self
+  end function
+  
+  
+  function fix_identities(int uniq)
+    // Make pattern-tree tips point to same object if they are equal.
+    if not hasattr(self, "children")
+      return self
+    end if
+    uniq = /* _py_list(set(self.flat())) if uniq == empty else uniq */
+    int i = 0
+    for each child in self.children
+      if not hasattr(child, "children")
+        if not uniq.contains(child)
+          print "assertion failed"
+          exit(1)
+        end if
+        self.children[i] = uniq[uniq.index(child)]
+      else
+        child.fix_identities(uniq)
+      end if
+      i = i + 1
+    end for
+  end function
+  
+  
+  function fix_repeating_arguments()
+    // Fix elements that should accumulate/increment values.
+    array int _lc0
+    for each child in transform(self).children
+      _lc0.push(_py_list(child.children))
+    end for
+    either = _lc0
+    for each case in either
+      array int _lc1
+      for each child in case
+        if case.count(child) > 1
+          _lc1.push(child)
+        end if
+      end for
+      for each e in _lc1
+        if _py_type(e) == Argument or _py_type(e) == Option and e.argcount
+          if e.value == empty
+            e.value = []
+          else
+            if _py_type(e.value) != _py_list
+              e.value = e.value.split()
+            end if
+          end if
+        end if
+        if _py_type(e) == Command or _py_type(e) == Option and e.argcount == 0
+          e.value = 0
+        end if
+      end for
+    end for
+    return self
+  end function
+  
+end object
+
+function transform(int pattern)
+  // Expand pattern into an (almost) equivalent one, but with single Either.
+  result = []
+  groups = [[pattern]]
+  while groups
+    children = groups.pop(0)
+    parents = [Required, Optional, OptionsShortcut, Either, OneOrMore]
+    if any(/* unknown expr: GeneratorExp */)
+      array int _lc2
+      for each c in children
+        if parents.contains(_py_type(c))
+          _lc2.push(c)
+        end if
+      end for
+      child = _lc2[0]
+      children.remove(child)
+      if _py_type(child) == Either
+        for each c in child.children
+          groups.append([c] + children)
+        end for
+      else
+        if _py_type(child) == OneOrMore
+          groups.append(child.children * 2 + children)
+        else
+          groups.append(child.children + children)
+        end if
+      end if
+    else
+      result.append(children)
+    end if
+  end while
+  array int _lc3
+  for each e in result
+    _lc3.push(Required(e))
+  end for
+  return Either(_lc3)
+end function
+
+object LeafPattern forks Pattern
+  
+  function __init__(int name, int value)
+    auto __unpack_0_0 = name
+    auto __unpack_0_1 = value
+    self.name = __unpack_0_0
+    self.value = __unpack_0_1
+  end function
+  
+  
+  function __repr__()
+    return "%s(%r, %r)" % [self.__class__.__name__, self.name, self.value]
+  end function
+  
+  
+  function flat(...)
+    return /* [self] if not types or types.contains(_py_type(self)) else [] */
+  end function
+  
+  
+  function _py_match(int left, int collected)
+    collected = /* [] if collected == empty else collected */
+    pos = self.single_match(left)[0]
+    _py_match = self.single_match(left)[1]
+    if _py_match == empty
+      return [false, left, collected]
+    end if
+    left_ = left[0:pos] + left[pos + 1:left.len()]
+    array int _lc4
+    for each a in collected
+      if a.name == self.name
+        _lc4.push(a)
+      end if
+    end for
+    same_name = _lc4
+    if [_py_int, _py_list].contains(_py_type(self.value))
+      if _py_type(self.value) == _py_int
+        increment = 1
+      else
+        increment = /* [_py_match.value] if _py_type(_py_match.value) == str else _py_match.value */
+      end if
+      if not same_name
+        _py_match.value = increment
+        return [true, left_, collected + [_py_match]]
+      end if
+      same_name[0].value += increment
+      return [true, left_, collected]
+    end if
+    return [true, left_, collected + [_py_match]]
+  end function
+  
+end object
+
+object BranchPattern forks Pattern
+  
+  function __init__(...)
+    self.children = _py_list(children)
+  end function
+  
+  
+  function __repr__()
+    return "%s(%s)" % [self.__class__.__name__, ", ".join(/* unknown expr: GeneratorExp */)]
+  end function
+  
+  
+  function flat(...)
+    if types.contains(_py_type(self))
+      return [self]
+    end if
+    array int _lc5
+    for each child in self.children
+      _lc5.push(child.flat(types))
+    end for
+    return sum(_lc5, [])
+  end function
+  
+end object
+
+object Argument forks LeafPattern
+  
+  function single_match(int left)
+    int n = 0
+    for each pattern in left
+      if _py_type(pattern) == Argument
+        return [n, Argument(self.name, pattern.value)]
+      end if
+      n = n + 1
+    end for
+    return [empty, empty]
+  end function
+  
+  
+  function parse(int class_, int source)
+    name = re.findall("(<\\S*?>)", source)[0]
+    value = re.findall("\\[default: (.*)\\]", source)
+    return class_(name, /* value[0] if value else empty */)
+  end function
+  
+end object
+
+object Command forks Argument
+  
+  function __init__(int name, int value)
+    auto __unpack_1_0 = name
+    auto __unpack_1_1 = value
+    self.name = __unpack_1_0
+    self.value = __unpack_1_1
+  end function
+  
+  
+  function single_match(int left)
+    int n = 0
+    for each pattern in left
+      if _py_type(pattern) == Argument
+        if pattern.value == self.name
+          return [n, Command(self.name, true)]
+        else
+          escape
+        end if
+      end if
+      n = n + 1
+    end for
+    return [empty, empty]
+  end function
+  
+end object
+
+object Option forks LeafPattern
+  
+  function __init__(int short, int long, int argcount, int value)
+    if not [0, 1].contains(argcount)
+      print "assertion failed"
+      exit(1)
+    end if
+    auto __unpack_2_0 = short
+    auto __unpack_2_1 = long
+    auto __unpack_2_2 = argcount
+    self.short = __unpack_2_0
+    self.long = __unpack_2_1
+    self.argcount = __unpack_2_2
+    self.value = /* empty if value == false and argcount else value */
+  end function
+  
+  
+  function parse(int class_, int option_description)
+    auto __unpack_3_0 = empty
+    auto __unpack_3_1 = empty
+    auto __unpack_3_2 = 0
+    auto __unpack_3_3 = false
+    short = __unpack_3_0
+    long = __unpack_3_1
+    argcount = __unpack_3_2
+    value = __unpack_3_3
+    options = option_description.trim().partition("  ")[0]
+    _ = option_description.trim().partition("  ")[1]
+    description = option_description.trim().partition("  ")[2]
+    options = options.replace(",", " ").replace("=", " ")
+    for each s in options.split()
+      if s.starts_with("--")
+        long = s
+      else
+        if s.starts_with("-")
+          short = s
+        else
+          argcount = 1
+        end if
+      end if
+    end for
+    if argcount
+      matched = re.findall("\\[default: (.*)\\]", description)
+      value = /* matched[0] if matched else empty */
+    end if
+    return class_(short, long, argcount, value)
+  end function
+  
+  
+  function single_match(int left)
+    int n = 0
+    for each pattern in left
+      if self.name == pattern.name
+        return [n, pattern]
+      end if
+      n = n + 1
+    end for
+    return [empty, empty]
+  end function
+  
+  
+  function name()
+    return self.long or self.short
+  end function
+  
+  
+  function __repr__()
+    return "Option(%r, %r, %r, %r)" % [self.short, self.long, self.argcount, self.value]
+  end function
+  
+end object
+
+object Required forks BranchPattern
+  
+  function _py_match(int left, int collected)
+    collected = /* [] if collected == empty else collected */
+    l = left
+    c = collected
+    for each pattern in self.children
+      matched = pattern.match(l, c)[0]
+      l = pattern.match(l, c)[1]
+      c = pattern.match(l, c)[2]
+      if not matched
+        return [false, left, collected]
+      end if
+    end for
+    return [true, l, c]
+  end function
+  
+end object
+
+object Optional forks BranchPattern
+  
+  function _py_match(int left, int collected)
+    collected = /* [] if collected == empty else collected */
+    for each pattern in self.children
+      m = pattern.match(left, collected)[0]
+      left = pattern.match(left, collected)[1]
+      collected = pattern.match(left, collected)[2]
+    end for
+    return [true, left, collected]
+  end function
+  
+end object
+
+object OptionsShortcut forks Optional
+end object
+
+object OneOrMore forks BranchPattern
+  
+  function _py_match(int left, int collected)
+    if not self.children.len() == 1
+      print "assertion failed"
+      exit(1)
+    end if
+    collected = /* [] if collected == empty else collected */
+    l = left
+    c = collected
+    l_ = empty
+    matched = true
+    times = 0
+    while matched
+      matched = self.children[0].match(l, c)[0]
+      l = self.children[0].match(l, c)[1]
+      c = self.children[0].match(l, c)[2]
+      times += /* 1 if matched else 0 */
+      if l_ == l
+        escape
+      end if
+      l_ = l
+    end while
+    if times >= 1
+      return [true, l, c]
+    end if
+    return [false, left, collected]
+  end function
+  
+end object
+
+object Either forks BranchPattern
+  
+  function _py_match(int left, int collected)
+    collected = /* [] if collected == empty else collected */
+    outcomes = []
+    for each pattern in self.children
+      [matched, _, _] = pattern.match(left, collected)
+      outcome = pattern.match(left, collected)
+      if matched
+        outcomes.append(outcome)
+      end if
+    end for
+    if outcomes
+      return min(outcomes)
+    end if
+    return [false, left, collected]
+  end function
+  
+end object
+
+object Tokens forks _py_list
+  
+  function __init__(int source, int _py_error)
+    self += /* source.split() if hasattr(source, "split") else source */
+    self.error = _py_error
+  end function
+  
+  
+  function from_pattern(int source)
+    source = re.sub("([\\[\\]\\(\\)\\|]|\\.\\.\\.)", " \\1 ", source)
+    array int _lc6
+    for each s in re.split("\\s+|(\\S*<.*?>)", source)
+      if s
+        _lc6.push(s)
+      end if
+    end for
+    source = _lc6
+    return Tokens(source)
+  end function
+  
+  
+  function move()
+    return /* self.pop(0) if self.len() else empty */
+  end function
+  
+  
+  function current()
+    return /* self[0] if self.len() else empty */
+  end function
+  
+end object
+
+function parse_long(int tokens, int options)
+  // long ::= '--' chars [ ( ' ' | '=' ) chars ] ;
+  long = tokens.move().partition("=")[0]
+  eq = tokens.move().partition("=")[1]
+  value = tokens.move().partition("=")[2]
+  if not long.starts_with("--")
+    print "assertion failed"
+    exit(1)
+  end if
+  value = /* empty if eq == value == "" else value */
+  array int _lc7
+  for each o in options
+    if o.long == long
+      _lc7.push(o)
+    end if
+  end for
+  similar = _lc7
+  if tokens.error == DocoptExit and similar == []
+    array int _lc8
+    for each o in options
+      if o.long and o.long.starts_with(long)
+        _lc8.push(o)
+      end if
+    end for
+    similar = _lc8
+  end if
+  if similar.len() > 1
+    throw tokens.error("%s is not a unique prefix: %s?" % [long, ", ".join(/* unknown expr: GeneratorExp */)])
+  else
+    if similar.len() < 1
+      argcount = /* 1 if eq == "=" else 0 */
+      o = Option(empty, long, argcount)
+      options.append(o)
+      if tokens.error == DocoptExit
+        o = Option(empty, long, argcount, /* value if argcount else true */)
+      end if
+    else
+      o = Option(similar[0].short, similar[0].long, similar[0].argcount, similar[0].value)
+      if o.argcount == 0
+        if value != empty
+          throw tokens.error("%s must not have an argument" % o.long)
+        end if
+      else
+        if value == empty
+          if [empty, "--"].contains(tokens.current())
+            throw tokens.error("%s requires argument" % o.long)
+          end if
+          value = tokens.move()
+        end if
+      end if
+      if tokens.error == DocoptExit
+        o.value = /* value if value != empty else true */
+      end if
+    end if
+  end if
+  return [o]
+end function
+
+function parse_shorts(int tokens, int options)
+  // shorts ::= '-' ( chars )* [ [ ' ' ] chars ] ;
+  token = tokens.move()
+  if not token.starts_with("-") and not token.starts_with("--")
+    print "assertion failed"
+    exit(1)
+  end if
+  left = token.trim("-")
+  parsed = []
+  while left != ""
+    auto __unpack_4_0 = "-" + left[0]
+    auto __unpack_4_1 = left[1:left.len()]
+    short = __unpack_4_0
+    left = __unpack_4_1
+    array int _lc9
+    for each o in options
+      if o.short == short
+        _lc9.push(o)
+      end if
+    end for
+    similar = _lc9
+    if similar.len() > 1
+      throw tokens.error("%s is specified ambiguously %d times" % [short, similar.len()])
+    else
+      if similar.len() < 1
+        o = Option(short, empty, 0)
+        options.append(o)
+        if tokens.error == DocoptExit
+          o = Option(short, empty, 0, true)
+        end if
+      else
+        o = Option(short, similar[0].long, similar[0].argcount, similar[0].value)
+        value = empty
+        if o.argcount != 0
+          if left == ""
+            if [empty, "--"].contains(tokens.current())
+              throw tokens.error("%s requires argument" % short)
+            end if
+            value = tokens.move()
+          else
+            value = left
+            left = ""
+          end if
+        end if
+        if tokens.error == DocoptExit
+          o.value = /* value if value != empty else true */
+        end if
+      end if
+    end if
+    parsed.append(o)
+  end while
+  return parsed
+end function
+
+function parse_pattern(int source, int options)
+  tokens = Tokens.from_pattern(source)
+  result = parse_expr(tokens, options)
+  if tokens.current() != empty
+    throw tokens.error("unexpected ending: %r" % " ".join(tokens))
+  end if
+  return Required(result)
+end function
+
+function parse_expr(int tokens, int options)
+  // expr ::= seq ( '|' seq )* ;
+  seq = parse_seq(tokens, options)
+  if tokens.current() != "|"
+    return seq
+  end if
+  result = /* [Required(seq)] if seq.len() > 1 else seq */
+  while tokens.current() == "|"
+    tokens.move()
+    seq = parse_seq(tokens, options)
+    result += /* [Required(seq)] if seq.len() > 1 else seq */
+  end while
+  return /* [Either(result)] if result.len() > 1 else result */
+end function
+
+function parse_seq(int tokens, int options)
+  // seq ::= ( atom [ '...' ] )* ;
+  result = []
+  while not [empty, "]", ")", "|"].contains(tokens.current())
+    atom = parse_atom(tokens, options)
+    if tokens.current() == "..."
+      atom = [OneOrMore(atom)]
+      tokens.move()
+    end if
+    result += atom
+  end while
+  return result
+end function
+
+function parse_atom(int tokens, int options)
+  // atom ::= '(' expr ')' | '[' expr ']' | 'options'
+  token = tokens.current()
+  result = []
+  if "([".contains(token)
+    tokens.move()
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict0 = map_new()
+    map_set(_dict0, "(", cast([")", Required], string))
+    map_set(_dict0, "[", cast(["]", Optional], string))
+    matching = _dict0[token][0]
+    pattern = _dict0[token][1]
+    result = pattern(parse_expr(tokens, options))
+    if tokens.move() != matching
+      throw tokens.error("unmatched '%s'" % token)
+    end if
+    return [result]
+  else
+    if token == "options"
+      tokens.move()
+      return [OptionsShortcut()]
+    else
+      if token.starts_with("--") and token != "--"
+        return parse_long(tokens, options)
+      else
+        if token.starts_with("-") and not ["-", "--"].contains(token)
+          return parse_shorts(tokens, options)
+        else
+          if token.starts_with("<") and token.ends_with(">") or token.isupper()
+            return [Argument(tokens.move())]
+          else
+            return [Command(tokens.move())]
+          end if
+        end if
+      end if
+    end if
+  end if
+end function
+
+function parse_argv(int tokens, int options, int options_first)
+  // Parse command-line argument vector.
+  parsed = []
+  while tokens.current() != empty
+    if tokens.current() == "--"
+      array int _lc10
+      for each v in tokens
+        _lc10.push(Argument(empty, v))
+      end for
+      return parsed + _lc10
+    else
+      if tokens.current().starts_with("--")
+        parsed += parse_long(tokens, options)
+      else
+        if tokens.current().starts_with("-") and tokens.current() != "-"
+          parsed += parse_shorts(tokens, options)
+        else
+          if options_first
+            array int _lc11
+            for each v in tokens
+              _lc11.push(Argument(empty, v))
+            end for
+            return parsed + _lc11
+          else
+            parsed.append(Argument(empty, tokens.move()))
+          end if
+        end if
+      end if
+    end if
+  end while
+  return parsed
+end function
+
+function parse_defaults(int doc)
+  defaults = []
+  for each s in parse_section("options:", doc)
+    _ = s.partition(":")[0]
+    _ = s.partition(":")[1]
+    s = s.partition(":")[2]
+    split = re.split("\\n[ \\t]*(-\\S+?)", "\\n" + s)[1:re.split("\\n[ \\t]*(-\\S+?)", "\\n" + s).len()]
+    array int _lc12
+    // TRANSPILER WARNING line 458: slice with step — step ignored — manual conversion required
+    // TRANSPILER WARNING line 458: slice with step — step ignored — manual conversion required
+    int __zip_i0 = 0
+    while __zip_i0 < split[0:split.len()].len()
+      auto s1 = split[0:split.len()][__zip_i0]
+      auto s2 = split[1:split.len()][__zip_i0]
+      _lc12.push(s1 + s2)
+      __zip_i0 = __zip_i0 + 1
+    end while
+    split = _lc12
+    array int _lc13
+    for each s in split
+      if s.starts_with("-")
+        _lc13.push(Option.parse(s))
+      end if
+    end for
+    options = _lc13
+    defaults += options
+  end for
+  return defaults
+end function
+
+function parse_section(int name, int source)
+  pattern = re.compile("^([^\\n]*" + name + "[^\\n]*\\n?(?:[ \\t].*?(?:\\n|$))*)", re.IGNORECASE bit_or re.MULTILINE)
+  array int _lc14
+  for each s in pattern.findall(source)
+    _lc14.push(s.trim())
+  end for
+  return _lc14
+end function
+
+function formal_usage(int section)
+  _ = section.partition(":")[0]
+  _ = section.partition(":")[1]
+  section = section.partition(":")[2]
+  pu = section.split()
+  return "( " + " ".join(/* unknown expr: GeneratorExp */) + " )"
+end function
+
+function extras(int help, int version, int options, int doc)
+  if help and any(/* unknown expr: GeneratorExp */)
+    print doc.trim("\n")
+    sys.exit()
+  end if
+  if version and any(/* unknown expr: GeneratorExp */)
+    print version
+    sys.exit()
+  end if
+end function
+
+object Dict forks dict
+  
+  function __repr__()
+    return "{%s}" % ",\n ".join(/* unknown expr: GeneratorExp */)
+  end function
+  
+end object
+
+function docopt(int doc, int argv, int help, int version, int options_first)
+  // Parse `argv` based on command-line interface described in `doc`.
+  argv = /* sys.argv[1:sys.argv.len()] if argv == empty else argv */
+  usage_sections = parse_section("usage:", doc)
+  if usage_sections.len() == 0
+    throw DocoptLanguageError("\"usage:\" (case-insensitive) not found.")
+  end if
+  if usage_sections.len() > 1
+    throw DocoptLanguageError("More than one \"usage:\" (case-insensitive).")
+  end if
+  DocoptExit.usage = usage_sections[0]
+  options = parse_defaults(doc)
+  pattern = parse_pattern(formal_usage(DocoptExit.usage), options)
+  argv = parse_argv(Tokens(argv), _py_list(options), options_first)
+  pattern_options = set(pattern.flat(Option))
+  for each options_shortcut in pattern.flat(OptionsShortcut)
+    doc_options = parse_defaults(doc)
+    options_shortcut.children = _py_list(set(doc_options) - pattern_options)
+  end for
+  extras(help, version, argv, doc)
+  matched = pattern.fix().match(argv)[0]
+  left = pattern.fix().match(argv)[1]
+  collected = pattern.fix().match(argv)[2]
+  if matched and left == []
+    return Dict(/* unknown expr: GeneratorExp */)
+  end if
+  throw DocoptExit()
+end function
+

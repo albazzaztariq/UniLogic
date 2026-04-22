@@ -1,0 +1,31 @@
+// T213: Nested functions, default parameters — C target
+// Avoids cross-nested function calls (C codegen limitation)
+
+function greet(string who, string greeting = "Hello") returns string
+    return greeting + " " + who
+end function
+
+function main() returns int
+    // Test 1: nested function
+    function add_offset(int x) returns int
+        int offset = 100
+        return x + offset
+    end function
+
+    print add_offset(5)
+
+    // Test 2: nested function with string
+    function make_label(int n) returns string
+        return "item_" + cast(n, string)
+    end function
+
+    print make_label(42)
+
+    // Test 3: default parameter — use default
+    print greet("World")
+
+    // Test 4: default parameter — override
+    print greet("World", "Hi")
+
+    return 0
+end function

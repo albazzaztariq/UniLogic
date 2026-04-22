@@ -1,0 +1,581 @@
+// Translated from test_md5_ctx.c by c2ul
+type mbedtls_md5_context
+  array uint32[2] total
+  array uint32[4] state
+  array uint8[64] buffer
+end type
+
+type mbedtls_md_info_t
+  string name
+  int digest_size
+  int block_size
+  <int> starts_func
+  <int> update_func
+  <int> finish_func
+  <int> digest_func
+  <none> ctx_alloc_func
+  <none> ctx_free_func
+  <none> clone_func
+end type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function mbedtls_md5_init(<mbedtls_md5_context> ctx)
+  memset(ctx, 0, size(mbedtls_md5_context))
+end function
+
+function mbedtls_md5_free(<mbedtls_md5_context> ctx)
+  if (ctx == 0)
+    return
+  end if
+  memset(ctx, 0, size(mbedtls_md5_context))
+end function
+
+function mbedtls_md5_clone(<mbedtls_md5_context> dst, <mbedtls_md5_context> src)
+  deref dst = deref src
+end function
+
+function mbedtls_md5_starts(<mbedtls_md5_context> ctx) returns int
+  ctx.total[0] = 0
+  ctx.total[1] = 0
+  ctx.state[0] = 1732584193
+  ctx.state[1] = 4023233417
+  ctx.state[2] = 2562383102
+  ctx.state[3] = 271733878
+  return 0
+end function
+
+function mbedtls_internal_md5_process(<mbedtls_md5_context> ctx, array uint8 data) returns int
+  array uint32 local_X = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  uint32 A = 0
+  uint32 B = 0
+  uint32 C = 0
+  uint32 D = 0
+  local_X[0] = (((cast(data[0], int) bit_or (cast(data[(0 + 1)], int) bit_left 8)) bit_or (cast(data[(0 + 2)], int) bit_left 16)) bit_or (cast(data[(0 + 3)], int) bit_left 24))
+  local_X[1] = (((cast(data[4], int) bit_or (cast(data[(4 + 1)], int) bit_left 8)) bit_or (cast(data[(4 + 2)], int) bit_left 16)) bit_or (cast(data[(4 + 3)], int) bit_left 24))
+  local_X[2] = (((cast(data[8], int) bit_or (cast(data[(8 + 1)], int) bit_left 8)) bit_or (cast(data[(8 + 2)], int) bit_left 16)) bit_or (cast(data[(8 + 3)], int) bit_left 24))
+  local_X[3] = (((cast(data[12], int) bit_or (cast(data[(12 + 1)], int) bit_left 8)) bit_or (cast(data[(12 + 2)], int) bit_left 16)) bit_or (cast(data[(12 + 3)], int) bit_left 24))
+  local_X[4] = (((cast(data[16], int) bit_or (cast(data[(16 + 1)], int) bit_left 8)) bit_or (cast(data[(16 + 2)], int) bit_left 16)) bit_or (cast(data[(16 + 3)], int) bit_left 24))
+  local_X[5] = (((cast(data[20], int) bit_or (cast(data[(20 + 1)], int) bit_left 8)) bit_or (cast(data[(20 + 2)], int) bit_left 16)) bit_or (cast(data[(20 + 3)], int) bit_left 24))
+  local_X[6] = (((cast(data[24], int) bit_or (cast(data[(24 + 1)], int) bit_left 8)) bit_or (cast(data[(24 + 2)], int) bit_left 16)) bit_or (cast(data[(24 + 3)], int) bit_left 24))
+  local_X[7] = (((cast(data[28], int) bit_or (cast(data[(28 + 1)], int) bit_left 8)) bit_or (cast(data[(28 + 2)], int) bit_left 16)) bit_or (cast(data[(28 + 3)], int) bit_left 24))
+  local_X[8] = (((cast(data[32], int) bit_or (cast(data[(32 + 1)], int) bit_left 8)) bit_or (cast(data[(32 + 2)], int) bit_left 16)) bit_or (cast(data[(32 + 3)], int) bit_left 24))
+  local_X[9] = (((cast(data[36], int) bit_or (cast(data[(36 + 1)], int) bit_left 8)) bit_or (cast(data[(36 + 2)], int) bit_left 16)) bit_or (cast(data[(36 + 3)], int) bit_left 24))
+  local_X[10] = (((cast(data[40], int) bit_or (cast(data[(40 + 1)], int) bit_left 8)) bit_or (cast(data[(40 + 2)], int) bit_left 16)) bit_or (cast(data[(40 + 3)], int) bit_left 24))
+  local_X[11] = (((cast(data[44], int) bit_or (cast(data[(44 + 1)], int) bit_left 8)) bit_or (cast(data[(44 + 2)], int) bit_left 16)) bit_or (cast(data[(44 + 3)], int) bit_left 24))
+  local_X[12] = (((cast(data[48], int) bit_or (cast(data[(48 + 1)], int) bit_left 8)) bit_or (cast(data[(48 + 2)], int) bit_left 16)) bit_or (cast(data[(48 + 3)], int) bit_left 24))
+  local_X[13] = (((cast(data[52], int) bit_or (cast(data[(52 + 1)], int) bit_left 8)) bit_or (cast(data[(52 + 2)], int) bit_left 16)) bit_or (cast(data[(52 + 3)], int) bit_left 24))
+  local_X[14] = (((cast(data[56], int) bit_or (cast(data[(56 + 1)], int) bit_left 8)) bit_or (cast(data[(56 + 2)], int) bit_left 16)) bit_or (cast(data[(56 + 3)], int) bit_left 24))
+  local_X[15] = (((cast(data[60], int) bit_or (cast(data[(60 + 1)], int) bit_left 8)) bit_or (cast(data[(60 + 2)], int) bit_left 16)) bit_or (cast(data[(60 + 3)], int) bit_left 24))
+  A = ctx.state[0]
+  B = ctx.state[1]
+  C = ctx.state[2]
+  D = ctx.state[3]
+  do
+    A = A + (((D bit_xor (B bit_and (C bit_xor D))) + local_X[0]) + 3614090360)
+    A = (((A bit_left 7) bit_or ((A bit_and 4294967295) bit_right (32 - 7))) + B)
+  while 0 end do
+  do
+    D = D + (((C bit_xor (A bit_and (B bit_xor C))) + local_X[1]) + 3905402710)
+    D = (((D bit_left 12) bit_or ((D bit_and 4294967295) bit_right (32 - 12))) + A)
+  while 0 end do
+  do
+    C = C + (((B bit_xor (D bit_and (A bit_xor B))) + local_X[2]) + 606105819)
+    C = (((C bit_left 17) bit_or ((C bit_and 4294967295) bit_right (32 - 17))) + D)
+  while 0 end do
+  do
+    B = B + (((A bit_xor (C bit_and (D bit_xor A))) + local_X[3]) + 3250441966)
+    B = (((B bit_left 22) bit_or ((B bit_and 4294967295) bit_right (32 - 22))) + C)
+  while 0 end do
+  do
+    A = A + (((D bit_xor (B bit_and (C bit_xor D))) + local_X[4]) + 4118548399)
+    A = (((A bit_left 7) bit_or ((A bit_and 4294967295) bit_right (32 - 7))) + B)
+  while 0 end do
+  do
+    D = D + (((C bit_xor (A bit_and (B bit_xor C))) + local_X[5]) + 1200080426)
+    D = (((D bit_left 12) bit_or ((D bit_and 4294967295) bit_right (32 - 12))) + A)
+  while 0 end do
+  do
+    C = C + (((B bit_xor (D bit_and (A bit_xor B))) + local_X[6]) + 2821735955)
+    C = (((C bit_left 17) bit_or ((C bit_and 4294967295) bit_right (32 - 17))) + D)
+  while 0 end do
+  do
+    B = B + (((A bit_xor (C bit_and (D bit_xor A))) + local_X[7]) + 4249261313)
+    B = (((B bit_left 22) bit_or ((B bit_and 4294967295) bit_right (32 - 22))) + C)
+  while 0 end do
+  do
+    A = A + (((D bit_xor (B bit_and (C bit_xor D))) + local_X[8]) + 1770035416)
+    A = (((A bit_left 7) bit_or ((A bit_and 4294967295) bit_right (32 - 7))) + B)
+  while 0 end do
+  do
+    D = D + (((C bit_xor (A bit_and (B bit_xor C))) + local_X[9]) + 2336552879)
+    D = (((D bit_left 12) bit_or ((D bit_and 4294967295) bit_right (32 - 12))) + A)
+  while 0 end do
+  do
+    C = C + (((B bit_xor (D bit_and (A bit_xor B))) + local_X[10]) + 4294925233)
+    C = (((C bit_left 17) bit_or ((C bit_and 4294967295) bit_right (32 - 17))) + D)
+  while 0 end do
+  do
+    B = B + (((A bit_xor (C bit_and (D bit_xor A))) + local_X[11]) + 2304563134)
+    B = (((B bit_left 22) bit_or ((B bit_and 4294967295) bit_right (32 - 22))) + C)
+  while 0 end do
+  do
+    A = A + (((D bit_xor (B bit_and (C bit_xor D))) + local_X[12]) + 1804603682)
+    A = (((A bit_left 7) bit_or ((A bit_and 4294967295) bit_right (32 - 7))) + B)
+  while 0 end do
+  do
+    D = D + (((C bit_xor (A bit_and (B bit_xor C))) + local_X[13]) + 4254626195)
+    D = (((D bit_left 12) bit_or ((D bit_and 4294967295) bit_right (32 - 12))) + A)
+  while 0 end do
+  do
+    C = C + (((B bit_xor (D bit_and (A bit_xor B))) + local_X[14]) + 2792965006)
+    C = (((C bit_left 17) bit_or ((C bit_and 4294967295) bit_right (32 - 17))) + D)
+  while 0 end do
+  do
+    B = B + (((A bit_xor (C bit_and (D bit_xor A))) + local_X[15]) + 1236535329)
+    B = (((B bit_left 22) bit_or ((B bit_and 4294967295) bit_right (32 - 22))) + C)
+  while 0 end do
+  do
+    A = A + (((C bit_xor (D bit_and (B bit_xor C))) + local_X[1]) + 4129170786)
+    A = (((A bit_left 5) bit_or ((A bit_and 4294967295) bit_right (32 - 5))) + B)
+  while 0 end do
+  do
+    D = D + (((B bit_xor (C bit_and (A bit_xor B))) + local_X[6]) + 3225465664)
+    D = (((D bit_left 9) bit_or ((D bit_and 4294967295) bit_right (32 - 9))) + A)
+  while 0 end do
+  do
+    C = C + (((A bit_xor (B bit_and (D bit_xor A))) + local_X[11]) + 643717713)
+    C = (((C bit_left 14) bit_or ((C bit_and 4294967295) bit_right (32 - 14))) + D)
+  while 0 end do
+  do
+    B = B + (((D bit_xor (A bit_and (C bit_xor D))) + local_X[0]) + 3921069994)
+    B = (((B bit_left 20) bit_or ((B bit_and 4294967295) bit_right (32 - 20))) + C)
+  while 0 end do
+  do
+    A = A + (((C bit_xor (D bit_and (B bit_xor C))) + local_X[5]) + 3593408605)
+    A = (((A bit_left 5) bit_or ((A bit_and 4294967295) bit_right (32 - 5))) + B)
+  while 0 end do
+  do
+    D = D + (((B bit_xor (C bit_and (A bit_xor B))) + local_X[10]) + 38016083)
+    D = (((D bit_left 9) bit_or ((D bit_and 4294967295) bit_right (32 - 9))) + A)
+  while 0 end do
+  do
+    C = C + (((A bit_xor (B bit_and (D bit_xor A))) + local_X[15]) + 3634488961)
+    C = (((C bit_left 14) bit_or ((C bit_and 4294967295) bit_right (32 - 14))) + D)
+  while 0 end do
+  do
+    B = B + (((D bit_xor (A bit_and (C bit_xor D))) + local_X[4]) + 3889429448)
+    B = (((B bit_left 20) bit_or ((B bit_and 4294967295) bit_right (32 - 20))) + C)
+  while 0 end do
+  do
+    A = A + (((C bit_xor (D bit_and (B bit_xor C))) + local_X[9]) + 568446438)
+    A = (((A bit_left 5) bit_or ((A bit_and 4294967295) bit_right (32 - 5))) + B)
+  while 0 end do
+  do
+    D = D + (((B bit_xor (C bit_and (A bit_xor B))) + local_X[14]) + 3275163606)
+    D = (((D bit_left 9) bit_or ((D bit_and 4294967295) bit_right (32 - 9))) + A)
+  while 0 end do
+  do
+    C = C + (((A bit_xor (B bit_and (D bit_xor A))) + local_X[3]) + 4107603335)
+    C = (((C bit_left 14) bit_or ((C bit_and 4294967295) bit_right (32 - 14))) + D)
+  while 0 end do
+  do
+    B = B + (((D bit_xor (A bit_and (C bit_xor D))) + local_X[8]) + 1163531501)
+    B = (((B bit_left 20) bit_or ((B bit_and 4294967295) bit_right (32 - 20))) + C)
+  while 0 end do
+  do
+    A = A + (((C bit_xor (D bit_and (B bit_xor C))) + local_X[13]) + 2850285829)
+    A = (((A bit_left 5) bit_or ((A bit_and 4294967295) bit_right (32 - 5))) + B)
+  while 0 end do
+  do
+    D = D + (((B bit_xor (C bit_and (A bit_xor B))) + local_X[2]) + 4243563512)
+    D = (((D bit_left 9) bit_or ((D bit_and 4294967295) bit_right (32 - 9))) + A)
+  while 0 end do
+  do
+    C = C + (((A bit_xor (B bit_and (D bit_xor A))) + local_X[7]) + 1735328473)
+    C = (((C bit_left 14) bit_or ((C bit_and 4294967295) bit_right (32 - 14))) + D)
+  while 0 end do
+  do
+    B = B + (((D bit_xor (A bit_and (C bit_xor D))) + local_X[12]) + 2368359562)
+    B = (((B bit_left 20) bit_or ((B bit_and 4294967295) bit_right (32 - 20))) + C)
+  while 0 end do
+  do
+    A = A + ((((B bit_xor C) bit_xor D) + local_X[5]) + 4294588738)
+    A = (((A bit_left 4) bit_or ((A bit_and 4294967295) bit_right (32 - 4))) + B)
+  while 0 end do
+  do
+    D = D + ((((A bit_xor B) bit_xor C) + local_X[8]) + 2272392833)
+    D = (((D bit_left 11) bit_or ((D bit_and 4294967295) bit_right (32 - 11))) + A)
+  while 0 end do
+  do
+    C = C + ((((D bit_xor A) bit_xor B) + local_X[11]) + 1839030562)
+    C = (((C bit_left 16) bit_or ((C bit_and 4294967295) bit_right (32 - 16))) + D)
+  while 0 end do
+  do
+    B = B + ((((C bit_xor D) bit_xor A) + local_X[14]) + 4259657740)
+    B = (((B bit_left 23) bit_or ((B bit_and 4294967295) bit_right (32 - 23))) + C)
+  while 0 end do
+  do
+    A = A + ((((B bit_xor C) bit_xor D) + local_X[1]) + 2763975236)
+    A = (((A bit_left 4) bit_or ((A bit_and 4294967295) bit_right (32 - 4))) + B)
+  while 0 end do
+  do
+    D = D + ((((A bit_xor B) bit_xor C) + local_X[4]) + 1272893353)
+    D = (((D bit_left 11) bit_or ((D bit_and 4294967295) bit_right (32 - 11))) + A)
+  while 0 end do
+  do
+    C = C + ((((D bit_xor A) bit_xor B) + local_X[7]) + 4139469664)
+    C = (((C bit_left 16) bit_or ((C bit_and 4294967295) bit_right (32 - 16))) + D)
+  while 0 end do
+  do
+    B = B + ((((C bit_xor D) bit_xor A) + local_X[10]) + 3200236656)
+    B = (((B bit_left 23) bit_or ((B bit_and 4294967295) bit_right (32 - 23))) + C)
+  while 0 end do
+  do
+    A = A + ((((B bit_xor C) bit_xor D) + local_X[13]) + 681279174)
+    A = (((A bit_left 4) bit_or ((A bit_and 4294967295) bit_right (32 - 4))) + B)
+  while 0 end do
+  do
+    D = D + ((((A bit_xor B) bit_xor C) + local_X[0]) + 3936430074)
+    D = (((D bit_left 11) bit_or ((D bit_and 4294967295) bit_right (32 - 11))) + A)
+  while 0 end do
+  do
+    C = C + ((((D bit_xor A) bit_xor B) + local_X[3]) + 3572445317)
+    C = (((C bit_left 16) bit_or ((C bit_and 4294967295) bit_right (32 - 16))) + D)
+  while 0 end do
+  do
+    B = B + ((((C bit_xor D) bit_xor A) + local_X[6]) + 76029189)
+    B = (((B bit_left 23) bit_or ((B bit_and 4294967295) bit_right (32 - 23))) + C)
+  while 0 end do
+  do
+    A = A + ((((B bit_xor C) bit_xor D) + local_X[9]) + 3654602809)
+    A = (((A bit_left 4) bit_or ((A bit_and 4294967295) bit_right (32 - 4))) + B)
+  while 0 end do
+  do
+    D = D + ((((A bit_xor B) bit_xor C) + local_X[12]) + 3873151461)
+    D = (((D bit_left 11) bit_or ((D bit_and 4294967295) bit_right (32 - 11))) + A)
+  while 0 end do
+  do
+    C = C + ((((D bit_xor A) bit_xor B) + local_X[15]) + 530742520)
+    C = (((C bit_left 16) bit_or ((C bit_and 4294967295) bit_right (32 - 16))) + D)
+  while 0 end do
+  do
+    B = B + ((((C bit_xor D) bit_xor A) + local_X[2]) + 3299628645)
+    B = (((B bit_left 23) bit_or ((B bit_and 4294967295) bit_right (32 - 23))) + C)
+  while 0 end do
+  do
+    A = A + (((C bit_xor (B bit_or bit_not D)) + local_X[0]) + 4096336452)
+    A = (((A bit_left 6) bit_or ((A bit_and 4294967295) bit_right (32 - 6))) + B)
+  while 0 end do
+  do
+    D = D + (((B bit_xor (A bit_or bit_not C)) + local_X[7]) + 1126891415)
+    D = (((D bit_left 10) bit_or ((D bit_and 4294967295) bit_right (32 - 10))) + A)
+  while 0 end do
+  do
+    C = C + (((A bit_xor (D bit_or bit_not B)) + local_X[14]) + 2878612391)
+    C = (((C bit_left 15) bit_or ((C bit_and 4294967295) bit_right (32 - 15))) + D)
+  while 0 end do
+  do
+    B = B + (((D bit_xor (C bit_or bit_not A)) + local_X[5]) + 4237533241)
+    B = (((B bit_left 21) bit_or ((B bit_and 4294967295) bit_right (32 - 21))) + C)
+  while 0 end do
+  do
+    A = A + (((C bit_xor (B bit_or bit_not D)) + local_X[12]) + 1700485571)
+    A = (((A bit_left 6) bit_or ((A bit_and 4294967295) bit_right (32 - 6))) + B)
+  while 0 end do
+  do
+    D = D + (((B bit_xor (A bit_or bit_not C)) + local_X[3]) + 2399980690)
+    D = (((D bit_left 10) bit_or ((D bit_and 4294967295) bit_right (32 - 10))) + A)
+  while 0 end do
+  do
+    C = C + (((A bit_xor (D bit_or bit_not B)) + local_X[10]) + 4293915773)
+    C = (((C bit_left 15) bit_or ((C bit_and 4294967295) bit_right (32 - 15))) + D)
+  while 0 end do
+  do
+    B = B + (((D bit_xor (C bit_or bit_not A)) + local_X[1]) + 2240044497)
+    B = (((B bit_left 21) bit_or ((B bit_and 4294967295) bit_right (32 - 21))) + C)
+  while 0 end do
+  do
+    A = A + (((C bit_xor (B bit_or bit_not D)) + local_X[8]) + 1873313359)
+    A = (((A bit_left 6) bit_or ((A bit_and 4294967295) bit_right (32 - 6))) + B)
+  while 0 end do
+  do
+    D = D + (((B bit_xor (A bit_or bit_not C)) + local_X[15]) + 4264355552)
+    D = (((D bit_left 10) bit_or ((D bit_and 4294967295) bit_right (32 - 10))) + A)
+  while 0 end do
+  do
+    C = C + (((A bit_xor (D bit_or bit_not B)) + local_X[6]) + 2734768916)
+    C = (((C bit_left 15) bit_or ((C bit_and 4294967295) bit_right (32 - 15))) + D)
+  while 0 end do
+  do
+    B = B + (((D bit_xor (C bit_or bit_not A)) + local_X[13]) + 1309151649)
+    B = (((B bit_left 21) bit_or ((B bit_and 4294967295) bit_right (32 - 21))) + C)
+  while 0 end do
+  do
+    A = A + (((C bit_xor (B bit_or bit_not D)) + local_X[4]) + 4149444226)
+    A = (((A bit_left 6) bit_or ((A bit_and 4294967295) bit_right (32 - 6))) + B)
+  while 0 end do
+  do
+    D = D + (((B bit_xor (A bit_or bit_not C)) + local_X[11]) + 3174756917)
+    D = (((D bit_left 10) bit_or ((D bit_and 4294967295) bit_right (32 - 10))) + A)
+  while 0 end do
+  do
+    C = C + (((A bit_xor (D bit_or bit_not B)) + local_X[2]) + 718787259)
+    C = (((C bit_left 15) bit_or ((C bit_and 4294967295) bit_right (32 - 15))) + D)
+  while 0 end do
+  do
+    B = B + (((D bit_xor (C bit_or bit_not A)) + local_X[9]) + 3951481745)
+    B = (((B bit_left 21) bit_or ((B bit_and 4294967295) bit_right (32 - 21))) + C)
+  while 0 end do
+  ctx.state[0] = ctx.state[0] + A
+  ctx.state[1] = ctx.state[1] + B
+  ctx.state[2] = ctx.state[2] + C
+  ctx.state[3] = ctx.state[3] + D
+  memset(local_X, 0, size(local_X))
+  return 0
+end function
+
+function mbedtls_md5_update(<mbedtls_md5_context> ctx, <uint8> input, int ilen) returns int
+  int ret = -110
+  int fill = 0
+  uint32 left_c = 0
+  if (ilen == 0)
+    return 0
+  end if
+  left_c = (ctx.total[0] bit_and 63)
+  fill = cast((64 - left_c), int)
+  ctx.total[0] = ctx.total[0] + cast(ilen, int)
+  ctx.total[0] = (ctx.total[0] bit_and 4294967295)
+  if (ctx.total[0] < cast(ilen, int))
+    ctx.total[1] = ctx.total[1] + 1
+  end if
+  if ((left_c != 0) and (ilen >= fill))
+    memcopy(cast((ctx.buffer + left_c), int), input, cast(fill, int))
+    ret = mbedtls_internal_md5_process(ctx, ctx.buffer)
+    if (ret != 0)
+      return ret
+    end if
+    input = input + fill
+    ilen = ilen - fill
+    left_c = 0
+  end if
+  while (ilen >= 64)
+    ret = mbedtls_internal_md5_process(ctx, input)
+    if (ret != 0)
+      return ret
+    end if
+    input = input + 64
+    ilen = ilen - 64
+  end while
+  if (ilen > 0)
+    memcopy(cast((ctx.buffer + left_c), int), input, ilen)
+  end if
+  return 0
+end function
+
+function mbedtls_md5_finish(<mbedtls_md5_context> ctx, array uint8 output) returns int
+  int ret = -110
+  uint32 used = 0
+  uint32 high = 0
+  uint32 low = 0
+  used = (ctx.total[0] bit_and 63)
+  ctx.buffer[used] = 128
+  if (used <= 56)
+    memset((ctx.buffer + used), 0, cast((56 - used), int))
+  else
+    memset((ctx.buffer + used), 0, cast((64 - used), int))
+    ret = mbedtls_internal_md5_process(ctx, ctx.buffer)
+    if (ret != 0)
+      goto exit_c
+    end if
+    memset(ctx.buffer, 0, 56)
+  end if
+  high = ((ctx.total[0] bit_right 29) bit_or (ctx.total[1] bit_left 3))
+  low = (ctx.total[0] bit_left 3)
+  do
+    ctx.buffer[56] = cast(low, int)
+    ctx.buffer[(56 + 1)] = cast((low bit_right 8), int)
+    ctx.buffer[(56 + 2)] = cast((low bit_right 16), int)
+    ctx.buffer[(56 + 3)] = cast((low bit_right 24), int)
+  while 0 end do
+  do
+    ctx.buffer[60] = cast(high, int)
+    ctx.buffer[(60 + 1)] = cast((high bit_right 8), int)
+    ctx.buffer[(60 + 2)] = cast((high bit_right 16), int)
+    ctx.buffer[(60 + 3)] = cast((high bit_right 24), int)
+  while 0 end do
+  ret = mbedtls_internal_md5_process(ctx, ctx.buffer)
+  if (ret != 0)
+    goto exit_c
+  end if
+  do
+    output[0] = cast(ctx.state[0], int)
+    output[(0 + 1)] = cast((ctx.state[0] bit_right 8), int)
+    output[(0 + 2)] = cast((ctx.state[0] bit_right 16), int)
+    output[(0 + 3)] = cast((ctx.state[0] bit_right 24), int)
+  while 0 end do
+  do
+    output[4] = cast(ctx.state[1], int)
+    output[(4 + 1)] = cast((ctx.state[1] bit_right 8), int)
+    output[(4 + 2)] = cast((ctx.state[1] bit_right 16), int)
+    output[(4 + 3)] = cast((ctx.state[1] bit_right 24), int)
+  while 0 end do
+  do
+    output[8] = cast(ctx.state[2], int)
+    output[(8 + 1)] = cast((ctx.state[2] bit_right 8), int)
+    output[(8 + 2)] = cast((ctx.state[2] bit_right 16), int)
+    output[(8 + 3)] = cast((ctx.state[2] bit_right 24), int)
+  while 0 end do
+  do
+    output[12] = cast(ctx.state[3], int)
+    output[(12 + 1)] = cast((ctx.state[3] bit_right 8), int)
+    output[(12 + 2)] = cast((ctx.state[3] bit_right 16), int)
+    output[(12 + 3)] = cast((ctx.state[3] bit_right 24), int)
+  while 0 end do
+  ret = 0
+  portal exit_c
+  mbedtls_md5_free(ctx)
+  return ret
+end function
+
+function mbedtls_md5(<uint8> input, int ilen, array uint8 output) returns int
+  int ret = -110
+  mbedtls_md5_context ctx = 0
+  mbedtls_md5_init(address ctx)
+  ret = mbedtls_md5_starts(address ctx)
+  if (ret != 0)
+    goto exit_c
+  end if
+  ret = mbedtls_md5_update(address ctx, input, ilen)
+  if (ret != 0)
+    goto exit_c
+  end if
+  ret = mbedtls_md5_finish(address ctx, output)
+  if (ret != 0)
+    goto exit_c
+  end if
+  portal exit_c
+  mbedtls_md5_free(address ctx)
+  return ret
+end function
+
+function md5_starts_wrap(<none> ctx) returns int
+  return mbedtls_md5_starts(cast(ctx, int))
+end function
+
+function md5_update_wrap(<none> ctx, <uint8> input, int ilen) returns int
+  return mbedtls_md5_update(cast(ctx, int), input, ilen)
+end function
+
+function md5_finish_wrap(<none> ctx, <uint8> output) returns int
+  return mbedtls_md5_finish(cast(ctx, int), output)
+end function
+
+function md5_digest_wrap(<uint8> input, int ilen, <uint8> output) returns int
+  return mbedtls_md5(input, ilen, output)
+end function
+
+function md5_ctx_alloc(<none> ctx)
+  mbedtls_md5_init(cast(ctx, int))
+end function
+
+function md5_ctx_free(<none> ctx)
+  mbedtls_md5_free(cast(ctx, int))
+end function
+
+function md5_clone_wrap(<none> dst, <none> src)
+  mbedtls_md5_clone(cast(dst, int), cast(src, int))
+end function
+
+mbedtls_md_info_t mbedtls_md5_info = 0
+
+function print_hex(<uint8> buf, int len)
+  int i = 0
+  i = 0
+  while (i < len)
+    print cast(buf[i], string)
+    i = i + 1
+  end while
+end function
+
+function main() returns int
+  int i = 0
+  int ret = 0
+  array uint8 digest = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  array int tests = [["", 0, [212, 29, 140, 217, 143, 0, 178, 4, 233, 128, 9, 152, 236, 248, 66, 126]], ["a", 1, [12, 193, 117, 185, 192, 241, 182, 168, 49, 195, 153, 226, 105, 119, 38, 97]], ["abc", 3, [144, 1, 80, 152, 60, 210, 79, 176, 214, 150, 63, 125, 40, 225, 127, 114]], ["message digest", 14, [249, 107, 105, 125, 124, 183, 147, 141, 82, 90, 47, 49, 170, 241, 97, 208]]]
+  print "=== MD5 RFC 1321 vectors ==="
+  i = 0
+  while (i < 4)
+    ret = mbedtls_md5(cast(tests[i].input, int), tests[i].len, digest)
+    int ok_c = ((ret == 0) and (memcmp(digest, tests[i].expected, 16) == 0))
+    print "MD5(\"" + tests[i].input + "\"): "
+    print_hex(digest, 16)
+    auto _tern_1 = "FAIL"
+    if ok_c
+      _tern_1 = "PASS"
+    end if
+    print " " + _tern_1
+    i = i + 1
+  end while
+  print "\n=== MD5 vtable dispatch ==="
+  mbedtls_md5_context ctx = 0
+  mbedtls_md_info_t info = address mbedtls_md5_info
+  info.ctx_alloc_func(address ctx)
+  info.starts_func(address ctx)
+  info.update_func(address ctx, cast("abc", int), 3)
+  info.finish_func(address ctx, digest)
+  array uint8 abc_expected = [144, 1, 80, 152, 60, 210, 79, 176, 214, 150, 63, 125, 40, 225, 127, 114]
+  ok_c = (memcmp(digest, abc_expected, 16) == 0)
+  print "vtable MD5(\"abc\"): "
+  print_hex(digest, 16)
+  auto _tern_2 = "FAIL"
+  if ok_c
+    _tern_2 = "PASS"
+  end if
+  print " " + _tern_2
+  print "vtable name=" + info.name + " digest_size=" + cast(info.digest_size, string) + " block_size=" + cast(info.block_size, string)
+  print "\n=== MD5 clone ==="
+  mbedtls_md5_context ctx1 = 0
+  mbedtls_md5_context ctx2 = 0
+  array uint8 d1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  array uint8 d2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  mbedtls_md5_init(address ctx1)
+  mbedtls_md5_starts(address ctx1)
+  mbedtls_md5_update(address ctx1, cast("hello", int), 5)
+  mbedtls_md5_clone(address ctx2, address ctx1)
+  mbedtls_md5_finish(address ctx1, d1)
+  mbedtls_md5_finish(address ctx2, d2)
+  ok_c = (memcmp(d1, d2, 16) == 0)
+  auto _tern_3 = "FAIL"
+  if ok_c
+    _tern_3 = "PASS"
+  end if
+  print "clone match: " + _tern_3
+  return 0
+end function
+

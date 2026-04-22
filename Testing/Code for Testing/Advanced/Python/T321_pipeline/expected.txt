@@ -1,0 +1,22 @@
+--- Stage 1: Filter positive ---
+count: 9
+12 8 15 7 20 3 11 6 25
+sum: 107
+--- Stage 2: Transform double ---
+24 16 30 14 40 6 22 12 50
+sum: 214
+min: 6
+max: 50
+--- Stage 3: Filter above 20 ---
+count: 5
+24 30 40 22 50
+--- Stage 4: Clamp to [25, 40] ---
+25 30 40 25 40
+sum: 160
+--- Pipeline 2: filter below 10, add 100 ---
+filtered: 10
+95 100 108 97 107 99 103 100 92 106
+sum: 1007
+--- Aggregation ---
+count 0 in raw: 2
+count 12 in raw: 1

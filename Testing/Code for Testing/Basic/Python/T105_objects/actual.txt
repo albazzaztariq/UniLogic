@@ -1,0 +1,7 @@
+Generic makes a sound
+Generic age 5
+Rex barks
+Rex age 3
+Rex fetches the ball
+Whiskers meows
+Whiskers age 7

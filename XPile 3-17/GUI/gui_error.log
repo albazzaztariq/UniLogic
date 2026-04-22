@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "C:\Users\azt12\OneDrive\Documents\Computing\Pragma\CURRENT\XPile 3-17\launch_gui.pyw", line 12, in <module>
-    from project_manager import main
-  File "C:\Users\azt12\OneDrive\Documents\Computing\Pragma\CURRENT\XPile 3-17\GUI\project_manager.py", line 22, in <module>
-    from PySide6.QtWidgets import (
-    ...<5 lines>...
-    )
-ModuleNotFoundError: No module named 'PySide6'

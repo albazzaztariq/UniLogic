@@ -1,0 +1,64 @@
+// Translated from test_cjson_hex.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function parse_hex4(char <input>) returns uint32
+  uint32 h = 0
+  int i = 0
+  while (i < 4)
+    char c = input[i]
+    if ((c >= 48) and (c <= 57))
+      h = h + cast((c - 48), uint32)
+    else if ((c >= 65) and (c <= 70))
+      h = h + cast(((10 + c) - 65), uint32)
+    else if ((c >= 97) and (c <= 102))
+      h = h + cast(((10 + c) - 97), uint32)
+    else
+      return 0
+    end if
+    if (i < 3)
+      h = (h left 4)
+    end if
+    i = i + 1
+  end while
+  return h
+end function
+
+function main() returns int
+  print "parse_hex4(\"0000\") = " + cast(parse_hex4("0000"), string)
+  print "parse_hex4(\"000F\") = " + cast(parse_hex4("000F"), string)
+  print "parse_hex4(\"00FF\") = " + cast(parse_hex4("00FF"), string)
+  print "parse_hex4(\"0FFF\") = " + cast(parse_hex4("0FFF"), string)
+  print "parse_hex4(\"FFFF\") = " + cast(parse_hex4("FFFF"), string)
+  print "parse_hex4(\"1A2B\") = " + cast(parse_hex4("1A2B"), string)
+  print "parse_hex4(\"dead\") = " + cast(parse_hex4("dead"), string)
+  print "parse_hex4(\"BEEF\") = " + cast(parse_hex4("BEEF"), string)
+  print "parse_hex4(\"4E2D\") = " + cast(parse_hex4("4E2D"), string)
+  print "parse_hex4(\"00GG\") = " + cast(parse_hex4("00GG"), string)
+  return 0
+end function
+

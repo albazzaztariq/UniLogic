@@ -1,0 +1,33 @@
+// M001: Variables, types, arithmetic, print
+function main() returns int
+    int x = 10
+    int y = 20
+    int sum = x + y
+    print sum
+
+    float pi = 3.14
+    print pi
+
+    string name = "UniLogic"
+    print name
+
+    bool flag = true
+    print flag
+
+    int a = 100
+    a += 50
+    a -= 25
+    a *= 2
+    print a
+
+    int mod = 17 % 5
+    print mod
+
+    string greeting = "Hello " + "World"
+    print greeting
+
+    constant int MAX = 999
+    print MAX
+
+    return 0
+end function

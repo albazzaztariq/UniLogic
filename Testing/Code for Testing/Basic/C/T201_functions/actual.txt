@@ -1,0 +1,8 @@
+10
+Hello World
+36
+1
+0
+120
+side effect
+13

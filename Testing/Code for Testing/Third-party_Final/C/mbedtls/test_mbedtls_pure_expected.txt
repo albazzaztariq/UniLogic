@@ -1,0 +1,46 @@
+=== S1: base64 enc/dec ===
+enc/dec round-trip 0..63: PASS
+b64_enc_char(0)=A PASS
+b64_enc_char(63)=/ PASS
+b64_dec_value('A')=0 PASS
+b64_dec_value('/')=63 PASS
+b64_dec_value('!')=-1 PASS
+
+=== S2: AES FSb lookup ===
+FSb[0]=0x63 PASS
+FSb[1]=0x7C PASS
+FSb[255]=0x16 PASS
+SubWord(0x00010203)=0x637C777B PASS
+FSb bijective: PASS
+
+=== S3+4: MD5 ctx + error propagation ===
+md_init ret=0 PASS
+state[0]=0x67452301 PASS
+state[3]=0x10325476 PASS
+md_chain(5) ret=0 PASS
+chain state[0]=0x67452304 PASS
+md_chain(-1) ret=-110 PASS
+
+=== S5: vtable dispatch ===
+vtable name=MD5 output_size=16
+vtable init_fn ret=0 PASS
+vtable state[1]=0xEFCDAB89 PASS
+vtable chain_fn(3) ret=0 PASS
+
+=== S6: nested struct (HMAC) ===
+hmac_init ret=0 PASS
+inner.state[0]=0x51731537 PASS
+outer.state[0]=0x3B197F5D PASS
+mode=1 PASS
+
+=== S7: switch/case (key rounds) ===
+get_nr_rounds(128)=10 PASS
+get_nr_rounds(192)=12 PASS
+get_nr_rounds(256)=14 PASS
+get_nr_rounds(64)=-1 PASS
+
+=== S8: const array checksum ===
+sbox_checksum(0,255)=0x544A5204
+sbox_checksum deterministic: PASS
+sbox_checksum(0,3)=0x000004FA
+sbox_checksum(0,3) deterministic: PASS

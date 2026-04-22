@@ -1,0 +1,28 @@
+// M007: Type casting with cast()
+function main() returns int
+    // float to int (truncation)
+    float f = 3.9
+    int n = cast(f, int)
+    print n
+
+    // int to string
+    string s = cast(42, string)
+    print s
+
+    // int to float
+    float g = cast(10, float)
+    print g
+
+    // int to bool
+    bool b1 = cast(1, bool)
+    print b1
+    bool b2 = cast(0, bool)
+    print b2
+
+    // string concatenation with cast
+    int score = 100
+    string msg = "Score: " + cast(score, string)
+    print msg
+
+    return 0
+end function

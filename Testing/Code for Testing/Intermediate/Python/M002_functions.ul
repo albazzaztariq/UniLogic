@@ -1,0 +1,29 @@
+// M002: Functions, recursion, multiple calls
+function add(int a, int b) returns int
+    return a + b
+end function
+
+function multiply(int a, int b) returns int
+    return a * b
+end function
+
+function factorial(int n) returns int
+    if n <= 1
+        return 1
+    end if
+    return n * factorial(n - 1)
+end function
+
+function greet(string name) returns none
+    print "Hello, " + name
+end function
+
+function main() returns int
+    print add(3, 7)
+    print multiply(6, 8)
+    print factorial(5)
+    print factorial(10)
+    greet("Tariq")
+    print add(multiply(3, 4), 5)
+    return 0
+end function

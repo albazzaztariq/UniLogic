@@ -1,0 +1,39 @@
+// T114: Context managers (with/end with)
+
+function get_value() returns int
+    return 42
+end function
+
+function get_name() returns string
+    return "resource"
+end function
+
+function main() returns int
+    // Test 1: with block with as binding
+    with get_value() as val
+        print val
+    end with
+
+    // Test 2: with block with computation
+    with get_value() as v
+        int doubled = v * 2
+        print doubled
+    end with
+
+    // Test 3: with block with string
+    with get_name() as name
+        print "got: " + name
+    end with
+
+    // Test 4: nested with blocks
+    with get_value() as a
+        with get_value() as b
+            print a + b
+        end with
+    end with
+
+    // Test 5: code after with
+    print "after with"
+
+    return 0
+end function

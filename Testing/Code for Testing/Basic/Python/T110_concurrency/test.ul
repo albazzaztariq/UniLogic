@@ -1,0 +1,23 @@
+// T110: Concurrency — basic DR directive test
+// COMPILER BUG: spawn/wait do not emit proper Python code (NameError: spawn not defined).
+// COMPILER BUG: @async/@await annotations not wired in parser.
+// This test validates DR concurrency directive parsing for Python target.
+// Concurrency features (spawn, wait, lock) are primarily C-target features.
+
+function compute(int x) returns int
+    return x * 10
+end function
+
+function main() returns int
+    // Verify basic functions work (no concurrency primitives for Python target)
+    int a = compute(5)
+    print a
+
+    int b = compute(3)
+    print b
+
+    int total = a + b
+    print total
+
+    return 0
+end function

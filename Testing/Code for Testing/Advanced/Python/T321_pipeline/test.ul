@@ -1,0 +1,173 @@
+// Data processing pipeline — filter, transform, aggregate integer data.
+function filter_positive(array int data, int count, array int out) returns int
+  int out_count = 0
+  int i = 0
+  while i < count
+    if data[i] > 0
+      out[out_count] = data[i]
+      out_count = out_count + 1
+    end if
+    i = i + 1
+  end while
+  return out_count
+end function
+
+function filter_above(array int data, int count, array int out, int threshold) returns int
+  int out_count = 0
+  int i = 0
+  while i < count
+    if data[i] > threshold
+      out[out_count] = data[i]
+      out_count = out_count + 1
+    end if
+    i = i + 1
+  end while
+  return out_count
+end function
+
+function filter_below(array int data, int count, array int out, int threshold) returns int
+  int out_count = 0
+  int i = 0
+  while i < count
+    if data[i] < threshold
+      out[out_count] = data[i]
+      out_count = out_count + 1
+    end if
+    i = i + 1
+  end while
+  return out_count
+end function
+
+function transform_double(array int data, int count)
+  int i = 0
+  while i < count
+    data[i] = data[i] * 2
+    i = i + 1
+  end while
+end function
+
+function transform_add(array int data, int count, int value)
+  int i = 0
+  while i < count
+    data[i] = data[i] + value
+    i = i + 1
+  end while
+end function
+
+function transform_clamp(array int data, int count, int lo, int hi)
+  int i = 0
+  while i < count
+    if data[i] < lo
+      data[i] = lo
+    end if
+    if data[i] > hi
+      data[i] = hi
+    end if
+    i = i + 1
+  end while
+end function
+
+function agg_sum(array int data, int count) returns int
+  int total = 0
+  int i = 0
+  while i < count
+    total = total + data[i]
+    i = i + 1
+  end while
+  return total
+end function
+
+function agg_min(array int data, int count) returns int
+  int result = data[0]
+  int i = 1
+  while i < count
+    if data[i] < result
+      result = data[i]
+    end if
+    i = i + 1
+  end while
+  return result
+end function
+
+function agg_max(array int data, int count) returns int
+  int result = data[0]
+  int i = 1
+  while i < count
+    if data[i] > result
+      result = data[i]
+    end if
+    i = i + 1
+  end while
+  return result
+end function
+
+function agg_count_eq(array int data, int count, int target) returns int
+  int result = 0
+  int i = 0
+  while i < count
+    if data[i] == target
+      result = result + 1
+    end if
+    i = i + 1
+  end while
+  return result
+end function
+
+function print_array(array int data, int count)
+  string result = ""
+  int i = 0
+  while i < count
+    if i > 0
+      result = result + " "
+    end if
+    result = result + cast(data[i], string)
+    i = i + 1
+  end while
+  print result
+end function
+
+function copy_array(array int src, array int dst, int count)
+  int i = 0
+  while i < count
+    dst[i] = src[i]
+    i = i + 1
+  end while
+end function
+
+function main() returns int
+  array int raw = [-5, 12, 0, 8, -3, 15, 7, -1, 20, 3, 0, 11, -8, 6, 25]
+  int raw_count = 15
+  array int buf = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  print "--- Stage 1: Filter positive ---"
+  int stage1_count = filter_positive(raw, raw_count, buf)
+  print "count: " + cast(stage1_count, string)
+  print_array(buf, stage1_count)
+  print "sum: " + cast(agg_sum(buf, stage1_count), string)
+  print "--- Stage 2: Transform double ---"
+  transform_double(buf, stage1_count)
+  print_array(buf, stage1_count)
+  print "sum: " + cast(agg_sum(buf, stage1_count), string)
+  print "min: " + cast(agg_min(buf, stage1_count), string)
+  print "max: " + cast(agg_max(buf, stage1_count), string)
+  print "--- Stage 3: Filter above 20 ---"
+  array int buf2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  int stage3_count = filter_above(buf, stage1_count, buf2, 20)
+  print "count: " + cast(stage3_count, string)
+  print_array(buf2, stage3_count)
+  print "--- Stage 4: Clamp to [25, 40] ---"
+  transform_clamp(buf2, stage3_count, 25, 40)
+  print_array(buf2, stage3_count)
+  print "sum: " + cast(agg_sum(buf2, stage3_count), string)
+  print "--- Pipeline 2: filter below 10, add 100 ---"
+  array int buf3 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  int p2_count = filter_below(raw, raw_count, buf3, 10)
+  print "filtered: " + cast(p2_count, string)
+  transform_add(buf3, p2_count, 100)
+  print_array(buf3, p2_count)
+  print "sum: " + cast(agg_sum(buf3, p2_count), string)
+  print "--- Aggregation ---"
+  print "count 0 in raw: " + cast(agg_count_eq(raw, raw_count, 0), string)
+  print "count 12 in raw: " + cast(agg_count_eq(raw, raw_count, 12), string)
+  return 0
+end function
+

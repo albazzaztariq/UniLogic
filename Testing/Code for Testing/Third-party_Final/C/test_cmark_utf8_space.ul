@@ -1,0 +1,52 @@
+// Translated from test_cmark_utf8_space.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function cmark_utf8proc_is_space(int uc) returns int
+  return (((((((((((uc == 9) or (uc == 10)) or (uc == 12)) or (uc == 13)) or (uc == 32)) or (uc == 160)) or (uc == 5760)) or ((uc >= 8192) and (uc <= 8202))) or (uc == 8239)) or (uc == 8287)) or (uc == 12288))
+end function
+
+function main() returns int
+  print "is_space(9)  = " + cast(cmark_utf8proc_is_space(9), string)
+  print "is_space(10) = " + cast(cmark_utf8proc_is_space(10), string)
+  print "is_space(12) = " + cast(cmark_utf8proc_is_space(12), string)
+  print "is_space(13) = " + cast(cmark_utf8proc_is_space(13), string)
+  print "is_space(32) = " + cast(cmark_utf8proc_is_space(32), string)
+  print "is_space(160) = " + cast(cmark_utf8proc_is_space(160), string)
+  print "is_space(5760) = " + cast(cmark_utf8proc_is_space(5760), string)
+  print "is_space(8192) = " + cast(cmark_utf8proc_is_space(8192), string)
+  print "is_space(8202) = " + cast(cmark_utf8proc_is_space(8202), string)
+  print "is_space(8239) = " + cast(cmark_utf8proc_is_space(8239), string)
+  print "is_space(8287) = " + cast(cmark_utf8proc_is_space(8287), string)
+  print "is_space(12288) = " + cast(cmark_utf8proc_is_space(12288), string)
+  print "is_space(65) = " + cast(cmark_utf8proc_is_space(65), string)
+  print "is_space(0) = " + cast(cmark_utf8proc_is_space(0), string)
+  print "is_space(8191) = " + cast(cmark_utf8proc_is_space(8191), string)
+  print "is_space(8203) = " + cast(cmark_utf8proc_is_space(8203), string)
+  return 0
+end function
+

@@ -1,0 +1,5 @@
+empty: free=8 used=0
+head+3 tail+0: free=5 used=3
+full (tail=head+1): free=0 used=8
+wrapped head+2 tail+6: free=3 used=5
+subtraction head-tail=7

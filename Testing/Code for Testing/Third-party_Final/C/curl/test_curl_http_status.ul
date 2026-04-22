@@ -1,0 +1,91 @@
+// Translated from test_curl_http_status.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function http_status_category(int code) returns <char>
+  if (code / 100) == 1
+    return "informational"
+  else if (code / 100) == 2
+    return "success"
+  else if (code / 100) == 3
+    return "redirect"
+  else if (code / 100) == 4
+    return "client_error"
+  else if (code / 100) == 5
+    return "server_error"
+  else
+    return "unknown"
+  end if
+end function
+
+function http_status_is_redirect(int code) returns int
+  if code == 301 or code == 302 or code == 303 or code == 307 or code == 308
+    return 1
+  else
+    return 0
+  end if
+end function
+
+function http_status_is_informational(int code) returns int
+  auto _tern_1 = 0
+  if ((code >= 100) and (code < 200))
+    _tern_1 = 1
+  end if
+  return _tern_1
+end function
+
+function http_status_is_success(int code) returns int
+  auto _tern_2 = 0
+  if ((code >= 200) and (code < 300))
+    _tern_2 = 1
+  end if
+  return _tern_2
+end function
+
+function http_should_retry(int code) returns int
+  if ((code == 429) or (code == 503))
+    return 1
+  end if
+  return 0
+end function
+
+function main() returns int
+  array int codes = [100, 101, 200, 201, 204, 206, 301, 302, 303, 304, 307, 308, 400, 401, 403, 404, 405, 408, 429, 500, 502, 503, 504, 0, 999]
+  int n = 25
+  int i = 0
+  print "=== HTTP Status Classification ==="
+  i = 0
+  while (i < n)
+    int c = codes[i]
+    print "code=" + cast(c, string) + " cat=" + http_status_category(c) + " redirect=" + cast(http_status_is_redirect(c), string) + " info=" + cast(http_status_is_informational(c), string) + " success=" + cast(http_status_is_success(c), string) + " retry=" + cast(http_should_retry(c), string)
+    i = i + 1
+  end while
+  print "=== Range Tests ==="
+  print "199/100=" + cast((199 / 100), string) + " 200/100=" + cast((200 / 100), string) + " 299/100=" + cast((299 / 100), string) + " 300/100=" + cast((300 / 100), string)
+  return 0
+end function
+

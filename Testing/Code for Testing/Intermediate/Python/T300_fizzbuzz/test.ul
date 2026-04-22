@@ -1,0 +1,65 @@
+// FizzBuzz with extensions — a classic programming exercise.
+function fizzbuzz(int n) returns string
+  if n % 15 == 0
+    return "FizzBuzz"
+  else
+    if n % 3 == 0
+      return "Fizz"
+    else
+      if n % 5 == 0
+        return "Buzz"
+      else
+        return cast(n, string)
+      end if
+    end if
+  end if
+end function
+
+function count_fizz(int limit) returns int
+  int count = 0
+  int i = 1
+  while i <= limit
+    if fizzbuzz(i) == "Fizz"
+      count = count + 1
+    end if
+    i = i + 1
+  end while
+  return count
+end function
+
+function count_buzz(int limit) returns int
+  int count = 0
+  int i = 1
+  while i <= limit
+    if fizzbuzz(i) == "Buzz"
+      count = count + 1
+    end if
+    i = i + 1
+  end while
+  return count
+end function
+
+function count_fizzbuzz(int limit) returns int
+  int count = 0
+  int i = 1
+  while i <= limit
+    if fizzbuzz(i) == "FizzBuzz"
+      count = count + 1
+    end if
+    i = i + 1
+  end while
+  return count
+end function
+
+function main() returns int
+  int i = 1
+  while i <= 20
+    print fizzbuzz(i)
+    i = i + 1
+  end while
+  print "Fizz count: " + cast(count_fizz(100), string)
+  print "Buzz count: " + cast(count_buzz(100), string)
+  print "FizzBuzz count: " + cast(count_fizzbuzz(100), string)
+  return 0
+end function
+

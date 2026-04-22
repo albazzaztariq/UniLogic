@@ -1,0 +1,37 @@
+// T121: Three-file program — main, geometry, convert, format
+
+import "geometry.ul" function area_rect(int w, int h) returns int
+import "geometry.ul" function perimeter_rect(int w, int h) returns int
+import "geometry.ul" function area_triangle(int base, int height) returns int
+
+import "convert.ul" function cm_to_mm(int cm) returns int
+import "convert.ul" function m_to_cm(int m) returns int
+import "convert.ul" function kg_to_grams(int kg) returns int
+
+import "format.ul" function format_result(string label, int value) returns string
+import "format.ul" function format_pair(string label, int a, int b) returns string
+
+function main() returns int
+    // Test 1: geometry functions
+    int w = 5
+    int h = 3
+    print format_result("Area", area_rect(w, h))
+    print format_result("Perimeter", perimeter_rect(w, h))
+
+    // Test 2: triangle
+    print format_result("Triangle area", area_triangle(10, 6))
+
+    // Test 3: conversions
+    print format_result("2m in cm", m_to_cm(2))
+    print format_result("15cm in mm", cm_to_mm(15))
+    print format_result("3kg in grams", kg_to_grams(3))
+
+    // Test 4: format_pair
+    print format_pair("Rectangle", w, h)
+
+    // Test 5: compose across modules
+    int area_mm = cm_to_mm(cm_to_mm(area_rect(2, 3)))
+    print format_result("Area in mm^2", area_mm)
+
+    return 0
+end function

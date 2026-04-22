@@ -1,0 +1,9 @@
+caught: cannot divide by zero
+5
+in try
+in finally
+catch-all: unknown problem
+caught: test
+finally ran
+5
+20

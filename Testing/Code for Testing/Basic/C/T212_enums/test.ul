@@ -1,0 +1,70 @@
+// T112: Enums (fixed), constants, module-level vars
+
+// Constants
+constant int MAX_ITEMS = 50
+constant int DOUBLED = MAX_ITEMS * 2
+constant string VERSION = "1.0"
+
+// Module-level variables
+int counter = 0
+string prefix = "item_"
+
+// Fixed enumeration
+fixed Status
+    pending  = 0
+    active   = 1
+    closed   = 2
+end fixed
+
+fixed Level
+    low    = 10
+    medium = 20
+    high   = 30
+end fixed
+
+function increment_counter() returns int
+    counter = counter + 1
+    return counter
+end function
+
+function main() returns int
+    // Test 1: constants
+    print MAX_ITEMS
+    print DOUBLED
+    print VERSION
+
+    // Test 2: module-level vars
+    print counter
+    print prefix
+
+    // Test 3: module var mutation via function
+    print increment_counter()
+    print increment_counter()
+    print increment_counter()
+
+    // Test 4: enum values
+    int s = Status.active
+    print s
+
+    // Test 5: enum in expression
+    int total = Status.pending + Status.active + Status.closed
+    print total
+
+    // Test 6: enum comparison
+    if s == Status.active
+        print "is active"
+    end if
+
+    // Test 7: enum match
+    int lev = Level.medium
+    match lev
+        10
+            print "low"
+        20
+            print "medium"
+        30
+            print "high"
+    end match
+
+    return 0
+end function

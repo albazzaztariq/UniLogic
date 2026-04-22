@@ -1,0 +1,38 @@
+=== 1. SHA-256 init ===
+init ret=0 PASS
+h[0]=1779033703 PASS
+h[7]=1541459225 PASS
+round=0 PASS
+status=0 PASS
+
+=== 2. Load block ===
+load ret=0 PASS
+w[0]=1633837952 PASS
+w[7]=0 PASS
+
+=== 3. One SHA-256 round ===
+round ret=0 PASS
+round count=1 PASS
+h[0] changed: PASS
+h[1]=old h[0]: PASS
+
+=== 4. Error propagation ===
+bad round ret=-1 PASS
+status=-1 PASS
+blocked load ret=-1 PASS
+
+=== 5. Switch/case classification ===
+classify(0)=10 PASS
+classify(1)=20 PASS
+classify(5)=20 PASS
+classify(7)=40 PASS
+
+=== 6. K constant table ===
+K[0]=1116352408 PASS
+K[7]=2870763221 PASS
+K[-1]=0 PASS
+K[16]=0 PASS
+
+=== 7. Determinism check ===
+two-ctx match: PASS
+after round 1: PASS

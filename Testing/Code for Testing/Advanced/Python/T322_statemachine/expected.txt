@@ -1,0 +1,58 @@
+=== Traffic Light State Machine ===
+--- Run 1: No pedestrians ---
+tick 0: state=RED dur=30 ped=0
+tick 1: state=GREEN dur=45 ped=0
+tick 2: state=YELLOW dur=5 ped=0
+tick 3: state=RED dur=30 ped=0
+tick 4: state=GREEN dur=45 ped=0
+tick 5: state=YELLOW dur=5 ped=0
+tick 6: state=RED dur=30 ped=0
+tick 7: state=GREEN dur=45 ped=0
+--- Summary ---
+transitions: 8
+total_time: 235
+time_in_red: 90
+time_in_green: 135
+time_in_yellow: 10
+time_in_ped: 0
+final_state: YELLOW
+--- Run 2: Pedestrian at tick 1 ---
+tick 0: state=RED dur=30 ped=0
+tick 1: state=GREEN dur=45 ped=1
+tick 2: state=YELLOW dur=5 ped=0
+tick 3: state=RED dur=30 ped=0
+tick 4: state=GREEN dur=45 ped=0
+tick 5: state=YELLOW dur=5 ped=0
+tick 6: state=RED dur=30 ped=0
+tick 7: state=GREEN dur=45 ped=0
+--- Summary ---
+transitions: 8
+total_time: 235
+time_in_red: 90
+time_in_green: 135
+time_in_yellow: 10
+time_in_ped: 0
+final_state: YELLOW
+--- Run 3: Multiple pedestrians ---
+tick 0: state=RED dur=30 ped=1
+tick 1: state=PED_WALK dur=20 ped=0
+tick 2: state=PED_FLASH dur=10 ped=0
+tick 3: state=RED dur=30 ped=1
+tick 4: state=PED_WALK dur=20 ped=0
+tick 5: state=PED_FLASH dur=10 ped=0
+tick 6: state=RED dur=30 ped=1
+tick 7: state=PED_WALK dur=20 ped=0
+tick 8: state=PED_FLASH dur=10 ped=0
+tick 9: state=RED dur=30 ped=0
+--- Summary ---
+transitions: 10
+total_time: 210
+time_in_red: 120
+time_in_green: 0
+time_in_yellow: 0
+time_in_ped: 90
+final_state: GREEN
+--- Transition counts ---
+run1: 8
+run2: 8
+run3: 10

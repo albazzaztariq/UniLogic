@@ -1,0 +1,24 @@
+// task_data.ul — task data operations (stateless, arrays passed in)
+
+function find_task_index(array string names, int count, string target) returns int
+    int i = 0
+    while i < count
+        if names[i] == target
+            return i
+        end if
+        i = i + 1
+    end while
+    return -1
+end function
+
+function count_done(array int done, int count) returns int
+    int result = 0
+    int i = 0
+    while i < count
+        if done[i] == 1
+            result = result + 1
+        end if
+        i = i + 1
+    end while
+    return result
+end function

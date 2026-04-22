@@ -1,31 +1,47 @@
 # UniLogic
 
-**Syntax reference, safety documentation, and compiler source.**
+One language for everything. UL compiles to C, Python, JavaScript,
+LLVM IR, and WebAssembly from a single source file. Runtime behavior
+— memory model, safety level, integer width, concurrency — is
+configurable per file via DR settings.
 
-## Live Site
+## Quick Start
 
-| Page | URL |
-|------|-----|
-| Home Page | https://albazzaztariq.github.io/UniLogic/ |
+1. Install Python 3.10+
+2. Clone this repo
+3. Run a program:
+   ```
+   ul run hello.ul
+   ```
 
-## What is UniLogic?
+## What it does
 
-A unified systems, application, and web language that transpiles to C, Python, and JavaScript. Runtime behavior such as memory model, stack size, safety checks and others are settings, not just language defaults. Includes a formal memory safety proof system with verifiable certificates.
+- Compiles to 5 targets from one source file
+- Four memory models: gc, manual, refcount, arena — per file
+- Result types with automatic error propagation
+- Static types with optional dynamic mode
+- Built-in profiler: --profile flag, VS Code flame graph panel
+- Package manager: ul install, ul new, ul build, ul test
 
-Standard mode reads like natural language. Base mode adds memory management, pointers, and bitwise operations in the same file — no mode switch, no separate language.
+## Tools
 
-**Example — `container_of`.** Recovering a struct from a pointer to one of its members. A pattern used throughout the Linux kernel.
+- **VS Code Extension** — syntax highlighting, diagnostics,
+  go-to-definition, AI-powered explainers, profiler panels
+- **Project Manager** — Qt C++ GUI for building and managing projects
+- **REPL** — interactive interpreter, also runs in browser
 
-![container_of side-by-side](container_of.png)
+## Documentation
 
-## Compiler
+- [Website](https://albazzaztariq.github.io/UniLogic/)
+- [Getting Started](https://albazzaztariq.github.io/UniLogic/getting-started.html)
+- [Language Reference](https://albazzaztariq.github.io/UniLogic/language-main.html)
+- [DR Settings](https://albazzaztariq.github.io/UniLogic/dynamic-runtime.html)
 
-Requires Python 3 and clang or gcc.
+## Build from source
 
-## Safety
+See [BUILD.md](GUI_Qt/BUILD.md) for Project Manager build instructions.
+The compiler requires Python 3.10+. No build step needed.
 
-UniLogic targets mathematically proven memory safety and functional correctness via a formal verification pipeline. See the [Safety page](https://albazzaztariq.github.io/UniLogic/safety.html) for the full methodology.
+## License
 
-## Dynamic Runtime
-
-UniLogic exposes 9 runtime settings — memory model, allocator, overflow behaviour, stack size, bounds checking, float semantics, and more — declared per source file at compile time. See the [Runtime page](https://albazzaztariq.github.io/UniLogic/dynamic-runtime.html) for all settings.
+MIT

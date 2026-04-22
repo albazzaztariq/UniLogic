@@ -1,0 +1,13 @@
+// geometry.ul — geometric calculations
+
+function area_rect(int w, int h) returns int
+    return w * h
+end function
+
+function perimeter_rect(int w, int h) returns int
+    return 2 * (w + h)
+end function
+
+function area_triangle(int base, int height) returns int
+    return base * height / 2
+end function

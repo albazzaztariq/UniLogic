@@ -1,0 +1,150 @@
+@dr python_compat = true
+
+auto _HANDLED_FUNCTIONS = empty
+auto op_name = empty
+
+function implements__decorator(int func)
+  _HANDLED_FUNCTIONS[op_name] = func
+  return func
+end function
+
+// TRANSPILER: dict values cast to string — may lose type information
+map _HANDLED_FUNCTIONS = map_new()
+function implements(int op_name)
+  // Decorator to register an implementation for an op.
+  // nested function 'decorator' hoisted to file scope as 'implements__decorator'
+  return implements__decorator
+end function
+
+object Tensor
+  int data
+  int dtype
+  array int shape
+  
+  function __init__(int data, int dtype)
+    self.data = data
+    self.dtype = dtype
+    self.shape = [data.len()]
+  end function
+  
+  
+  function __torch_function_dispatch__(int op_name, int _py_args)
+    if _HANDLED_FUNCTIONS.contains(op_name)
+      return _HANDLED_FUNCTIONS[op_name](_py_args)
+    end if
+    return empty
+  end function
+  
+  
+  function _py_size()
+    return self.shape[0]
+  end function
+  
+  
+  function item(int idx)
+    return self.data[idx]
+  end function
+  
+  
+  function dtype_name()
+    return self.dtype
+  end function
+  
+end object
+
+object QuantizedTensor forks Tensor
+  int scale
+  int zero_point
+  
+  function __init__(int data, int dtype, int scale, int zero_point)
+    Tensor.__init__(self, data, dtype)
+    self.scale = scale
+    self.zero_point = zero_point
+  end function
+  
+  
+  function dequantize()
+    result = []
+    for each v in self.data
+      result.append(v - self.zero_point * self.scale)
+    end for
+    return Tensor(result, "float32")
+  end function
+  
+  
+  function dtype_name()
+    return "quantized_" + self.dtype
+  end function
+  
+end object
+
+function dispatch(int op_name, ...)
+  // Simulate torch function dispatch: check if first arg supports __torch_function__.
+  if _va_args.len() > 0
+    first = _va_args[0]
+    if hasattr(first, "__torch_function_dispatch__")
+      result = first.__torch_function_dispatch__(op_name, _py_list(_va_args))
+      if result != empty
+        return result
+      end if
+    end if
+  end if
+  return empty
+end function
+
+// TRANSPILER WARNING line 65: decorator @ — manual conversion required
+function _add(int a, int b)
+  if a.data.len() != b.data.len()
+    return empty
+  end if
+  result = []
+  for each i in range(a.data.len())
+    result.append(a.data[i] + b.data[i])
+  end for
+  return Tensor(result, a.dtype)
+end function
+
+// TRANSPILER WARNING line 75: decorator @ — manual conversion required
+function _mul(int a, int b)
+  if a.data.len() != b.data.len()
+    return empty
+  end if
+  result = []
+  for each i in range(a.data.len())
+    result.append(a.data[i] * b.data[i])
+  end for
+  return Tensor(result, a.dtype)
+end function
+
+// TRANSPILER WARNING line 85: decorator @ — manual conversion required
+function _sum(int a)
+  total = 0
+  for each v in a.data
+    total = total + v
+  end for
+  return total
+end function
+
+function main()
+  t1 = Tensor([1, 2, 3], "float32")
+  t2 = Tensor([4, 5, 6], "float32")
+  r_add = dispatch("add", t1, t2)
+  print "add result size: " + cast(r_add.size(), string)
+  print "add result[0]: " + cast(r_add.item(0), string)
+  print "add result[2]: " + cast(r_add.item(2), string)
+  r_mul = dispatch("mul", t1, t2)
+  print "mul result[1]: " + cast(r_mul.item(1), string)
+  r_sum = dispatch("sum", t1)
+  print "sum result: " + cast(r_sum, string)
+  qt = QuantizedTensor([100, 110, 120], "int8", 0.1, 100)
+  print "quantized dtype: " + cast(qt.dtype_name(), string)
+  dq = qt.dequantize()
+  print "dequantize[0]: " + cast(dq.item(0), string)
+  print "dequantize[1]: " + cast(round(dq.item(1), 6), string)
+  print "dequantize[2]: " + cast(dq.item(2), string)
+  r_add2 = dispatch("add", dq, t1)
+  print "add dequant+t1 result[0]: " + cast(r_add2.item(0), string)
+  r_unknown = dispatch("unknown_op", t1, t2)
+  print "unknown op result: " + cast(r_unknown, string)
+end function
+

@@ -1,0 +1,36 @@
+// T120: Two-file program — main imports a utility module
+
+import "utils.ul" function clamp(int val, int lo, int hi) returns int
+import "utils.ul" function abs_val(int x) returns int
+import "utils.ul" function max_of(int a, int b) returns int
+import "utils.ul" function repeat_string(string s, int n) returns string
+
+function main() returns int
+    // Test 1: clamp within range
+    print clamp(5, 0, 10)
+
+    // Test 2: clamp below
+    print clamp(-3, 0, 10)
+
+    // Test 3: clamp above
+    print clamp(15, 0, 10)
+
+    // Test 4: abs_val positive
+    print abs_val(7)
+
+    // Test 5: abs_val negative
+    print abs_val(-12)
+
+    // Test 6: max_of
+    print max_of(3, 8)
+    print max_of(20, 5)
+
+    // Test 7: repeat_string
+    print repeat_string("ab", 3)
+
+    // Test 8: compose imported functions
+    int result = clamp(abs_val(-25), 0, 20)
+    print result
+
+    return 0
+end function

@@ -1,0 +1,58 @@
+// T203: Arrays, lists — C target version
+// Avoids array.len() which is not defined in C codegen
+
+function main() returns int
+    // Test 1: array creation and access
+    array int nums = [10, 20, 30, 40, 50]
+    print nums[0]
+    print nums[4]
+
+    // Test 2: array iteration (known size)
+    int sum = 0
+    for each n in nums
+        sum = sum + n
+    end for
+    print sum
+
+    // Test 3: list — dynamic
+    list int scores
+    scores.append(100)
+    scores.append(200)
+    scores.append(300)
+    print scores.len()
+    print scores[0]
+    print scores[2]
+
+    // Test 4: list insert
+    scores.insert(1, 150)
+    print scores[1]
+
+    // Test 5: list remove
+    scores.remove(150)
+    print scores.len()
+
+    // Test 6: list drop
+    int dropped = scores.drop(0)
+    print dropped
+
+    // Test 7: list for each
+    list int items = [5, 10, 15]
+    int item_sum = 0
+    for each it in items
+        item_sum = item_sum + it
+    end for
+    print item_sum
+
+    // Test 8: array slice
+    array int sliced = nums[1:4]
+    print sliced[0]
+    print sliced[1]
+    print sliced[2]
+
+    // Test 9: x in list
+    if 30 in nums
+        print "found"
+    end if
+
+    return 0
+end function

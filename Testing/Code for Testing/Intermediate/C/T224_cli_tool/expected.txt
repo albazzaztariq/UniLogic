@@ -1,0 +1,24 @@
+--- Adding tasks ---
+Tasks added: 5
+--- All tasks ---
+0. [ ] Buy groceries
+1. [ ] Write report
+2. [ ] Build prototype
+3. [ ] Review code
+4. [ ] Buy hardware
+--- Completing tasks ---
+Completed: 2
+--- Updated tasks ---
+0. [x] Buy groceries
+1. [ ] Write report
+2. [x] Build prototype
+3. [ ] Review code
+4. [ ] Buy hardware
+--- Search: Buy ---
+0. [x] Buy groceries
+4. [ ] Buy hardware
+--- Find ---
+Found 'Review code' at index: 3
+Found 'Nonexistent' at index: -1
+--- Summary ---
+2/5 completed

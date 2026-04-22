@@ -1,0 +1,50 @@
+// Translated from test_cmark_ctype.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function main() returns int
+  print "isspace(tab)=" + cast(cmark_isspace(9), string)
+  print "isspace(newline)=" + cast(cmark_isspace(10), string)
+  print "isspace(space)=" + cast(cmark_isspace(32), string)
+  print "isspace(A)=" + cast(cmark_isspace(65), string)
+  print "ispunct(!)=" + cast(cmark_ispunct(33), string)
+  print "ispunct(.)=" + cast(cmark_ispunct(46), string)
+  print "ispunct(a)=" + cast(cmark_ispunct(97), string)
+  print "ispunct(1)=" + cast(cmark_ispunct(49), string)
+  print "isdigit(0)=" + cast(cmark_isdigit(48), string)
+  print "isdigit(9)=" + cast(cmark_isdigit(57), string)
+  print "isdigit(a)=" + cast(cmark_isdigit(97), string)
+  print "isalpha(a)=" + cast(cmark_isalpha(97), string)
+  print "isalpha(Z)=" + cast(cmark_isalpha(90), string)
+  print "isalpha(5)=" + cast(cmark_isalpha(53), string)
+  return 0
+end function
+

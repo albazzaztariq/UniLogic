@@ -1,0 +1,72 @@
+// T106: Error handling — try/catch/finally, Result types, ? propagation
+
+function safe_divide(int a, int b) returns int|error
+    if b == 0
+        return error "division by zero"
+    end if
+    return ok a / b
+end function
+
+function chain_calc(int x) returns int|error
+    int half = safe_divide(x, 2)?
+    int doubled = half * 2
+    return ok doubled
+end function
+
+function risky_divide(int a, int b) returns int
+    if b == 0
+        throw ArithmeticError "cannot divide by zero"
+    end if
+    return a / b
+end function
+
+function main() returns int
+    // Test 1: basic try/catch
+    try
+        int r = risky_divide(10, 0)
+        print "should not reach"
+    catch ArithmeticError as e
+        print "caught: " + e
+    end try
+
+    // Test 2: try with no exception
+    try
+        int r = risky_divide(10, 2)
+        print r
+    catch ArithmeticError
+        print "should not catch"
+    end try
+
+    // Test 3: finally always runs
+    try
+        print "in try"
+    finally
+        print "in finally"
+    end try
+
+    // Test 4: catch-all
+    try
+        throw SomeError "unknown problem"
+    catch as e
+        print "catch-all: " + e
+    end try
+
+    // Test 5: try/catch/finally combo
+    try
+        throw TestError "test"
+    catch TestError as e
+        print "caught: " + e
+    finally
+        print "finally ran"
+    end try
+
+    // Test 6: Result type with ? propagation — ok path
+    int a = safe_divide(10, 2)?
+    print a
+
+    // Test 7: Result type — chain calc
+    int b = chain_calc(20)?
+    print b
+
+    return 0
+end function

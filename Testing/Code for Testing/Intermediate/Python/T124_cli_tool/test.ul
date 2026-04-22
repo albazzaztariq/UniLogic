@@ -1,0 +1,73 @@
+// T124: CLI task manager tool (3 support files)
+// All state managed in main, functions are stateless
+
+import "task_data.ul" function find_task_index(array string names, int count, string target) returns int
+import "task_data.ul" function count_done(array int done, int count) returns int
+
+import "task_format.ul" function format_task_line(int index, string name, int done) returns string
+import "task_format.ul" function format_summary(int total, int completed) returns string
+
+import "task_search.ul" function starts_with(string s, string prefix) returns bool
+
+function main() returns int
+    // Task state
+    array string names = ["", "", "", "", "", "", "", "", "", ""]
+    array int done = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    int task_count = 0
+
+    // Add tasks
+    print "--- Adding tasks ---"
+    names[0] = "Buy groceries"
+    names[1] = "Write report"
+    names[2] = "Build prototype"
+    names[3] = "Review code"
+    names[4] = "Buy hardware"
+    task_count = 5
+    print "Tasks added: " + cast(task_count, string)
+
+    // List all tasks
+    print "--- All tasks ---"
+    int i = 0
+    while i < task_count
+        print format_task_line(i, names[i], done[i])
+        i = i + 1
+    end while
+
+    // Complete some tasks
+    print "--- Completing tasks ---"
+    done[0] = 1
+    done[2] = 1
+    print "Completed: " + cast(count_done(done, task_count), string)
+
+    // List tasks again
+    print "--- Updated tasks ---"
+    i = 0
+    while i < task_count
+        print format_task_line(i, names[i], done[i])
+        i = i + 1
+    end while
+
+    // Search for tasks starting with "Buy"
+    print "--- Search: Buy ---"
+    i = 0
+    while i < task_count
+        if starts_with(names[i], "Buy")
+            print format_task_line(i, names[i], done[i])
+        end if
+        i = i + 1
+    end while
+
+    // Find a specific task
+    print "--- Find ---"
+    int idx = find_task_index(names, task_count, "Review code")
+    print "Found 'Review code' at index: " + cast(idx, string)
+
+    int idx2 = find_task_index(names, task_count, "Nonexistent")
+    print "Found 'Nonexistent' at index: " + cast(idx2, string)
+
+    // Summary
+    print "--- Summary ---"
+    print format_summary(task_count, count_done(done, task_count))
+
+    return 0
+end function

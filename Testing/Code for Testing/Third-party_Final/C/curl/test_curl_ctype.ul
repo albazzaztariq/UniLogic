@@ -1,0 +1,110 @@
+// Translated from test_curl_ctype.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function curl_islower(int x) returns int
+  return ((x >= 97) and (x <= 122))
+end function
+
+function curl_isupper(int x) returns int
+  return ((x >= 65) and (x <= 90))
+end function
+
+function curl_isdigit(int x) returns int
+  return ((x >= 48) and (x <= 57))
+end function
+
+function curl_isalpha(int x) returns int
+  return (curl_islower(x) or curl_isupper(x))
+end function
+
+function curl_isalnum(int x) returns int
+  return ((curl_isdigit(x) or curl_islower(x)) or curl_isupper(x))
+end function
+
+function curl_islowhexalpha(int x) returns int
+  return ((x >= 97) and (x <= 102))
+end function
+
+function curl_isuphexalpha(int x) returns int
+  return ((x >= 65) and (x <= 70))
+end function
+
+function curl_isxdigit(int x) returns int
+  return ((curl_isdigit(x) or curl_islowhexalpha(x)) or curl_isuphexalpha(x))
+end function
+
+function curl_isurlpuntcs(int x) returns int
+  return ((((x == 45) or (x == 46)) or (x == 95)) or (x == 126))
+end function
+
+function curl_isunreserved(int x) returns int
+  return (curl_isalnum(x) or curl_isurlpuntcs(x))
+end function
+
+function curl_isblank(int x) returns int
+  return ((x == 32) or (x == 9))
+end function
+
+function curl_isspace(int x) returns int
+  return (curl_isblank(x) or ((x >= 10) and (x <= 13)))
+end function
+
+function curl_is_token_char(int x) returns int
+  if ((x <= 32) or (x >= 127))
+    return 0
+  end if
+  if x == 40 or x == 41 or x == 44 or x == 47 or x == 58 or x == 59 or x == 60 or x == 61 or x == 62 or x == 63 or x == 64 or x == 91 or x == 92 or x == 93 or x == 123 or x == 125 or x == 34
+    return 0
+  else
+    return 1
+  end if
+end function
+
+function main() returns int
+  int i = 0
+  array int chars = [48, 57, 97, 102, 122, 65, 70, 90, 103, 71, 45, 46, 95, 126, 43, 47, 32, 9, 10, 13, 33, 35, 37, 38]
+  int n = 24
+  print "=== curl ctype checks ==="
+  i = 0
+  while (i < n)
+    int c1 = chars[i]
+    print "chr=" + cast(c1, string) + " alpha=" + cast(curl_isalpha(c1), string) + " digit=" + cast(curl_isdigit(c1), string) + " xdigit=" + cast(curl_isxdigit(c1), string) + " alnum=" + cast(curl_isalnum(c1), string) + " unresvd=" + cast(curl_isunreserved(c1), string) + " space=" + cast(curl_isspace(c1), string)
+    i = i + 1
+  end while
+  print "=== token char check ==="
+  array int tkchars = [97, 90, 48, 45, 95, 40, 58, 32, 10]
+  int tn = 9
+  i = 0
+  while (i < tn)
+    int c2 = tkchars[i]
+    print "chr=" + cast(c2, string) + " token=" + cast(curl_is_token_char(c2), string)
+    i = i + 1
+  end while
+  return 0
+end function
+

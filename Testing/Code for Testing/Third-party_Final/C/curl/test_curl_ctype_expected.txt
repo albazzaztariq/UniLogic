@@ -1,0 +1,35 @@
+=== curl ctype checks ===
+chr=48 alpha=0 digit=1 xdigit=1 alnum=1 unresvd=1 space=0
+chr=57 alpha=0 digit=1 xdigit=1 alnum=1 unresvd=1 space=0
+chr=97 alpha=1 digit=0 xdigit=1 alnum=1 unresvd=1 space=0
+chr=102 alpha=1 digit=0 xdigit=1 alnum=1 unresvd=1 space=0
+chr=122 alpha=1 digit=0 xdigit=0 alnum=1 unresvd=1 space=0
+chr=65 alpha=1 digit=0 xdigit=1 alnum=1 unresvd=1 space=0
+chr=70 alpha=1 digit=0 xdigit=1 alnum=1 unresvd=1 space=0
+chr=90 alpha=1 digit=0 xdigit=0 alnum=1 unresvd=1 space=0
+chr=103 alpha=1 digit=0 xdigit=0 alnum=1 unresvd=1 space=0
+chr=71 alpha=1 digit=0 xdigit=0 alnum=1 unresvd=1 space=0
+chr=45 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=1 space=0
+chr=46 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=1 space=0
+chr=95 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=1 space=0
+chr=126 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=1 space=0
+chr=43 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=0 space=0
+chr=47 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=0 space=0
+chr=32 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=0 space=1
+chr=9 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=0 space=1
+chr=10 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=0 space=1
+chr=13 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=0 space=1
+chr=33 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=0 space=0
+chr=35 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=0 space=0
+chr=37 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=0 space=0
+chr=38 alpha=0 digit=0 xdigit=0 alnum=0 unresvd=0 space=0
+=== token char check ===
+chr=97 token=1
+chr=90 token=1
+chr=48 token=1
+chr=45 token=1
+chr=95 token=1
+chr=40 token=0
+chr=58 token=0
+chr=32 token=0
+chr=10 token=0

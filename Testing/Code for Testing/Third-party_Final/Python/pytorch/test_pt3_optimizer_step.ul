@@ -1,0 +1,175 @@
+@dr python_compat = true
+
+object Parameter
+  int data
+  int grad
+  
+  function __init__(int data)
+    self.data = data
+    self.grad = 0
+  end function
+  
+  
+  function set_grad(int g)
+    self.grad = g
+  end function
+  
+  
+  function zero_grad()
+    self.grad = 0
+  end function
+  
+end object
+
+object SGD
+  array int param_groups
+  int state
+  
+  function __init__()
+    self.param_groups = []
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict0 = map_new()
+    self.state = _dict0
+  end function
+  
+  
+  function add_param_group(int group)
+    self.param_groups.append(group)
+  end function
+  
+  
+  function zero_grad()
+    for each group in self.param_groups
+      params = group["params"]
+      for each p in params
+        p.zero_grad()
+      end for
+    end for
+  end function
+  
+  
+  function step()
+    for each group in self.param_groups
+      lr = group["lr"]
+      momentum = group["momentum"]
+      params = group["params"]
+      for each p in params
+        if p.grad == 0
+          continue
+        end if
+        param_id = id(p)
+        if not self.state.contains(param_id)
+          // TRANSPILER: dict values cast to string — may lose type information
+          map _dict1 = map_new()
+          map_set(_dict1, "momentum_buffer", cast(0, string))
+          self.state[param_id] = _dict1
+        end if
+        buf = self.state[param_id]["momentum_buffer"]
+        buf = momentum * buf + p.grad
+        self.state[param_id]["momentum_buffer"] = buf
+        p.data = p.data - lr * buf
+      end for
+    end for
+  end function
+  
+end object
+
+object Adam
+  array int param_groups
+  int state
+  int step_count
+  
+  function __init__()
+    self.param_groups = []
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict2 = map_new()
+    self.state = _dict2
+    self.step_count = 0
+  end function
+  
+  
+  function add_param_group(int group)
+    self.param_groups.append(group)
+  end function
+  
+  
+  function zero_grad()
+    for each group in self.param_groups
+      for each p in group["params"]
+        p.zero_grad()
+      end for
+    end for
+  end function
+  
+  
+  function step()
+    self.step_count = self.step_count + 1
+    for each group in self.param_groups
+      lr = group["lr"]
+      beta1 = group["beta1"]
+      beta2 = group["beta2"]
+      eps = group["eps"]
+      for each p in group["params"]
+        if p.grad == 0
+          continue
+        end if
+        param_id = id(p)
+        if not self.state.contains(param_id)
+          // TRANSPILER: dict values cast to string — may lose type information
+          map _dict3 = map_new()
+          map_set(_dict3, "m", cast(0, string))
+          map_set(_dict3, "v", cast(0, string))
+          self.state[param_id] = _dict3
+        end if
+        s = self.state[param_id]
+        s["m"] = beta1 * s["m"] + 1 - beta1 * p.grad
+        s["v"] = beta2 * s["v"] + 1 - beta2 * p.grad * p.grad
+        m_hat = s["m"] / 1 - beta1 ** self.step_count
+        v_hat = s["v"] / 1 - beta2 ** self.step_count
+        p.data = p.data - lr * m_hat / v_hat ** 0.5 + eps
+      end for
+    end for
+  end function
+  
+end object
+
+function main()
+  w = Parameter(10.0)
+  b = Parameter(2.0)
+  w.set_grad(1.0)
+  b.set_grad(0.5)
+  sgd = SGD()
+  // TRANSPILER: dict values cast to string — may lose type information
+  map group = map_new()
+  map_set(group, "params", cast([w, b], string))
+  map_set(group, "lr", cast(0.1, string))
+  map_set(group, "momentum", cast(0.9, string))
+  sgd.add_param_group(group)
+  sgd.step()
+  print "SGD step1 w.data: " + cast(w.data, string)
+  print "SGD step1 b.data: " + cast(b.data, string)
+  w.set_grad(1.0)
+  b.set_grad(0.5)
+  sgd.step()
+  print "SGD step2 w.data: " + cast(w.data, string)
+  print "SGD step2 b.data: " + cast(b.data, string)
+  sgd.zero_grad()
+  print "SGD after zero_grad w.grad: " + cast(w.grad, string)
+  p1 = Parameter(5.0)
+  p1.set_grad(2.0)
+  adam = Adam()
+  // TRANSPILER: dict values cast to string — may lose type information
+  map adam_group = map_new()
+  map_set(adam_group, "params", cast([p1], string))
+  map_set(adam_group, "lr", cast(0.001, string))
+  map_set(adam_group, "beta1", cast(0.9, string))
+  map_set(adam_group, "beta2", cast(0.999, string))
+  map_set(adam_group, "eps", cast(1e-08, string))
+  adam.add_param_group(adam_group)
+  adam.step()
+  print "Adam step1 p1.data: " + cast(round(p1.data, 6), string)
+  p1.set_grad(2.0)
+  adam.step()
+  print "Adam step2 p1.data: " + cast(round(p1.data, 6), string)
+end function
+

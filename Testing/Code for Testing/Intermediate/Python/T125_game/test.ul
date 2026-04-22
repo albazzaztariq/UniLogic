@@ -1,0 +1,88 @@
+// T125: Text-based dungeon exploration game (5 support files)
+// All state tracked in main, functions are pure/stateless
+
+import "player.ul" function clamp_hp(int hp) returns int
+import "player.ul" function calc_attack(int level) returns int
+import "player.ul" function format_status(string name, int hp, int gold, int level) returns string
+
+import "rooms.ul" function room_name(int id) returns string
+import "rooms.ul" function room_monster(int id) returns int
+import "rooms.ul" function room_treasure(int id) returns int
+
+import "monsters.ul" function monster_name(int id) returns string
+import "monsters.ul" function monster_hp(int id) returns int
+import "monsters.ul" function monster_attack(int id) returns int
+import "monsters.ul" function monster_gold(int id) returns int
+
+import "combat.ul" function fight_monster(string m_name, int m_hp, int m_atk, int player_atk) returns int
+
+import "display.ul" function show_enter(string name) returns none
+import "display.ul" function show_divider() returns none
+
+function main() returns int
+    // Player state
+    string name = "Hero"
+    int hp = 100
+    int gold = 0
+    int level = 1
+    int atk = calc_attack(level)
+
+    print "=== DUNGEON CRAWLER ==="
+    print format_status(name, hp, gold, level)
+    show_divider()
+
+    // Explore 5 rooms
+    int room = 0
+    while room < 5
+        show_enter(room_name(room))
+
+        // Check treasure
+        int treasure = room_treasure(room)
+        if treasure > 0
+            print "  Found treasure: " + cast(treasure, string) + " gold!"
+            gold = gold + treasure
+        end if
+
+        // Check monster
+        int mid = room_monster(room)
+        if mid >= 0
+            int dmg = fight_monster(monster_name(mid), monster_hp(mid), monster_attack(mid), atk)
+            hp = clamp_hp(hp - dmg)
+            gold = gold + monster_gold(mid)
+            print "  Gained " + cast(monster_gold(mid), string) + " gold"
+        else
+            print "  The room is quiet."
+        end if
+
+        print format_status(name, hp, gold, level)
+        show_divider()
+
+        // Level up after room 2
+        if room == 2
+            level = level + 1
+            atk = calc_attack(level)
+            print ">> Level Up! Now Lv:" + cast(level, string)
+            show_divider()
+        end if
+
+        // Heal before boss (room 4)
+        if room == 3
+            print ">> Using healing potion..."
+            hp = clamp_hp(hp + 50)
+            print format_status(name, hp, gold, level)
+            show_divider()
+        end if
+
+        room = room + 1
+    end while
+
+    // Final status
+    print "=== GAME OVER ==="
+    if hp > 0
+        print "Victory! Final gold: " + cast(gold, string)
+    else
+        print "Defeat!"
+    end if
+
+    return 0
+end function

@@ -1,0 +1,55 @@
+// Translated from test_ptr_return.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function find_max(int <arr>, int n) returns <int>
+  int <max_ptr> = address(arr[0])
+  int i = 0
+  i = 1
+  while (i < n)
+    if (arr[i] > deref(<max_ptr>))
+      max_ptr = address(arr[i])
+    end if
+    i = i + 1
+  end while
+  return max_ptr
+end function
+
+function double_value(int <p>)
+  deref(<p>) = (deref(<p>) * 2)
+end function
+
+function main() returns int
+  array int nums = [3, 7, 2, 9, 4]
+  int <biggest> = find_max(nums, 5)
+  print "max = " + cast(deref(<biggest>), string)
+  double_value(biggest)
+  print "after double = " + cast(deref(<biggest>), string)
+  print "in array = " + cast(nums[3], string)
+  return 0
+end function
+

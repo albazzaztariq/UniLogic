@@ -1,0 +1,374 @@
+// Translated from test_mbedtls_pure.c by c2ul
+type md_ctx_t
+  array uint32[4] state
+  array uint32[2] total
+  int last_ret
+end type
+
+type md_dispatch_t
+  string name
+  int output_size
+  <int> init_fn
+  <int> chain_fn
+end type
+
+type hmac_ctx_t
+  md_ctx_t inner
+  md_ctx_t outer
+  int mode
+end type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function ct_in_range(uint8 lo, uint8 hi, uint8 c, uint8 val) returns uint8
+  auto _tern_1 = 0
+  if cast((cast(((1 + hi) - lo), int) > cast((c - lo), int)), int)
+    _tern_1 = 255
+  end if
+  uint8 in_range = _tern_1
+  return cast((in_range bit_and val), int)
+end function
+
+function b64_enc_char(uint8 v) returns uint8
+  uint8 d = 0
+  d = cast((d bit_or ct_in_range(0, 25, v, cast((65 + v), int))), int)
+  d = cast((d bit_or ct_in_range(26, 51, v, cast(((97 + v) - 26), int))), int)
+  d = cast((d bit_or ct_in_range(52, 61, v, cast(((48 + v) - 52), int))), int)
+  d = cast((d bit_or ct_in_range(62, 62, v, 43)), int)
+  d = cast((d bit_or ct_in_range(63, 63, v, 47)), int)
+  return d
+end function
+
+function b64_dec_value(uint8 c) returns int
+  uint8 val = 0
+  val = cast((val bit_or ct_in_range(65, 90, c, cast((((c - 65) + 0) + 1), int))), int)
+  val = cast((val bit_or ct_in_range(97, 122, c, cast((((c - 97) + 26) + 1), int))), int)
+  val = cast((val bit_or ct_in_range(48, 57, c, cast((((c - 48) + 52) + 1), int))), int)
+  val = cast((val bit_or ct_in_range(43, 43, c, cast((((c - 43) + 62) + 1), int))), int)
+  val = cast((val bit_or ct_in_range(47, 47, c, cast((((c - 47) + 63) + 1), int))), int)
+  return (cast(val, int) - 1)
+end function
+
+array uint8 FSb = [99, 124, 119, 123, 242, 107, 111, 197, 48, 1, 103, 43, 254, 215, 171, 118, 202, 130, 201, 125, 250, 89, 71, 240, 173, 212, 162, 175, 156, 164, 114, 192, 183, 253, 147, 38, 54, 63, 247, 204, 52, 165, 229, 241, 113, 216, 49, 21, 4, 199, 35, 195, 24, 150, 5, 154, 7, 18, 128, 226, 235, 39, 178, 117, 9, 131, 44, 26, 27, 110, 90, 160, 82, 59, 214, 179, 41, 227, 47, 132, 83, 209, 0, 237, 32, 252, 177, 91, 106, 203, 190, 57, 74, 76, 88, 207, 208, 239, 170, 251, 67, 77, 51, 133, 69, 249, 2, 127, 80, 60, 159, 168, 81, 163, 64, 143, 146, 157, 56, 245, 188, 182, 218, 33, 16, 255, 243, 210, 205, 12, 19, 236, 95, 151, 68, 23, 196, 167, 126, 61, 100, 93, 25, 115, 96, 129, 79, 220, 34, 42, 144, 136, 70, 238, 184, 20, 222, 94, 11, 219, 224, 50, 58, 10, 73, 6, 36, 92, 194, 211, 172, 98, 145, 149, 228, 121, 231, 200, 55, 109, 141, 213, 78, 169, 108, 86, 244, 234, 101, 122, 174, 8, 186, 120, 37, 46, 28, 166, 180, 198, 232, 221, 116, 31, 75, 189, 139, 138, 112, 62, 181, 102, 72, 3, 246, 14, 97, 53, 87, 185, 134, 193, 29, 158, 225, 248, 152, 17, 105, 217, 142, 148, 155, 30, 135, 233, 206, 85, 40, 223, 140, 161, 137, 13, 191, 230, 66, 104, 65, 153, 45, 15, 176, 84, 187, 22]
+
+function SubWord(uint32 x) returns uint32
+  return (((cast(FSb[(x bit_and 255)], int) bit_or (cast(FSb[((x bit_right 8) bit_and 255)], int) bit_left 8)) bit_or (cast(FSb[((x bit_right 16) bit_and 255)], int) bit_left 16)) bit_or (cast(FSb[((x bit_right 24) bit_and 255)], int) bit_left 24))
+end function
+
+function md_init(<md_ctx_t> ctx) returns int
+  ctx.state[0] = 1732584193
+  ctx.state[1] = 4023233417
+  ctx.state[2] = 2562383102
+  ctx.state[3] = 271733878
+  ctx.total[0] = 0
+  ctx.total[1] = 0
+  ctx.last_ret = 0
+  return 0
+end function
+
+function md_chain(<md_ctx_t> ctx, int step) returns int
+  int ret = -110
+  ret = md_init(ctx)
+  if (ret != 0)
+    return ret
+  end if
+  if (step > 0)
+    ctx.state[0] = (ctx.state[0] bit_xor cast(step, int))
+    ret = 0
+    if (ret != 0)
+      return ret
+    end if
+  end if
+  if (step < 0)
+    ret = -110
+    return ret
+  end if
+  ctx.last_ret = ret
+  return ret
+end function
+
+md_dispatch_t md5_dispatch = 0
+
+function hmac_init(<hmac_ctx_t> ctx, int mode) returns int
+  int ret = -110
+  ctx.mode = mode
+  ret = md_init(address ctx.inner)
+  if (ret != 0)
+    return ret
+  end if
+  ret = md_init(address ctx.outer)
+  if (ret != 0)
+    return ret
+  end if
+  ctx.inner.state[0] = (ctx.inner.state[0] bit_xor 909522486)
+  ctx.outer.state[0] = (ctx.outer.state[0] bit_xor 1549556828)
+  return 0
+end function
+
+function get_nr_rounds(int keybits) returns int
+  int nr = 0
+  if keybits == 128
+    nr = 10
+  else if keybits == 192
+    nr = 12
+  else if keybits == 256
+    nr = 14
+  else
+    return -1
+  end if
+  return nr
+end function
+
+function sbox_checksum(int lo, int hi) returns uint32
+  int i = 0
+  uint32 acc = 0
+  i = lo
+  while (i <= hi)
+    acc = (acc bit_xor cast(FSb[i], int))
+    acc = ((acc bit_left 1) bit_or (acc bit_right 31))
+    i = i + 1
+  end while
+  return acc
+end function
+
+function main() returns int
+  int i = 0
+  int pass = 0
+  print "=== S1: base64 enc/dec ==="
+  string alph = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  pass = 1
+  i = 0
+  while (i < 64)
+    uint8 enc = b64_enc_char(cast(i, int))
+    int dec = b64_dec_value(enc)
+    if ((enc != cast(alph[i], int)) or (dec != i))
+      print "FAIL i=" + cast(i, string) + " enc=" + cast(enc, string) + "(" + cast(enc, string) + ") dec=" + cast(dec, string)
+      pass = 0
+    end if
+    i = i + 1
+  end while
+  auto _tern_2 = "FAIL"
+  if pass
+    _tern_2 = "PASS"
+  end if
+  print "enc/dec round-trip 0..63: " + _tern_2
+  auto _tern_3 = "FAIL"
+  if (b64_enc_char(0) == 65)
+    _tern_3 = "PASS"
+  end if
+  print "b64_enc_char(0)=" + cast(b64_enc_char(0), string) + " " + _tern_3
+  auto _tern_4 = "FAIL"
+  if (b64_enc_char(63) == 47)
+    _tern_4 = "PASS"
+  end if
+  print "b64_enc_char(63)=" + cast(b64_enc_char(63), string) + " " + _tern_4
+  auto _tern_5 = "FAIL"
+  if (b64_dec_value(65) == 0)
+    _tern_5 = "PASS"
+  end if
+  print "b64_dec_value('A')=" + cast(b64_dec_value(65), string) + " " + _tern_5
+  auto _tern_6 = "FAIL"
+  if (b64_dec_value(47) == 63)
+    _tern_6 = "PASS"
+  end if
+  print "b64_dec_value('/')=" + cast(b64_dec_value(47), string) + " " + _tern_6
+  auto _tern_7 = "FAIL"
+  if (b64_dec_value(33) == -1)
+    _tern_7 = "PASS"
+  end if
+  print "b64_dec_value('!')=" + cast(b64_dec_value(33), string) + " " + _tern_7
+  print "\n=== S2: AES FSb lookup ==="
+  auto _tern_8 = "FAIL"
+  if (FSb[0] == 99)
+    _tern_8 = "PASS"
+  end if
+  print "FSb[0]=0x" + cast(FSb[0], string) + " " + _tern_8
+  auto _tern_9 = "FAIL"
+  if (FSb[1] == 124)
+    _tern_9 = "PASS"
+  end if
+  print "FSb[1]=0x" + cast(FSb[1], string) + " " + _tern_9
+  auto _tern_10 = "FAIL"
+  if (FSb[255] == 22)
+    _tern_10 = "PASS"
+  end if
+  print "FSb[255]=0x" + cast(FSb[255], string) + " " + _tern_10
+  uint32 sw = SubWord(66051)
+  auto _tern_11 = "FAIL"
+  if (sw == 1669101435)
+    _tern_11 = "PASS"
+  end if
+  print "SubWord(0x00010203)=0x" + cast(sw, string) + " " + _tern_11
+  array int counts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  i = 0
+  while (i < 256)
+    counts[i] = 0
+    i = i + 1
+  end while
+  i = 0
+  while (i < 256)
+    counts[FSb[i]] = counts[FSb[i]] + 1
+    i = i + 1
+  end while
+  pass = 1
+  int _brk_0 = 0
+  i = 0
+  while ((i < 256) and not _brk_0)
+    if (counts[i] != 1)
+      pass = 0
+      _brk_0 = 1
+    end if
+    if not _brk_0
+      i = i + 1
+    end if
+  end while
+  auto _tern_12 = "FAIL"
+  if pass
+    _tern_12 = "PASS"
+  end if
+  print "FSb bijective: " + _tern_12
+  print "\n=== S3+4: MD5 ctx + error propagation ==="
+  md_ctx_t ctx = 0
+  int ret = md_init(address ctx)
+  auto _tern_13 = "FAIL"
+  if (ret == 0)
+    _tern_13 = "PASS"
+  end if
+  print "md_init ret=" + cast(ret, string) + " " + _tern_13
+  auto _tern_14 = "FAIL"
+  if (ctx.state[0] == 1732584193)
+    _tern_14 = "PASS"
+  end if
+  print "state[0]=0x" + cast(ctx.state[0], string) + " " + _tern_14
+  auto _tern_15 = "FAIL"
+  if (ctx.state[3] == 271733878)
+    _tern_15 = "PASS"
+  end if
+  print "state[3]=0x" + cast(ctx.state[3], string) + " " + _tern_15
+  ret = md_chain(address ctx, 5)
+  auto _tern_16 = "FAIL"
+  if (ret == 0)
+    _tern_16 = "PASS"
+  end if
+  print "md_chain(5) ret=" + cast(ret, string) + " " + _tern_16
+  auto _tern_17 = "FAIL"
+  if (ctx.state[0] == 1732584196)
+    _tern_17 = "PASS"
+  end if
+  print "chain state[0]=0x" + cast(ctx.state[0], string) + " " + _tern_17
+  ret = md_chain(address ctx, -1)
+  auto _tern_18 = "FAIL"
+  if (ret == -110)
+    _tern_18 = "PASS"
+  end if
+  print "md_chain(-1) ret=" + cast(ret, string) + " " + _tern_18
+  print "\n=== S5: vtable dispatch ==="
+  md_dispatch_t ops = address md5_dispatch
+  ctx = 0
+  print "vtable name=" + ops.name + " output_size=" + cast(ops.output_size, string)
+  ret = ops.init_fn(address ctx)
+  auto _tern_19 = "FAIL"
+  if (ret == 0)
+    _tern_19 = "PASS"
+  end if
+  print "vtable init_fn ret=" + cast(ret, string) + " " + _tern_19
+  auto _tern_20 = "FAIL"
+  if (ctx.state[1] == 4023233417)
+    _tern_20 = "PASS"
+  end if
+  print "vtable state[1]=0x" + cast(ctx.state[1], string) + " " + _tern_20
+  ret = ops.chain_fn(address ctx, 3)
+  auto _tern_21 = "FAIL"
+  if (ret == 0)
+    _tern_21 = "PASS"
+  end if
+  print "vtable chain_fn(3) ret=" + cast(ret, string) + " " + _tern_21
+  print "\n=== S6: nested struct (HMAC) ==="
+  hmac_ctx_t hctx = 0
+  ret = hmac_init(address hctx, 1)
+  auto _tern_22 = "FAIL"
+  if (ret == 0)
+    _tern_22 = "PASS"
+  end if
+  print "hmac_init ret=" + cast(ret, string) + " " + _tern_22
+  auto _tern_23 = "FAIL"
+  if (hctx.inner.state[0] == 1366496567)
+    _tern_23 = "PASS"
+  end if
+  print "inner.state[0]=0x" + cast(hctx.inner.state[0], string) + " " + _tern_23
+  auto _tern_24 = "FAIL"
+  if (hctx.outer.state[0] == 991526749)
+    _tern_24 = "PASS"
+  end if
+  print "outer.state[0]=0x" + cast(hctx.outer.state[0], string) + " " + _tern_24
+  auto _tern_25 = "FAIL"
+  if (hctx.mode == 1)
+    _tern_25 = "PASS"
+  end if
+  print "mode=" + cast(hctx.mode, string) + " " + _tern_25
+  print "\n=== S7: switch/case (key rounds) ==="
+  auto _tern_26 = "FAIL"
+  if (get_nr_rounds(128) == 10)
+    _tern_26 = "PASS"
+  end if
+  print "get_nr_rounds(128)=" + cast(get_nr_rounds(128), string) + " " + _tern_26
+  auto _tern_27 = "FAIL"
+  if (get_nr_rounds(192) == 12)
+    _tern_27 = "PASS"
+  end if
+  print "get_nr_rounds(192)=" + cast(get_nr_rounds(192), string) + " " + _tern_27
+  auto _tern_28 = "FAIL"
+  if (get_nr_rounds(256) == 14)
+    _tern_28 = "PASS"
+  end if
+  print "get_nr_rounds(256)=" + cast(get_nr_rounds(256), string) + " " + _tern_28
+  auto _tern_29 = "FAIL"
+  if (get_nr_rounds(64) == -1)
+    _tern_29 = "PASS"
+  end if
+  print "get_nr_rounds(64)=" + cast(get_nr_rounds(64), string) + " " + _tern_29
+  print "\n=== S8: const array checksum ==="
+  uint32 cs = sbox_checksum(0, 255)
+  print "sbox_checksum(0,255)=0x" + cast(cs, string)
+  uint32 ref = sbox_checksum(0, 255)
+  auto _tern_30 = "FAIL"
+  if (cs == ref)
+    _tern_30 = "PASS"
+  end if
+  print "sbox_checksum deterministic: " + _tern_30
+  uint32 cs4 = sbox_checksum(0, 3)
+  print "sbox_checksum(0,3)=0x" + cast(cs4, string)
+  uint32 cs4_ref = sbox_checksum(0, 3)
+  auto _tern_31 = "FAIL"
+  if (cs4 == cs4_ref)
+    _tern_31 = "PASS"
+  end if
+  print "sbox_checksum(0,3) deterministic: " + _tern_31
+  return 0
+end function
+

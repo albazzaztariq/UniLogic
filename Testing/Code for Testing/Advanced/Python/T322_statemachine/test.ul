@@ -1,0 +1,139 @@
+// Simple state machine — traffic light controller with pedestrian button.
+function get_state_name(int state) returns string
+  if state == 0
+    return "RED"
+  end if
+  if state == 1
+    return "GREEN"
+  end if
+  if state == 2
+    return "YELLOW"
+  end if
+  if state == 3
+    return "PED_WALK"
+  end if
+  if state == 4
+    return "PED_FLASH"
+  end if
+  return "UNKNOWN"
+end function
+
+function next_state(int state, int ped_button) returns int
+  if state == 0
+    if ped_button == 1
+      return 3
+    end if
+    return 1
+  end if
+  if state == 1
+    if ped_button == 1
+      return 2
+    end if
+    return 2
+  end if
+  if state == 2
+    return 0
+  end if
+  if state == 3
+    return 4
+  end if
+  if state == 4
+    return 0
+  end if
+  return 0
+end function
+
+function state_duration(int state) returns int
+  if state == 0
+    return 30
+  end if
+  if state == 1
+    return 45
+  end if
+  if state == 2
+    return 5
+  end if
+  if state == 3
+    return 20
+  end if
+  if state == 4
+    return 10
+  end if
+  return 0
+end function
+
+function simulate(array int events, int event_count)
+  int state = 0
+  int total_time = 0
+  int transitions = 0
+  int time_in_red = 0
+  int time_in_green = 0
+  int time_in_yellow = 0
+  int time_in_ped = 0
+  int i = 0
+  while i < event_count
+    int ped = events[i]
+    int dur = state_duration(state)
+    string name = get_state_name(state)
+    print "tick " + cast(i, string) + ": state=" + name + " dur=" + cast(dur, string) + " ped=" + cast(ped, string)
+    if state == 0
+      time_in_red = time_in_red + dur
+    end if
+    if state == 1
+      time_in_green = time_in_green + dur
+    end if
+    if state == 2
+      time_in_yellow = time_in_yellow + dur
+    end if
+    if state == 3 or state == 4
+      time_in_ped = time_in_ped + dur
+    end if
+    total_time = total_time + dur
+    state = next_state(state, ped)
+    transitions = transitions + 1
+    i = i + 1
+  end while
+  print "--- Summary ---"
+  print "transitions: " + cast(transitions, string)
+  print "total_time: " + cast(total_time, string)
+  print "time_in_red: " + cast(time_in_red, string)
+  print "time_in_green: " + cast(time_in_green, string)
+  print "time_in_yellow: " + cast(time_in_yellow, string)
+  print "time_in_ped: " + cast(time_in_ped, string)
+  print "final_state: " + get_state_name(state)
+end function
+
+function count_transitions(array int events, int event_count) returns int
+  int state = 0
+  int count = 0
+  int prev_state = -1
+  int i = 0
+  while i < event_count
+    if state != prev_state
+      count = count + 1
+    end if
+    prev_state = state
+    state = next_state(state, events[i])
+    i = i + 1
+  end while
+  return count
+end function
+
+function main() returns int
+  print "=== Traffic Light State Machine ==="
+  print "--- Run 1: No pedestrians ---"
+  array int events1 = [0, 0, 0, 0, 0, 0, 0, 0]
+  simulate(events1, 8)
+  print "--- Run 2: Pedestrian at tick 1 ---"
+  array int events2 = [0, 1, 0, 0, 0, 0, 0, 0]
+  simulate(events2, 8)
+  print "--- Run 3: Multiple pedestrians ---"
+  array int events3 = [1, 0, 0, 1, 0, 0, 1, 0, 0, 0]
+  simulate(events3, 10)
+  print "--- Transition counts ---"
+  print "run1: " + cast(count_transitions(events1, 8), string)
+  print "run2: " + cast(count_transitions(events2, 8), string)
+  print "run3: " + cast(count_transitions(events3, 10), string)
+  return 0
+end function
+

@@ -1,0 +1,156 @@
+@dr python_compat = true
+
+object TypedDescriptor
+  int attr_name
+  int type_name
+  
+  function __init__(int attr_name, int type_name)
+    self.attr_name = attr_name
+    self.type_name = type_name
+  end function
+  
+  
+  function __get__(int obj, int objtype)
+    if obj == empty
+      return self
+    end if
+    val = obj.__dict__.get(self.attr_name)
+    if val == empty
+      return ""
+    end if
+    return val
+  end function
+  
+  
+  function __set__(int obj, int value)
+    obj.__dict__[self.attr_name] = value
+  end function
+  
+  
+  function __repr__()
+    return "TypedDescriptor(" + self.attr_name + ", " + self.type_name + ")"
+  end function
+  
+end object
+
+object ReadOnlyDescriptor
+  int value
+  
+  function __init__(int value)
+    self.value = value
+  end function
+  
+  
+  function __get__(int obj, int objtype)
+    if obj == empty
+      return self
+    end if
+    return self.value
+  end function
+  
+  
+  function __set__(int obj, int value)
+    throw AttributeError "read-only attribute"
+  end function
+  
+end object
+
+object ValidatedDescriptor
+  int attr_name
+  
+  function __init__(int attr_name)
+    self.attr_name = attr_name
+  end function
+  
+  
+  function __get__(int obj, int objtype)
+    if obj == empty
+      return self
+    end if
+    val = obj.__dict__.get(self.attr_name)
+    if val == empty
+      return 0
+    end if
+    return val
+  end function
+  
+  
+  function __set__(int obj, int value)
+    if value < 0
+      throw ValueError "value must be non-negative"
+    end if
+    obj.__dict__[self.attr_name] = value
+  end function
+  
+end object
+
+object Holder
+  
+  function __init__()
+    0
+  end function
+  
+end object
+
+function main()
+  d = TypedDescriptor("name", "string")
+  obj = Holder()
+  print cast("descriptor repr:", string) + " " + cast(repr(d), string)
+  val = d.__get__(obj, Holder)
+  print cast("initial get:", string) + " " + cast(val, string)
+  d.__set__(obj, "Alice")
+  val2 = d.__get__(obj, Holder)
+  print cast("after set:", string) + " " + cast(val2, string)
+  d.__set__(obj, "Bob")
+  val3 = d.__get__(obj, Holder)
+  print cast("after update:", string) + " " + cast(val3, string)
+  self_ref = d.__get__(empty, Holder)
+  print cast("class access is descriptor:", string) + " " + cast(self_ref == d, string)
+  rod = ReadOnlyDescriptor("active")
+  obj2 = Holder()
+  status = rod.__get__(obj2, Holder)
+  print cast("status:", string) + " " + cast(status, string)
+  raised = false
+  try
+    rod.__set__(obj2, "inactive")
+  catch AttributeError
+    raised = true
+  end try
+  print cast("read-only set raises:", string) + " " + cast(raised, string)
+  vd = ValidatedDescriptor("count")
+  obj3 = Holder()
+  v0 = vd.__get__(obj3, Holder)
+  print cast("initial count:", string) + " " + cast(v0, string)
+  vd.__set__(obj3, 5)
+  v1 = vd.__get__(obj3, Holder)
+  print cast("count after set:", string) + " " + cast(v1, string)
+  vd.__set__(obj3, vd.__get__(obj3, Holder) + 1)
+  v2 = vd.__get__(obj3, Holder)
+  print cast("count after increment:", string) + " " + cast(v2, string)
+  raised2 = false
+  try
+    vd.__set__(obj3, -1)
+  catch ValueError
+    raised2 = true
+  end try
+  print cast("negative raises:", string) + " " + cast(raised2, string)
+  v3 = vd.__get__(obj3, Holder)
+  print cast("count unchanged:", string) + " " + cast(v3, string)
+  obj4 = Holder()
+  obj5 = Holder()
+  vd.__set__(obj4, 10)
+  vd.__set__(obj5, 20)
+  v4 = vd.__get__(obj4, Holder)
+  v5 = vd.__get__(obj5, Holder)
+  print cast("obj4 count:", string) + " " + cast(v4, string)
+  print cast("obj5 count:", string) + " " + cast(v5, string)
+  print cast("independent:", string) + " " + cast(v4 != v5, string)
+  d_age = TypedDescriptor("age", "int")
+  obj6 = Holder()
+  d_age.__set__(obj6, 30)
+  age_val = d_age.__get__(obj6, Holder)
+  print cast("age:", string) + " " + cast(age_val, string)
+  print cast("age descriptor:", string) + " " + cast(repr(d_age), string)
+end function
+
+// UL runtime invokes main() automatically

@@ -1,0 +1,72 @@
+@dr python_compat = true
+
+function main__on_template_rendered(int data)
+  received.append("rendered:" + data)
+  return "rendered:" + data
+end function
+
+object Signal
+  int name
+  array int _receivers
+  
+  function __init__(string name)
+    self.name = name
+    self._receivers = []
+  end function
+  
+  
+  function connect(int receiver)
+    self._receivers.append(receiver)
+  end function
+  
+  
+  function send(...)
+    results = []
+    for each r in self._receivers
+      results.append(r(_va_args))
+    end for
+    return results
+  end function
+  
+  
+  function __repr__() returns string
+    return "<Signal '" + cast(self.name, string) + "'>"
+  end function
+  
+end object
+
+object Namespace
+  int _signals
+  
+  function __init__()
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict0 = map_new()
+    self._signals = _dict0
+  end function
+  
+  
+  function signal(string name) returns Signal
+    if not self._signals.contains(name)
+      self._signals[name] = Signal(name)
+    end if
+    return self._signals[name]
+  end function
+  
+end object
+
+function main()
+  ns = Namespace()
+  template_rendered = ns.signal("template-rendered")
+  request_started = ns.signal("request-started")
+  got_request_exception = ns.signal("got-request-exception")
+  print cast("template_rendered:", string) + " " + cast(template_rendered, string)
+  print cast("request_started:", string) + " " + cast(request_started, string)
+  received = []
+  // nested function 'on_template_rendered' hoisted to file scope as 'main__on_template_rendered'
+  template_rendered.connect(main__on_template_rendered)
+  template_rendered.send("index.html")
+  print cast("received:", string) + " " + cast(received, string)
+  print cast("same signal:", string) + " " + cast(ns.signal("template-rendered") == template_rendered, string)
+end function
+
+// UL runtime invokes main() automatically

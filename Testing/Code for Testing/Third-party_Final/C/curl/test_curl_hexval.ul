@@ -1,0 +1,115 @@
+// Translated from test_curl_hexval.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function hex_char_val(int c) returns int
+  if ((c >= 48) and (c <= 57))
+    return (c - 48)
+  end if
+  if ((c >= 97) and (c <= 102))
+    return ((c - 97) + 10)
+  end if
+  if ((c >= 65) and (c <= 70))
+    return ((c - 65) + 10)
+  end if
+  return -1
+end function
+
+function hex_pair_val(int hi, int lo) returns int
+  int h = hex_char_val(hi)
+  int l = hex_char_val(lo)
+  if ((h < 0) or (l < 0))
+    return -1
+  end if
+  return ((h left 4) either1 l)
+end function
+
+function is_xdigit(int c) returns int
+  return ((((c >= 48) and (c <= 57)) or ((c >= 97) and (c <= 102))) or ((c >= 65) and (c <= 70)))
+end function
+
+function count_encoded_seqs(int <codes>, int len) returns int
+  int count = 0
+  int i = 0
+  while (i < len)
+    if ((((codes[i] == 37) and ((i + 2) < len)) and is_xdigit(codes[(i + 1)])) and is_xdigit(codes[(i + 2)]))
+      count = count + 1
+      i = i + 3
+    else
+      i = i + 1
+    end if
+  end while
+  return count
+end function
+
+function main() returns int
+  int i = 0
+  print "=== Hex Char Value Tests ==="
+  i = 48
+  while (i <= 57)
+    print "code=" + cast(i, string) + " val=" + cast(hex_char_val(i), string)
+    i = i + 1
+  end while
+  i = 97
+  while (i <= 102)
+    print "code=" + cast(i, string) + " val=" + cast(hex_char_val(i), string)
+    i = i + 1
+  end while
+  i = 65
+  while (i <= 70)
+    print "code=" + cast(i, string) + " val=" + cast(hex_char_val(i), string)
+    i = i + 1
+  end while
+  print "code=103 val=" + cast(hex_char_val(103), string)
+  print "code=71 val=" + cast(hex_char_val(71), string)
+  print "code=32 val=" + cast(hex_char_val(32), string)
+  print "=== Hex Pair Value Tests ==="
+  print "hi=50 lo=48 val=" + cast(hex_pair_val(50, 48), string)
+  print "hi=52 lo=49 val=" + cast(hex_pair_val(52, 49), string)
+  print "hi=70 lo=70 val=" + cast(hex_pair_val(70, 70), string)
+  print "hi=48 lo=48 val=" + cast(hex_pair_val(48, 48), string)
+  print "hi=97 lo=98 val=" + cast(hex_pair_val(97, 98), string)
+  print "hi=71 lo=48 val=" + cast(hex_pair_val(71, 48), string)
+  print "=== Percent-Encoded Detection ==="
+  array int s1 = [104, 101, 108, 108, 111, 37, 50, 48, 119, 111, 114, 108, 100]
+  int s1len = 13
+  array int s2 = [37, 52, 49, 37, 52, 50, 37, 52, 51]
+  int s2len = 9
+  array int s3 = [110, 111, 37, 101, 110, 99, 111, 100, 105, 110, 103]
+  int s3len = 11
+  array int s4 = [116, 114, 97, 105, 108, 37, 50]
+  int s4len = 7
+  array int s5 = [37, 50, 70, 37, 55, 69, 37, 50, 49]
+  int s5len = 9
+  print "s1 count=" + cast(count_encoded_seqs(s1, s1len), string)
+  print "s2 count=" + cast(count_encoded_seqs(s2, s2len), string)
+  print "s3 count=" + cast(count_encoded_seqs(s3, s3len), string)
+  print "s4 count=" + cast(count_encoded_seqs(s4, s4len), string)
+  print "s5 count=" + cast(count_encoded_seqs(s5, s5len), string)
+  return 0
+end function
+

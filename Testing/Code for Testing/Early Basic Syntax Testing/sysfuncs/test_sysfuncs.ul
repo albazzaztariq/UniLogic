@@ -1,0 +1,37 @@
+// test_sysfuncs.ul — system built-in functions
+
+function main() returns none
+    // time returns Unix timestamp (should be > 0)
+    int t = time()
+    if t > 0
+        print "time ok"
+    end if
+
+    // clock returns nanoseconds (should be > 0)
+    int c = clock()
+    if c > 0
+        print "clock ok"
+    end if
+
+    // random_seed for reproducibility
+    random_seed(42)
+    float r = random()
+    if r >= 0.0
+        if r <= 1.0
+            print "random ok"
+        end if
+    end if
+
+    // random_int
+    int ri = random_int(1, 10)
+    if ri >= 1
+        if ri <= 10
+            print "random_int ok"
+        end if
+    end if
+
+    // abort is not tested (would terminate)
+    // sleep is not tested (would block)
+    // userinput is not tested (needs CLI args)
+    // vault is not tested (needs env vars)
+end function

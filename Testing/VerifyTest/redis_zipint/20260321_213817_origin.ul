@@ -1,0 +1,79 @@
+// Translated from test_redis_zipint.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function zipIntEncoding(int64 value) returns int
+  if ((value >= 0) and (value <= 12))
+    return (241 + cast(value, int))
+  else if ((value >= -128) and (value <= 127))
+    return 254
+  else if ((value >= -32768) and (value <= 32767))
+    return (192 either1 (1 left 4))
+  else if ((value >= -8388608) and (value <= 8388607))
+    return (192 either1 (4 left 4))
+  else if ((value >= -2147483648) and (value <= 2147483647))
+    return (192 either1 (2 left 4))
+  else
+    return (192 either1 (3 left 4))
+  end if
+end function
+
+function encName(int enc) returns <char>
+  if ((enc >= 241) and (enc <= 253))
+    return "IMM"
+  end if
+  if (enc == 254)
+    return "INT8"
+  end if
+  if (enc == (192 either1 (1 left 4)))
+    return "INT16"
+  end if
+  if (enc == (192 either1 (4 left 4)))
+    return "INT24"
+  end if
+  if (enc == (192 either1 (2 left 4)))
+    return "INT32"
+  end if
+  if (enc == (192 either1 (3 left 4)))
+    return "INT64"
+  end if
+  return "UNKNOWN"
+end function
+
+function main() returns int
+  array int64 tests = [0, 1, 12, 13, -1, -128, 127, -129, 128, -32768, 32767, -32769, 32768, -8388608, 8388607, (-8388608 - 1), (8388607 + 1), -2147483648, 2147483647, -2147483649, 2147483648, (-9223372036854775807 - 1), 9223372036854775807]
+  int n = cast((size(tests) / size(tests[0])), int)
+  int i = 0
+  i = 0
+  while (i < n)
+    int enc = zipIntEncoding(tests[i])
+    print encName(enc)
+    i = i + 1
+  end while
+  return 0
+end function
+

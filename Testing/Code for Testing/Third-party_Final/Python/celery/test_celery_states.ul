@@ -1,0 +1,128 @@
+@dr python_compat = true
+
+const string PENDING = "PENDING"
+const string RECEIVED = "RECEIVED"
+const string STARTED = "STARTED"
+const string SUCCESS = "SUCCESS"
+const string FAILURE = "FAILURE"
+const string REVOKED = "REVOKED"
+const string REJECTED = "REJECTED"
+const string RETRY = "RETRY"
+const string IGNORED = "IGNORED"
+// TRANSPILER: inferred type for PRECEDENCE — verify this is correct
+array string PRECEDENCE = ["SUCCESS", "FAILURE", "", "REVOKED", "STARTED", "RECEIVED", "REJECTED", "RETRY", "PENDING"]
+// TRANSPILER: dict values cast to string — may lose type information
+map PRECEDENCE_LOOKUP = map_new()
+// TRANSPILER: module-level for loop moved to __module_init__
+// TRANSPILER: module-level variable NONE_PRECEDENCE — verify type is correct
+auto NONE_PRECEDENCE = empty
+// TRANSPILER: inferred type for READY_STATES — verify this is correct
+array int READY_STATES
+// TRANSPILER: inferred type for UNREADY_STATES — verify this is correct
+array int UNREADY_STATES
+// TRANSPILER: inferred type for EXCEPTION_STATES — verify this is correct
+array int EXCEPTION_STATES
+// TRANSPILER: inferred type for PROPAGATE_STATES — verify this is correct
+array int PROPAGATE_STATES
+// TRANSPILER: inferred type for ALL_STATES — verify this is correct
+array int ALL_STATES
+function precedence(int s)
+  // Get precedence index for state. Lower index = higher precedence.
+  try
+    return PRECEDENCE_LOOKUP[s]
+  catch KeyError
+    return NONE_PRECEDENCE
+  end try
+end function
+
+object state
+  int s
+  
+  function __init__(int s = "")
+    self.s = s
+  end function
+  
+  
+  function __gt__(int other)
+    return precedence(self.s) < precedence(other.s)
+  end function
+  
+  
+  function __ge__(int other)
+    return precedence(self.s) <= precedence(other.s)
+  end function
+  
+  
+  function __lt__(int other)
+    return precedence(self.s) > precedence(other.s)
+  end function
+  
+  
+  function __le__(int other)
+    return precedence(self.s) >= precedence(other.s)
+  end function
+  
+  
+  function __str__()
+    return self.s
+  end function
+  
+  
+  function __repr__()
+    return "state(" + self.s + ")"
+  end function
+  
+end object
+
+function main()
+  print cast("PENDING:", string) + " " + cast(PENDING, string)
+  print cast("SUCCESS:", string) + " " + cast(SUCCESS, string)
+  print cast("FAILURE:", string) + " " + cast(FAILURE, string)
+  print cast("precedence(SUCCESS):", string) + " " + cast(precedence(SUCCESS), string)
+  print cast("precedence(FAILURE):", string) + " " + cast(precedence(FAILURE), string)
+  print cast("precedence(PENDING):", string) + " " + cast(precedence(PENDING), string)
+  print cast("precedence(unknown):", string) + " " + cast(precedence("CUSTOM"), string)
+  print cast("NONE_PRECEDENCE:", string) + " " + cast(NONE_PRECEDENCE, string)
+  print cast("SUCCESS in READY_STATES:", string) + " " + cast(READY_STATES.contains(SUCCESS), string)
+  print cast("PENDING in READY_STATES:", string) + " " + cast(READY_STATES.contains(PENDING), string)
+  print cast("PENDING in UNREADY_STATES:", string) + " " + cast(UNREADY_STATES.contains(PENDING), string)
+  print cast("FAILURE in EXCEPTION_STATES:", string) + " " + cast(EXCEPTION_STATES.contains(FAILURE), string)
+  print cast("FAILURE in PROPAGATE_STATES:", string) + " " + cast(PROPAGATE_STATES.contains(FAILURE), string)
+  print cast("REVOKED in PROPAGATE_STATES:", string) + " " + cast(PROPAGATE_STATES.contains(REVOKED), string)
+  print cast("STARTED in PROPAGATE_STATES:", string) + " " + cast(PROPAGATE_STATES.contains(STARTED), string)
+  s_pending = state(PENDING)
+  s_success = state(SUCCESS)
+  s_failure = state(FAILURE)
+  s_started = state(STARTED)
+  s_custom = state("PROGRESS")
+  print cast("state(PENDING) < state(SUCCESS):", string) + " " + cast(s_pending < s_success, string)
+  print cast("state(SUCCESS) > state(PENDING):", string) + " " + cast(s_success > s_pending, string)
+  print cast("state(FAILURE) > state(SUCCESS):", string) + " " + cast(s_failure > s_success, string)
+  print cast("state(SUCCESS) >= state(SUCCESS):", string) + " " + cast(s_success >= s_success, string)
+  print cast("state(SUCCESS) <= state(SUCCESS):", string) + " " + cast(s_success <= s_success, string)
+  print cast("state(PROGRESS) > state(STARTED):", string) + " " + cast(s_custom > s_started, string)
+  print cast("state(PROGRESS) > state(SUCCESS):", string) + " " + cast(s_custom > s_success, string)
+  print cast("PRECEDENCE length:", string) + " " + cast(PRECEDENCE.len(), string)
+  print cast("PRECEDENCE[0]:", string) + " " + cast(PRECEDENCE[0], string)
+  print cast("PRECEDENCE[8]:", string) + " " + cast(PRECEDENCE[8], string)
+  print cast("ALL_STATES length:", string) + " " + cast(ALL_STATES.len(), string)
+  print cast("str(state(FAILURE)):", string) + " " + cast(cast(s_failure, string), string)
+  print cast("repr(state(RETRY)):", string) + " " + cast(repr(state(RETRY)), string)
+end function
+
+// UL runtime invokes main() automatically
+
+function __module_init__() returns none
+  int _i = 0
+  for each _s in PRECEDENCE
+    PRECEDENCE_LOOKUP[_s] = _i
+    _i = _i + 1
+  end for
+  NONE_PRECEDENCE = PRECEDENCE_LOOKUP[""]
+  READY_STATES = [SUCCESS, FAILURE, REVOKED]
+  UNREADY_STATES = [PENDING, RECEIVED, STARTED, REJECTED, RETRY]
+  EXCEPTION_STATES = [RETRY, FAILURE, REVOKED]
+  PROPAGATE_STATES = [FAILURE, REVOKED]
+  ALL_STATES = [PENDING, RECEIVED, STARTED, SUCCESS, FAILURE, RETRY, REVOKED]
+end function
+

@@ -1,0 +1,54 @@
+// Translated from test_redis_dictNextExp.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function dictNextExp(uint64 size_c) returns int
+  if (size_c <= (1 left 2))
+    return 2
+  end if
+  if (size_c >= 2147483647)
+    return ((8 * size(int)) - 1)
+  end if
+  return cast(((8 * size(int)) - 0), int)
+end function
+
+function main() returns int
+  print cast(cast(dictNextExp(0), int), string)
+  print cast(cast(dictNextExp(1), int), string)
+  print cast(cast(dictNextExp(4), int), string)
+  print cast(cast(dictNextExp(5), int), string)
+  print cast(cast(dictNextExp(8), int), string)
+  print cast(cast(dictNextExp(9), int), string)
+  print cast(cast(dictNextExp(16), int), string)
+  print cast(cast(dictNextExp(17), int), string)
+  print cast(cast(dictNextExp(1024), int), string)
+  print cast(cast(dictNextExp(1025), int), string)
+  print cast(cast(dictNextExp(65536), int), string)
+  print cast(cast(dictNextExp(65537), int), string)
+  return 0
+end function
+

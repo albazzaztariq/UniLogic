@@ -1,0 +1,32 @@
+// test_cast.ul — cast/change type conversions
+
+function main() returns none
+    // int to float
+    int a = 42
+    float b = change(a)->float
+    print b
+
+    // float to int (truncation)
+    float c = 3.7
+    int d = change(c)->int
+    print d
+
+    // int to string
+    int e = 123
+    string f = change(e)->string
+    print f
+
+    // bool to int
+    bool g = true
+    int h = change(g)->int
+    print h
+
+    // int to bool
+    int i = 0
+    bool j = change(i)->bool
+    print j
+
+    int k = 1
+    bool l = change(k)->bool
+    print l
+end function

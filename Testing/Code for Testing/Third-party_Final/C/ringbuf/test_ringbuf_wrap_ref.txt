@@ -1,0 +1,4 @@
+buf=000000FD48BFF753 end=000000FD48BFF758 size=5
+after advance CAPACITY: head_offset=4
+after manual wrap: head_offset=0
+after tail wrap: tail_offset=0

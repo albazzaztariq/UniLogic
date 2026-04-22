@@ -1,0 +1,35 @@
+// utils.ul — utility functions for T120
+
+function clamp(int val, int lo, int hi) returns int
+    if val < lo
+        return lo
+    end if
+    if val > hi
+        return hi
+    end if
+    return val
+end function
+
+function abs_val(int x) returns int
+    if x < 0
+        return 0 - x
+    end if
+    return x
+end function
+
+function max_of(int a, int b) returns int
+    if a > b
+        return a
+    end if
+    return b
+end function
+
+function repeat_string(string s, int n) returns string
+    string result = ""
+    int i = 0
+    while i < n
+        result = result + s
+        i = i + 1
+    end while
+    return result
+end function

@@ -1,0 +1,55 @@
+// T104: Types (structs) — define, instantiate, access fields
+
+type Point
+    int x
+    int y
+end type
+
+type Rectangle
+    Point top_left
+    Point bottom_right
+end type
+
+function make_point(int px, int py) returns Point
+    Point p
+    p.x = px
+    p.y = py
+    return p
+end function
+
+function distance_sq(Point a, Point b) returns int
+    int dx = b.x - a.x
+    int dy = b.y - a.y
+    return dx * dx + dy * dy
+end function
+
+function main() returns int
+    // Test 1: create type instance and access fields
+    Point p1
+    p1.x = 3
+    p1.y = 4
+    print p1.x
+    print p1.y
+
+    // Test 2: use function to create type
+    Point p2 = make_point(10, 20)
+    print p2.x
+    print p2.y
+
+    // Test 3: pass types to functions
+    int dist = distance_sq(p1, p2)
+    print dist
+
+    // Test 4: nested types
+    Rectangle r
+    r.top_left = make_point(0, 0)
+    r.bottom_right = make_point(100, 50)
+    print r.top_left.x
+    print r.bottom_right.y
+
+    // Test 5: modify field
+    p1.x = 99
+    print p1.x
+
+    return 0
+end function

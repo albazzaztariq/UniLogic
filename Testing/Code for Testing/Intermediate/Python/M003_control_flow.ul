@@ -1,0 +1,56 @@
+// M003: If/else, while, for each, match, escape, continue
+function classify(int score) returns string
+    if score > 90
+        return "A"
+    else if score > 80
+        return "B"
+    else if score > 70
+        return "C"
+    else
+        return "F"
+    end if
+end function
+
+function main() returns int
+    // if/else
+    print classify(95)
+    print classify(85)
+    print classify(72)
+    print classify(50)
+
+    // while loop
+    int count = 0
+    while count < 5 do
+        count++
+    end do
+    print count
+
+    // for each
+    list int[5] nums = [10, 20, 30, 40, 50]
+    int total = 0
+    for each n in nums
+        total += n
+    end for
+    print total
+
+    // match
+    int code = 2
+    match code
+        1: print "one"
+        2: print "two"
+        3: print "three"
+        default: print "other"
+    end match
+
+    // escape from loop
+    int i = 0
+    while i < 100 do
+        if i == 3
+            escape
+        end if
+        i++
+    end do
+    print i
+
+    return 0
+end function

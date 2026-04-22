@@ -1,0 +1,15 @@
+=== mbedtls_ct_base64_enc_char ===
+enc_char 0..63: PASS
+
+=== mbedtls_ct_base64_dec_value ===
+dec_value round-trip: PASS
+
+=== dec_value invalid chars ===
+dec_value invalid: PASS
+
+=== mbedtls_base64_encode ===
+encode ret=0 olen=8 out=AAECAwQF
+encode 6 bytes: PASS
+encode empty: ret=0 olen=0 PASS
+encode too-small: ret=-40 olen=9 PASS
+encode 'Man': ret=0 olen=4 out=TWFu PASS

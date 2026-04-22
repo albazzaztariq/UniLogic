@@ -1,0 +1,30 @@
+// T111: DR configurations — Python target
+// For Python target, memory DR (gc/manual/refcount/arena) is handled natively.
+// Test that DR directives parse and compile without errors.
+// Also test @dr types = strict (type checking mode).
+
+@dr types = strict
+
+function add_strict(int a, int b) returns int
+    return a + b
+end function
+
+function greet_strict(string who) returns string
+    return "Hello " + who
+end function
+
+function main() returns int
+    int result = add_strict(3, 7)
+    print result
+
+    string msg = greet_strict("World")
+    print msg
+
+    // Test that strict types work with control flow
+    int x = 10
+    if x > 5
+        print "strict check passed"
+    end if
+
+    return 0
+end function

@@ -1,0 +1,31 @@
+// test_pipe.ul — pipe operator |> end-to-end
+
+function twice(int x) returns int
+    return x * 2
+end function
+
+function add_one(int x) returns int
+    return x + 1
+end function
+
+function flip_sign(int x) returns int
+    return 0 - x
+end function
+
+function main() returns none
+    // single pipe
+    int a = 5 |> twice
+    print a
+
+    // chained pipes
+    int b = 5 |> twice |> add_one
+    print b
+
+    // triple chain
+    int c = 3 |> twice |> add_one |> flip_sign
+    print c
+
+    // pipe with literal
+    int d = 10 |> add_one
+    print d
+end function

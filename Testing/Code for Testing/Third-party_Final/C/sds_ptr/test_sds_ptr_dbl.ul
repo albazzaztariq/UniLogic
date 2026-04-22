@@ -1,0 +1,93 @@
+// Translated from test_sds_ptr_dbl.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function split_csv(string input, string <out>, int <out_count>) returns int
+  int count = 1
+  int i = 0
+  int len = cast(size(input), int)
+  i = 0
+  while (i < len)
+    if (input[i] == 44)
+      count = count + 1
+    end if
+    i = i + 1
+  end while
+  string <result> = cast(memtake((count * size(string))), string)
+  if not result
+    return -1
+  end if
+  int slot = 0
+  int start = 0
+  i = 0
+  while (i <= len)
+    if ((input[i] == 44) or (input[i] == 0))
+      int toklen = (i - start)
+      result[slot] = cast(memtake((toklen + 1)), string)
+      if not result[slot]
+        // free(result) - UL handles memory
+        return -1
+      end if
+      memcopy(result[slot], (input + start), toklen)
+      result[slot][toklen] = 0
+      slot = slot + 1
+      start = (i + 1)
+    end if
+    i = i + 1
+  end while
+  deref(<out>) = result
+  deref(<out_count>) = count
+  return 0
+end function
+
+function main() returns int
+  string <tokens> = cast(0, none)
+  int count = 0
+  int i = 0
+  if (split_csv("alpha,beta,gamma", address(tokens), address(count)) == 0)
+    print "count=" + cast(count, string)
+    i = 0
+    while (i < count)
+      print "token[" + cast(i, string) + "]=" + tokens[i]
+      // free(tokens[i]) - UL handles memory
+      i = i + 1
+    end while
+    // free(tokens) - UL handles memory
+  end if
+  if (split_csv("one", address(tokens), address(count)) == 0)
+    print "count=" + cast(count, string)
+    i = 0
+    while (i < count)
+      print "token[" + cast(i, string) + "]=" + tokens[i]
+      // free(tokens[i]) - UL handles memory
+      i = i + 1
+    end while
+    // free(tokens) - UL handles memory
+  end if
+  return 0
+end function
+

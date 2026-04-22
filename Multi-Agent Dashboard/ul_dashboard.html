@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniLogic Orchestrator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:        #0a0c10;
+    --panel:     #0f1218;
+    --border:    #1e2530;
+    --border2:   #2a3444;
+    --accent:    #00d4ff;
+    --accent2:   #7c3aed;
+    --green:     #22c55e;
+    --amber:     #f59e0b;
+    --red:       #ef4444;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --dim:       #334155;
+    --tab-bg:    #141820;
+    --tab-act:   #1e2530;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 8px 16px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .logo {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .logo span { color: var(--muted); font-weight: 300; }
+
+  .stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    font-size: 11px;
+  }
+
+  .stat-pill .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .stat-pill .label { color: var(--muted); }
+  .stat-pill .val { color: var(--text); font-weight: 600; }
+
+  .topbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .refresh-btn {
+    padding: 4px 12px;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    transition: all 0.15s;
+  }
+  .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .server-url { color: var(--muted); font-size: 10px; }
+
+  /* ── Main layout ── */
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  /* ── Manager panel (left) ── */
+  .manager-panel {
+    width: 320px;
+    flex-shrink: 0;
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .panel-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  .badge {
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .badge-accent  { background: rgba(0,212,255,0.15); color: var(--accent); }
+  .badge-green   { background: rgba(34,197,94,0.15); color: var(--green); }
+  .badge-amber   { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .badge-red     { background: rgba(239,68,68,0.15); color: var(--red); }
+  .badge-dim     { background: var(--dim); color: var(--muted); }
+
+  .manager-lists {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .task-section {
+    flex: 1;
+    overflow-y: auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .task-section:last-child { border-bottom: none; }
+
+  .section-label {
+    padding: 6px 12px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .task-item {
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+    cursor: default;
+    transition: background 0.1s;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .task-item:hover { background: rgba(255,255,255,0.02); }
+
+  .task-item.blocked { border-left: 2px solid var(--amber); padding-left: 10px; }
+  .task-item.done    { opacity: 0.6; }
+
+  .task-id { font-size: 9px; color: var(--muted); }
+  .task-title { font-size: 11px; color: var(--text); line-height: 1.4; }
+  .task-meta { font-size: 9px; color: var(--muted); display: flex; gap: 8px; }
+  .task-worker { color: var(--accent); }
+
+  /* ── Workers area (right) ── */
+  .workers-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--panel);
+  }
+
+  .workers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ── Worker card ── */
+  .worker-card {
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .worker-header {
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    background: var(--bg);
+  }
+
+  .worker-id {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .worker-status {
+    font-size: 10px;
+    color: var(--muted);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .worker-status.active { color: var(--green); }
+  .worker-status.idle   { color: var(--muted); }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--tab-bg);
+    flex-shrink: 0;
+  }
+
+  .tab {
+    padding: 5px 12px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── Tab content ── */
+  .tab-content { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+  .tab-content.active { display: flex; }
+
+  /* Queue + Done side by side */
+  .split-view {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .split-col {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--panel);
+  }
+
+  .split-header {
+    padding: 5px 10px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .task-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0;
+  }
+
+  .task-chip {
+    padding: 5px 10px;
+    font-size: 10px;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.4;
+  }
+
+  .task-chip .chip-id {
+    font-size: 9px;
+    color: var(--muted);
+    flex-shrink: 0;
+    width: 28px;
+  }
+
+  .task-chip.done-chip { opacity: 0.55; }
+  .task-chip.done-chip::before {
+    content: '✓';
+    color: var(--green);
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+
+  .task-chip.blocked-chip::before {
+    content: '!';
+    color: var(--amber);
+    font-size: 10px;
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+
+  /* ── Verbose log tab ── */
+  .log-view {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .log-entry {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    padding: 3px 4px;
+    border-radius: 2px;
+    transition: background 0.1s;
+  }
+
+  .log-entry:hover { background: rgba(255,255,255,0.02); }
+
+  .log-time {
+    font-size: 9px;
+    color: var(--muted);
+    flex-shrink: 0;
+    padding-top: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .log-msg {
+    font-size: 10px;
+    color: var(--text);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .log-msg.log-done    { color: var(--green); }
+  .log-msg.log-blocked { color: var(--amber); }
+  .log-msg.log-assign  { color: var(--accent); }
+  .log-msg.log-error   { color: var(--red); }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--dim); }
+
+  /* ── Empty state ── */
+  .empty {
+    padding: 16px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 10px;
+  }
+
+  /* ── Blocker banner ── */
+  .blocker-banner {
+    display: none;
+    padding: 6px 16px;
+    background: rgba(245,158,11,0.1);
+    border-bottom: 1px solid rgba(245,158,11,0.3);
+    font-size: 11px;
+    color: var(--amber);
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+  .blocker-banner.visible { display: flex; }
+
+  /* ── Progress bar ── */
+  .progress-bar {
+    height: 2px;
+    background: var(--border);
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 0.5s ease;
+  }
+
+  /* ── Connection status ── */
+  .conn-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+  .conn-dot.connected { background: var(--green); animation: pulse 2s infinite; }
+  .conn-dot.error     { background: var(--red); }
+
+  /* No workers yet placeholder */
+  .no-workers {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 12px;
+    color: var(--muted);
+  }
+
+  .no-workers .big { font-size: 13px; color: var(--dim); }
+  .no-workers .small { font-size: 10px; }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="logo">UniLogic <span>/ Orchestrator</span></div>
+  <div id="connPill" class="stat-pill">
+    <div class="conn-dot" id="connDot"></div>
+    <span class="label">server</span>
+    <span class="val" id="connVal">connecting...</span>
+  </div>
+  <div class="stat-pill">
+    <div class="dot"></div>
+    <span class="label">tests</span>
+    <span class="val" id="testCount">—</span>
+  </div>
+  <div class="stat-pill">
+    <span class="label">done</span>
+    <span class="val" id="doneCount">—</span>
+  </div>
+  <div class="stat-pill">
+    <span class="label">queue</span>
+    <span class="val" id="queueCount">—</span>
+  </div>
+  <div class="stat-pill">
+    <span class="label">active</span>
+    <span class="val" id="activeCount">—</span>
+  </div>
+  <div class="topbar-right">
+    <span class="server-url" id="serverUrl">http://localhost:7771</span>
+    <button class="refresh-btn" onclick="fetchState()">↻ refresh</button>
+    <button class="refresh-btn" onclick="toggleAuto()">
+      <span id="autoLabel">auto: on</span>
+    </button>
+  </div>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+
+<!-- Blocker banner -->
+<div class="blocker-banner" id="blockerBanner">
+  ⚠ Tasks need your decision — see BLOCKED items in manager panel
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Manager panel -->
+  <div class="manager-panel">
+    <div class="panel-header">
+      <div class="panel-title">Manager</div>
+      <div class="badge badge-accent" id="totalBadge">0 tasks</div>
+    </div>
+    <div class="manager-lists">
+
+      <!-- In progress -->
+      <div class="task-section" style="max-height: 30%;">
+        <div class="section-label">
+          <span>In Progress</span>
+          <span id="inProgressCount" class="badge badge-accent">0</span>
+        </div>
+        <div id="inProgressList"><div class="empty">none</div></div>
+      </div>
+
+      <!-- Pending queue -->
+      <div class="task-section" style="max-height: 35%;">
+        <div class="section-label">
+          <span>Queued</span>
+          <span id="pendingCount" class="badge badge-dim">0</span>
+        </div>
+        <div id="pendingList"><div class="empty">none</div></div>
+      </div>
+
+      <!-- Completed -->
+      <div class="task-section" style="max-height: 35%;">
+        <div class="section-label">
+          <span>Completed</span>
+          <span id="completedCount" class="badge badge-green">0</span>
+        </div>
+        <div id="completedList"><div class="empty">none</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Workers area -->
+  <div class="workers-area">
+    <div class="workers-grid" id="workersGrid">
+      <div class="no-workers">
+        <div class="big">No workers connected yet</div>
+        <div class="small">Start Claude Code instances with the worker prompt</div>
+        <div class="small" style="color:var(--dim)">curl http://localhost:7771/next_task?worker=W1</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+
+const SERVER = 'http://localhost:7771';
+let state = null;
+let workerLogs = {};   // worker_id -> [{time, msg, type}]
+let workerTasks = {};  // worker_id -> {current, queue, done}
+let autoRefresh = true;
+let refreshInterval = null;
+let activeTab = {};    // worker_id -> 'overview' | 'log'
+
+// ── Fetch ──────────────────────────────────────────────────────────────────
+
+async function fetchState() {
+  try {
+    const r = await fetch(`${SERVER}/status`);
+    const data = await r.json();
+    state = data;
+    updateUI(data);
+    setConn(true);
+  } catch (e) {
+    setConn(false);
+  }
+}
+
+function setConn(ok) {
+  const dot = document.getElementById('connDot');
+  const val = document.getElementById('connVal');
+  dot.className = 'conn-dot ' + (ok ? 'connected' : 'error');
+  val.textContent = ok ? 'connected' : 'unreachable';
+}
+
+// ── Update UI ──────────────────────────────────────────────────────────────
+
+function updateUI(data) {
+  const tasks = data.tasks || [];
+  const pending   = tasks.filter(t => t.status === 'pending' && !t.needs_human);
+  const inProg    = tasks.filter(t => t.status === 'in_progress');
+  const done      = tasks.filter(t => t.status === 'done');
+  const blocked   = tasks.filter(t => t.status === 'blocked' || (t.needs_human && t.status === 'pending'));
+
+  // Top bar stats
+  document.getElementById('testCount').textContent = data.test_count || '—';
+  document.getElementById('doneCount').textContent = done.length;
+  document.getElementById('queueCount').textContent = pending.length;
+  document.getElementById('activeCount').textContent = inProg.length;
+  document.getElementById('totalBadge').textContent = tasks.length + ' tasks';
+
+  // Progress bar
+  const pct = tasks.length ? Math.round((done.length / tasks.length) * 100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  // Blocker banner
+  const bb = document.getElementById('blockerBanner');
+  bb.className = 'blocker-banner' + (blocked.length ? ' visible' : '');
+
+  // Manager counts
+  document.getElementById('inProgressCount').textContent = inProg.length;
+  document.getElementById('pendingCount').textContent = pending.length;
+  document.getElementById('completedCount').textContent = done.length;
+
+  // Manager lists
+  renderManagerList('inProgressList', inProg, 'active');
+  renderManagerList('pendingList', [...blocked, ...pending], 'pending');
+  renderManagerList('completedList', done, 'done');
+
+  // Process log entries into per-worker logs
+  processLogs(data.recent_log || [], tasks);
+
+  // Build per-worker task state
+  buildWorkerState(tasks);
+
+  // Render worker cards
+  renderWorkers();
+}
+
+function taskHighLevel(title) {
+  // Map verbose titles to high-level summaries
+  const map = {
+    'with statement without as binding':      'Fixed context manager syntax',
+    'nocache volatile variable keyword':      'Added volatile variable support',
+    'Bit fields (uint.bits=N syntax)':        'Implemented bit field types',
+    '@packed annotation for struct packing':  'Added struct packing',
+    '#function macro syntax':                 'Implemented macro system',
+    '@symbol annotation wired in codegen':    'Wired operator overloading',
+    'Pipe operator |> verified end-to-end':   'Verified pipe operator',
+    'cast() full coverage':                   'Expanded type cast coverage',
+    '@onlyone singleton fully implemented':   'Implemented singleton pattern',
+    '@allownull nullable fields fully implemented': 'Implemented nullable fields',
+    'Transpiler: dict .items(), chained comparisons': 'Improved Python transpiler',
+    'Real Python file gauntlet':              'Tested real-world Python files',
+    'Real C library integration test':        'Tested C FFI integration',
+    'Full regression suite':                  'Full regression pass',
+    'HUMAN DECISION:':                        '⚠ Needs decision',
+  };
+  for (const [k, v] of Object.entries(map)) {
+    if (title.includes(k)) return v;
+  }
+  return title.length > 40 ? title.slice(0, 37) + '…' : title;
+}
+
+function renderManagerList(id, tasks, mode) {
+  const el = document.getElementById(id);
+  if (!tasks.length) { el.innerHTML = '<div class="empty">—</div>'; return; }
+  el.innerHTML = tasks.map(t => {
+    const cls = t.status === 'blocked' || t.needs_human ? 'blocked'
+              : t.status === 'done' ? 'done' : '';
+    const worker = t.assigned_to ? `<span class="task-worker">${t.assigned_to}</span>` : '';
+    const pri = t.priority ? `P${t.priority}` : '';
+    return `<div class="task-item ${cls}">
+      <div class="task-id">${t.id} &nbsp; ${pri}</div>
+      <div class="task-title">${taskHighLevel(t.title)}</div>
+      <div class="task-meta">${worker}${t.finished_at ? `<span>${formatTime(t.finished_at)}</span>` : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Worker state ───────────────────────────────────────────────────────────
+
+function buildWorkerState(tasks) {
+  workerTasks = {};
+  for (const t of tasks) {
+    if (!t.assigned_to) continue;
+    const w = t.assigned_to;
+    if (!workerTasks[w]) workerTasks[w] = { current: null, queue: [], done: [] };
+    if (t.status === 'in_progress') workerTasks[w].current = t;
+    else if (t.status === 'done') workerTasks[w].done.push(t);
+  }
+}
+
+function processLogs(logs, tasks) {
+  // Parse log entries into per-worker buckets
+  // Format: "Task T001 'title' assigned to worker 'W1'"
+  //         "Task T001 DONE by 'W1'. Tests: 120. Result: ..."
+  //         "Task T001 BLOCKED by 'W1': ..."
+
+  for (const entry of logs) {
+    const msg = entry.msg || '';
+    const time = entry.time || '';
+
+    let workerId = null;
+    let type = 'info';
+    let display = msg;
+
+    // Detect worker
+    const assignMatch = msg.match(/assigned to worker '(\w+)'/);
+    const doneMatch   = msg.match(/DONE by '(\w+)'/);
+    const blockMatch  = msg.match(/BLOCKED by '(\w+)'/);
+
+    if (assignMatch) { workerId = assignMatch[1]; type = 'assign'; }
+    if (doneMatch)   { workerId = doneMatch[1];   type = 'done'; }
+    if (blockMatch)  { workerId = blockMatch[1];  type = 'blocked'; }
+
+    if (workerId) {
+      if (!workerLogs[workerId]) workerLogs[workerId] = [];
+      // Avoid duplicates
+      const exists = workerLogs[workerId].some(e => e.time === time && e.msg === msg);
+      if (!exists) {
+        workerLogs[workerId].push({ time, msg, type });
+      }
+    }
+  }
+}
+
+// ── Render workers ─────────────────────────────────────────────────────────
+
+function renderWorkers() {
+  const grid = document.getElementById('workersGrid');
+
+  // Collect all known workers
+  const workerIds = new Set();
+  if (state && state.tasks) {
+    for (const t of state.tasks) {
+      if (t.assigned_to) workerIds.add(t.assigned_to);
+    }
+  }
+  Object.keys(workerLogs).forEach(w => workerIds.add(w));
+
+  if (!workerIds.size) {
+    grid.innerHTML = `<div class="no-workers">
+      <div class="big">No workers connected yet</div>
+      <div class="small">Start Claude Code instances with the worker prompt</div>
+      <div class="small" style="color:var(--dim)">Each instance calls /next_task?worker=W1</div>
+    </div>`;
+    return;
+  }
+
+  const workers = [...workerIds].sort();
+
+  // Update grid columns
+  grid.style.gridTemplateColumns = `repeat(${Math.min(workers.length, 3)}, 1fr)`;
+
+  // Render each worker card
+  // Keep existing cards if possible, update content
+  const existing = {};
+  grid.querySelectorAll('.worker-card').forEach(el => {
+    existing[el.dataset.worker] = el;
+  });
+
+  // Remove cards for gone workers
+  Object.keys(existing).forEach(w => {
+    if (!workerIds.has(w)) existing[w].remove();
+  });
+
+  // Add/update cards
+  for (const wid of workers) {
+    if (!existing[wid]) {
+      const card = document.createElement('div');
+      card.className = 'worker-card';
+      card.dataset.worker = wid;
+      grid.appendChild(card);
+      if (!activeTab[wid]) activeTab[wid] = 'overview';
+    }
+    renderWorkerCard(wid);
+  }
+}
+
+function renderWorkerCard(wid) {
+  const card = document.querySelector(`[data-worker="${wid}"]`);
+  if (!card) return;
+
+  const wt = workerTasks[wid] || { current: null, queue: [], done: [] };
+  const logs = workerLogs[wid] || [];
+  const isActive = !!wt.current;
+  const tab = activeTab[wid] || 'overview';
+
+  // Get all tasks assigned to this worker
+  const allTasks = state ? state.tasks.filter(t => t.assigned_to === wid) : [];
+  const doneTasks = allTasks.filter(t => t.status === 'done');
+  const pendingForWorker = state ? state.tasks.filter(t => t.status === 'pending' && !t.needs_human) : [];
+
+  const statusText = wt.current
+    ? taskHighLevel(wt.current.title)
+    : (doneTasks.length ? 'idle — waiting for task' : 'idle');
+
+  card.innerHTML = `
+    <div class="worker-header">
+      <div class="worker-id">${wid}</div>
+      <div class="worker-status ${isActive ? 'active' : 'idle'}">${statusText}</div>
+      <div class="badge ${isActive ? 'badge-accent' : 'badge-dim'}">${isActive ? 'active' : 'idle'}</div>
+    </div>
+    <div class="tabs">
+      <div class="tab ${tab === 'overview' ? 'active' : ''}"
+           onclick="setTab('${wid}','overview')">Overview</div>
+      <div class="tab ${tab === 'log' ? 'active' : ''}"
+           onclick="setTab('${wid}','log')">Log</div>
+    </div>
+
+    <div class="tab-content ${tab === 'overview' ? 'active' : ''}">
+      <div class="split-view">
+        <div class="split-col">
+          <div class="split-header">
+            <span>Queue</span>
+            <span class="badge badge-dim">${pendingForWorker.length}</span>
+          </div>
+          <div class="task-list">
+            ${pendingForWorker.length
+              ? pendingForWorker.slice(0,8).map(t => `
+                <div class="task-chip">
+                  <span class="chip-id">${t.id}</span>
+                  ${taskHighLevel(t.title)}
+                </div>`).join('')
+              : '<div class="empty">empty</div>'
+            }
+          </div>
+        </div>
+        <div class="split-col">
+          <div class="split-header">
+            <span>Completed</span>
+            <span class="badge badge-green">${doneTasks.length}</span>
+          </div>
+          <div class="task-list">
+            ${doneTasks.length
+              ? doneTasks.map(t => `
+                <div class="task-chip done-chip">
+                  <span class="chip-id">${t.id}</span>
+                  ${taskHighLevel(t.title)}
+                </div>`).join('')
+              : '<div class="empty">none yet</div>'
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content ${tab === 'log' ? 'active' : ''}">
+      <div class="log-view">
+        ${logs.length
+          ? [...logs].reverse().slice(0, 50).map(e => `
+            <div class="log-entry">
+              <div class="log-time">${formatTime(e.time)}</div>
+              <div class="log-msg log-${e.type}">${escHtml(e.msg)}</div>
+            </div>`).join('')
+          : '<div class="empty">no log entries yet</div>'
+        }
+      </div>
+    </div>
+  `;
+}
+
+function setTab(wid, tab) {
+  activeTab[wid] = tab;
+  renderWorkerCard(wid);
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+function formatTime(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  } catch { return iso.slice(11, 19) || ''; }
+}
+
+function escHtml(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function toggleAuto() {
+  autoRefresh = !autoRefresh;
+  document.getElementById('autoLabel').textContent = 'auto: ' + (autoRefresh ? 'on' : 'off');
+  if (autoRefresh) startAuto();
+  else if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
+}
+
+function startAuto() {
+  if (refreshInterval) clearInterval(refreshInterval);
+  refreshInterval = setInterval(fetchState, 3000);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+
+fetchState();
+startAuto();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+pack type PackedData
+    uint8 nibble_hi
+    uint8 nibble_lo
+    uint8 byte_val
+end type
+
+function main() returns int
+    PackedData d = PackedData { nibble_hi = 15, nibble_lo = 9, byte_val = 200 }
+    print d.nibble_hi
+    print d.nibble_lo
+    print d.byte_val
+    return 0
+end function

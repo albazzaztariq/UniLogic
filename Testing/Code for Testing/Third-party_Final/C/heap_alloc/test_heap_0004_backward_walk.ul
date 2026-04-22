@@ -1,0 +1,170 @@
+// Translated from test_heap_0004_backward_walk.c by c2ul
+type node_t
+  int hole
+  int size_c
+  node_t <next>
+  node_t <prev>
+end type
+
+type bin_t
+  node_t <head>
+end type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function add_node(bin_t <bin>, node_t <node>)
+  node.next = cast(0, none)
+  node.prev = cast(0, none)
+  if (bin.head == cast(0, none))
+    bin.head = node
+    return
+  end if
+  node_t <current> = bin.head
+  node_t <previous> = cast(0, none)
+  while ((current != cast(0, none)) and (current.size_c <= node.size_c))
+    previous = current
+    current = current.next
+  end while
+  if (current == cast(0, none))
+    previous.next = node
+    node.prev = previous
+  else if (previous != cast(0, none))
+    node.next = current
+    previous.next = node
+    node.prev = previous
+    current.prev = node
+  else
+    node.next = bin.head
+    bin.head.prev = node
+    bin.head = node
+  end if
+end function
+
+function remove_node(bin_t <bin>, node_t <node>)
+  if (bin.head == cast(0, none))
+    return
+  end if
+  if (bin.head == node)
+    bin.head = bin.head.next
+    return
+  end if
+  node_t <temp> = bin.head.next
+  while (temp != cast(0, none))
+    if (temp == node)
+      if (temp.next == cast(0, none))
+        temp.prev.next = cast(0, none)
+      else
+        temp.prev.next = temp.next
+        temp.next.prev = temp.prev
+      end if
+      return
+    end if
+    temp = temp.next
+  end while
+end function
+
+function print_backward(bin_t <bin>)
+  if (bin.head == cast(0, none))
+    print "(empty)"
+    return
+  end if
+  node_t <cur> = bin.head
+  while (cur.next != cast(0, none))
+    cur = cur.next
+  end while
+  print "backward:"
+  while (cur != cast(0, none))
+    print " " + cast(cur.size_c, string)
+    cur = cur.prev
+  end while
+  print ""
+end function
+
+function print_forward(bin_t <bin>)
+  print "forward:"
+  node_t <cur> = bin.head
+  while (cur != cast(0, none))
+    print " " + cast(cur.size_c, string)
+    cur = cur.next
+  end while
+  print ""
+end function
+
+function main() returns int
+  node_t n1 = 0
+  node_t n2 = 0
+  node_t n3 = 0
+  node_t n4 = 0
+  node_t n5 = 0
+  bin_t bin = 0
+  bin.head = cast(0, none)
+  n1.size_c = 16
+  n1.hole = 1
+  n2.size_c = 32
+  n2.hole = 1
+  n3.size_c = 64
+  n3.hole = 1
+  n4.size_c = 128
+  n4.hole = 1
+  n5.size_c = 256
+  n5.hole = 1
+  add_node(address(bin), address(n3))
+  add_node(address(bin), address(n1))
+  add_node(address(bin), address(n5))
+  add_node(address(bin), address(n2))
+  add_node(address(bin), address(n4))
+  print "Initial state:"
+  print_forward(address(bin))
+  print_backward(address(bin))
+  print "\nAfter remove head (size=16):"
+  remove_node(address(bin), address(n1))
+  print_forward(address(bin))
+  print_backward(address(bin))
+  print "\nAfter remove middle (size=64):"
+  remove_node(address(bin), address(n3))
+  print_forward(address(bin))
+  print_backward(address(bin))
+  print "\nAfter remove tail (size=256):"
+  remove_node(address(bin), address(n5))
+  print_forward(address(bin))
+  print_backward(address(bin))
+  print "\nPrev-pointer chain verification:"
+  node_t <cur> = bin.head
+  node_t <prev_saved> = cast(0, none)
+  while (cur != cast(0, none))
+    auto _tern_1 = "NULL"
+    if cur.prev
+      _tern_1 = "ok"
+    end if
+    print "  node size=" + cast(cur.size_c, string) + " prev_size=" + _tern_1
+    prev_saved = cur
+    cur = cur.next
+  end while
+  return 0
+end function
+

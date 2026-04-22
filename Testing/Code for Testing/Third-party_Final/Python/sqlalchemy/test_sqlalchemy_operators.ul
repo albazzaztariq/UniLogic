@@ -1,0 +1,171 @@
+@dr python_compat = true
+
+object BinaryExpression
+  int _py_left
+  int op
+  int _py_right
+  
+  function __init__(int _py_left, int op, int _py_right)
+    self.left = _py_left
+    self.op = op
+    self.right = _py_right
+  end function
+  
+  
+  function __repr__()
+    return "(" + repr(self.left) + " " + self.op + " " + repr(self.right) + ")"
+  end function
+  
+  
+  function __and__(int other)
+    return BinaryExpression(self, "AND", other)
+  end function
+  
+  
+  function __or__(int other)
+    return BinaryExpression(self, "OR", other)
+  end function
+  
+  
+  function __invert__()
+    return UnaryExpression("NOT", self)
+  end function
+  
+end object
+
+object UnaryExpression
+  int op
+  int operand
+  
+  function __init__(int op, int operand)
+    self.op = op
+    self.operand = operand
+  end function
+  
+  
+  function __repr__()
+    return "(" + self.op + " " + repr(self.operand) + ")"
+  end function
+  
+  
+  function __and__(int other)
+    return BinaryExpression(self, "AND", other)
+  end function
+  
+  
+  function __or__(int other)
+    return BinaryExpression(self, "OR", other)
+  end function
+  
+  
+  function __invert__()
+    return UnaryExpression("NOT", self)
+  end function
+  
+end object
+
+object Column
+  int name
+  
+  function __init__(int name)
+    self.name = name
+  end function
+  
+  
+  function __repr__()
+    return self.name
+  end function
+  
+  
+  function __eq__(int other)
+    return BinaryExpression(self, "=", other)
+  end function
+  
+  
+  function __ne__(int other)
+    return BinaryExpression(self, "!=", other)
+  end function
+  
+  
+  function __lt__(int other)
+    return BinaryExpression(self, "<", other)
+  end function
+  
+  
+  function __le__(int other)
+    return BinaryExpression(self, "<=", other)
+  end function
+  
+  
+  function __gt__(int other)
+    return BinaryExpression(self, ">", other)
+  end function
+  
+  
+  function __ge__(int other)
+    return BinaryExpression(self, ">=", other)
+  end function
+  
+  
+  function __and__(int other)
+    return BinaryExpression(self, "AND", other)
+  end function
+  
+  
+  function __or__(int other)
+    return BinaryExpression(self, "OR", other)
+  end function
+  
+  
+  function __invert__()
+    return UnaryExpression("NOT", self)
+  end function
+  
+end object
+
+function main()
+  col_id = Column("id")
+  col_name = Column("name")
+  col_age = Column("age")
+  expr_eq = col_id == 5
+  print cast("eq:", string) + " " + cast(repr(expr_eq), string)
+  expr_ne = col_name != "admin"
+  print cast("ne:", string) + " " + cast(repr(expr_ne), string)
+  expr_lt = col_age < 30
+  print cast("lt:", string) + " " + cast(repr(expr_lt), string)
+  expr_le = col_age <= 30
+  print cast("le:", string) + " " + cast(repr(expr_le), string)
+  expr_gt = col_age > 18
+  print cast("gt:", string) + " " + cast(repr(expr_gt), string)
+  expr_ge = col_age >= 18
+  print cast("ge:", string) + " " + cast(repr(expr_ge), string)
+  expr_and = col_id == 5 both1 col_name != "admin"
+  print cast("and:", string) + " " + cast(repr(expr_and), string)
+  expr_or = col_age < 10 either1 col_age > 90
+  print cast("or:", string) + " " + cast(repr(expr_or), string)
+  tmp1 = col_id == 5
+  tmp2 = col_age > 18
+  tmp3 = tmp1 both1 tmp2
+  expr_chain = tmp3 both1 col_name != "admin"
+  print cast("chain:", string) + " " + cast(repr(expr_chain), string)
+  expr_not = bitflip(col_id == 5)
+  print cast("not:", string) + " " + cast(repr(expr_not), string)
+  tmp4 = col_id == 5
+  tmp5 = bitflip(tmp4)
+  expr_not_and = tmp5 both1 col_age > 18
+  print cast("not_and:", string) + " " + cast(repr(expr_not_and), string)
+  tmp6 = col_id == 1
+  tmp7 = col_age > 10
+  expr_complex = tmp6 both1 tmp7
+  tmp8 = col_id == 2
+  tmp9 = col_age < 5
+  expr_complex2 = tmp8 both1 tmp9
+  expr_full = expr_complex either1 expr_complex2
+  print cast("complex:", string) + " " + cast(repr(expr_full), string)
+  tmp10 = col_id == 7
+  tmp11 = bitflip(tmp10)
+  expr_double_not = bitflip(tmp11)
+  print cast("double_not:", string) + " " + cast(repr(expr_double_not), string)
+end function
+
+// UL runtime invokes main() automatically

@@ -1,0 +1,79 @@
+// T102: If/else, match, loops (while, for, for each, do/while)
+
+function main() returns int
+    // Test 1: if/else
+    int x = 15
+    if x > 10
+        print "greater"
+    else
+        print "not greater"
+    end if
+
+    // Test 2: nested if
+    int val = 50
+    if val > 100
+        print "big"
+    else
+        if val > 25
+            print "medium"
+        else
+            print "small"
+        end if
+    end if
+
+    // Test 3: match statement
+    int code = 2
+    match code
+        1
+            print "one"
+        2
+            print "two"
+        3
+            print "three"
+    end match
+
+    // Test 4: while loop
+    int i = 0
+    int total = 0
+    while i < 5
+        total = total + i
+        i = i + 1
+    end while
+    print total
+
+    // Test 5: for loop (C-style verbose)
+    int sum = 0
+    for int j = 1 while j <= 5 do j++
+        sum = sum + j
+    end for
+    print sum
+
+    // Test 6: for each
+    array int nums = [10, 20, 30]
+    int arr_sum = 0
+    for each n in nums
+        arr_sum = arr_sum + n
+    end for
+    print arr_sum
+
+    // Test 7: do while
+    int count = 0
+    do
+        count = count + 1
+    while count < 3 end do
+    print count
+
+    // Test 8: escape (break)
+    int last = 0
+    int k = 0
+    while k < 100
+        if k == 5
+            last = k
+            escape
+        end if
+        k = k + 1
+    end while
+    print last
+
+    return 0
+end function

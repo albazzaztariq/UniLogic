@@ -1,0 +1,2167 @@
+// Translated from cJSON.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+type cJSON
+  object next
+  object prev
+  object child
+  int type_c
+  int valuestring
+  int valueint
+  float valuedouble
+  int string_c
+end type
+
+type cJSON_Hooks
+  // fn_ptr malloc_fn (function pointer field)
+  // fn_ptr free_fn (function pointer field)
+end type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+type error_c
+  int json
+  int position
+end type
+
+// global: int global_error = [cast(0, int), 0]
+
+function cJSON_GetErrorPtr(none _) returns int
+  return cast((global_error.json + global_error.position), int)
+end function
+
+function cJSON_GetStringValue(int item) returns int
+  if not cJSON_IsString(item)
+    return cast(0, int)
+  end if
+  return item.valuestring
+end function
+
+function cJSON_GetNumberValue(int item) returns float
+  if not cJSON_IsNumber(item)
+    return cast(0, int)
+  end if
+  return item.valuedouble
+end function
+
+function cJSON_Version(none _) returns int
+  array int version = 0
+  sprintf(version, "%i.%i.%i", 1, 7, 19)
+  return version
+end function
+
+function case_insensitive_strcmp(int string1, int string2) returns int
+  if ((string1 == cast(0, int)) or (string2 == cast(0, int)))
+    return 1
+  end if
+  if (string1 == string2)
+    return 0
+  end if
+  while (tolower(string1) == tolower(string2))
+    if (string1 == 0)
+      return 0
+    end if
+    cast(string1, int)
+    string2 = string2 + 1
+  end while
+  return (tolower(string1) - tolower(string2))
+end function
+
+type internal_hooks
+  // fn_ptr allocate (function pointer field)
+  // fn_ptr deallocate (function pointer field)
+  // fn_ptr reallocate (function pointer field)
+end type
+
+// global: int global_hooks = [malloc, free, realloc]
+
+function cJSON_strdup(int string_c, int hooks) returns int
+  int length = 0
+  int copy = cast(0, int)
+  if (string_c == cast(0, int))
+    return cast(0, int)
+  end if
+  length = (strlen(cast(string_c, int)) + 0)
+  copy = cast(hooks.allocate(length), int)
+  if (copy == cast(0, int))
+    return cast(0, int)
+  end if
+  memcpy(copy, string_c, length)
+  return copy
+end function
+
+function cJSON_InitHooks(int hooks)
+  if (hooks == cast(0, int))
+    global_hooks.allocate = malloc
+    global_hooks.deallocate = free
+    global_hooks.reallocate = realloc
+    return
+  end if
+  global_hooks.allocate = malloc
+  if (hooks.malloc_fn != cast(0, int))
+    global_hooks.allocate = hooks.malloc_fn
+  end if
+  global_hooks.deallocate = free
+  if (hooks.free_fn != cast(0, int))
+    global_hooks.deallocate = hooks.free_fn
+  end if
+  global_hooks.reallocate = cast(0, int)
+  if ((global_hooks.allocate == malloc) and (global_hooks.deallocate == free))
+    global_hooks.reallocate = realloc
+  end if
+end function
+
+function cJSON_New_Item(int hooks) returns int
+  int node = cast(hooks.allocate(0), int)
+  if node
+    memset_c(node, 0, 0)
+  end if
+  return node
+end function
+
+function cJSON_Delete(int item)
+  int next = cast(0, int)
+  while (item != cast(0, int))
+    next = item.next
+    if (not (item.type bit_and 256) and (item.child != cast(0, int)))
+      cJSON_Delete(item.child)
+    end if
+    if (not (item.type bit_and 256) and (item.valuestring != cast(0, int)))
+      global_hooks.deallocate(item.valuestring)
+      item.valuestring = cast(0, int)
+    end if
+    if (not (item.type bit_and 512) and (item.string != cast(0, int)))
+      global_hooks.deallocate(item.string)
+      item.string = cast(0, int)
+    end if
+    global_hooks.deallocate(item)
+    item = next
+  end while
+end function
+
+function get_decimal_point(none _) returns int
+  return 46
+end function
+
+type parse_buffer
+  int content
+  int length
+  int offset
+  int depth
+  int hooks
+end type
+
+function parse_number(int item, int input_buffer) returns int
+  float number = 0
+  int after_end = cast(0, int)
+  int number_c_string = 0
+  int decimal_point = get_decimal_point()
+  int i = 0
+  int number_string_length = 0
+  int has_decimal_point = cast(0, int)
+  if ((input_buffer == cast(0, int)) or (input_buffer.content == cast(0, int)))
+    return cast(0, int)
+  end if
+  i = 0
+  while ((input_buffer != cast(0, int)) and ((input_buffer.offset + i) < input_buffer.length))
+    if (input_buffer.content + input_buffer.offset)[i] == 48 or (input_buffer.content + input_buffer.offset)[i] == 49 or (input_buffer.content + input_buffer.offset)[i] == 50 or (input_buffer.content + input_buffer.offset)[i] == 51 or (input_buffer.content + input_buffer.offset)[i] == 52 or (input_buffer.content + input_buffer.offset)[i] == 53 or (input_buffer.content + input_buffer.offset)[i] == 54 or (input_buffer.content + input_buffer.offset)[i] == 55 or (input_buffer.content + input_buffer.offset)[i] == 56 or (input_buffer.content + input_buffer.offset)[i] == 57 or (input_buffer.content + input_buffer.offset)[i] == 43 or (input_buffer.content + input_buffer.offset)[i] == 45 or (input_buffer.content + input_buffer.offset)[i] == 101 or (input_buffer.content + input_buffer.offset)[i] == 69
+      number_string_length = number_string_length + 1
+    else if (input_buffer.content + input_buffer.offset)[i] == 46
+      number_string_length = number_string_length + 1
+      has_decimal_point = cast(1, int)
+    else
+      // goto loop_end — not supported in UL
+    end if
+    i = i + 1
+  end while
+  // label: loop_end
+  number_c_string = cast(input_buffer.hooks.allocate((number_string_length + 1)), int)
+  if (number_c_string == cast(0, int))
+    return cast(0, int)
+  end if
+  memcpy(number_c_string, (input_buffer.content + input_buffer.offset), number_string_length)
+  number_c_string[number_string_length] = 0
+  if has_decimal_point
+    i = 0
+    while (i < number_string_length)
+      if (number_c_string[i] == 46)
+        number_c_string[i] = decimal_point
+      end if
+      i = i + 1
+    end while
+  end if
+  number = strtod(cast(number_c_string, int), cast(after_end, int))
+  if (number_c_string == after_end)
+    input_buffer.hooks.deallocate(number_c_string)
+    return cast(0, int)
+  end if
+  item.valuedouble = number
+  if (number >= 2147483647)
+    item.valueint = 2147483647
+  else if (number <= cast((-2147483647 - 1), int))
+    item.valueint = (-2147483647 - 1)
+  else
+    item.valueint = cast(number, int)
+  end if
+  item.type = (1 bit_left 3)
+  input_buffer.offset = input_buffer.offset + cast((after_end - number_c_string), int)
+  input_buffer.hooks.deallocate(number_c_string)
+  return cast(1, int)
+end function
+
+function cJSON_SetNumberHelper(int object_c, float number) returns float
+  if (object_c == cast(0, int))
+    return cast(0, int)
+  end if
+  if (number >= 2147483647)
+    object_c.valueint = 2147483647
+  else if (number <= cast((-2147483647 - 1), int))
+    object_c.valueint = (-2147483647 - 1)
+  else
+    object_c.valueint = cast(number, int)
+  end if
+  object_c.valuedouble = number
+  return object_c.valuedouble
+end function
+
+function cJSON_SetValuestring(int object_c, int valuestring) returns int
+  int copy = cast(0, int)
+  int v1_len = 0
+  int v2_len = 0
+  if (((object_c == cast(0, int)) or not (object_c.type bit_and (1 bit_left 4))) or (object_c.type bit_and 256))
+    return cast(0, int)
+  end if
+  if ((object_c.valuestring == cast(0, int)) or (valuestring == cast(0, int)))
+    return cast(0, int)
+  end if
+  v1_len = strlen(valuestring)
+  v2_len = strlen(object_c.valuestring)
+  if (v1_len <= v2_len)
+    if not (((valuestring + v1_len) < object_c.valuestring) or ((object_c.valuestring + v2_len) < valuestring))
+      return cast(0, int)
+    end if
+    strcpy(object_c.valuestring, valuestring)
+    return object_c.valuestring
+  end if
+  copy = cast(cJSON_strdup(cast(valuestring, int), global_hooks), int)
+  if (copy == cast(0, int))
+    return cast(0, int)
+  end if
+  if (object_c.valuestring != cast(0, int))
+    cJSON_free(object_c.valuestring)
+  end if
+  object_c.valuestring = copy
+  return copy
+end function
+
+type printbuffer
+  int buffer
+  int length
+  int offset
+  int depth
+  int noalloc
+  int format
+  int hooks
+end type
+
+function ensure(int p, int needed) returns int
+  int newbuffer = cast(0, int)
+  int newsize = 0
+  if ((p == cast(0, int)) or (p.buffer == cast(0, int)))
+    return cast(0, int)
+  end if
+  if ((p.length > 0) and (p.offset >= p.length))
+    return cast(0, int)
+  end if
+  if (needed > 2147483647)
+    return cast(0, int)
+  end if
+  needed = needed + (p.offset + 1)
+  if (needed <= p.length)
+    return (p.buffer + p.offset)
+  end if
+  if p.noalloc
+    return cast(0, int)
+  end if
+  if (needed > (2147483647 / 2))
+    if (needed <= 2147483647)
+      newsize = 2147483647
+    else
+      return cast(0, int)
+    end if
+  else
+    newsize = (needed * 2)
+  end if
+  if (p.hooks.reallocate != cast(0, int))
+    newbuffer = cast(p.hooks.reallocate(p.buffer, newsize), int)
+    if (newbuffer == cast(0, int))
+      p.hooks.deallocate(p.buffer)
+      p.length = 0
+      p.buffer = cast(0, int)
+      return cast(0, int)
+    end if
+  else
+    newbuffer = cast(p.hooks.allocate(newsize), int)
+    if not newbuffer
+      p.hooks.deallocate(p.buffer)
+      p.length = 0
+      p.buffer = cast(0, int)
+      return cast(0, int)
+    end if
+    memcpy(newbuffer, p.buffer, (p.offset + 1))
+    p.hooks.deallocate(p.buffer)
+  end if
+  p.length = newsize
+  p.buffer = newbuffer
+  return (newbuffer + p.offset)
+end function
+
+function update_offset(int buffer)
+  int buffer_pointer = cast(0, int)
+  if ((buffer == cast(0, int)) or (buffer.buffer == cast(0, int)))
+    return
+  end if
+  buffer_pointer = (buffer.buffer + buffer.offset)
+  buffer.offset = buffer.offset + strlen(cast(buffer_pointer, int))
+end function
+
+function compare_double(float a, float b) returns int
+  float maxVal = fabs(a)
+  return (fabs((a - b)) <= (maxVal * cast(2.22044604925031308084726333618164062e-16, int)))
+end function
+
+function print_number(int item, int output_buffer) returns int
+  int output_pointer = cast(0, int)
+  float d = item.valuedouble
+  int length = 0
+  int i = 0
+  array int number_buffer = [0]
+  int decimal_point = get_decimal_point()
+  float test = 0.0
+  if (output_buffer == cast(0, int))
+    return cast(0, int)
+  end if
+  if (0 or (0 == (256 bit_or 1024)))
+    length = "null"
+  else if (d == cast(item.valueint, int))
+    length = cast(item.valueint, string)
+  else
+    length = cast(d, string)
+    if ((sscanf(cast(number_buffer, int), "%lg", test) != 1) or not compare_double(cast(test, int), d))
+      length = cast(d, string)
+    end if
+  end if
+  if ((length < 0) or (length > cast((0 - 1), int)))
+    return cast(0, int)
+  end if
+  output_pointer = ensure(output_buffer, (cast(length, int) + 0))
+  if (output_pointer == cast(0, int))
+    return cast(0, int)
+  end if
+  i = 0
+  while (i < cast(length, int))
+    if (number_buffer[i] == decimal_point)
+      output_pointer[i] = 46
+      continue
+    end if
+    output_pointer[i] = number_buffer[i]
+    i = i + 1
+  end while
+  output_pointer[i] = 0
+  output_buffer.offset = output_buffer.offset + cast(length, int)
+  return cast(1, int)
+end function
+
+function parse_hex4(int input) returns int
+  int h = 0
+  int i = 0
+  i = 0
+  while (i < 4)
+    if ((input[i] >= 48) and (input[i] <= 57))
+      h = h + (cast(input[i], int) - 48)
+    else if ((input[i] >= 65) and (input[i] <= 70))
+      h = h + ((cast(10, int) + input[i]) - 65)
+    else if ((input[i] >= 97) and (input[i] <= 102))
+      h = h + ((cast(10, int) + input[i]) - 97)
+    else
+      return 0
+    end if
+    if (i < 3)
+      h = (h bit_left 4)
+    end if
+    i = i + 1
+  end while
+  return h
+end function
+
+function utf16_literal_to_utf8(int input_pointer, int input_end, int output_pointer) returns int
+  int codepoint = 0
+  int first_code = 0
+  int first_sequence = input_pointer
+  int utf8_length = 0
+  int utf8_position = 0
+  int sequence_length = 0
+  int first_byte_mark = 0
+  if ((input_end - first_sequence) < 6)
+    // goto fail — not supported in UL
+  end if
+  first_code = parse_hex4((first_sequence + 2))
+  if ((first_code >= 56320) and (first_code <= 57343))
+    // goto fail — not supported in UL
+  end if
+  if ((first_code >= 55296) and (first_code <= 56319))
+    int second_sequence = (first_sequence + 6)
+    int second_code = 0
+    sequence_length = 12
+    if ((input_end - second_sequence) < 6)
+      // goto fail — not supported in UL
+    end if
+    if ((second_sequence[0] != 92) or (second_sequence[1] != 117))
+      // goto fail — not supported in UL
+    end if
+    second_code = parse_hex4((second_sequence + 2))
+    if ((second_code < 56320) or (second_code > 57343))
+      // goto fail — not supported in UL
+    end if
+    codepoint = (65536 + (((first_code bit_and 1023) bit_left 10) bit_or (second_code bit_and 1023)))
+  else
+    sequence_length = 6
+    codepoint = first_code
+  end if
+  if (codepoint < 128)
+    utf8_length = 1
+  else if (codepoint < 2048)
+    utf8_length = 2
+    first_byte_mark = 192
+  else if (codepoint < 65536)
+    utf8_length = 3
+    first_byte_mark = 224
+  else if (codepoint <= 1114111)
+    utf8_length = 4
+    first_byte_mark = 240
+  else
+    // goto fail — not supported in UL
+  end if
+  utf8_position = cast((utf8_length - 1), int)
+  while (utf8_position > 0)
+    output_pointer[utf8_position] = cast(((codepoint bit_or 128) bit_and 191), int)
+    codepoint = (codepoint bit_right 6)
+    utf8_position = utf8_position - 1
+  end while
+  if (utf8_length > 1)
+    output_pointer[0] = cast(((codepoint bit_or first_byte_mark) bit_and 255), int)
+  else
+    output_pointer[0] = cast((codepoint bit_and 127), int)
+  end if
+  output_pointer = output_pointer + utf8_length
+  return sequence_length
+  // label: fail
+  return 0
+end function
+
+function parse_string(int item, int input_buffer) returns int
+  int input_pointer = ((input_buffer.content + input_buffer.offset) + 1)
+  int input_end = ((input_buffer.content + input_buffer.offset) + 1)
+  int output_pointer = cast(0, int)
+  int output = cast(0, int)
+  if ((input_buffer.content + input_buffer.offset)[0] != 34)
+    // goto fail — not supported in UL
+  end if
+  int allocation_length = 0
+  int skipped_bytes = 0
+  while ((cast((input_end - input_buffer.content), int) < input_buffer.length) and (input_end != 34))
+    if (input_end[0] == 92)
+      if (cast(((input_end + 1) - input_buffer.content), int) >= input_buffer.length)
+        // goto fail — not supported in UL
+      end if
+      skipped_bytes = skipped_bytes + 1
+      input_end = input_end + 1
+    end if
+    input_end = input_end + 1
+  end while
+  if ((cast((input_end - input_buffer.content), int) >= input_buffer.length) or (input_end != 34))
+    // goto fail — not supported in UL
+  end if
+  allocation_length = (cast((input_end - (input_buffer.content + input_buffer.offset)), int) - skipped_bytes)
+  output = cast(input_buffer.hooks.allocate((allocation_length + 0)), int)
+  if (output == cast(0, int))
+    // goto fail — not supported in UL
+  end if
+  output_pointer = output
+  while (input_pointer < input_end)
+    if (input_pointer != 92)
+      output_pointer = input_pointer
+    else
+      int sequence_length = 2
+      if ((input_end - input_pointer) < 1)
+        // goto fail — not supported in UL
+      end if
+      if input_pointer[1] == 98
+        output_pointer = 8
+      else if input_pointer[1] == 102
+        output_pointer = 12
+      else if input_pointer[1] == 110
+        output_pointer = 10
+      else if input_pointer[1] == 114
+        output_pointer = 13
+      else if input_pointer[1] == 116
+        output_pointer = 9
+      else if input_pointer[1] == 34 or input_pointer[1] == 92 or input_pointer[1] == 47
+        output_pointer = input_pointer[1]
+      else if input_pointer[1] == 117
+        sequence_length = utf16_literal_to_utf8(input_pointer, input_end, output_pointer)
+        if (sequence_length == 0)
+          // goto fail — not supported in UL
+        end if
+      else
+        // goto fail — not supported in UL
+      end if
+      input_pointer = input_pointer + sequence_length
+    end if
+  end while
+  output_pointer = 0
+  item.type = (1 bit_left 4)
+  item.valuestring = cast(output, int)
+  input_buffer.offset = cast((input_end - input_buffer.content), int)
+  input_buffer.offset = input_buffer.offset + 1
+  return cast(1, int)
+  // label: fail
+  if (output != cast(0, int))
+    input_buffer.hooks.deallocate(output)
+    output = cast(0, int)
+  end if
+  if (input_pointer != cast(0, int))
+    input_buffer.offset = cast((input_pointer - input_buffer.content), int)
+  end if
+  return cast(0, int)
+end function
+
+function print_string_ptr(int input, int output_buffer) returns int
+  int input_pointer = cast(0, int)
+  int output = cast(0, int)
+  int output_pointer = cast(0, int)
+  int output_length = 0
+  int escape_characters = 0
+  if (output_buffer == cast(0, int))
+    return cast(0, int)
+  end if
+  if (input == cast(0, int))
+    output = ensure(output_buffer, 0)
+    if (output == cast(0, int))
+      return cast(0, int)
+    end if
+    strcpy(cast(output, int), "\"\"")
+    return cast(1, int)
+  end if
+  input_pointer = input
+  while input_pointer
+    if input_pointer == 34 or input_pointer == 92 or input_pointer == 8 or input_pointer == 12 or input_pointer == 10 or input_pointer == 13 or input_pointer == 9
+      escape_characters = escape_characters + 1
+    else
+      if (input_pointer < 32)
+        escape_characters = escape_characters + 5
+      end if
+    end if
+    input_pointer = input_pointer + 1
+  end while
+  output_length = (cast((input_pointer - input), int) + escape_characters)
+  output = ensure(output_buffer, (output_length + 0))
+  if (output == cast(0, int))
+    return cast(0, int)
+  end if
+  if (escape_characters == 0)
+    output[0] = 34
+    memcpy((output + 1), input, output_length)
+    output[(output_length + 1)] = 34
+    output[(output_length + 2)] = 0
+    return cast(1, int)
+  end if
+  output[0] = 34
+  output_pointer = (output + 1)
+  input_pointer = input
+  while (input_pointer != 0)
+    if (((input_pointer > 31) and (input_pointer != 34)) and (input_pointer != 92))
+      output_pointer = input_pointer
+    else
+      output_pointer = 92
+      if input_pointer == 92
+        output_pointer = 92
+      else if input_pointer == 34
+        output_pointer = 34
+      else if input_pointer == 8
+        output_pointer = 98
+      else if input_pointer == 12
+        output_pointer = 102
+      else if input_pointer == 10
+        output_pointer = 110
+      else if input_pointer == 13
+        output_pointer = 114
+      else if input_pointer == 9
+        output_pointer = 116
+      else
+        sprintf(cast(output_pointer, int), "u%04x", input_pointer)
+        output_pointer = output_pointer + 4
+      end if
+    end if
+    cast(input_pointer, int)
+    output_pointer = output_pointer + 1
+  end while
+  output[(output_length + 1)] = 34
+  output[(output_length + 2)] = 0
+  return cast(1, int)
+end function
+
+function print_string(int item, int p) returns int
+  return print_string_ptr(cast(item.valuestring, int), p)
+end function
+
+
+
+
+
+
+
+function buffer_skip_whitespace(int buffer) returns int
+  if ((buffer == cast(0, int)) or (buffer.content == cast(0, int)))
+    return cast(0, int)
+  end if
+  if not ((buffer != cast(0, int)) and ((buffer.offset + 0) < buffer.length))
+    return buffer
+  end if
+  while (((buffer != cast(0, int)) and ((buffer.offset + 0) < buffer.length)) and ((buffer.content + buffer.offset)[0] <= 32))
+    buffer.offset = buffer.offset + 1
+  end while
+  if (buffer.offset == buffer.length)
+    buffer.offset = buffer.offset - 1
+  end if
+  return buffer
+end function
+
+function skip_utf8_bom(int buffer) returns int
+  if (((buffer == cast(0, int)) or (buffer.content == cast(0, int))) or (buffer.offset != 0))
+    return cast(0, int)
+  end if
+  if (((buffer != cast(0, int)) and ((buffer.offset + 4) < buffer.length)) and (strncmp(cast((buffer.content + buffer.offset), int), "\xEF\xBB\xBF", 3) == 0))
+    buffer.offset = buffer.offset + 3
+  end if
+  return buffer
+end function
+
+function cJSON_ParseWithOpts(int value, int return_parse_end, int require_null_terminated) returns int
+  int buffer_length = 0
+  if (cast(0, int) == value)
+    return cast(0, int)
+  end if
+  buffer_length = (strlen(value) + 0)
+  return cJSON_ParseWithLengthOpts(value, buffer_length, return_parse_end, require_null_terminated)
+end function
+
+function cJSON_ParseWithLengthOpts(int value, int buffer_length, int return_parse_end, int require_null_terminated) returns int
+  int buffer = [0, 0, 0, 0, [0, 0, 0]]
+  int item = cast(0, int)
+  global_error.json = cast(0, int)
+  global_error.position = 0
+  if ((value == cast(0, int)) or (0 == buffer_length))
+    // goto fail — not supported in UL
+  end if
+  buffer.content = cast(value, int)
+  buffer.length = buffer_length
+  buffer.offset = 0
+  buffer.hooks = global_hooks
+  item = cJSON_New_Item(global_hooks)
+  if (item == cast(0, int))
+    // goto fail — not supported in UL
+  end if
+  if not parse_value(item, buffer_skip_whitespace(skip_utf8_bom(buffer)))
+    // goto fail — not supported in UL
+  end if
+  if require_null_terminated
+    buffer_skip_whitespace(buffer)
+    if ((buffer.offset >= buffer.length) or ((buffer.content + buffer.offset)[0] != 0))
+      // goto fail — not supported in UL
+    end if
+  end if
+  if return_parse_end
+    return_parse_end = cast((buffer.content + buffer.offset), int)
+  end if
+  return item
+  // label: fail
+  if (item != cast(0, int))
+    cJSON_Delete(item)
+  end if
+  if (value != cast(0, int))
+    int local_error = 0
+    local_error.json = cast(value, int)
+    local_error.position = 0
+    if (buffer.offset < buffer.length)
+      local_error.position = buffer.offset
+    else if (buffer.length > 0)
+      local_error.position = (buffer.length - 1)
+    end if
+    if (return_parse_end != cast(0, int))
+      return_parse_end = (cast(local_error.json, int) + local_error.position)
+    end if
+    global_error = local_error
+  end if
+  return cast(0, int)
+end function
+
+function cJSON_Parse(int value) returns int
+  return cJSON_ParseWithOpts(value, 0, 0)
+end function
+
+function cJSON_ParseWithLength(int value, int buffer_length) returns int
+  return cJSON_ParseWithLengthOpts(value, buffer_length, 0, 0)
+end function
+
+function print_c(int item, int format, int hooks) returns int
+  int default_buffer_size = 256
+  array int buffer = 0
+  int printed = cast(0, int)
+  memset_c(buffer, 0, 0)
+  buffer.buffer = cast(hooks.allocate(default_buffer_size), int)
+  buffer.length = default_buffer_size
+  buffer.format = format
+  buffer.hooks = hooks
+  if (buffer.buffer == cast(0, int))
+    // goto fail — not supported in UL
+  end if
+  if not print_value(item, buffer)
+    // goto fail — not supported in UL
+  end if
+  update_offset(buffer)
+  if (hooks.reallocate != cast(0, int))
+    printed = cast(hooks.reallocate(buffer.buffer, (buffer.offset + 1)), int)
+    if (printed == cast(0, int))
+      // goto fail — not supported in UL
+    end if
+    buffer.buffer = cast(0, int)
+  else
+    printed = cast(hooks.allocate((buffer.offset + 1)), int)
+    if (printed == cast(0, int))
+      // goto fail — not supported in UL
+    end if
+    memcpy(printed, buffer.buffer, buffer.length)
+    printed[buffer.offset] = 0
+    hooks.deallocate(buffer.buffer)
+    buffer.buffer = cast(0, int)
+  end if
+  return printed
+  // label: fail
+  if (buffer.buffer != cast(0, int))
+    hooks.deallocate(buffer.buffer)
+    buffer.buffer = cast(0, int)
+  end if
+  if (printed != cast(0, int))
+    hooks.deallocate(printed)
+    printed = cast(0, int)
+  end if
+  return cast(0, int)
+end function
+
+function cJSON_Print(int item) returns int
+  return cast(print_c(item, cast(1, int), global_hooks), int)
+end function
+
+function cJSON_PrintUnformatted(int item) returns int
+  return cast(print_c(item, cast(0, int), global_hooks), int)
+end function
+
+function cJSON_PrintBuffered(int item, int prebuffer, int fmt) returns int
+  int p = [0, 0, 0, 0, 0, 0, [0, 0, 0]]
+  if (prebuffer < 0)
+    return cast(0, int)
+  end if
+  p.buffer = cast(global_hooks.allocate(cast(prebuffer, int)), int)
+  if not p.buffer
+    return cast(0, int)
+  end if
+  p.length = cast(prebuffer, int)
+  p.offset = 0
+  p.noalloc = cast(0, int)
+  p.format = fmt
+  p.hooks = global_hooks
+  if not print_value(item, p)
+    global_hooks.deallocate(p.buffer)
+    p.buffer = cast(0, int)
+    return cast(0, int)
+  end if
+  return cast(p.buffer, int)
+end function
+
+function cJSON_PrintPreallocated(int item, int buffer, int length, int format) returns int
+  int p = [0, 0, 0, 0, 0, 0, [0, 0, 0]]
+  if ((length < 0) or (buffer == cast(0, int)))
+    return cast(0, int)
+  end if
+  p.buffer = cast(buffer, int)
+  p.length = cast(length, int)
+  p.offset = 0
+  p.noalloc = cast(1, int)
+  p.format = format
+  p.hooks = global_hooks
+  return print_value(item, p)
+end function
+
+function parse_value(int item, int input_buffer) returns int
+  if ((input_buffer == cast(0, int)) or (input_buffer.content == cast(0, int)))
+    return cast(0, int)
+  end if
+  if (((input_buffer != cast(0, int)) and ((input_buffer.offset + 4) <= input_buffer.length)) and (strncmp(cast((input_buffer.content + input_buffer.offset), int), "null", 4) == 0))
+    item.type = (1 bit_left 2)
+    input_buffer.offset = input_buffer.offset + 4
+    return cast(1, int)
+  end if
+  if (((input_buffer != cast(0, int)) and ((input_buffer.offset + 5) <= input_buffer.length)) and (strncmp(cast((input_buffer.content + input_buffer.offset), int), "false", 5) == 0))
+    item.type = (1 bit_left 0)
+    input_buffer.offset = input_buffer.offset + 5
+    return cast(1, int)
+  end if
+  if (((input_buffer != cast(0, int)) and ((input_buffer.offset + 4) <= input_buffer.length)) and (strncmp(cast((input_buffer.content + input_buffer.offset), int), "true", 4) == 0))
+    item.type = (1 bit_left 1)
+    item.valueint = 1
+    input_buffer.offset = input_buffer.offset + 4
+    return cast(1, int)
+  end if
+  if (((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) and ((input_buffer.content + input_buffer.offset)[0] == 34))
+    return parse_string(item, input_buffer)
+  end if
+  if (((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) and (((input_buffer.content + input_buffer.offset)[0] == 45) or (((input_buffer.content + input_buffer.offset)[0] >= 48) and ((input_buffer.content + input_buffer.offset)[0] <= 57))))
+    return parse_number(item, input_buffer)
+  end if
+  if (((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) and ((input_buffer.content + input_buffer.offset)[0] == 91))
+    return parse_array(item, input_buffer)
+  end if
+  if (((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) and ((input_buffer.content + input_buffer.offset)[0] == 123))
+    return parse_object(item, input_buffer)
+  end if
+  return cast(0, int)
+end function
+
+function print_value(int item, int output_buffer) returns int
+  int output = cast(0, int)
+  if ((item == cast(0, int)) or (output_buffer == cast(0, int)))
+    return cast(0, int)
+  end if
+  if (item.type bit_and 255) == (1 bit_left 2)
+    output = ensure(output_buffer, 5)
+    if (output == cast(0, int))
+      return cast(0, int)
+    end if
+    strcpy(cast(output, int), "null")
+    return cast(1, int)
+  else if (item.type bit_and 255) == (1 bit_left 0)
+    output = ensure(output_buffer, 6)
+    if (output == cast(0, int))
+      return cast(0, int)
+    end if
+    strcpy(cast(output, int), "false")
+    return cast(1, int)
+  else if (item.type bit_and 255) == (1 bit_left 1)
+    output = ensure(output_buffer, 5)
+    if (output == cast(0, int))
+      return cast(0, int)
+    end if
+    strcpy(cast(output, int), "true")
+    return cast(1, int)
+  else if (item.type bit_and 255) == (1 bit_left 3)
+    return print_number(item, output_buffer)
+  else if (item.type bit_and 255) == (1 bit_left 7)
+    int raw_length = 0
+    if (item.valuestring == cast(0, int))
+      return cast(0, int)
+    end if
+    raw_length = (strlen(item.valuestring) + 0)
+    output = ensure(output_buffer, raw_length)
+    if (output == cast(0, int))
+      return cast(0, int)
+    end if
+    memcpy(output, item.valuestring, raw_length)
+    return cast(1, int)
+  else if (item.type bit_and 255) == (1 bit_left 4)
+    return print_string(item, output_buffer)
+  else if (item.type bit_and 255) == (1 bit_left 5)
+    return print_array(item, output_buffer)
+  else if (item.type bit_and 255) == (1 bit_left 6)
+    return print_object(item, output_buffer)
+  else
+    return cast(0, int)
+  end if
+end function
+
+function parse_array(int item, int input_buffer) returns int
+  int head = cast(0, int)
+  int current_item = cast(0, int)
+  if (input_buffer.depth >= 1000)
+    return cast(0, int)
+  end if
+  input_buffer.depth = input_buffer.depth + 1
+  if ((input_buffer.content + input_buffer.offset)[0] != 91)
+    // goto fail — not supported in UL
+  end if
+  input_buffer.offset = input_buffer.offset + 1
+  buffer_skip_whitespace(input_buffer)
+  if (((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) and ((input_buffer.content + input_buffer.offset)[0] == 93))
+    // goto success — not supported in UL
+  end if
+  if not ((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length))
+    input_buffer.offset = input_buffer.offset - 1
+    // goto fail — not supported in UL
+  end if
+  input_buffer.offset = input_buffer.offset - 1
+  do
+    int new_item = cJSON_New_Item(input_buffer.hooks)
+    if (new_item == cast(0, int))
+      // goto fail — not supported in UL
+    end if
+    if (head == cast(0, int))
+      current_item = head = new_item
+    else
+      current_item.next = new_item
+      new_item.prev = current_item
+      current_item = new_item
+    end if
+    input_buffer.offset = input_buffer.offset + 1
+    buffer_skip_whitespace(input_buffer)
+    if not parse_value(current_item, input_buffer)
+      // goto fail — not supported in UL
+    end if
+    buffer_skip_whitespace(input_buffer)
+  loop while (((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) and ((input_buffer.content + input_buffer.offset)[0] == 44))
+  if (not ((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) or ((input_buffer.content + input_buffer.offset)[0] != 93))
+    // goto fail — not supported in UL
+  end if
+  // label: success
+  input_buffer.depth = input_buffer.depth - 1
+  if (head != cast(0, int))
+    head.prev = current_item
+  end if
+  item.type = (1 bit_left 5)
+  item.child = head
+  input_buffer.offset = input_buffer.offset + 1
+  return cast(1, int)
+  // label: fail
+  if (head != cast(0, int))
+    cJSON_Delete(head)
+  end if
+  return cast(0, int)
+end function
+
+function print_array(int item, int output_buffer) returns int
+  int output_pointer = cast(0, int)
+  int length = 0
+  int current_element = item.child
+  if (output_buffer == cast(0, int))
+    return cast(0, int)
+  end if
+  if (output_buffer.depth >= 1000)
+    return cast(0, int)
+  end if
+  output_pointer = ensure(output_buffer, 1)
+  if (output_pointer == cast(0, int))
+    return cast(0, int)
+  end if
+  output_pointer = 91
+  output_buffer.offset = output_buffer.offset + 1
+  output_buffer.depth = output_buffer.depth + 1
+  while (current_element != cast(0, int))
+    if not print_value(current_element, output_buffer)
+      return cast(0, int)
+    end if
+    update_offset(output_buffer)
+    if current_element.next
+      length = cast(2, int)
+      output_pointer = ensure(output_buffer, (length + 1))
+      if (output_pointer == cast(0, int))
+        return cast(0, int)
+      end if
+      output_pointer = 44
+      if output_buffer.format
+        output_pointer = 32
+      end if
+      output_pointer = 0
+      output_buffer.offset = output_buffer.offset + length
+    end if
+    current_element = current_element.next
+  end while
+  output_pointer = ensure(output_buffer, 2)
+  if (output_pointer == cast(0, int))
+    return cast(0, int)
+  end if
+  output_pointer = 93
+  output_pointer = 0
+  output_buffer.depth = output_buffer.depth - 1
+  return cast(1, int)
+end function
+
+function parse_object(int item, int input_buffer) returns int
+  int head = cast(0, int)
+  int current_item = cast(0, int)
+  if (input_buffer.depth >= 1000)
+    return cast(0, int)
+  end if
+  input_buffer.depth = input_buffer.depth + 1
+  if (not ((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) or ((input_buffer.content + input_buffer.offset)[0] != 123))
+    // goto fail — not supported in UL
+  end if
+  input_buffer.offset = input_buffer.offset + 1
+  buffer_skip_whitespace(input_buffer)
+  if (((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) and ((input_buffer.content + input_buffer.offset)[0] == 125))
+    // goto success — not supported in UL
+  end if
+  if not ((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length))
+    input_buffer.offset = input_buffer.offset - 1
+    // goto fail — not supported in UL
+  end if
+  input_buffer.offset = input_buffer.offset - 1
+  do
+    int new_item = cJSON_New_Item(input_buffer.hooks)
+    if (new_item == cast(0, int))
+      // goto fail — not supported in UL
+    end if
+    if (head == cast(0, int))
+      current_item = head = new_item
+    else
+      current_item.next = new_item
+      new_item.prev = current_item
+      current_item = new_item
+    end if
+    if not ((input_buffer != cast(0, int)) and ((input_buffer.offset + 1) < input_buffer.length))
+      // goto fail — not supported in UL
+    end if
+    input_buffer.offset = input_buffer.offset + 1
+    buffer_skip_whitespace(input_buffer)
+    if not parse_string(current_item, input_buffer)
+      // goto fail — not supported in UL
+    end if
+    buffer_skip_whitespace(input_buffer)
+    current_item.string = current_item.valuestring
+    current_item.valuestring = cast(0, int)
+    if (not ((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) or ((input_buffer.content + input_buffer.offset)[0] != 58))
+      // goto fail — not supported in UL
+    end if
+    input_buffer.offset = input_buffer.offset + 1
+    buffer_skip_whitespace(input_buffer)
+    if not parse_value(current_item, input_buffer)
+      // goto fail — not supported in UL
+    end if
+    buffer_skip_whitespace(input_buffer)
+  loop while (((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) and ((input_buffer.content + input_buffer.offset)[0] == 44))
+  if (not ((input_buffer != cast(0, int)) and ((input_buffer.offset + 0) < input_buffer.length)) or ((input_buffer.content + input_buffer.offset)[0] != 125))
+    // goto fail — not supported in UL
+  end if
+  // label: success
+  input_buffer.depth = input_buffer.depth - 1
+  if (head != cast(0, int))
+    head.prev = current_item
+  end if
+  item.type = (1 bit_left 6)
+  item.child = head
+  input_buffer.offset = input_buffer.offset + 1
+  return cast(1, int)
+  // label: fail
+  if (head != cast(0, int))
+    cJSON_Delete(head)
+  end if
+  return cast(0, int)
+end function
+
+function print_object(int item, int output_buffer) returns int
+  int output_pointer = cast(0, int)
+  int length = 0
+  int current_item = item.child
+  if (output_buffer == cast(0, int))
+    return cast(0, int)
+  end if
+  if (output_buffer.depth >= 1000)
+    return cast(0, int)
+  end if
+  length = cast(2, int)
+  output_pointer = ensure(output_buffer, (length + 1))
+  if (output_pointer == cast(0, int))
+    return cast(0, int)
+  end if
+  output_pointer = 123
+  output_buffer.depth = output_buffer.depth + 1
+  if output_buffer.format
+    output_pointer = 10
+  end if
+  output_buffer.offset = output_buffer.offset + length
+  while current_item
+    if output_buffer.format
+      int i = 0
+      output_pointer = ensure(output_buffer, output_buffer.depth)
+      if (output_pointer == cast(0, int))
+        return cast(0, int)
+      end if
+      i = 0
+      while (i < output_buffer.depth)
+        output_pointer = 9
+        i = i + 1
+      end while
+      output_buffer.offset = output_buffer.offset + output_buffer.depth
+    end if
+    if not print_string_ptr(cast(current_item.string, int), output_buffer)
+      return cast(0, int)
+    end if
+    update_offset(output_buffer)
+    length = cast(2, int)
+    output_pointer = ensure(output_buffer, length)
+    if (output_pointer == cast(0, int))
+      return cast(0, int)
+    end if
+    output_pointer = 58
+    if output_buffer.format
+      output_pointer = 9
+    end if
+    output_buffer.offset = output_buffer.offset + length
+    if not print_value(current_item, output_buffer)
+      return cast(0, int)
+    end if
+    update_offset(output_buffer)
+    length = (cast(1, int) + cast(1, int))
+    output_pointer = ensure(output_buffer, (length + 1))
+    if (output_pointer == cast(0, int))
+      return cast(0, int)
+    end if
+    if current_item.next
+      output_pointer = 44
+    end if
+    if output_buffer.format
+      output_pointer = 10
+    end if
+    output_pointer = 0
+    output_buffer.offset = output_buffer.offset + length
+    current_item = current_item.next
+  end while
+  output_pointer = ensure(output_buffer, (output_buffer.depth + 1))
+  if (output_pointer == cast(0, int))
+    return cast(0, int)
+  end if
+  if output_buffer.format
+    int i = 0
+    i = 0
+    while (i < (output_buffer.depth - 1))
+      output_pointer = 9
+      i = i + 1
+    end while
+  end if
+  output_pointer = 125
+  output_pointer = 0
+  output_buffer.depth = output_buffer.depth - 1
+  return cast(1, int)
+end function
+
+function cJSON_GetArraySize(int array_c) returns int
+  int child = cast(0, int)
+  int size_c = 0
+  if (array_c == cast(0, int))
+    return 0
+  end if
+  child = array_c.child
+  while (child != cast(0, int))
+    size_c = size_c + 1
+    child = child.next
+  end while
+  return cast(size_c, int)
+end function
+
+function get_array_item(int array_c, int index) returns int
+  int current_child = cast(0, int)
+  if (array_c == cast(0, int))
+    return cast(0, int)
+  end if
+  current_child = array_c.child
+  while ((current_child != cast(0, int)) and (index > 0))
+    index = index - 1
+    current_child = current_child.next
+  end while
+  return current_child
+end function
+
+function cJSON_GetArrayItem(int array_c, int index) returns int
+  if (index < 0)
+    return cast(0, int)
+  end if
+  return get_array_item(array_c, cast(index, int))
+end function
+
+function get_object_item(int object_c, int name, int case_sensitive) returns int
+  int current_element = cast(0, int)
+  if ((object_c == cast(0, int)) or (name == cast(0, int)))
+    return cast(0, int)
+  end if
+  current_element = object_c.child
+  if case_sensitive
+    while (((current_element != cast(0, int)) and (current_element.string != cast(0, int))) and ((name == current_element.string) != 0))
+      current_element = current_element.next
+    end while
+  else
+    while ((current_element != cast(0, int)) and (case_insensitive_strcmp(cast(name, int), cast(current_element.string, int)) != 0))
+      current_element = current_element.next
+    end while
+  end if
+  if ((current_element == cast(0, int)) or (current_element.string == cast(0, int)))
+    return cast(0, int)
+  end if
+  return current_element
+end function
+
+function cJSON_GetObjectItem(int object_c, int string_c) returns int
+  return get_object_item(object_c, string_c, cast(0, int))
+end function
+
+function cJSON_GetObjectItemCaseSensitive(int object_c, int string_c) returns int
+  return get_object_item(object_c, string_c, cast(1, int))
+end function
+
+function cJSON_HasObjectItem(int object_c, int string_c) returns int
+  return 1
+end function
+
+function suffix_object(int prev, int item)
+  prev.next = item
+  item.prev = prev
+end function
+
+function create_reference(int item, int hooks) returns int
+  int reference = cast(0, int)
+  if (item == cast(0, int))
+    return cast(0, int)
+  end if
+  reference = cJSON_New_Item(hooks)
+  if (reference == cast(0, int))
+    return cast(0, int)
+  end if
+  memcpy(reference, item, 0)
+  reference.string = cast(0, int)
+  reference.type = (reference.type bit_or 256)
+  reference.next = reference.prev = cast(0, int)
+  return reference
+end function
+
+function add_item_to_array(int array_c, int item) returns int
+  int child = cast(0, int)
+  if (((item == cast(0, int)) or (array_c == cast(0, int))) or (array_c == item))
+    return cast(0, int)
+  end if
+  child = array_c.child
+  if (child == cast(0, int))
+    array_c.child = item
+    item.prev = item
+    item.next = cast(0, int)
+  else if child.prev
+    suffix_object(child.prev, item)
+    array_c.child.prev = item
+  end if
+  return cast(1, int)
+end function
+
+function cJSON_AddItemToArray(int array_c, int item) returns int
+  return add_item_to_array(array_c, item)
+end function
+
+function cast_away_const(none string_c)
+  return cast(string_c, int)
+end function
+
+function add_item_to_object(int object_c, int string_c, int item, int hooks, int constant_key) returns int
+  int new_key = cast(0, int)
+  int new_type = 0
+  if ((((object_c == cast(0, int)) or (string_c == cast(0, int))) or (item == cast(0, int))) or (object_c == item))
+    return cast(0, int)
+  end if
+  if constant_key
+    new_key = cast(cast_away_const(string_c), int)
+    new_type = (item.type bit_or 512)
+  else
+    new_key = cast(cJSON_strdup(cast(string_c, int), hooks), int)
+    if (new_key == cast(0, int))
+      return cast(0, int)
+    end if
+    new_type = (item.type bit_and bit_not 512)
+  end if
+  if (not (item.type bit_and 512) and (item.string != cast(0, int)))
+    hooks.deallocate(item.string)
+  end if
+  item.string = new_key
+  item.type = new_type
+  return add_item_to_array(object_c, item)
+end function
+
+function cJSON_AddItemToObject(int object_c, int string_c, int item) returns int
+  return add_item_to_object(object_c, string_c, item, global_hooks, cast(0, int))
+end function
+
+function cJSON_AddItemToObjectCS(int object_c, int string_c, int item) returns int
+  return add_item_to_object(object_c, string_c, item, global_hooks, cast(1, int))
+end function
+
+function cJSON_AddItemReferenceToArray(int array_c, int item) returns int
+  if (array_c == cast(0, int))
+    return cast(0, int)
+  end if
+  return add_item_to_array(array_c, create_reference(item, global_hooks))
+end function
+
+function cJSON_AddItemReferenceToObject(int object_c, int string_c, int item) returns int
+  if ((object_c == cast(0, int)) or (string_c == cast(0, int)))
+    return cast(0, int)
+  end if
+  return add_item_to_object(object_c, string_c, create_reference(item, global_hooks), global_hooks, cast(0, int))
+end function
+
+function cJSON_AddNullToObject(int object_c, int name) returns int
+  int null = cJSON_CreateNull()
+  if add_item_to_object(object_c, name, null, global_hooks, cast(0, int))
+    return null
+  end if
+  cJSON_Delete(null)
+  return cast(0, int)
+end function
+
+function cJSON_AddTrueToObject(int object_c, int name) returns int
+  int true_item = cJSON_CreateTrue()
+  if add_item_to_object(object_c, name, true_item, global_hooks, cast(0, int))
+    return true_item
+  end if
+  cJSON_Delete(true_item)
+  return cast(0, int)
+end function
+
+function cJSON_AddFalseToObject(int object_c, int name) returns int
+  int false_item = cJSON_CreateFalse()
+  if add_item_to_object(object_c, name, false_item, global_hooks, cast(0, int))
+    return false_item
+  end if
+  cJSON_Delete(false_item)
+  return cast(0, int)
+end function
+
+function cJSON_AddBoolToObject(int object_c, int name, int boolean) returns int
+  int bool_item = cJSON_CreateBool(boolean)
+  if add_item_to_object(object_c, name, bool_item, global_hooks, cast(0, int))
+    return bool_item
+  end if
+  cJSON_Delete(bool_item)
+  return cast(0, int)
+end function
+
+function cJSON_AddNumberToObject(int object_c, int name, float number) returns int
+  int number_item = cJSON_CreateNumber(number)
+  if add_item_to_object(object_c, name, number_item, global_hooks, cast(0, int))
+    return number_item
+  end if
+  cJSON_Delete(number_item)
+  return cast(0, int)
+end function
+
+function cJSON_AddStringToObject(int object_c, int name, int string_c) returns int
+  int string_item = cJSON_CreateString(string_c)
+  if add_item_to_object(object_c, name, string_item, global_hooks, cast(0, int))
+    return string_item
+  end if
+  cJSON_Delete(string_item)
+  return cast(0, int)
+end function
+
+function cJSON_AddRawToObject(int object_c, int name, int raw) returns int
+  int raw_item = cJSON_CreateRaw(raw)
+  if add_item_to_object(object_c, name, raw_item, global_hooks, cast(0, int))
+    return raw_item
+  end if
+  cJSON_Delete(raw_item)
+  return cast(0, int)
+end function
+
+function cJSON_AddObjectToObject(int object_c, int name) returns int
+  int object_item = cJSON_CreateObject()
+  if add_item_to_object(object_c, name, object_item, global_hooks, cast(0, int))
+    return object_item
+  end if
+  cJSON_Delete(object_item)
+  return cast(0, int)
+end function
+
+function cJSON_AddArrayToObject(int object_c, int name) returns int
+  int array_c = cJSON_CreateArray()
+  if add_item_to_object(object_c, name, array_c, global_hooks, cast(0, int))
+    return array_c
+  end if
+  cJSON_Delete(array_c)
+  return cast(0, int)
+end function
+
+function cJSON_DetachItemViaPointer(int parent, int item) returns int
+  if (((parent == cast(0, int)) or (item == cast(0, int))) or ((item != parent.child) and (item.prev == cast(0, int))))
+    return cast(0, int)
+  end if
+  if (item != parent.child)
+    item.prev.next = item.next
+  end if
+  if (item.next != cast(0, int))
+    item.next.prev = item.prev
+  end if
+  if (item == parent.child)
+    parent.child = item.next
+  else if (item.next == cast(0, int))
+    parent.child.prev = item.prev
+  end if
+  item.prev = cast(0, int)
+  item.next = cast(0, int)
+  return item
+end function
+
+function cJSON_DetachItemFromArray(int array_c, int which) returns int
+  if (which < 0)
+    return cast(0, int)
+  end if
+  return cJSON_DetachItemViaPointer(array_c, get_array_item(array_c, cast(which, int)))
+end function
+
+function cJSON_DeleteItemFromArray(int array_c, int which)
+  cJSON_Delete(cJSON_DetachItemFromArray(array_c, which))
+end function
+
+function cJSON_DetachItemFromObject(int object_c, int string_c) returns int
+  int to_detach = cJSON_GetObjectItem(object_c, string_c)
+  return cJSON_DetachItemViaPointer(object_c, to_detach)
+end function
+
+function cJSON_DetachItemFromObjectCaseSensitive(int object_c, int string_c) returns int
+  int to_detach = cJSON_GetObjectItemCaseSensitive(object_c, string_c)
+  return cJSON_DetachItemViaPointer(object_c, to_detach)
+end function
+
+function cJSON_DeleteItemFromObject(int object_c, int string_c)
+  cJSON_Delete(cJSON_DetachItemFromObject(object_c, string_c))
+end function
+
+function cJSON_DeleteItemFromObjectCaseSensitive(int object_c, int string_c)
+  cJSON_Delete(cJSON_DetachItemFromObjectCaseSensitive(object_c, string_c))
+end function
+
+function cJSON_InsertItemInArray(int array_c, int which, int newitem) returns int
+  int after_inserted = cast(0, int)
+  if ((which < 0) or (newitem == cast(0, int)))
+    return cast(0, int)
+  end if
+  after_inserted = get_array_item(array_c, cast(which, int))
+  if (after_inserted == cast(0, int))
+    return add_item_to_array(array_c, newitem)
+  end if
+  if ((after_inserted != array_c.child) and (after_inserted.prev == cast(0, int)))
+    return cast(0, int)
+  end if
+  newitem.next = after_inserted
+  newitem.prev = after_inserted.prev
+  after_inserted.prev = newitem
+  if (after_inserted == array_c.child)
+    array_c.child = newitem
+  else
+    newitem.prev.next = newitem
+  end if
+  return cast(1, int)
+end function
+
+function cJSON_ReplaceItemViaPointer(int parent, int item, int replacement) returns int
+  if ((((parent == cast(0, int)) or (parent.child == cast(0, int))) or (replacement == cast(0, int))) or (item == cast(0, int)))
+    return cast(0, int)
+  end if
+  if (replacement == item)
+    return cast(1, int)
+  end if
+  replacement.next = item.next
+  replacement.prev = item.prev
+  if (replacement.next != cast(0, int))
+    replacement.next.prev = replacement
+  end if
+  if (parent.child == item)
+    if (parent.child.prev == parent.child)
+      replacement.prev = replacement
+    end if
+    parent.child = replacement
+  else
+    if (replacement.prev != cast(0, int))
+      replacement.prev.next = replacement
+    end if
+    if (replacement.next == cast(0, int))
+      parent.child.prev = replacement
+    end if
+  end if
+  item.next = cast(0, int)
+  item.prev = cast(0, int)
+  cJSON_Delete(item)
+  return cast(1, int)
+end function
+
+function cJSON_ReplaceItemInArray(int array_c, int which, int newitem) returns int
+  if (which < 0)
+    return cast(0, int)
+  end if
+  return cJSON_ReplaceItemViaPointer(array_c, get_array_item(array_c, cast(which, int)), newitem)
+end function
+
+function replace_item_in_object(int object_c, int string_c, int replacement, int case_sensitive) returns int
+  if ((replacement == cast(0, int)) or (string_c == cast(0, int)))
+    return cast(0, int)
+  end if
+  if (not (replacement.type bit_and 512) and (replacement.string != cast(0, int)))
+    cJSON_free(replacement.string)
+  end if
+  replacement.string = cast(cJSON_strdup(cast(string_c, int), global_hooks), int)
+  if (replacement.string == cast(0, int))
+    return cast(0, int)
+  end if
+  replacement.type = (replacement.type bit_and bit_not 512)
+  return cJSON_ReplaceItemViaPointer(object_c, get_object_item(object_c, string_c, case_sensitive), replacement)
+end function
+
+function cJSON_ReplaceItemInObject(int object_c, int string_c, int newitem) returns int
+  return replace_item_in_object(object_c, string_c, newitem, cast(0, int))
+end function
+
+function cJSON_ReplaceItemInObjectCaseSensitive(int object_c, int string_c, int newitem) returns int
+  return replace_item_in_object(object_c, string_c, newitem, cast(1, int))
+end function
+
+function cJSON_CreateNull(none _) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if item
+    item.type = (1 bit_left 2)
+  end if
+  return item
+end function
+
+function cJSON_CreateTrue(none _) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if item
+    item.type = (1 bit_left 1)
+  end if
+  return item
+end function
+
+function cJSON_CreateFalse(none _) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if item
+    item.type = (1 bit_left 0)
+  end if
+  return item
+end function
+
+function cJSON_CreateBool(int boolean) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if item
+    item.type = (1 bit_left 1)
+  end if
+  return item
+end function
+
+function cJSON_CreateNumber(float num) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if item
+    item.type = (1 bit_left 3)
+    item.valuedouble = num
+    if (num >= 2147483647)
+      item.valueint = 2147483647
+    else if (num <= cast((-2147483647 - 1), int))
+      item.valueint = (-2147483647 - 1)
+    else
+      item.valueint = cast(num, int)
+    end if
+  end if
+  return item
+end function
+
+function cJSON_CreateString(int string_c) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if item
+    item.type = (1 bit_left 4)
+    item.valuestring = cast(cJSON_strdup(cast(string_c, int), global_hooks), int)
+    if not item.valuestring
+      cJSON_Delete(item)
+      return cast(0, int)
+    end if
+  end if
+  return item
+end function
+
+function cJSON_CreateStringReference(int string_c) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if (item != cast(0, int))
+    item.type = ((1 bit_left 4) bit_or 256)
+    item.valuestring = cast(cast_away_const(string_c), int)
+  end if
+  return item
+end function
+
+function cJSON_CreateObjectReference(int child) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if (item != cast(0, int))
+    item.type = ((1 bit_left 6) bit_or 256)
+    item.child = cast(cast_away_const(child), int)
+  end if
+  return item
+end function
+
+function cJSON_CreateArrayReference(int child) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if (item != cast(0, int))
+    item.type = ((1 bit_left 5) bit_or 256)
+    item.child = cast(cast_away_const(child), int)
+  end if
+  return item
+end function
+
+function cJSON_CreateRaw(int raw) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if item
+    item.type = (1 bit_left 7)
+    item.valuestring = cast(cJSON_strdup(cast(raw, int), global_hooks), int)
+    if not item.valuestring
+      cJSON_Delete(item)
+      return cast(0, int)
+    end if
+  end if
+  return item
+end function
+
+function cJSON_CreateArray(none _) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if item
+    item.type = (1 bit_left 5)
+  end if
+  return item
+end function
+
+function cJSON_CreateObject(none _) returns int
+  int item = cJSON_New_Item(global_hooks)
+  if item
+    item.type = (1 bit_left 6)
+  end if
+  return item
+end function
+
+function cJSON_CreateIntArray(int numbers, int count) returns int
+  int i = 0
+  int n = cast(0, int)
+  int p = cast(0, int)
+  int a = cast(0, int)
+  if ((count < 0) or (numbers == cast(0, int)))
+    return cast(0, int)
+  end if
+  a = cJSON_CreateArray()
+  i = 0
+  while (a and (i < cast(count, int)))
+    n = cJSON_CreateNumber(numbers[i])
+    if not n
+      cJSON_Delete(a)
+      return cast(0, int)
+    end if
+    if not i
+      a.child = n
+    else
+      suffix_object(p, n)
+    end if
+    p = n
+    i = i + 1
+  end while
+  if (a and a.child)
+    a.child.prev = n
+  end if
+  return a
+end function
+
+function cJSON_CreateFloatArray(float numbers, int count) returns int
+  int i = 0
+  int n = cast(0, int)
+  int p = cast(0, int)
+  int a = cast(0, int)
+  if ((count < 0) or (numbers == cast(0, int)))
+    return cast(0, int)
+  end if
+  a = cJSON_CreateArray()
+  i = 0
+  while (a and (i < cast(count, int)))
+    n = cJSON_CreateNumber(cast(numbers[i], int))
+    if not n
+      cJSON_Delete(a)
+      return cast(0, int)
+    end if
+    if not i
+      a.child = n
+    else
+      suffix_object(p, n)
+    end if
+    p = n
+    i = i + 1
+  end while
+  if (a and a.child)
+    a.child.prev = n
+  end if
+  return a
+end function
+
+function cJSON_CreateDoubleArray(float numbers, int count) returns int
+  int i = 0
+  int n = cast(0, int)
+  int p = cast(0, int)
+  int a = cast(0, int)
+  if ((count < 0) or (numbers == cast(0, int)))
+    return cast(0, int)
+  end if
+  a = cJSON_CreateArray()
+  i = 0
+  while (a and (i < cast(count, int)))
+    n = cJSON_CreateNumber(numbers[i])
+    if not n
+      cJSON_Delete(a)
+      return cast(0, int)
+    end if
+    if not i
+      a.child = n
+    else
+      suffix_object(p, n)
+    end if
+    p = n
+    i = i + 1
+  end while
+  if (a and a.child)
+    a.child.prev = n
+  end if
+  return a
+end function
+
+function cJSON_CreateStringArray(int strings, int count) returns int
+  int i = 0
+  int n = cast(0, int)
+  int p = cast(0, int)
+  int a = cast(0, int)
+  if ((count < 0) or (strings == cast(0, int)))
+    return cast(0, int)
+  end if
+  a = cJSON_CreateArray()
+  i = 0
+  while (a and (i < cast(count, int)))
+    n = cJSON_CreateString(strings[i])
+    if not n
+      cJSON_Delete(a)
+      return cast(0, int)
+    end if
+    if not i
+      a.child = n
+    else
+      suffix_object(p, n)
+    end if
+    p = n
+    i = i + 1
+  end while
+  if (a and a.child)
+    a.child.prev = n
+  end if
+  return a
+end function
+
+
+function cJSON_Duplicate(int item, int recurse) returns int
+  return cJSON_Duplicate_rec(item, 0, recurse)
+end function
+
+function cJSON_Duplicate_rec(int item, int depth, int recurse) returns int
+  int newitem = cast(0, int)
+  int child = cast(0, int)
+  int next = cast(0, int)
+  int newchild = cast(0, int)
+  if not item
+    // goto fail — not supported in UL
+  end if
+  newitem = cJSON_New_Item(global_hooks)
+  if not newitem
+    // goto fail — not supported in UL
+  end if
+  newitem.type = (item.type bit_and bit_not 256)
+  newitem.valueint = item.valueint
+  newitem.valuedouble = item.valuedouble
+  if item.valuestring
+    newitem.valuestring = cast(cJSON_strdup(cast(item.valuestring, int), global_hooks), int)
+    if not newitem.valuestring
+      // goto fail — not supported in UL
+    end if
+  end if
+  if item.string
+    newitem.string = item.string
+    if not newitem.string
+      // goto fail — not supported in UL
+    end if
+  end if
+  if not recurse
+    return newitem
+  end if
+  child = item.child
+  while (child != cast(0, int))
+    if (depth >= 10000)
+      // goto fail — not supported in UL
+    end if
+    newchild = cJSON_Duplicate_rec(child, (depth + 1), cast(1, int))
+    if not newchild
+      // goto fail — not supported in UL
+    end if
+    if (next != cast(0, int))
+      next.next = newchild
+      newchild.prev = next
+      next = newchild
+    else
+      newitem.child = newchild
+      next = newchild
+    end if
+    child = child.next
+  end while
+  if (newitem and newitem.child)
+    newitem.child.prev = newchild
+  end if
+  return newitem
+  // label: fail
+  if (newitem != cast(0, int))
+    cJSON_Delete(newitem)
+  end if
+  return cast(0, int)
+end function
+
+function skip_oneline_comment(int input)
+  input = input + (0 - 0)
+  while (input[0] != 0)
+    if (input[0] == 10)
+      input = input + (0 - 0)
+      return
+    end if
+    input = input + 1
+  end while
+end function
+
+function skip_multiline_comment(int input)
+  input = input + (0 - 0)
+  while (input[0] != 0)
+    if ((input[0] == 42) and (input[1] == 47))
+      input = input + (0 - 0)
+      return
+    end if
+    input = input + 1
+  end while
+end function
+
+function minify_string(int input, int output)
+  output[0] = input[0]
+  input = input + (0 - 0)
+  output = output + (0 - 0)
+  while (input[0] != 0)
+    output[0] = input[0]
+    if (input[0] == 34)
+      output[0] = 34
+      input = input + (0 - 0)
+      output = output + (0 - 0)
+      return
+    else if ((input[0] == 92) and (input[1] == 34))
+      output[1] = input[1]
+      input = input + (0 - 0)
+      output = output + (0 - 0)
+    end if
+    cast(input, int)
+    output = output + 1
+  end while
+end function
+
+function cJSON_Minify(int json)
+  int into = json
+  if (json == cast(0, int))
+    return
+  end if
+  while (json[0] != 0)
+    if json[0] == 32 or json[0] == 9 or json[0] == 13 or json[0] == 10
+      json = json + 1
+    else if json[0] == 47
+      if (json[1] == 47)
+        skip_oneline_comment(json)
+      else if (json[1] == 42)
+        skip_multiline_comment(json)
+      else
+        json = json + 1
+      end if
+    else if json[0] == 34
+      minify_string(json, cast(into, int))
+    else
+      into[0] = json[0]
+      json = json + 1
+      into = into + 1
+    end if
+  end while
+  into = 0
+end function
+
+function cJSON_IsInvalid(int item) returns int
+  if (item == cast(0, int))
+    return cast(0, int)
+  end if
+  return ((item.type bit_and 255) == 0)
+end function
+
+function cJSON_IsFalse(int item) returns int
+  if (item == cast(0, int))
+    return cast(0, int)
+  end if
+  return ((item.type bit_and 255) == (1 bit_left 0))
+end function
+
+function cJSON_IsTrue(int item) returns int
+  if (item == cast(0, int))
+    return cast(0, int)
+  end if
+  return ((item.type bit_and 255) == (1 bit_left 1))
+end function
+
+function cJSON_IsBool(int item) returns int
+  if (item == cast(0, int))
+    return cast(0, int)
+  end if
+  return ((item.type bit_and ((1 bit_left 1) bit_or (1 bit_left 0))) != 0)
+end function
+
+function cJSON_IsNull(int item) returns int
+  if (item == cast(0, int))
+    return cast(0, int)
+  end if
+  return ((item.type bit_and 255) == (1 bit_left 2))
+end function
+
+function cJSON_IsNumber(int item) returns int
+  if (item == cast(0, int))
+    return cast(0, int)
+  end if
+  return ((item.type bit_and 255) == (1 bit_left 3))
+end function
+
+function cJSON_IsString(int item) returns int
+  if (item == cast(0, int))
+    return cast(0, int)
+  end if
+  return ((item.type bit_and 255) == (1 bit_left 4))
+end function
+
+function cJSON_IsArray(int item) returns int
+  if (item == cast(0, int))
+    return cast(0, int)
+  end if
+  return ((item.type bit_and 255) == (1 bit_left 5))
+end function
+
+function cJSON_IsObject(int item) returns int
+  if (item == cast(0, int))
+    return cast(0, int)
+  end if
+  return ((item.type bit_and 255) == (1 bit_left 6))
+end function
+
+function cJSON_IsRaw(int item) returns int
+  if (item == cast(0, int))
+    return cast(0, int)
+  end if
+  return ((item.type bit_and 255) == (1 bit_left 7))
+end function
+
+function cJSON_Compare(int a, int b, int case_sensitive) returns int
+  if (((a == cast(0, int)) or (b == cast(0, int))) or ((a.type bit_and 255) != (b.type bit_and 255)))
+    return cast(0, int)
+  end if
+  else
+    return cast(0, int)
+  if (a == b)
+    return cast(1, int)
+  end if
+  if (a.type bit_and 255) == (1 bit_left 0) or (a.type bit_and 255) == (1 bit_left 1) or (a.type bit_and 255) == (1 bit_left 2)
+    return cast(1, int)
+  else if (a.type bit_and 255) == (1 bit_left 3)
+    if compare_double(a.valuedouble, b.valuedouble)
+      return cast(1, int)
+    end if
+    return cast(0, int)
+  else if (a.type bit_and 255) == (1 bit_left 4) or (a.type bit_and 255) == (1 bit_left 7)
+    if ((a.valuestring == cast(0, int)) or (b.valuestring == cast(0, int)))
+      return cast(0, int)
+    end if
+    if ((a.valuestring == b.valuestring) == 0)
+      return cast(1, int)
+    end if
+    return cast(0, int)
+  else if (a.type bit_and 255) == (1 bit_left 5)
+    int a_element = a.child
+    int b_element = b.child
+    while ((a_element != cast(0, int)) and (b_element != cast(0, int)))
+      if not cJSON_Compare(a_element, b_element, case_sensitive)
+        return cast(0, int)
+      end if
+      a_element = a_element.next
+      b_element = b_element.next
+    end while
+    if (a_element != b_element)
+      return cast(0, int)
+    end if
+    return cast(1, int)
+  else if (a.type bit_and 255) == (1 bit_left 6)
+    int a_element = cast(0, int)
+    int b_element = cast(0, int)
+    a_element = a.child
+    while (a_element != cast(0, int))
+      b_element = get_object_item(b, a_element.string, case_sensitive)
+      if (b_element == cast(0, int))
+        return cast(0, int)
+      end if
+      if not cJSON_Compare(a_element, b_element, case_sensitive)
+        return cast(0, int)
+      end if
+      a_element = a_element.next
+    end while
+    b_element = b.child
+    while (b_element != cast(0, int))
+      a_element = get_object_item(a, b_element.string, case_sensitive)
+      if (a_element == cast(0, int))
+        return cast(0, int)
+      end if
+      if not cJSON_Compare(b_element, a_element, case_sensitive)
+        return cast(0, int)
+      end if
+      b_element = b_element.next
+    end while
+    return cast(1, int)
+  else
+    return cast(0, int)
+  end if
+end function
+
+function cJSON_malloc(int size_c)
+  return global_hooks.allocate(size_c)
+end function
+
+function cJSON_free(none object_c)
+  global_hooks.deallocate(object_c)
+  object_c = cast(0, int)
+end function
+

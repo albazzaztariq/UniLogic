@@ -1,0 +1,30 @@
+@dr python_compat = true
+
+@dr pyimport_0 = enum__IntEnum
+@dr pyimport_1 = enum__unique
+
+// TRANSPILER WARNING line 1: from enum import ... — convert to UL import syntax — manual conversion required
+fixed ExitStatus
+  SUCCESS = 0
+  ERROR = 1
+  ERROR_TIMEOUT = 2
+  ERROR_HTTP_3XX = 3
+  ERROR_HTTP_4XX = 4
+  ERROR_HTTP_5XX = 5
+  ERROR_TOO_MANY_REDIRECTS = 6
+  PLUGIN_ERROR = 7
+  ERROR_CTRL_C = 130
+end fixed
+
+function http_status_to_exit_status(int http_status, int follow = false) returns ExitStatus
+  if 300 <= http_status and http_status <= 399 and not follow
+    return ExitStatus.ERROR_HTTP_3XX
+  else if 400 <= http_status and http_status <= 499
+    return ExitStatus.ERROR_HTTP_4XX
+  else if 500 <= http_status and http_status <= 599
+    return ExitStatus.ERROR_HTTP_5XX
+  else
+    return ExitStatus.SUCCESS
+  end if
+end function
+

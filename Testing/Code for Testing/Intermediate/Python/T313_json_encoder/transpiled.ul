@@ -1,0 +1,717 @@
+function encode_basestring__replace(int _py_match)
+  return ESCAPE_DCT[_py_match.group(0)]
+end function
+
+function py_encode_basestring_ascii__replace(int _py_match)
+  s = _py_match.group(0)
+  try
+    return ESCAPE_DCT[s]
+  catch KeyError
+    n = char_code(s, 0)
+    if n < 65536
+      return "\\u%04x" % [n]
+    else
+      n -= 65536
+      s1 = 55296 bit_or n bit_right 10 bit_and 1023
+      s2 = 56320 bit_or n bit_and 1023
+      return "\\u%04x\\u%04x" % [s1, s2]
+    end if
+  end try
+end function
+
+function _make_iterencode__call_method(int obj, int method_name)
+  method = getattr(obj, method_name, empty)
+  if callable(method)
+    try
+      return [method()]
+    catch TypeError
+      // pass
+    end try
+  end if
+  return empty
+end function
+
+function _make_iterencode___encode_int(int value)
+  skip_quoting = _int_as_string_bitcount == empty or _int_as_string_bitcount < 1
+  if not integer_types.contains(_py_type(value))
+    value = _py_int(value)
+  end if
+  if skip_quoting or -1 bit_left _int_as_string_bitcount < value < 1 bit_left _int_as_string_bitcount
+    return cast(value, string)
+  end if
+  return "\"" + cast(value, string) + "\""
+end function
+
+function _make_iterencode___iterencode_list(int lst, int _current_indent_level)
+  if not lst
+    /* unknown expr: Yield */
+    return
+  end if
+  if markers != empty
+    markerid = id(lst)
+    if markers.contains(markerid)
+      throw ValueError("Circular reference detected")
+    end if
+    markers[markerid] = lst
+  end if
+  buf = "["
+  if _indent != empty
+    _current_indent_level += 1
+    newline_indent = "\n" + _indent * _current_indent_level
+    separator = _item_separator + newline_indent
+    buf += newline_indent
+  else
+    newline_indent = empty
+    separator = _item_separator
+  end if
+  first = true
+  for each value in lst
+    if first
+      first = false
+    else
+      buf = separator
+    end if
+    if isinstance(value, string_types)
+      /* unknown expr: Yield */
+    else
+      if _PY3 and isinstance(value, bytes) and _encoding != empty
+        /* unknown expr: Yield */
+      else
+        if isinstance(value, RawJSON)
+          /* unknown expr: Yield */
+        else
+          if value == empty
+            /* unknown expr: Yield */
+          else
+            if value == true
+              /* unknown expr: Yield */
+            else
+              if value == false
+                /* unknown expr: Yield */
+              else
+                if isinstance(value, integer_types)
+                  /* unknown expr: Yield */
+                else
+                  if isinstance(value, _py_float)
+                    /* unknown expr: Yield */
+                  else
+                    if _use_decimal and isinstance(value, Decimal)
+                      /* unknown expr: Yield */
+                    else
+                      /* unknown expr: Yield */
+                      for_json = _for_json and _make_iterencode__call_method(value, "for_json")
+                      if for_json
+                        chunks = _iterencode(for_json[0], _current_indent_level)
+                      else
+                        if isinstance(value, _py_list)
+                          chunks = _iterencode_list(value, _current_indent_level)
+                        else
+                          _asdict = _namedtuple_as_object and _make_iterencode__call_method(value, "_asdict")
+                          if _asdict
+                            dct = _asdict[0]
+                            if not isinstance(dct, dict)
+                              throw TypeError("_asdict() must return a dict, not %s" % [_py_type(dct).__name__])
+                            end if
+                            chunks = _iterencode_dict(dct, _current_indent_level)
+                          else
+                            if _tuple_as_array and isinstance(value, tuple)
+                              chunks = _iterencode_list(value, _current_indent_level)
+                            else
+                              if isinstance(value, dict)
+                                chunks = _iterencode_dict(value, _current_indent_level)
+                              else
+                                chunks = _iterencode(value, _current_indent_level)
+                              end if
+                            end if
+                          end if
+                        end if
+                      end if
+                      for each chunk in chunks
+                        /* unknown expr: Yield */
+                      end for
+                    end if
+                  end if
+                end if
+              end if
+            end if
+          end if
+        end if
+      end if
+    end if
+  end for
+  if first
+    /* unknown expr: Yield */
+  else
+    if newline_indent != empty
+      _current_indent_level -= 1
+      /* unknown expr: Yield */
+    end if
+    /* unknown expr: Yield */
+  end if
+  if markers != empty
+    // TRANSPILER WARNING line 555: del statement — manual conversion required
+  end if
+end function
+
+function _make_iterencode___stringify_key(int key)
+  if isinstance(key, string_types)
+    // pass
+  else
+    if _PY3 and isinstance(key, bytes) and _encoding != empty
+      key = cast(key, string)
+    else
+      if isinstance(key, _py_float)
+        key = _floatstr(key)
+      else
+        if key == true
+          key = "true"
+        else
+          if key == false
+            key = "false"
+          else
+            if key == empty
+              key = "null"
+            else
+              if isinstance(key, integer_types)
+                if not integer_types.contains(_py_type(key))
+                  key = _py_int(key)
+                end if
+                key = cast(key, string)
+              else
+                if _use_decimal and isinstance(key, Decimal)
+                  key = cast(key, string)
+                else
+                  if _skipkeys
+                    key = empty
+                  else
+                    throw TypeError("keys must be str, int, float, bool or None, not %s" % key.__class__.__name__)
+                  end if
+                end if
+              end if
+            end if
+          end if
+        end if
+      end if
+    end if
+  end if
+  return key
+end function
+
+function _make_iterencode___iterencode_dict(int dct, int _current_indent_level)
+  if not dct
+    /* unknown expr: Yield */
+    return
+  end if
+  if markers != empty
+    markerid = id(dct)
+    if markers.contains(markerid)
+      throw ValueError("Circular reference detected")
+    end if
+    markers[markerid] = dct
+  end if
+  /* unknown expr: Yield */
+  if _indent != empty
+    _current_indent_level += 1
+    newline_indent = "\n" + _indent * _current_indent_level
+    item_separator = _item_separator + newline_indent
+    /* unknown expr: Yield */
+  else
+    newline_indent = empty
+    item_separator = _item_separator
+  end if
+  first = true
+  if _PY3
+    iteritems = dct.items()
+  else
+    iteritems = dct.iteritems()
+  end if
+  if _item_sort_key
+    items = []
+    for each __pair0 in dct.items()
+      auto k = __pair0[0]
+      auto v = __pair0[1]
+      if not isinstance(k, string_types)
+        k = _make_iterencode___stringify_key(k)
+        if k == empty
+          continue
+        end if
+      end if
+      items.append([k, v])
+    end for
+    items.sort()
+  else
+    items = iteritems
+  end if
+  for each __pair1 in items
+    auto key = __pair1[0]
+    auto value = __pair1[1]
+    if not _item_sort_key or isinstance(key, string_types)
+      key = _make_iterencode___stringify_key(key)
+      if key == empty
+        continue
+      end if
+    end if
+    if first
+      first = false
+    else
+      /* unknown expr: Yield */
+    end if
+    /* unknown expr: Yield */
+    /* unknown expr: Yield */
+    if isinstance(value, string_types)
+      /* unknown expr: Yield */
+    else
+      if _PY3 and isinstance(value, bytes) and _encoding != empty
+        /* unknown expr: Yield */
+      else
+        if isinstance(value, RawJSON)
+          /* unknown expr: Yield */
+        else
+          if value == empty
+            /* unknown expr: Yield */
+          else
+            if value == true
+              /* unknown expr: Yield */
+            else
+              if value == false
+                /* unknown expr: Yield */
+              else
+                if isinstance(value, integer_types)
+                  /* unknown expr: Yield */
+                else
+                  if isinstance(value, _py_float)
+                    /* unknown expr: Yield */
+                  else
+                    if _use_decimal and isinstance(value, Decimal)
+                      /* unknown expr: Yield */
+                    else
+                      for_json = _for_json and _make_iterencode__call_method(value, "for_json")
+                      if for_json
+                        chunks = _iterencode(for_json[0], _current_indent_level)
+                      else
+                        if isinstance(value, _py_list)
+                          chunks = _make_iterencode___iterencode_list(value, _current_indent_level)
+                        else
+                          _asdict = _namedtuple_as_object and _make_iterencode__call_method(value, "_asdict")
+                          if _asdict
+                            dct = _asdict[0]
+                            if not isinstance(dct, dict)
+                              throw TypeError("_asdict() must return a dict, not %s" % [_py_type(dct).__name__])
+                            end if
+                            chunks = _iterencode_dict(dct, _current_indent_level)
+                          else
+                            if _tuple_as_array and isinstance(value, tuple)
+                              chunks = _make_iterencode___iterencode_list(value, _current_indent_level)
+                            else
+                              if isinstance(value, dict)
+                                chunks = _iterencode_dict(value, _current_indent_level)
+                              else
+                                chunks = _iterencode(value, _current_indent_level)
+                              end if
+                            end if
+                          end if
+                        end if
+                      end if
+                      for each chunk in chunks
+                        /* unknown expr: Yield */
+                      end for
+                    end if
+                  end if
+                end if
+              end if
+            end if
+          end if
+        end if
+      end if
+    end if
+  end for
+  if newline_indent != empty
+    _current_indent_level -= 1
+    /* unknown expr: Yield */
+  end if
+  /* unknown expr: Yield */
+  if markers != empty
+    // TRANSPILER WARNING line 675: del statement — manual conversion required
+  end if
+end function
+
+function _make_iterencode___iterencode(int o, int _current_indent_level)
+  if isinstance(o, string_types)
+    /* unknown expr: Yield */
+  else
+    if _PY3 and isinstance(o, bytes) and _encoding != empty
+      /* unknown expr: Yield */
+    else
+      if isinstance(o, RawJSON)
+        /* unknown expr: Yield */
+      else
+        if o == empty
+          /* unknown expr: Yield */
+        else
+          if o == true
+            /* unknown expr: Yield */
+          else
+            if o == false
+              /* unknown expr: Yield */
+            else
+              if isinstance(o, integer_types)
+                /* unknown expr: Yield */
+              else
+                if isinstance(o, _py_float)
+                  /* unknown expr: Yield */
+                else
+                  for_json = _for_json and _make_iterencode__call_method(o, "for_json")
+                  if for_json
+                    for each chunk in _iterencode(for_json[0], _current_indent_level)
+                      /* unknown expr: Yield */
+                    end for
+                  else
+                    if isinstance(o, _py_list)
+                      for each chunk in _make_iterencode___iterencode_list(o, _current_indent_level)
+                        /* unknown expr: Yield */
+                      end for
+                    else
+                      _asdict = _namedtuple_as_object and _make_iterencode__call_method(o, "_asdict")
+                      if _asdict
+                        dct = _asdict[0]
+                        if not isinstance(dct, dict)
+                          throw TypeError("_asdict() must return a dict, not %s" % [_py_type(dct).__name__])
+                        end if
+                        for each chunk in _make_iterencode___iterencode_dict(dct, _current_indent_level)
+                          /* unknown expr: Yield */
+                        end for
+                      else
+                        if _tuple_as_array and isinstance(o, tuple)
+                          for each chunk in _make_iterencode___iterencode_list(o, _current_indent_level)
+                            /* unknown expr: Yield */
+                          end for
+                        else
+                          if isinstance(o, dict)
+                            for each chunk in _make_iterencode___iterencode_dict(o, _current_indent_level)
+                              /* unknown expr: Yield */
+                            end for
+                          else
+                            if _use_decimal and isinstance(o, Decimal)
+                              /* unknown expr: Yield */
+                            else
+                              while _iterable_as_array
+                                try
+                                  o = iter(o)
+                                catch TypeError
+                                  escape
+                                end try
+                                for each chunk in _make_iterencode___iterencode_list(o, _current_indent_level)
+                                  /* unknown expr: Yield */
+                                end for
+                                return
+                              end while
+                              if markers != empty
+                                markerid = id(o)
+                                if markers.contains(markerid)
+                                  throw ValueError("Circular reference detected")
+                                end if
+                                markers[markerid] = o
+                              end if
+                              o = _default(o)
+                              for each chunk in _iterencode(o, _current_indent_level)
+                                /* unknown expr: Yield */
+                              end for
+                              if markers != empty
+                                // TRANSPILER WARNING line 738: del statement — manual conversion required
+                              end if
+                            end if
+                          end if
+                        end if
+                      end if
+                    end if
+                  end if
+                end if
+              end if
+            end if
+          end if
+        end if
+      end if
+    end if
+  end if
+end function
+
+// Implementation of JSONEncoder
+// TRANSPILER WARNING line 3: from __future__ import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 4: import re — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 5: from operator import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 7: import decimal — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 8: from compat import ... — convert to UL import syntax — manual conversion required
+function _import_speedups()
+  try
+    // TRANSPILER WARNING line 11: from None import ... — convert to UL import syntax — manual conversion required
+    return [_speedups.encode_basestring_ascii, _speedups.make_encoder]
+  catch ImportError
+    return [empty, empty]
+  end try
+end function
+
+c_encode_basestring_ascii = _import_speedups()[0]
+c_make_encoder = _import_speedups()[1]
+// TRANSPILER WARNING line 17: from decoder import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 18: from raw_json import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER: module-level variable ESCAPE — verify type is correct
+// Original: ESCAPE = ...
+// TRANSPILER: module-level variable ESCAPE_ASCII — verify type is correct
+// Original: ESCAPE_ASCII = ...
+// TRANSPILER: module-level variable HAS_UTF8 — verify type is correct
+// Original: HAS_UTF8 = ...
+// TRANSPILER: module-level variable ESCAPE_DCT — verify type is correct
+// Original: ESCAPE_DCT = ...
+for each i in range(32)
+  ESCAPE_DCT.setdefault(char_from_code(i), "\\u%04x" % [i])
+end for
+// TRANSPILER WARNING line 35: del statement — manual conversion required
+// TRANSPILER: module-level variable FLOAT_REPR — verify type is correct
+// Original: FLOAT_REPR = ...
+function encode_basestring(int s, int _PY3, int _q)
+  // Return a JSON representation of a Python string
+  if _PY3
+    if isinstance(s, bytes)
+      s = cast(s, string)
+    else
+      if _py_type(s) != str
+        s = str.__str__(s)
+      end if
+    end if
+  else
+    if isinstance(s, str) and HAS_UTF8.search(s) != empty
+      s = unicode(s, "utf-8")
+    else
+      if not [str, unicode].contains(_py_type(s))
+        if isinstance(s, str)
+          s = str.__str__(s)
+        else
+          s = unicode.__getnewargs__(s)[0]
+        end if
+      end if
+    end if
+  end if
+  // nested function 'replace' hoisted to file scope as 'encode_basestring__replace'
+  return _q + ESCAPE.sub(replace, s) + _q
+end function
+
+function py_encode_basestring_ascii(int s, int _PY3)
+  // Return an ASCII-only JSON representation of a Python string
+  if _PY3
+    if isinstance(s, bytes)
+      s = cast(s, string)
+    else
+      if _py_type(s) != str
+        s = str.__str__(s)
+      end if
+    end if
+  else
+    if isinstance(s, str) and HAS_UTF8.search(s) != empty
+      s = unicode(s, "utf-8")
+    else
+      if not [str, unicode].contains(_py_type(s))
+        if isinstance(s, str)
+          s = str.__str__(s)
+        else
+          s = unicode.__getnewargs__(s)[0]
+        end if
+      end if
+    end if
+  end if
+  // nested function 'replace' hoisted to file scope as 'py_encode_basestring_ascii__replace'
+  return "\"" + cast(ESCAPE_ASCII.sub(replace, s), string) + "\""
+end function
+
+// TRANSPILER: module-level variable encode_basestring_ascii — verify type is correct
+// Original: encode_basestring_ascii = ...
+object JSONEncoder
+  string item_separator = ", "
+  string key_separator = ": "
+  
+  function __init__(int skipkeys, int ensure_ascii, int check_circular, int allow_nan, int sort_keys, int indent, int separators, int encoding, int _py_default, int use_decimal, int namedtuple_as_object, int tuple_as_array, int bigint_as_string, int item_sort_key, int for_json, int ignore_nan, int int_as_string_bitcount, int iterable_as_array)
+    // Constructor for JSONEncoder, with sensible defaults.
+    self.skipkeys = skipkeys
+    self.ensure_ascii = ensure_ascii
+    self.check_circular = check_circular
+    self.allow_nan = allow_nan
+    self.sort_keys = sort_keys
+    self.use_decimal = use_decimal
+    self.namedtuple_as_object = namedtuple_as_object
+    self.tuple_as_array = tuple_as_array
+    self.iterable_as_array = iterable_as_array
+    self.bigint_as_string = bigint_as_string
+    self.item_sort_key = item_sort_key
+    self.for_json = for_json
+    self.ignore_nan = ignore_nan
+    self.int_as_string_bitcount = int_as_string_bitcount
+    if indent != empty and not isinstance(indent, string_types)
+      indent = indent * " "
+    end if
+    self.indent = indent
+    if separators != empty
+      self.item_separator = separators[0]
+      self.key_separator = separators[1]
+    else
+      if indent != empty
+        self.item_separator = ","
+      end if
+    end if
+    if _py_default != empty
+      self.default = _py_default
+    end if
+    self.encoding = encoding
+  end function
+  
+  
+  function _py_default(int o)
+    // Implement this method in a subclass such that it returns
+    throw TypeError("Object of type %s is not JSON serializable" % o.__class__.__name__)
+  end function
+  
+  
+  function encode(int o)
+    // Return a JSON string representation of a Python data structure.
+    if isinstance(o, binary_type)
+      _encoding = self.encoding
+      if _encoding != empty and not _encoding == "utf-8"
+        o = text_type(o, _encoding)
+      end if
+    end if
+    if isinstance(o, string_types)
+      if self.ensure_ascii
+        return encode_basestring_ascii(o)
+      else
+        return encode_basestring(o)
+      end if
+    end if
+    chunks = self.iterencode(o)
+    if not isinstance(chunks, [_py_list, tuple])
+      chunks = _py_list(chunks)
+    end if
+    if self.ensure_ascii
+      return "".join(chunks)
+    else
+      return "".join(chunks)
+    end if
+  end function
+  
+  
+  function iterencode(int o)
+    // Encode the given object and yield each string
+    if self.check_circular
+      // TRANSPILER: dict values cast to string — may lose type information
+      map _dict0 = map_new()
+      markers = _dict0
+    else
+      markers = empty
+    end if
+    if self.ensure_ascii
+      _encoder = encode_basestring_ascii
+    else
+      _encoder = encode_basestring
+    end if
+    if self.encoding != "utf-8" and self.encoding != empty
+      function _encoder(int o, int _orig_encoder, int _encoding)
+        if isinstance(o, binary_type)
+          o = text_type(o, _encoding)
+        end if
+        return _orig_encoder(o)
+      end function
+      
+    end if
+    function floatstr(int o, int allow_nan, int ignore_nan, int _repr, int _inf, int _neginf)
+      if o != o
+        text = "NaN"
+      else
+        if o == _inf
+          text = "Infinity"
+        else
+          if o == _neginf
+            text = "-Infinity"
+          else
+            if _py_type(o) != _py_float
+              o = _py_float(o)
+            end if
+            return _repr(o)
+          end if
+        end if
+      end if
+      if ignore_nan
+        text = "null"
+      else
+        if not allow_nan
+          throw ValueError("Out of range float values are not JSON compliant: " + repr(o))
+        end if
+      end if
+      return text
+    end function
+    
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict1 = map_new()
+    key_memo = _dict1
+    int_as_string_bitcount = /* 53 if self.bigint_as_string else self.int_as_string_bitcount */
+    if c_make_encoder != empty and self.indent == empty
+      _iterencode = c_make_encoder(markers, self.default, _encoder, self.indent, self.key_separator, self.item_separator, self.sort_keys, self.skipkeys, self.allow_nan, key_memo, self.use_decimal, self.namedtuple_as_object, self.tuple_as_array, int_as_string_bitcount, self.item_sort_key, self.encoding, self.for_json, self.ignore_nan, decimal.Decimal, self.iterable_as_array)
+    else
+      _iterencode = _make_iterencode(markers, self.default, _encoder, self.indent, floatstr, self.key_separator, self.item_separator, self.sort_keys, self.skipkeys, self.use_decimal, self.namedtuple_as_object, self.tuple_as_array, int_as_string_bitcount, self.item_sort_key, self.encoding, self.for_json, self.iterable_as_array)
+    end if
+    try
+      return _iterencode(o, 0)
+    finally
+      key_memo.clear()
+    end try
+  end function
+  
+end object
+
+object JSONEncoderForHTML forks JSONEncoder
+  
+  function encode(int o)
+    chunks = self.iterencode(o)
+    if self.ensure_ascii
+      return "".join(chunks)
+    else
+      return "".join(chunks)
+    end if
+  end function
+  
+  
+  function iterencode(int o)
+    chunks = super(JSONEncoderForHTML, self).iterencode(o)
+    for each chunk in chunks
+      chunk = chunk.replace("&", "\\u0026")
+      chunk = chunk.replace("<", "\\u003c")
+      chunk = chunk.replace(">", "\\u003e")
+      if not self.ensure_ascii
+        chunk = chunk.replace(" ", "\\u2028")
+        chunk = chunk.replace(" ", "\\u2029")
+      end if
+      /* unknown expr: Yield */
+    end for
+  end function
+  
+end object
+
+function _make_iterencode(int markers, int _default, int _encoder, int _indent, int _floatstr, int _key_separator, int _item_separator, int _sort_keys, int _skipkeys, int _use_decimal, int _namedtuple_as_object, int _tuple_as_array, int _int_as_string_bitcount, int _item_sort_key, int _encoding, int _for_json, int _iterable_as_array, int _PY3, int ValueError, int string_types, int Decimal, int dict, int _py_float, int id, int integer_types, int isinstance, int _py_list, int str, int tuple, int iter)
+  if _use_decimal and Decimal == empty
+    Decimal = decimal.Decimal
+  end if
+  if _item_sort_key and not callable(_item_sort_key)
+    throw TypeError("item_sort_key must be None or callable")
+  else
+    if _sort_keys and not _item_sort_key
+      _item_sort_key = itemgetter(0)
+    end if
+  end if
+  if _int_as_string_bitcount != empty and _int_as_string_bitcount <= 0 or not isinstance(_int_as_string_bitcount, integer_types)
+    throw TypeError("int_as_string_bitcount must be a positive integer")
+  end if
+  // nested function 'call_method' hoisted to file scope as '_make_iterencode__call_method'
+  // nested function '_encode_int' hoisted to file scope as '_make_iterencode___encode_int'
+  // nested function '_iterencode_list' hoisted to file scope as '_make_iterencode___iterencode_list'
+  // nested function '_stringify_key' hoisted to file scope as '_make_iterencode___stringify_key'
+  // nested function '_iterencode_dict' hoisted to file scope as '_make_iterencode___iterencode_dict'
+  // nested function '_iterencode' hoisted to file scope as '_make_iterencode___iterencode'
+  return _iterencode
+end function
+

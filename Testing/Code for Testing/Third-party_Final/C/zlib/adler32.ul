@@ -1,0 +1,131 @@
+// Translated from test_adler32.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function adler32_simple(uint64 adler, uint8 <buf>, uint32 len) returns uint64
+  uint64 sum2 = 0
+  sum2 = ((adler right 16) both1 65535)
+  adler = (adler both1 65535)
+  if (buf == 0)
+    return 1
+  end if
+  while (len > 0)
+    adler = adler + buf[0]
+    sum2 = sum2 + adler
+    buf = (buf + 1)
+    len = (len - 1)
+  end while
+  adler = (adler % 65521)
+  sum2 = (sum2 % 65521)
+  return (adler either1 (sum2 left 16))
+end function
+
+function adler32_combine(uint64 adler1, uint64 adler2, uint64 len2) returns uint64
+  uint64 sum1 = 0
+  uint64 sum2 = 0
+  uint64 rem = 0
+  if (len2 < 0)
+    return 4294967295
+  end if
+  rem = (len2 % 65521)
+  sum1 = (adler1 both1 65535)
+  sum2 = (rem * sum1)
+  sum2 = (sum2 % 65521)
+  sum1 = (((sum1 + (adler2 both1 65535)) + 65521) - 1)
+  sum2 = ((((sum2 + ((adler1 right 16) both1 65535)) + ((adler2 right 16) both1 65535)) + 65521) - rem)
+  if (sum1 >= 65521)
+    sum1 = (sum1 - 65521)
+  end if
+  if (sum1 >= 65521)
+    sum1 = (sum1 - 65521)
+  end if
+  if (sum2 >= (65521 * 2))
+    sum2 = (sum2 - (65521 * 2))
+  end if
+  if (sum2 >= 65521)
+    sum2 = (sum2 - 65521)
+  end if
+  return (sum1 either1 (sum2 left 16))
+end function
+
+function main() returns int
+  uint64 r = adler32_simple(1, 0, 0)
+  print "adler32(\"\") = " + cast(r, string)
+  array uint8 a = [0]
+  a[0] = 65
+  r = adler32_simple(1, a, 1)
+  print "adler32(\"A\") = " + cast(r, string)
+  array uint8 abc = [0, 0, 0]
+  abc[0] = 97
+  abc[1] = 98
+  abc[2] = 99
+  r = adler32_simple(1, abc, 3)
+  print "adler32(\"abc\") = " + cast(r, string)
+  array uint8 hw = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  hw[0] = 72
+  hw[1] = 101
+  hw[2] = 108
+  hw[3] = 108
+  hw[4] = 111
+  hw[5] = 44
+  hw[6] = 32
+  hw[7] = 87
+  hw[8] = 111
+  hw[9] = 114
+  hw[10] = 108
+  hw[11] = 100
+  hw[12] = 33
+  r = adler32_simple(1, hw, 13)
+  print "adler32(\"Hello, World!\") = " + cast(r, string)
+  uint64 lo = (r both1 65535)
+  uint64 hi = ((r right 16) both1 65535)
+  uint64 recombined = (lo either1 (hi left 16))
+  print "split-recombine: " + cast(r, string) + " == " + cast(recombined, string) + " -> " + cast((r == recombined), string)
+  array uint8 hello = [0, 0, 0, 0, 0]
+  hello[0] = 72
+  hello[1] = 101
+  hello[2] = 108
+  hello[3] = 108
+  hello[4] = 111
+  array uint8 world = [0, 0, 0, 0, 0, 0, 0, 0]
+  world[0] = 44
+  world[1] = 32
+  world[2] = 87
+  world[3] = 111
+  world[4] = 114
+  world[5] = 108
+  world[6] = 100
+  world[7] = 33
+  uint64 r1 = adler32_simple(1, hello, 5)
+  uint64 r2 = adler32_simple(1, world, 8)
+  uint64 combined = adler32_combine(r1, r2, 8)
+  print "adler32_combine result = " + cast(combined, string)
+  print "direct full result     = " + cast(r, string)
+  print "combine match: " + cast((combined == r), string)
+  return 0
+end function
+

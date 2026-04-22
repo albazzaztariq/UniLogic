@@ -1,0 +1,21 @@
+// test_in_operator.ul — 'in' keyword for collection membership
+
+function main() returns none
+    // integer array membership
+    array int nums = [10, 20, 30, 40, 50]
+    if 30 in nums
+        print "found 30"
+    end if
+    if 99 in nums
+        print "should not print"
+    end if
+
+    // string array membership
+    array string fruits = ["apple", "banana", "mango"]
+    if "banana" in fruits
+        print "found banana"
+    end if
+    if "grape" in fruits
+        print "should not print"
+    end if
+end function

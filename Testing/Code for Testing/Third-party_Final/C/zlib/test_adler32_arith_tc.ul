@@ -1,0 +1,222 @@
+// Translated from test_adler32_arith.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function adler32_hello_world() returns uint64
+  uint64 adler = 1
+  uint64 sum2 = 0
+  int b = 0
+  b = 72
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 101
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 108
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 108
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 111
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 44
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 32
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 87
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 111
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 114
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 108
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 100
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 33
+  adler = adler + b
+  sum2 = sum2 + adler
+  adler = (adler % 65521)
+  sum2 = (sum2 % 65521)
+  return (adler either1 (sum2 left 16))
+end function
+
+function adler32_empty() returns uint64
+  return 1
+end function
+
+function adler32_abc() returns uint64
+  uint64 adler = 1
+  uint64 sum2 = 0
+  int b = 0
+  b = 97
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 98
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 99
+  adler = adler + b
+  sum2 = sum2 + adler
+  adler = (adler % 65521)
+  sum2 = (sum2 % 65521)
+  return (adler either1 (sum2 left 16))
+end function
+
+function adler32_lo(uint64 adler) returns uint64
+  return (adler both1 65535)
+end function
+
+function adler32_hi(uint64 adler) returns uint64
+  return ((adler right 16) both1 65535)
+end function
+
+function adler32_combine(uint64 adler1, uint64 adler2, uint64 len2) returns uint64
+  uint64 sum1 = 0
+  uint64 sum2 = 0
+  uint64 rem = 0
+  rem = (len2 % 65521)
+  sum1 = (adler1 both1 65535)
+  sum2 = (rem * sum1)
+  sum2 = (sum2 % 65521)
+  sum1 = (((sum1 + (adler2 both1 65535)) + 65521) - 1)
+  sum2 = ((((sum2 + ((adler1 right 16) both1 65535)) + ((adler2 right 16) both1 65535)) + 65521) - rem)
+  if (sum1 >= 65521)
+    sum1 = (sum1 - 65521)
+  end if
+  if (sum1 >= 65521)
+    sum1 = (sum1 - 65521)
+  end if
+  if (sum2 >= (65521 * 2))
+    sum2 = (sum2 - (65521 * 2))
+  end if
+  if (sum2 >= 65521)
+    sum2 = (sum2 - 65521)
+  end if
+  return (sum1 either1 (sum2 left 16))
+end function
+
+function adler32_hello() returns uint64
+  uint64 adler = 1
+  uint64 sum2 = 0
+  int b = 0
+  b = 72
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 101
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 108
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 108
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 111
+  adler = adler + b
+  sum2 = sum2 + adler
+  adler = (adler % 65521)
+  sum2 = (sum2 % 65521)
+  return (adler either1 (sum2 left 16))
+end function
+
+function adler32_world() returns uint64
+  uint64 adler = 1
+  uint64 sum2 = 0
+  int b = 0
+  b = 44
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 32
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 87
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 111
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 114
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 108
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 100
+  adler = adler + b
+  sum2 = sum2 + adler
+  b = 33
+  adler = adler + b
+  sum2 = sum2 + adler
+  adler = (adler % 65521)
+  sum2 = (sum2 % 65521)
+  return (adler either1 (sum2 left 16))
+end function
+
+function main() returns int
+  uint64 r = 0
+  uint64 lo = 0
+  uint64 hi = 0
+  uint64 recombined = 0
+  uint64 r1 = 0
+  uint64 r2 = 0
+  uint64 combined = 0
+  r = adler32_empty()
+  print "adler32(\"\") = " + cast(r, string)
+  r = adler32_abc()
+  print "adler32(\"abc\") = " + cast(r, string)
+  r = adler32_hello_world()
+  print "adler32(\"Hello, World!\") = " + cast(r, string)
+  lo = adler32_lo(r)
+  hi = adler32_hi(r)
+  recombined = (lo either1 (hi left 16))
+  print "lo=" + cast(lo, string) + " hi=" + cast(hi, string) + " recombined=" + cast(recombined, string) + " match=" + cast((recombined == r), string)
+  r1 = adler32_hello()
+  r2 = adler32_world()
+  combined = adler32_combine(r1, r2, 8)
+  print "adler32(\"Hello\") = " + cast(r1, string)
+  print "adler32(\", World!\") = " + cast(r2, string)
+  print "combined = " + cast(combined, string)
+  print "direct   = " + cast(r, string)
+  print "match = " + cast((combined == r), string)
+  uint64 x = 3735928559
+  uint64 y = ((x right 16) both1 65535)
+  uint64 z = (x both1 65535)
+  uint64 w = (y either1 (z left 16))
+  print "bit_swap: x=" + cast(x, string) + " y=" + cast(y, string) + " z=" + cast(z, string) + " w=" + cast(w, string)
+  return 0
+end function
+

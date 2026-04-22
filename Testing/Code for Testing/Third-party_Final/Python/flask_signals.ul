@@ -1,0 +1,97 @@
+@dr python_compat = true
+
+@dr pyimport_0 = dataclasses__dataclass
+@dr pyimport_1 = dataclasses__field
+
+// TRANSPILER: stub for imported base type 'Exception'
+object Exception
+end object
+
+auto received = empty
+
+// TRANSPILER WARNING line 3: from dataclasses import ... — convert to UL import syntax — manual conversion required
+function __ul_sort(int arr, int n)
+  arr[0:n] = sorted(arr[0:n])
+end function
+
+object __ul_Exception forks Exception
+  int type_name
+  int message
+  
+  function __init__(int type_name, int message)
+    self.type_name = type_name
+    self.message = message
+    super().__init__(message)
+  end function
+  
+end object
+
+object Signal
+  int name
+  array int _receivers
+  
+  function __init__(int name)
+    self.name = name
+    self._receivers = []
+  end function
+  
+  
+  function connect(int receiver)
+    self._receivers.append(receiver)
+  end function
+  
+  
+  function send(...)
+    results = []
+    for each r in self._receivers
+      results.append(r(_va_args))
+    end for
+    return results
+  end function
+  
+  
+  function __repr__()
+    return "<Signal '" + cast(self.name, string) + "'>"
+  end function
+  
+end object
+
+object Namespace
+  int _signals
+  
+  function __init__()
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict0 = map_new()
+    self._signals = _dict0
+  end function
+  
+  
+  function signal(int name)
+    if not self._signals.contains(name)
+      self._signals[name] = Signal(name)
+    end if
+    return self._signals[name]
+  end function
+  
+end object
+
+function main__on_template_rendered(int data)
+  received.append("rendered:" + data)
+  return "rendered:" + data
+end function
+
+function main()
+  ns = Namespace()
+  template_rendered = ns.signal("template-rendered")
+  request_started = ns.signal("request-started")
+  got_request_exception = ns.signal("got-request-exception")
+  print cast("template_rendered:", string) + " " + cast(template_rendered, string)
+  print cast("request_started:", string) + " " + cast(request_started, string)
+  received = []
+  template_rendered.connect(main__on_template_rendered)
+  template_rendered.send("index.html")
+  print cast("received:", string) + " " + cast(received, string)
+  print cast("same signal:", string) + " " + cast(ns.signal("template-rendered") == template_rendered, string)
+  return 0
+end function
+

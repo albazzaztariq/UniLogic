@@ -1,0 +1,9 @@
+// format.ul — output formatting
+
+function format_result(string label, int value) returns string
+    return label + ": " + cast(value, string)
+end function
+
+function format_pair(string label, int a, int b) returns string
+    return label + ": " + cast(a, string) + " x " + cast(b, string)
+end function

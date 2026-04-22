@@ -1,0 +1,45 @@
+// M006: Try/catch, error throwing
+function divide(int a, int b) returns int
+    if b == 0
+        error DivisionByZero "cannot divide by zero"
+    end if
+    return a / b
+end function
+
+function risky(int x) returns int
+    if x < 0
+        error ValueError "negative input"
+    end if
+    return x * 2
+end function
+
+function main() returns int
+    // normal division
+    print divide(10, 2)
+
+    // catch division by zero
+    try
+        int result = divide(10, 0)
+        print result
+    catch(DivisionByZero err)
+        print "caught: divide by zero"
+    end try
+
+    // catch value error
+    try
+        int val = risky(-5)
+        print val
+    catch(ValueError err)
+        print "caught: negative input"
+    end try
+
+    // no error case
+    try
+        int val = risky(10)
+        print val
+    catch(ValueError err)
+        print "should not reach here"
+    end try
+
+    return 0
+end function

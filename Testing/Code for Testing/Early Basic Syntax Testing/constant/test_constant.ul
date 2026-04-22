@@ -1,0 +1,11 @@
+// test_constant.ul — constant keyword (primary) and const (alias)
+
+constant int MAX = 100
+constant string VERSION = "1.0.0"
+const float PI = 3.14
+
+function main() returns none
+    print MAX
+    print VERSION
+    print PI
+end function

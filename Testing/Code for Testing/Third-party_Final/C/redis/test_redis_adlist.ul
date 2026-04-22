@@ -1,0 +1,291 @@
+// Translated from test_redis_adlist.c by c2ul
+type listNode
+  listNode <prev>
+  listNode <next>
+  none <value>
+end type
+
+type listIter
+  listNode <next>
+  int direction
+end type
+
+type list_c
+  listNode <head>
+  listNode <tail>
+  uint64 len
+end type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function listCreate() returns list_c
+  list_c <l> = cast(memtake(size(deref(<l>))), list_c)
+  if not l
+    return cast(0, none)
+  end if
+  l.tail = cast(0, none)
+  l.head = l.tail
+  l.len = 0
+  return l
+end function
+
+function listEmpty(list_c <l>)
+  uint64 len = 0
+  listNode <current> = 0
+  listNode <next> = 0
+  current = l.head
+  len = l.len
+  while len
+    next = current.next
+    // free(current) - UL handles memory
+    current = next
+  end while
+  l.tail = cast(0, none)
+  l.head = l.tail
+  l.len = 0
+end function
+
+function listRelease(list_c <l>)
+  if not l
+    return
+  end if
+  listEmpty(l)
+  // free(l) - UL handles memory
+end function
+
+function listLinkNodeHead(list_c <l>, listNode <node>)
+  if (l.len == 0)
+    l.tail = node
+    l.head = l.tail
+    node.next = cast(0, none)
+    node.prev = node.next
+  else
+    node.prev = cast(0, none)
+    node.next = l.head
+    l.head.prev = node
+    l.head = node
+  end if
+  l.len = l.len + 1
+end function
+
+function listLinkNodeTail(list_c <l>, listNode <node>)
+  if (l.len == 0)
+    l.tail = node
+    l.head = l.tail
+    node.next = cast(0, none)
+    node.prev = node.next
+  else
+    node.prev = l.tail
+    node.next = cast(0, none)
+    l.tail.next = node
+    l.tail = node
+  end if
+  l.len = l.len + 1
+end function
+
+function listAddNodeHead(list_c <l>, none <value>) returns list_c
+  listNode <node> = cast(memtake(size(deref(<node>))), listNode)
+  if not node
+    return cast(0, none)
+  end if
+  node.value = value
+  listLinkNodeHead(l, node)
+  return l
+end function
+
+function listAddNodeTail(list_c <l>, none <value>) returns list_c
+  listNode <node> = cast(memtake(size(deref(<node>))), listNode)
+  if not node
+    return cast(0, none)
+  end if
+  node.value = value
+  listLinkNodeTail(l, node)
+  return l
+end function
+
+function listInsertNode(list_c <l>, listNode <old_node>, none <value>, int after) returns list_c
+  listNode <node> = cast(memtake(size(deref(<node>))), listNode)
+  if not node
+    return cast(0, none)
+  end if
+  node.value = value
+  if after
+    node.prev = old_node
+    node.next = old_node.next
+    if (l.tail == old_node)
+      l.tail = node
+    end if
+  else
+    node.next = old_node
+    node.prev = old_node.prev
+    if (l.head == old_node)
+      l.head = node
+    end if
+  end if
+  if (node.prev != cast(0, none))
+    node.prev.next = node
+  end if
+  if (node.next != cast(0, none))
+    node.next.prev = node
+  end if
+  l.len = l.len + 1
+  return l
+end function
+
+function listUnlinkNode(list_c <l>, listNode <node>)
+  if node.prev
+    node.prev.next = node.next
+  else
+    l.head = node.next
+  end if
+  if node.next
+    node.next.prev = node.prev
+  else
+    l.tail = node.prev
+  end if
+  node.next = cast(0, none)
+  node.prev = cast(0, none)
+  l.len = l.len - 1
+end function
+
+function listDelNode(list_c <l>, listNode <node>)
+  listUnlinkNode(l, node)
+  // free(node) - UL handles memory
+end function
+
+function listRewind(list_c <l>, listIter <li>)
+  li.next = l.head
+  li.direction = 0
+end function
+
+function listNext(listIter <iter>) returns listNode
+  listNode <current> = iter.next
+  if (current != cast(0, none))
+    if (iter.direction == 0)
+      iter.next = current.next
+    else
+      iter.next = current.prev
+    end if
+  end if
+  return current
+end function
+
+function listIndex(list_c <l>, int index) returns listNode
+  listNode <n> = 0
+  if (index < 0)
+    index = (-index - 1)
+    n = l.tail
+    while (index and n)
+      n = n.prev
+    end while
+  else
+    n = l.head
+    while (index and n)
+      n = n.next
+    end while
+  end if
+  return n
+end function
+
+function listRotateTailToHead(list_c <l>)
+  if (l.len <= 1)
+    return
+  end if
+  listNode <tail> = l.tail
+  l.tail = tail.prev
+  l.tail.next = cast(0, none)
+  l.head.prev = tail
+  tail.prev = cast(0, none)
+  tail.next = l.head
+  l.head = tail
+end function
+
+function listJoin(list_c <l>, list_c <o>)
+  if (o.len == 0)
+    return
+  end if
+  o.head.prev = l.tail
+  if l.tail
+    l.tail.next = o.head
+  else
+    l.head = o.head
+  end if
+  l.tail = o.tail
+  l.len = l.len + o.len
+  o.tail = cast(0, none)
+  o.head = o.tail
+  o.len = 0
+end function
+
+function printList(list_c <l>)
+  listIter iter = 0
+  listNode <node> = 0
+  listRewind(l, address(iter))
+  print "["
+  int first = 1
+  node = listNext(address(iter))
+  while (node != cast(0, none))
+    if not first
+      print ", "
+    end if
+    print cast(cast(cast(node.value, int), int), string)
+    first = 0
+  end while
+  print "] len=" + cast(l.len, string)
+end function
+
+function main() returns int
+  list_c <l> = listCreate()
+  listAddNodeTail(l, cast(1, none))
+  listAddNodeTail(l, cast(2, none))
+  listAddNodeTail(l, cast(3, none))
+  printList(l)
+  listAddNodeHead(l, cast(0, none))
+  printList(l)
+  listNode <n1> = listIndex(l, 1)
+  listInsertNode(l, n1, cast(99, none), 1)
+  printList(l)
+  listNode <n2> = listIndex(l, 2)
+  listDelNode(l, n2)
+  printList(l)
+  print "index 0: " + cast(cast(cast(listIndex(l, 0).value, int), int), string)
+  print "index -1: " + cast(cast(cast(listIndex(l, -1).value, int), int), string)
+  print "index 2: " + cast(cast(cast(listIndex(l, 2).value, int), int), string)
+  listRotateTailToHead(l)
+  printList(l)
+  list_c <l2> = listCreate()
+  listAddNodeTail(l2, cast(10, none))
+  listAddNodeTail(l2, cast(11, none))
+  listJoin(l, l2)
+  printList(l)
+  print "l2 len after join: " + cast(l2.len, string)
+  listRelease(l)
+  listRelease(l2)
+  return 0
+end function
+

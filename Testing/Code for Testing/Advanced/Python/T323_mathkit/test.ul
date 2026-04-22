@@ -1,0 +1,396 @@
+// mathkit — merged from 5-file package: vectors.py, stats.py, matrix.py, sequences.py, main.py
+function vec_add(array int a, array int b, array int result, int _py_size)
+  int i = 0
+  while i < _py_size
+    result[i] = a[i] + b[i]
+    i = i + 1
+  end while
+end function
+
+function vec_sub(array int a, array int b, array int result, int _py_size)
+  int i = 0
+  while i < _py_size
+    result[i] = a[i] - b[i]
+    i = i + 1
+  end while
+end function
+
+function vec_scale(array int a, int scalar, array int result, int _py_size)
+  int i = 0
+  while i < _py_size
+    result[i] = a[i] * scalar
+    i = i + 1
+  end while
+end function
+
+function vec_dot(array int a, array int b, int _py_size) returns int
+  int total = 0
+  int i = 0
+  while i < _py_size
+    total = total + a[i] * b[i]
+    i = i + 1
+  end while
+  return total
+end function
+
+function vec_magnitude_sq(array int a, int _py_size) returns int
+  return vec_dot(a, a, _py_size)
+end function
+
+function vec_equal(array int a, array int b, int _py_size) returns bool
+  int i = 0
+  while i < _py_size
+    if a[i] != b[i]
+      return false
+    end if
+    i = i + 1
+  end while
+  return true
+end function
+
+function vec_to_string(array int a, int _py_size) returns string
+  string result = "("
+  int i = 0
+  while i < _py_size
+    if i > 0
+      result = result + ", "
+    end if
+    result = result + cast(a[i], string)
+    i = i + 1
+  end while
+  result = result + ")"
+  return result
+end function
+
+function stat_sum(array int data, int count) returns int
+  int total = 0
+  int i = 0
+  while i < count
+    total = total + data[i]
+    i = i + 1
+  end while
+  return total
+end function
+
+function stat_min(array int data, int count) returns int
+  int result = data[0]
+  int i = 1
+  while i < count
+    if data[i] < result
+      result = data[i]
+    end if
+    i = i + 1
+  end while
+  return result
+end function
+
+function stat_max(array int data, int count) returns int
+  int result = data[0]
+  int i = 1
+  while i < count
+    if data[i] > result
+      result = data[i]
+    end if
+    i = i + 1
+  end while
+  return result
+end function
+
+function stat_mean_x10(array int data, int count) returns int
+  int total = stat_sum(data, count)
+  return total * 10 / count
+end function
+
+function stat_variance_x100(array int data, int count) returns int
+  int mean_x10 = stat_mean_x10(data, count)
+  int total = 0
+  int i = 0
+  while i < count
+    int diff = data[i] * 10 - mean_x10
+    total = total + diff * diff
+    i = i + 1
+  end while
+  return total / count
+end function
+
+function stat_range(array int data, int count) returns int
+  return stat_max(data, count) - stat_min(data, count)
+end function
+
+function stat_median(array int data, int count, array int work) returns int
+  int i = 0
+  while i < count
+    work[i] = data[i]
+    i = i + 1
+  end while
+  i = 0
+  while i < count - 1
+    int j = i + 1
+    while j < count
+      if work[j] < work[i]
+        int temp = work[i]
+        work[i] = work[j]
+        work[j] = temp
+      end if
+      j = j + 1
+    end while
+    i = i + 1
+  end while
+  if count % 2 == 1
+    return work[count / 2]
+  end if
+  return work[count / 2 - 1] + work[count / 2] / 2
+end function
+
+function mat2_multiply(array int a, array int b, array int result)
+  result[0] = a[0] * b[0] + a[1] * b[2]
+  result[1] = a[0] * b[1] + a[1] * b[3]
+  result[2] = a[2] * b[0] + a[3] * b[2]
+  result[3] = a[2] * b[1] + a[3] * b[3]
+end function
+
+function mat2_det(array int m) returns int
+  return m[0] * m[3] - m[1] * m[2]
+end function
+
+function mat2_trace(array int m) returns int
+  return m[0] + m[3]
+end function
+
+function mat2_transpose(array int m, array int result)
+  result[0] = m[0]
+  result[1] = m[2]
+  result[2] = m[1]
+  result[3] = m[3]
+end function
+
+function mat2_identity(array int result)
+  result[0] = 1
+  result[1] = 0
+  result[2] = 0
+  result[3] = 1
+end function
+
+function mat2_add(array int a, array int b, array int result)
+  int i = 0
+  while i < 4
+    result[i] = a[i] + b[i]
+    i = i + 1
+  end while
+end function
+
+function mat2_scale(array int m, int scalar, array int result)
+  int i = 0
+  while i < 4
+    result[i] = m[i] * scalar
+    i = i + 1
+  end while
+end function
+
+function mat2_to_string(array int m) returns string
+  return "[" + cast(m[0], string) + " " + cast(m[1], string) + "; " + cast(m[2], string) + " " + cast(m[3], string) + "]"
+end function
+
+function mat3_det(array int m) returns int
+  return m[0] * m[4] * m[8] - m[5] * m[7] - m[1] * m[3] * m[8] - m[5] * m[6] + m[2] * m[3] * m[7] - m[4] * m[6]
+end function
+
+function mat3_trace(array int m) returns int
+  return m[0] + m[4] + m[8]
+end function
+
+function mat3_to_string(array int m) returns string
+  return "[" + cast(m[0], string) + " " + cast(m[1], string) + " " + cast(m[2], string) + "; " + cast(m[3], string) + " " + cast(m[4], string) + " " + cast(m[5], string) + "; " + cast(m[6], string) + " " + cast(m[7], string) + " " + cast(m[8], string) + "]"
+end function
+
+function fibonacci(int n, array int result)
+  if n == 0
+    return
+  end if
+  result[0] = 0
+  if n == 1
+    return
+  end if
+  result[1] = 1
+  int i = 2
+  while i < n
+    result[i] = result[i - 1] + result[i - 2]
+    i = i + 1
+  end while
+end function
+
+function is_prime(int n) returns bool
+  if n < 2
+    return false
+  end if
+  if n == 2
+    return true
+  end if
+  if n % 2 == 0
+    return false
+  end if
+  int d = 3
+  while d * d <= n
+    if n % d == 0
+      return false
+    end if
+    d = d + 2
+  end while
+  return true
+end function
+
+function count_primes(int limit) returns int
+  int count = 0
+  int n = 2
+  while n <= limit
+    if is_prime(n)
+      count = count + 1
+    end if
+    n = n + 1
+  end while
+  return count
+end function
+
+function gcd(int a, int b) returns int
+  while b != 0
+    int temp = b
+    b = a % b
+    a = temp
+  end while
+  return a
+end function
+
+function lcm(int a, int b) returns int
+  return a * b / gcd(a, b)
+end function
+
+function factorial(int n) returns int
+  int result = 1
+  int i = 2
+  while i <= n
+    result = result * i
+    i = i + 1
+  end while
+  return result
+end function
+
+function power(int base, int exp) returns int
+  int result = 1
+  int i = 0
+  while i < exp
+    result = result * base
+    i = i + 1
+  end while
+  return result
+end function
+
+function triangular(int n) returns int
+  return n * n + 1 / 2
+end function
+
+function sum_of_digits(int n) returns int
+  int total = 0
+  int val = n
+  if val < 0
+    val = -val
+  end if
+  while val > 0
+    total = total + val % 10
+    val = val / 10
+  end while
+  return total
+end function
+
+function test_vectors()
+  print "=== Vectors ==="
+  array int a = [1, 2, 3, 0, 0]
+  array int b = [4, 5, 6, 0, 0]
+  array int r = [0, 0, 0, 0, 0]
+  int _py_size = 3
+  vec_add(a, b, r, _py_size)
+  print "add: " + vec_to_string(r, _py_size)
+  vec_sub(a, b, r, _py_size)
+  print "sub: " + vec_to_string(r, _py_size)
+  vec_scale(a, 3, r, _py_size)
+  print "scale: " + vec_to_string(r, _py_size)
+  int d = vec_dot(a, b, _py_size)
+  print "dot: " + cast(d, string)
+  int m = vec_magnitude_sq(a, _py_size)
+  print "mag_sq: " + cast(m, string)
+  bool eq = vec_equal(a, a, _py_size)
+  print "eq_self: " + cast(eq, string)
+  bool eq2 = vec_equal(a, b, _py_size)
+  print "eq_diff: " + cast(eq2, string)
+end function
+
+function test_stats()
+  print "=== Stats ==="
+  array int data = [10, 20, 30, 40, 50, 15, 25, 35, 0, 0]
+  int count = 8
+  array int work = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  print "sum: " + cast(stat_sum(data, count), string)
+  print "min: " + cast(stat_min(data, count), string)
+  print "max: " + cast(stat_max(data, count), string)
+  print "mean_x10: " + cast(stat_mean_x10(data, count), string)
+  print "var_x100: " + cast(stat_variance_x100(data, count), string)
+  print "range: " + cast(stat_range(data, count), string)
+  print "median: " + cast(stat_median(data, count, work), string)
+end function
+
+function test_matrix()
+  print "=== Matrix ==="
+  array int a = [1, 2, 3, 4]
+  array int b = [5, 6, 7, 8]
+  array int r = [0, 0, 0, 0]
+  mat2_multiply(a, b, r)
+  print "mul: " + mat2_to_string(r)
+  print "det_a: " + cast(mat2_det(a), string)
+  print "trace_a: " + cast(mat2_trace(a), string)
+  mat2_transpose(a, r)
+  print "trans: " + mat2_to_string(r)
+  array int ident = [0, 0, 0, 0]
+  mat2_identity(ident)
+  print "ident: " + mat2_to_string(ident)
+  mat2_add(a, b, r)
+  print "add: " + mat2_to_string(r)
+  mat2_scale(a, 2, r)
+  print "scale: " + mat2_to_string(r)
+  array int m3 = [1, 2, 3, 0, 4, 5, 1, 0, 6]
+  print "det3: " + cast(mat3_det(m3), string)
+  print "trace3: " + cast(mat3_trace(m3), string)
+  print "mat3: " + mat3_to_string(m3)
+end function
+
+function test_sequences()
+  print "=== Sequences ==="
+  array int fib = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  fibonacci(10, fib)
+  string result = ""
+  int i = 0
+  while i < 10
+    if i > 0
+      result = result + " "
+    end if
+    result = result + cast(fib[i], string)
+    i = i + 1
+  end while
+  print "fib10: " + result
+  print "prime_7: " + cast(is_prime(7), string)
+  print "prime_9: " + cast(is_prime(9), string)
+  print "primes_30: " + cast(count_primes(30), string)
+  print "gcd_12_8: " + cast(gcd(12, 8), string)
+  print "lcm_4_6: " + cast(lcm(4, 6), string)
+  print "fact_6: " + cast(factorial(6), string)
+  print "pow_2_10: " + cast(power(2, 10), string)
+  print "tri_10: " + cast(triangular(10), string)
+  print "digits_12345: " + cast(sum_of_digits(12345), string)
+end function
+
+function main() returns int
+  test_vectors()
+  test_stats()
+  test_matrix()
+  test_sequences()
+  return 0
+end function
+

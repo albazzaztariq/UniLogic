@@ -1,0 +1,105 @@
+// Translated from test_macro_expand.c by c2ul
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function adler32_do4(uint64 adler, uint64 sum2, int b0, int b1, int b2, int b3) returns uint64
+  adler = adler + b0
+  sum2 = sum2 + adler
+  adler = adler + b1
+  sum2 = sum2 + adler
+  adler = adler + b2
+  sum2 = sum2 + adler
+  adler = adler + b3
+  sum2 = sum2 + adler
+  return (adler either1 (sum2 left 16))
+end function
+
+function do1_step(uint64 adler, uint64 sum2, int byte_val) returns uint64
+  adler = adler + byte_val
+  sum2 = sum2 + adler
+  return (adler either1 (sum2 left 16))
+end function
+
+function accumulate_flags() returns uint64
+  uint64 flags = 0
+  flags = flags + 1
+  flags = flags + (1 left 2)
+  flags = flags + (2 left 4)
+  flags = flags + (1 left 8)
+  flags = flags + (1 left 16)
+  return flags
+end function
+
+function mod_base(uint64 v) returns uint64
+  return (v % 65521)
+end function
+
+function adler_mod_nodivide(uint64 a) returns uint64
+  uint64 tmp = 0
+  tmp = (a right 16)
+  a = (a both1 65535)
+  a = ((a + (tmp left 4)) - tmp)
+  tmp = (a right 16)
+  a = (a both1 65535)
+  a = ((a + (tmp left 4)) - tmp)
+  if (a >= 65521)
+    a = (a - 65521)
+  end if
+  return a
+end function
+
+function sum_stepped(int n) returns uint64
+  uint64 total = 0
+  uint64 running = 1
+  int i = 0
+  while (i < n)
+    running = running + i
+    total = total + running
+    i = (i + 1)
+  end while
+  return total
+end function
+
+function main() returns int
+  uint64 r = 0
+  r = adler32_do4(1, 0, 72, 101, 108, 108)
+  print "do4(Hell) = " + cast(r, string)
+  r = do1_step(1, 0, 72)
+  print "do1(H) = " + cast(r, string)
+  r = accumulate_flags()
+  print "accumulate_flags = " + cast(r, string)
+  print "mod_base(65521) = " + cast(mod_base(65521), string)
+  print "mod_base(65522) = " + cast(mod_base(65522), string)
+  print "mod_base(130000) = " + cast(mod_base(130000), string)
+  print "adler_mod_nodivide(0) = " + cast(adler_mod_nodivide(0), string)
+  print "adler_mod_nodivide(65521) = " + cast(adler_mod_nodivide(65521), string)
+  print "adler_mod_nodivide(65522) = " + cast(adler_mod_nodivide(65522), string)
+  print "sum_stepped(5) = " + cast(sum_stepped(5), string)
+  print "sum_stepped(10) = " + cast(sum_stepped(10), string)
+  return 0
+end function
+

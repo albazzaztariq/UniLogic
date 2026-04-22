@@ -1,0 +1,992 @@
+// TRANSPILER WARNING line 1: from random import ... — convert to UL import syntax — manual conversion required
+// TRANSPILER WARNING line 2: import sys — convert to UL import syntax — manual conversion required
+// TRANSPILER: module-level try/except block — try branch emitted
+// TRANSPILER WARNING line 5: from typing import ... — convert to UL import syntax — manual conversion required
+object UnsolvableSudoku forks Exception
+  // pass
+end object
+
+object _SudokuSolver
+  
+  function __init__(int sudoku)
+    self.width = sudoku.width
+    self.height = sudoku.height
+    self.size = sudoku.size
+    self.sudoku = sudoku
+  end function
+  
+  
+  function _solve()
+    blanks = self.__get_blanks()
+    blank_count = blanks.len()
+    array bool _lc0
+    for each _ in range(blank_count)
+      _lc0.push(false)
+    end for
+    are_blanks_filled = _lc0
+    blank_fillers = self.__calculate_blank_cell_fillers(blanks)
+    solution_board = self.__get_solution(Sudoku._copy_board(self.sudoku.board), blanks, blank_fillers, are_blanks_filled)
+    solution_difficulty = 0
+    if not solution_board
+      return empty
+    end if
+    return Sudoku(self.width, self.height)
+  end function
+  
+  
+  function _has_multiple_solutions()
+    blanks = self.__get_blanks()
+    blank_count = blanks.len()
+    array bool _lc1
+    for each _ in range(blank_count)
+      _lc1.push(false)
+    end for
+    are_blanks_filled = _lc1
+    blank_fillers = self.__calculate_blank_cell_fillers(blanks)
+    solution_board = self.__get_solution(Sudoku._copy_board(self.sudoku.board), blanks, blank_fillers, are_blanks_filled)
+    array bool _lc2
+    for each _ in range(blank_count)
+      _lc2.push(false)
+    end for
+    are_blanks_filled = _lc2
+    blank_fillers = self.__calculate_blank_cell_fillers(blanks)
+    solution_board2 = self.__get_solution(Sudoku._copy_board(self.sudoku.board), blanks, blank_fillers, are_blanks_filled)
+    if not solution_board
+      return false
+    end if
+    return solution_board != solution_board2
+  end function
+  
+  
+  function __calculate_blank_cell_fillers(int blanks)
+    sudoku = self.sudoku
+    array int _lc3
+    for each _ in range(self.size)
+      array int _lc4
+      for each _ in range(self.size)
+        array bool _lc5
+        for each _ in range(self.size)
+          _lc5.push(true)
+        end for
+        _lc4.push(_lc5)
+      end for
+      _lc3.push(_lc4)
+    end for
+    valid_fillers = _lc3
+    for each __pair0 in blanks
+      auto row = __pair0[0]
+      auto col = __pair0[1]
+      for each i in range(self.size)
+        same_row = sudoku.board[row][i]
+        same_col = sudoku.board[i][col]
+        if same_row and i != col
+          valid_fillers[row][col][same_row - 1] = false
+        end if
+        if same_col and i != row
+          valid_fillers[row][col][same_col - 1] = false
+        end if
+      end for
+      auto __unpack_0_0 = row / sudoku.height
+      auto __unpack_0_1 = col / sudoku.width
+      grid_row = __unpack_0_0
+      grid_col = __unpack_0_1
+      grid_row_start = grid_row * sudoku.height
+      grid_col_start = grid_col * sudoku.width
+      for each y_offset in range(sudoku.height)
+        for each x_offset in range(sudoku.width)
+          if grid_row_start + y_offset == row and grid_col_start + x_offset == col
+            continue
+          end if
+          cell = sudoku.board[grid_row_start + y_offset][grid_col_start + x_offset]
+          if cell
+            valid_fillers[row][col][cell - 1] = false
+          end if
+        end for
+      end for
+    end for
+    return valid_fillers
+  end function
+  
+  
+  function __get_blanks()
+    blanks = []
+    int i = 0
+    for each row in self.sudoku.board
+      int j = 0
+      for each cell in row
+        if cell == Sudoku._empty_cell_value
+          blanks += [[i, j]]
+        end if
+        j = j + 1
+      end for
+      i = i + 1
+    end for
+    return blanks
+  end function
+  
+  
+  function __is_neighbor(int blank1, int blank2)
+    row1 = blank1[0]
+    col1 = blank1[1]
+    row2 = blank2[0]
+    col2 = blank2[1]
+    if row1 == row2 or col1 == col2
+      return true
+    end if
+    auto __unpack_1_0 = row1 / self.height
+    auto __unpack_1_1 = col1 / self.width
+    grid_row1 = __unpack_1_0
+    grid_col1 = __unpack_1_1
+    auto __unpack_2_0 = row2 / self.height
+    auto __unpack_2_1 = col2 / self.width
+    grid_row2 = __unpack_2_0
+    grid_col2 = __unpack_2_1
+    return grid_row1 == grid_row2 and grid_col1 == grid_col2
+  end function
+  
+  
+  function __get_solution(int board, int blanks, int blank_fillers, int are_blanks_filled, int reverse)
+    min_filler_count = empty
+    chosen_blank = empty
+    int i = 0
+    for each blank in blanks
+      x = blank[0]
+      y = blank[1]
+      if are_blanks_filled[i]
+        continue
+      end if
+      valid_filler_count = sum(blank_fillers[x][y])
+      if valid_filler_count == 0
+        return empty
+      end if
+      if not min_filler_count or valid_filler_count < min_filler_count
+        min_filler_count = valid_filler_count
+        chosen_blank = blank
+        chosen_blank_index = i
+      end if
+      i = i + 1
+    end for
+    if not chosen_blank
+      return _py_cast(List[List[_py_int]], board)
+    end if
+    row = chosen_blank[0]
+    col = chosen_blank[1]
+    are_blanks_filled[chosen_blank_index] = true
+    array bool _lc6
+    for each _ in range(blanks.len())
+      _lc6.push(false)
+    end for
+    revert_list = _lc6
+    if reverse
+      foo = range(self.size - 1, -1, -1)
+    else
+      foo = range(self.size)
+    end if
+    for each number in foo
+      if not blank_fillers[row][col][number]
+        continue
+      end if
+      board[row][col] = number + 1
+      int i = 0
+      for each blank in blanks
+        blank_row = blank[0]
+        blank_col = blank[1]
+        if blank == chosen_blank
+          continue
+        end if
+        if self.__is_neighbor(blank, chosen_blank) and blank_fillers[blank_row][blank_col][number]
+          blank_fillers[blank_row][blank_col][number] = false
+          revert_list[i] = true
+        else
+          revert_list[i] = false
+        end if
+        i = i + 1
+      end for
+      solution_board = self.__get_solution(board, blanks, blank_fillers, are_blanks_filled)
+      if solution_board
+        return solution_board
+      end if
+      int i = 0
+      for each blank in blanks
+        if revert_list[i]
+          blank_row = blank[0]
+          blank_col = blank[1]
+          blank_fillers[blank_row][blank_col][number] = true
+        end if
+        i = i + 1
+      end for
+    end for
+    are_blanks_filled[chosen_blank_index] = false
+    board[row][col] = Sudoku._empty_cell_value
+    return empty
+  end function
+  
+end object
+
+object Sudoku
+  int _empty_cell_value = empty
+  int __difficulty = empty
+  
+  function __init__(int width, int height, int board, int difficulty, int seed)
+    self.width = width
+    self.height = /* height if height else width */
+    self.size = self.width * self.height
+    if not self.width > 0
+      print "Width cannot be less than 1"
+      exit(1)
+    end if
+    if not self.height > 0
+      print "Height cannot be less than 1"
+      exit(1)
+    end if
+    if not self.size > 1
+      print "Board size cannot be 1 x 1"
+      exit(1)
+    end if
+    if difficulty != empty
+      self.__difficulty = difficulty
+    end if
+    if board
+      blank_count = 0
+      array int _lc7
+      for each row in board
+        array int _lc8
+        for each cell in row
+          _lc8.push(cell)
+        end for
+        _lc7.push(_lc8)
+      end for
+      self.board = _lc7
+      for each row in self.board
+        for each i in range(row.len())
+          if not range(1, self.size + 1).contains(row[i])
+            row[i] = Sudoku._empty_cell_value
+            blank_count += 1
+          end if
+        end for
+      end for
+      if difficulty == empty
+        if self.validate()
+          self.__difficulty = blank_count / self.size * self.size
+        else
+          self.__difficulty = -2
+        end if
+      end if
+    else
+      positions = _py_list(range(self.size))
+      random_seed(seed)
+      shuffle(positions)
+      array int _lc9
+      for each j in range(self.size)
+        array int _lc10
+        for each i in range(self.size)
+          _lc10.push(/* i + 1 if i == positions[j] else Sudoku._empty_cell_value */)
+        end for
+        _lc9.push(_lc10)
+      end for
+      self.board = _lc9
+    end if
+  end function
+  
+  
+  function solve(int assert_solvable)
+    solution = /* _SudokuSolver(self)._solve() if self.validate() else empty */
+    if solution
+      return solution
+    else
+      if assert_solvable
+        throw UnsolvableSudoku("No solution found")
+      else
+        solution_board = Sudoku.empty(self.width, self.height).board
+        solution_difficulty = -2
+        return Sudoku()
+      end if
+    end if
+  end function
+  
+  
+  function has_multiple_solutions()
+    return _SudokuSolver(self)._has_multiple_solutions()
+  end function
+  
+  
+  function validate()
+    array int _lc11
+    for each _ in range(self.size)
+      array bool _lc12
+      for each _ in range(self.size)
+        _lc12.push(false)
+      end for
+      _lc11.push(_lc12)
+    end for
+    row_numbers = _lc11
+    array int _lc13
+    for each _ in range(self.size)
+      array bool _lc14
+      for each _ in range(self.size)
+        _lc14.push(false)
+      end for
+      _lc13.push(_lc14)
+    end for
+    col_numbers = _lc13
+    array int _lc15
+    for each _ in range(self.size)
+      array bool _lc16
+      for each _ in range(self.size)
+        _lc16.push(false)
+      end for
+      _lc15.push(_lc16)
+    end for
+    box_numbers = _lc15
+    for each row in range(self.size)
+      for each col in range(self.size)
+        cell = self.board[row][col]
+        box = row / self.height * self.height + col / self.width
+        if cell == Sudoku._empty_cell_value
+          continue
+        else
+          if isinstance(cell, _py_int)
+            if row_numbers[row][cell - 1]
+              return false
+            else
+              if col_numbers[col][cell - 1]
+                return false
+              else
+                if box_numbers[box][cell - 1]
+                  return false
+                end if
+              end if
+            end if
+            row_numbers[row][cell - 1] = true
+            col_numbers[col][cell - 1] = true
+            box_numbers[box][cell - 1] = true
+          end if
+        end if
+      end for
+    end for
+    return true
+  end function
+  
+  
+  function _copy_board(int board)
+    array int _lc17
+    for each row in board
+      array int _lc18
+      for each cell in row
+        _lc18.push(cell)
+      end for
+      _lc17.push(_lc18)
+    end for
+    return _lc17
+  end function
+  
+  
+  function _py_empty(int width, int height)
+    size = width * height
+    board = [[Sudoku._empty_cell_value] * size] * size
+    return Sudoku(width, height, board, 0)
+  end function
+  
+  
+  function difficulty(int difficulty)
+    if not 0 < difficulty < 1
+      print "Difficulty must be between 0 and 1"
+      exit(1)
+    end if
+    indices = _py_list(range(self.size * self.size))
+    shuffle(indices)
+    problem_board = self.solve().board
+    for each index in indices[0:_py_int(difficulty * self.size * self.size)]
+      row_index = index / self.size
+      col_index = index % self.size
+      problem_board[row_index][col_index] = Sudoku._empty_cell_value
+    end for
+    puzzle = Sudoku(self.width, self.height, problem_board, difficulty)
+    if puzzle.has_multiple_solutions()
+      return Sudoku(self.width, self.height, problem_board, -3)
+    end if
+    return Sudoku(self.width, self.height, problem_board, difficulty)
+  end function
+  
+  
+  function get_difficulty()
+    return self.__difficulty
+  end function
+  
+  
+  function show()
+    if self.__difficulty == -3
+      print "Puzzle has multiple solutions"
+    else
+      if self.__difficulty == -2
+        print "Puzzle has no solution"
+      else
+        if self.__difficulty == -1
+          print "Invalid puzzle. Please solve the puzzle (puzzle.solve()), or set a difficulty (puzzle.difficulty())"
+        else
+          if not self.board
+            print "No solution"
+          else
+            print "Puzzle has exactly one solution"
+          end if
+        end if
+      end if
+    end if
+    print self.__format_board_ascii()
+  end function
+  
+  
+  function show_full()
+    print self.__str__()
+  end function
+  
+  
+  function __format_board_ascii()
+    table = ""
+    cell_length = cast(self.size, string).len()
+    format_int = "{0:0" + cast(cell_length, string) + "d}"
+    int i = 0
+    for each row in self.board
+      if i == 0
+        table += "+-" + "-" * cell_length + 1 * self.width * self.height + "+" + "\n"
+      end if
+      array int _lc19
+      for each x in row
+        _lc19.push(/* format_int.format(x) if x != Sudoku._empty_cell_value else " " * cell_length */)
+      end for
+      table += "| " + "{} " * self.width * self.height + "|".format(_lc19) + "\n"
+      if i == self.size - 1 or i % self.height == self.height - 1
+        table += "+-" + "-" * cell_length + 1 * self.width * self.height + "+" + "\n"
+      end if
+      i = i + 1
+    end for
+    return table
+  end function
+  
+  
+  function __str__()
+    if self.__difficulty == -2
+      difficulty_str = "INVALID PUZZLE (GIVEN PUZZLE HAS NO SOLUTION)"
+    else
+      if self.__difficulty == -1
+        difficulty_str = "INVALID PUZZLE"
+      else
+        if self.__difficulty == -3
+          difficulty_str = "INVALID PUZZLE (MULTIPLE SOLUTIONS)"
+        else
+          if self.__difficulty == 0
+            difficulty_str = "SOLVED"
+          else
+            difficulty_str = "{:.2f}".format(self.__difficulty)
+          end if
+        end if
+      end if
+    end if
+    return "\n---------------------------\n{}x{} ({}x{}) SUDOKU PUZZLE\nDifficulty: {}\n---------------------------\n{}\n        ".format(self.size, self.size, self.width, self.height, difficulty_str, self.__format_board_ascii())
+  end function
+  
+end object
+
+object DiagonalSudoku forks Sudoku
+  int __difficulty = empty
+  
+  function __init__(int size, int board, int difficulty, int seed)
+    self.width = size
+    self.height = size
+    self.size = size * size
+    array array int _lc20
+    for each i in range(self.size)
+      _lc20.push([i, i])
+    end for
+    self.diagonal_left_to_right = _lc20
+    array array int _lc21
+    for each [i, j] in enumerate(range(self.size - 1, -1, -1))
+      _lc21.push([i, j])
+    end for
+    self.diagonal_right_to_left = _lc21
+    if not self.width > 0
+      print "Width cannot be less than 1"
+      exit(1)
+    end if
+    if not self.height > 0
+      print "Height cannot be less than 1"
+      exit(1)
+    end if
+    if not self.size > 1
+      print "Board size cannot be 1 x 1"
+      exit(1)
+    end if
+    if difficulty != empty
+      self.__difficulty = difficulty
+    end if
+    if board
+      blank_count = 0
+      array int _lc22
+      for each row in board
+        array int _lc23
+        for each cell in row
+          _lc23.push(cell)
+        end for
+        _lc22.push(_lc23)
+      end for
+      self.board = _lc22
+      for each _row in self.board
+        for each i in range(_row.len())
+          if not range(1, self.size + 1).contains(_row[i])
+            _row[i] = Sudoku._empty_cell_value
+            blank_count += 1
+          end if
+        end for
+      end for
+      for each __pair1 in self.diagonal_left_to_right
+        auto row = __pair1[0]
+        auto col = __pair1[1]
+        if not range(1, self.size + 1).contains(self.board[row][col])
+          self.board[row][col] = Sudoku._empty_cell_value
+          blank_count += 1
+        end if
+      end for
+      for each __pair2 in self.diagonal_right_to_left
+        auto row = __pair2[0]
+        auto col = __pair2[1]
+        if not range(1, self.size + 1).contains(self.board[row][col])
+          self.board[row][col] = Sudoku._empty_cell_value
+          blank_count += 1
+        end if
+      end for
+      if difficulty == empty
+        if self.validate()
+          self.__difficulty = blank_count / self.size * self.size
+        else
+          self.__difficulty = -2
+        end if
+      end if
+    else
+      positions = _py_list(range(1, self.size + 1))
+      random_seed(seed)
+      shuffle(positions)
+      array int _lc24
+      for each j in range(self.size)
+        array int _lc25
+        for each i in range(self.size)
+          _lc25.push(/* positions[j] if i == j else Sudoku._empty_cell_value */)
+        end for
+        _lc24.push(_lc25)
+      end for
+      self.board = _lc24
+    end if
+  end function
+  
+  
+  function difficulty(int difficulty)
+    if not 0 < difficulty < 1
+      print "Difficulty must be between 0 and 1"
+      exit(1)
+    end if
+    indices = _py_list(range(self.size * self.size))
+    shuffle(indices)
+    problem_board = self.solve().board
+    for each index in indices[0:_py_int(difficulty * self.size * self.size)]
+      row_index = index / self.size
+      col_index = index % self.size
+      problem_board[row_index][col_index] = Sudoku._empty_cell_value
+    end for
+    return DiagonalSudoku(self.width, problem_board, difficulty)
+  end function
+  
+  
+  function validate()
+    array int _lc26
+    for each _ in range(self.size)
+      array bool _lc27
+      for each _ in range(self.size)
+        _lc27.push(false)
+      end for
+      _lc26.push(_lc27)
+    end for
+    row_numbers = _lc26
+    array int _lc28
+    for each _ in range(self.size)
+      array bool _lc29
+      for each _ in range(self.size)
+        _lc29.push(false)
+      end for
+      _lc28.push(_lc29)
+    end for
+    col_numbers = _lc28
+    array int _lc30
+    for each _ in range(self.size)
+      array bool _lc31
+      for each _ in range(self.size)
+        _lc31.push(false)
+      end for
+      _lc30.push(_lc31)
+    end for
+    box_numbers = _lc30
+    array int _lc32
+    for each _ in range(2)
+      array bool _lc33
+      for each _ in range(self.size)
+        _lc33.push(false)
+      end for
+      _lc32.push(_lc33)
+    end for
+    diagonal_numbers = _lc32
+    for each row in range(self.size)
+      for each col in range(self.size)
+        cell = self.board[row][col]
+        box = row / self.height * self.height + col / self.width
+        if cell == Sudoku._empty_cell_value
+          continue
+        else
+          if isinstance(cell, _py_int)
+            if row_numbers[row][cell - 1] or col_numbers[col][cell - 1] or box_numbers[box][cell - 1]
+              return false
+            end if
+            row_numbers[row][cell - 1] = true
+            col_numbers[col][cell - 1] = true
+            box_numbers[box][cell - 1] = true
+          end if
+        end if
+      end for
+    end for
+    for each i in self.diagonal_left_to_right
+      cell = self.board[i[0]][i[1]]
+      if cell == Sudoku._empty_cell_value
+        continue
+      else
+        if isinstance(cell, _py_int)
+          if diagonal_numbers[0][cell - 1]
+            return false
+          end if
+          diagonal_numbers[0][cell - 1] = true
+        end if
+      end if
+    end for
+    for each i in self.diagonal_right_to_left
+      cell = self.board[i[0]][i[1]]
+      if cell == Sudoku._empty_cell_value
+        continue
+      else
+        if isinstance(cell, _py_int)
+          if diagonal_numbers[1][cell - 1]
+            return false
+          end if
+          diagonal_numbers[1][cell - 1] = true
+        end if
+      end if
+    end for
+    return true
+  end function
+  
+  
+  function solve(int raising)
+    solution = /* _DiagonalSudokuSolver(self)._solve() if self.validate() else empty */
+    if solution
+      return solution
+    else
+      if raising
+        throw UnsolvableSudoku("No solution found")
+      else
+        solution_board = DiagonalSudoku.empty(self.width, self.height).board
+        solution_difficulty = -2
+        return DiagonalSudoku()
+      end if
+    end if
+  end function
+  
+  
+  function show()
+    if self.__difficulty == -2
+      print "Puzzle has no solution"
+    end if
+    if self.__difficulty == -1
+      print "Invalid puzzle. Please solve the puzzle (puzzle.solve()), or set a difficulty (puzzle.difficulty())"
+    end if
+    if not self.board
+      print "No solution"
+    end if
+    print self.__format_board_ascii()
+  end function
+  
+  
+  function show_full()
+    print self.__str__()
+  end function
+  
+  
+  function __format_board_ascii()
+    table = ""
+    cell_length = cast(self.size, string).len()
+    row_square = []
+    format_int = "{0:0" + cast(cell_length, string) + "d}"
+    int i = 0
+    for each row in self.board
+      if i == 0
+        table += "+-" + "-" * cell_length + 1 * self.width * self.height + "+" + "\n"
+      end if
+      for each x in range(row.len())
+        if x != Sudoku._empty_cell_value
+          if i == x
+            row_square.append("[1m[4m{}[0m".format(format_int.format(row[x])))
+          else
+            if self.diagonal_right_to_left[i][1] == x
+              row_square.append("[1m[4m{}[0m".format(format_int.format(row[x])))
+            else
+              row_square.append(format_int.format(row[x]))
+            end if
+          end if
+        else
+          row_square.append(" " * cell_length)
+        end if
+      end for
+      table += "| " + "{} " * self.width * self.height + "|".format(row_square) + "\n"
+      row_square = []
+      if i == self.size - 1 or i % self.height == self.height - 1
+        table += "+-" + "-" * cell_length + 1 * self.width * self.height + "+" + "\n"
+      end if
+      i = i + 1
+    end for
+    return table
+  end function
+  
+  
+  function __str__()
+    if self.__difficulty == -2
+      difficulty_str = "INVALID PUZZLE (GIVEN PUZZLE HAS NO SOLUTION)"
+    else
+      if self.__difficulty == -1
+        difficulty_str = "INVALID PUZZLE"
+      else
+        if self.__difficulty == 0
+          difficulty_str = "SOLVED"
+        else
+          difficulty_str = "{:.2f}".format(self.__difficulty)
+        end if
+      end if
+    end if
+    return "\n------------------------------------\n{}x{} ({}x{}) DIAGONAL SUDOKU PUZZLE\nDifficulty: {}\n------------------------------------\n{}\n        ".format(self.size, self.size, self.width, self.height, difficulty_str, self.__format_board_ascii())
+  end function
+  
+end object
+
+object _DiagonalSudokuSolver forks _SudokuSolver
+  
+  function __init__(int sudoku)
+    super().__init__(sudoku)
+    array array int _lc34
+    for each i in range(self.size)
+      _lc34.push([i, i])
+    end for
+    self.diagonal_left_to_right = _lc34
+    array array int _lc35
+    for each [i, j] in enumerate(range(self.size - 1, -1, -1))
+      _lc35.push([i, j])
+    end for
+    self.diagonal_right_to_left = _lc35
+  end function
+  
+  
+  function _solve()
+    blanks = self.__get_blanks()
+    blank_count = blanks.len()
+    array bool _lc36
+    for each _ in range(blank_count)
+      _lc36.push(false)
+    end for
+    are_blanks_filled = _lc36
+    blank_fillers = self.__calculate_blank_cell_fillers(blanks)
+    solution_board = self.__get_solution(DiagonalSudoku._copy_board(self.sudoku.board), blanks, blank_fillers, are_blanks_filled)
+    solution_difficulty = 0
+    if not solution_board
+      return empty
+    end if
+    return DiagonalSudoku(self.width)
+  end function
+  
+  
+  function __get_blanks()
+    blanks = []
+    int i = 0
+    for each row in self.sudoku.board
+      int j = 0
+      for each cell in row
+        if cell == Sudoku._empty_cell_value
+          blanks += [[i, j]]
+        end if
+        j = j + 1
+      end for
+      i = i + 1
+    end for
+    return blanks
+  end function
+  
+  
+  function __is_neighbor(int blank1, int blank2)
+    row1 = blank1[0]
+    col1 = blank1[1]
+    row2 = blank2[0]
+    col2 = blank2[1]
+    if row1 == row2 or col1 == col2
+      return true
+    end if
+    auto __unpack_3_0 = row1 / self.height
+    auto __unpack_3_1 = col1 / self.width
+    grid_row1 = __unpack_3_0
+    grid_col1 = __unpack_3_1
+    auto __unpack_4_0 = row2 / self.height
+    auto __unpack_4_1 = col2 / self.width
+    grid_row2 = __unpack_4_0
+    grid_col2 = __unpack_4_1
+    if grid_row1 == grid_row2 and grid_col1 == grid_col2
+      return true
+    end if
+    if self.diagonal_left_to_right.contains(blank1) and self.diagonal_left_to_right.contains(blank2)
+      return true
+    end if
+    return self.diagonal_right_to_left.contains(blank1) and self.diagonal_right_to_left.contains(blank2)
+  end function
+  
+  
+  function __calculate_blank_cell_fillers(int blanks)
+    sudoku = self.sudoku
+    array int _lc37
+    for each _ in range(self.size)
+      array int _lc38
+      for each _ in range(self.size)
+        array bool _lc39
+        for each _ in range(self.size)
+          _lc39.push(true)
+        end for
+        _lc38.push(_lc39)
+      end for
+      _lc37.push(_lc38)
+    end for
+    valid_fillers = _lc37
+    for each __pair3 in blanks
+      auto row = __pair3[0]
+      auto col = __pair3[1]
+      for each i in range(self.size)
+        same_row = sudoku.board[row][i]
+        same_col = sudoku.board[i][col]
+        if same_row and i != col
+          valid_fillers[row][col][same_row - 1] = false
+        end if
+        if same_col and i != row
+          valid_fillers[row][col][same_col - 1] = false
+        end if
+      end for
+      auto __unpack_5_0 = row / sudoku.height
+      auto __unpack_5_1 = col / sudoku.width
+      grid_row = __unpack_5_0
+      grid_col = __unpack_5_1
+      grid_row_start = grid_row * sudoku.height
+      grid_col_start = grid_col * sudoku.width
+      for each y_offset in range(sudoku.height)
+        for each x_offset in range(sudoku.width)
+          if grid_row_start + y_offset == row and grid_col_start + x_offset == col
+            continue
+          end if
+          cell = sudoku.board[grid_row_start + y_offset][grid_col_start + x_offset]
+          if cell
+            valid_fillers[row][col][cell - 1] = false
+          end if
+        end for
+      end for
+      if self.diagonal_left_to_right.contains([row, col])
+        for each j in self.diagonal_left_to_right
+          same_diagonal = sudoku.board[row][col]
+          if j == [row, col] or not same_diagonal
+            continue
+          end if
+          valid_fillers[row][col][same_diagonal - 1] = false
+        end for
+      else
+        if self.diagonal_right_to_left.contains([row, col])
+          for each j in self.diagonal_right_to_left
+            same_diagonal = sudoku.board[j[0]][j[1]]
+            if j == [row, col] or not same_diagonal
+              continue
+            end if
+            valid_fillers[row][col][same_diagonal - 1] = false
+          end for
+        end if
+      end if
+    end for
+    return valid_fillers
+  end function
+  
+  
+  function __get_solution(int board, int blanks, int blank_fillers, int are_blanks_filled)
+    min_filler_count = empty
+    chosen_blank = empty
+    int i = 0
+    for each blank in blanks
+      x = blank[0]
+      y = blank[1]
+      if are_blanks_filled[i]
+        continue
+      end if
+      valid_filler_count = sum(blank_fillers[x][y])
+      if valid_filler_count == 0
+        return empty
+      end if
+      if not min_filler_count or valid_filler_count < min_filler_count
+        min_filler_count = valid_filler_count
+        chosen_blank = blank
+        chosen_blank_index = i
+      end if
+      i = i + 1
+    end for
+    if not chosen_blank
+      return _py_cast(List[List[_py_int]], board)
+    end if
+    row = chosen_blank[0]
+    col = chosen_blank[1]
+    are_blanks_filled[chosen_blank_index] = true
+    array bool _lc40
+    for each _ in range(blanks.len())
+      _lc40.push(false)
+    end for
+    revert_list = _lc40
+    for each number in range(self.size)
+      if not blank_fillers[row][col][number]
+        continue
+      end if
+      board[row][col] = number + 1
+      int i = 0
+      for each blank in blanks
+        blank_row = blank[0]
+        blank_col = blank[1]
+        if blank == chosen_blank
+          continue
+        end if
+        if self.__is_neighbor(blank, chosen_blank) and blank_fillers[blank_row][blank_col][number]
+          blank_fillers[blank_row][blank_col][number] = false
+          revert_list[i] = true
+        else
+          revert_list[i] = false
+        end if
+        i = i + 1
+      end for
+      solution_board = self.__get_solution(board, blanks, blank_fillers, are_blanks_filled)
+      if solution_board
+        return solution_board
+      end if
+      int i = 0
+      for each blank in blanks
+        if revert_list[i]
+          blank_row = blank[0]
+          blank_col = blank[1]
+          blank_fillers[blank_row][blank_col][number] = true
+        end if
+        i = i + 1
+      end for
+    end for
+    are_blanks_filled[chosen_blank_index] = false
+    board[row][col] = Sudoku._empty_cell_value
+    return empty
+  end function
+  
+end object
+

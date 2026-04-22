@@ -1,0 +1,308 @@
+// Translated from test_sha256_core.c by c2ul
+type sha256_ctx
+  array uint32[8] h
+  array uint32[16] w
+  int round
+  int status
+end type
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+array uint32 K = [1116352408, 1899447441, 3049323471, 3921009573, 961987163, 1508970993, 2453635748, 2870763221, 3624381080, 310598401, 607225278, 1426881987, 1925078388, 2162078206, 2614888103, 3248222580]
+
+function rotr(uint32 x, int n) returns uint32
+  return ((x right n) either1 (x left (32 - n)))
+end function
+
+function sigma0(uint32 x) returns uint32
+  return ((rotr(x, 2) diff rotr(x, 13)) diff rotr(x, 22))
+end function
+
+function sigma1(uint32 x) returns uint32
+  return ((rotr(x, 6) diff rotr(x, 11)) diff rotr(x, 25))
+end function
+
+function ch(uint32 e, uint32 f, uint32 g) returns uint32
+  return ((e both1 f) diff (bitflip e both1 g))
+end function
+
+function maj(uint32 a, uint32 b, uint32 c) returns uint32
+  return (((a both1 b) diff (a both1 c)) diff (b both1 c))
+end function
+
+function sha256_init(sha256_ctx <ctx>) returns int
+  ctx.h[0] = 1779033703
+  ctx.h[1] = 3144134277
+  ctx.h[2] = 1013904242
+  ctx.h[3] = 2773480762
+  ctx.h[4] = 1359893119
+  ctx.h[5] = 2600822924
+  ctx.h[6] = 528734635
+  ctx.h[7] = 1541459225
+  ctx.round = 0
+  ctx.status = 0
+  return 0
+end function
+
+function sha256_load_block(sha256_ctx <ctx>, uint32 w0, uint32 w1, uint32 w2, uint32 w3, uint32 w4, uint32 w5, uint32 w6, uint32 w7) returns int
+  if (ctx.status != 0)
+    return ctx.status
+  end if
+  ctx.w[0] = w0
+  ctx.w[1] = w1
+  ctx.w[2] = w2
+  ctx.w[3] = w3
+  ctx.w[4] = w4
+  ctx.w[5] = w5
+  ctx.w[6] = w6
+  ctx.w[7] = w7
+  ctx.w[8] = 0
+  ctx.w[9] = 0
+  ctx.w[10] = 0
+  ctx.w[11] = 0
+  ctx.w[12] = 0
+  ctx.w[13] = 0
+  ctx.w[14] = 0
+  ctx.w[15] = 0
+  return 0
+end function
+
+function sha256_do_round(sha256_ctx <ctx>, int r) returns int
+  uint32 a = 0
+  uint32 b = 0
+  uint32 c = 0
+  uint32 d = 0
+  uint32 e = 0
+  uint32 f = 0
+  uint32 g = 0
+  uint32 h = 0
+  uint32 t1 = 0
+  uint32 t2 = 0
+  if (ctx.status != 0)
+    return ctx.status
+  end if
+  if ((r < 0) or (r >= 16))
+    ctx.status = -1
+    return -1
+  end if
+  a = ctx.h[0]
+  b = ctx.h[1]
+  c = ctx.h[2]
+  d = ctx.h[3]
+  e = ctx.h[4]
+  f = ctx.h[5]
+  g = ctx.h[6]
+  h = ctx.h[7]
+  t1 = ((((h + sigma1(e)) + ch(e, f, g)) + K[r]) + ctx.w[r])
+  t2 = (sigma0(a) + maj(a, b, c))
+  ctx.h[7] = g
+  ctx.h[6] = f
+  ctx.h[5] = e
+  ctx.h[4] = (d + t1)
+  ctx.h[3] = c
+  ctx.h[2] = b
+  ctx.h[1] = a
+  ctx.h[0] = (t1 + t2)
+  ctx.round = (r + 1)
+  return 0
+end function
+
+function classify_round(int r) returns int
+  if (r % 4) == 0
+    return 10
+  else if (r % 4) == 1
+    return 20
+  else if (r % 4) == 2
+    return 30
+  else if (r % 4) == 3
+    return 40
+  else
+    return -1
+  end if
+end function
+
+function get_k(int i) returns uint32
+  if ((i < 0) or (i >= 16))
+    return 0
+  end if
+  return K[i]
+end function
+
+function main() returns int
+  sha256_ctx ctx = 0
+  int ret = 0
+  print "=== 1. SHA-256 init ==="
+  ret = sha256_init(address(ctx))
+  auto _tern_1 = "FAIL"
+  if (ret == 0)
+    _tern_1 = "PASS"
+  end if
+  print "init ret=" + cast(ret, string) + " " + _tern_1
+  auto _tern_2 = "FAIL"
+  if (ctx.h[0] == 1779033703)
+    _tern_2 = "PASS"
+  end if
+  print "h[0]=" + cast(ctx.h[0], string) + " " + _tern_2
+  auto _tern_3 = "FAIL"
+  if (ctx.h[7] == 1541459225)
+    _tern_3 = "PASS"
+  end if
+  print "h[7]=" + cast(ctx.h[7], string) + " " + _tern_3
+  auto _tern_4 = "FAIL"
+  if (ctx.round == 0)
+    _tern_4 = "PASS"
+  end if
+  print "round=" + cast(ctx.round, string) + " " + _tern_4
+  auto _tern_5 = "FAIL"
+  if (ctx.status == 0)
+    _tern_5 = "PASS"
+  end if
+  print "status=" + cast(ctx.status, string) + " " + _tern_5
+  print "\n=== 2. Load block ==="
+  ret = sha256_load_block(address(ctx), 1633837952, 0, 0, 0, 0, 0, 0, 0)
+  auto _tern_6 = "FAIL"
+  if (ret == 0)
+    _tern_6 = "PASS"
+  end if
+  print "load ret=" + cast(ret, string) + " " + _tern_6
+  auto _tern_7 = "FAIL"
+  if (ctx.w[0] == 1633837952)
+    _tern_7 = "PASS"
+  end if
+  print "w[0]=" + cast(ctx.w[0], string) + " " + _tern_7
+  auto _tern_8 = "FAIL"
+  if (ctx.w[7] == 0)
+    _tern_8 = "PASS"
+  end if
+  print "w[7]=" + cast(ctx.w[7], string) + " " + _tern_8
+  print "\n=== 3. One SHA-256 round ==="
+  ret = sha256_do_round(address(ctx), 0)
+  auto _tern_9 = "FAIL"
+  if (ret == 0)
+    _tern_9 = "PASS"
+  end if
+  print "round ret=" + cast(ret, string) + " " + _tern_9
+  auto _tern_10 = "FAIL"
+  if (ctx.round == 1)
+    _tern_10 = "PASS"
+  end if
+  print "round count=" + cast(ctx.round, string) + " " + _tern_10
+  auto _tern_11 = "FAIL"
+  if (ctx.h[0] != 1779033703)
+    _tern_11 = "PASS"
+  end if
+  print "h[0] changed: " + _tern_11
+  auto _tern_12 = "FAIL"
+  if (ctx.h[1] == 1779033703)
+    _tern_12 = "PASS"
+  end if
+  print "h[1]=old h[0]: " + _tern_12
+  print "\n=== 4. Error propagation ==="
+  ret = sha256_do_round(address(ctx), 99)
+  auto _tern_13 = "FAIL"
+  if (ret == -1)
+    _tern_13 = "PASS"
+  end if
+  print "bad round ret=" + cast(ret, string) + " " + _tern_13
+  auto _tern_14 = "FAIL"
+  if (ctx.status == -1)
+    _tern_14 = "PASS"
+  end if
+  print "status=" + cast(ctx.status, string) + " " + _tern_14
+  ret = sha256_load_block(address(ctx), 0, 0, 0, 0, 0, 0, 0, 0)
+  auto _tern_15 = "FAIL"
+  if (ret == -1)
+    _tern_15 = "PASS"
+  end if
+  print "blocked load ret=" + cast(ret, string) + " " + _tern_15
+  print "\n=== 5. Switch/case classification ==="
+  auto _tern_16 = "FAIL"
+  if (classify_round(0) == 10)
+    _tern_16 = "PASS"
+  end if
+  print "classify(0)=" + cast(classify_round(0), string) + " " + _tern_16
+  auto _tern_17 = "FAIL"
+  if (classify_round(1) == 20)
+    _tern_17 = "PASS"
+  end if
+  print "classify(1)=" + cast(classify_round(1), string) + " " + _tern_17
+  auto _tern_18 = "FAIL"
+  if (classify_round(5) == 20)
+    _tern_18 = "PASS"
+  end if
+  print "classify(5)=" + cast(classify_round(5), string) + " " + _tern_18
+  auto _tern_19 = "FAIL"
+  if (classify_round(7) == 40)
+    _tern_19 = "PASS"
+  end if
+  print "classify(7)=" + cast(classify_round(7), string) + " " + _tern_19
+  print "\n=== 6. K constant table ==="
+  auto _tern_20 = "FAIL"
+  if (get_k(0) == 1116352408)
+    _tern_20 = "PASS"
+  end if
+  print "K[0]=" + cast(get_k(0), string) + " " + _tern_20
+  auto _tern_21 = "FAIL"
+  if (get_k(7) == 2870763221)
+    _tern_21 = "PASS"
+  end if
+  print "K[7]=" + cast(get_k(7), string) + " " + _tern_21
+  auto _tern_22 = "FAIL"
+  if (get_k(-1) == 0)
+    _tern_22 = "PASS"
+  end if
+  print "K[-1]=" + cast(get_k(-1), string) + " " + _tern_22
+  auto _tern_23 = "FAIL"
+  if (get_k(16) == 0)
+    _tern_23 = "PASS"
+  end if
+  print "K[16]=" + cast(get_k(16), string) + " " + _tern_23
+  print "\n=== 7. Determinism check ==="
+  sha256_ctx c1 = 0
+  sha256_ctx c2 = 0
+  sha256_init(address(c1))
+  sha256_init(address(c2))
+  sha256_load_block(address(c1), 1633837952, 0, 0, 0, 0, 0, 0, 0)
+  sha256_load_block(address(c2), 1633837952, 0, 0, 0, 0, 0, 0, 0)
+  sha256_do_round(address(c1), 0)
+  sha256_do_round(address(c2), 0)
+  auto _tern_24 = "FAIL"
+  if (c1.h[0] == c2.h[0])
+    _tern_24 = "PASS"
+  end if
+  print "two-ctx match: " + _tern_24
+  sha256_do_round(address(c1), 1)
+  sha256_do_round(address(c2), 1)
+  auto _tern_25 = "FAIL"
+  if (c1.h[0] == c2.h[0])
+    _tern_25 = "PASS"
+  end if
+  print "after round 1: " + _tern_25
+  return 0
+end function
+

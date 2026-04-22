@@ -1,0 +1,319 @@
+@dr python_compat = true
+
+auto cast_str = empty
+auto received = empty
+
+function main__to_str(int x)
+  return cast_str(x)
+end function
+
+function main__is_positive(int x)
+  return x > 0
+end function
+
+function main__call_upper(int meth)
+  result = meth()
+  if result
+    return result.upper()
+  end if
+  return empty
+end function
+
+function main__add(int x, int y)
+  return x + y
+end function
+
+function main__greet(int name)
+  return "hello " + name
+end function
+
+function main__on_task_success(...)
+  received.append(_va_args)
+  return "handled"
+end function
+
+function main__on_task_success2(...)
+  return "also handled"
+end function
+
+function cast_str(int x)
+  // Convert x to string — used in place of str() which can't round-trip via UL.
+  return cast(x, string)
+end function
+
+function noop(...)
+  // No operation. Accepts anything, returns nothing.
+  0
+end function
+
+function pass1(int arg, ...)
+  // Return the first positional argument.
+  return arg
+end function
+
+function maybe(int typ, int val)
+  // Call typ(val) if val is not None, else return val.
+  if val != empty
+    return typ(val)
+  end if
+  return val
+end function
+
+function first(int predicate, int it)
+  // Return first element in it where predicate(elem) is true.
+  for each v in it
+    if predicate == empty
+      if v != empty
+        return v
+      end if
+    else if predicate(v)
+      return v
+    end if
+  end for
+  return empty
+end function
+
+object Dispatcher
+  int method_name
+  int on_call
+  
+  function __init__(int method_name = "", int on_call = empty)
+    self.method_name = method_name
+    self.on_call = on_call
+  end function
+  
+  
+  function __call__(int obj_list, ...)
+    for each obj in obj_list
+      meth = getattr(obj, self.method_name, empty)
+      if meth == empty
+        continue
+      end if
+      try
+        if self.on_call != empty
+          reply = self.on_call(meth)
+        else
+          reply = meth()
+        end if
+      catch AttributeError
+        continue
+      end try
+      if reply != empty
+        return reply
+      end if
+    end for
+    return empty
+  end function
+  
+end object
+
+function firstmethod(int method_name, int on_call = empty)
+  // Return a Dispatcher for method_name.
+  return Dispatcher(method_name, on_call)
+end function
+
+function padlist(int container, int _py_size, int _py_default = empty)
+  // Pad list with default elements up to size.
+  result = _py_list(container)
+  while result.len() < _py_size
+    result.append(_py_default)
+  end while
+  return result[0:_py_size]
+end function
+
+function uniq(int it)
+  // Return unique elements preserving order.
+  seen = []
+  result = []
+  for each obj in it
+    if not seen.contains(obj)
+      seen.append(obj)
+      result.append(obj)
+    end if
+  end for
+  return result
+end function
+
+function chunks(int items, int n)
+  // Split a list into chunks of n elements.
+  result = []
+  i = 0
+  while i < items.len()
+    chunk = []
+    j = i
+    while j < items.len() and j < i + n
+      chunk.append(items[j])
+      j += 1
+    end while
+    result.append(chunk)
+    i += n
+  end while
+  return result
+end function
+
+object DummyContext
+  
+  function __enter__()
+    return self
+  end function
+  
+  
+  function __exit__(int exc_type, int exc_val, int exc_tb)
+    return false
+  end function
+  
+end object
+
+object HasName
+  int val
+  
+  function __init__(int val = "")
+    self.val = val
+  end function
+  
+  
+  function get_val()
+    if self.val
+      return self.val
+    end if
+    return empty
+  end function
+  
+end object
+
+object NoName
+end object
+
+object Registry
+  int _tasks
+  
+  function __init__()
+    // TRANSPILER: dict values cast to string — may lose type information
+    map _dict0 = map_new()
+    self._tasks = _dict0
+  end function
+  
+  
+  function register(int name)
+    // Decorator: register function under name.
+    function decorator(int func)
+      self._tasks[name] = func
+      return func
+    end function
+    
+    return decorator
+  end function
+  
+  
+  function dispatch(int name, ...)
+    // Dispatch call to registered function by name.
+    func = self._tasks.get(name)
+    if func == empty
+      return empty
+    end if
+    return func(_va_args)
+  end function
+  
+  
+  function names()
+    return _py_list(self._tasks.keys())
+  end function
+  
+end object
+
+object Signal
+  int name
+  array int _receivers
+  
+  function __init__(int name = "")
+    self.name = name
+    self._receivers = []
+  end function
+  
+  
+  function connect(int receiver)
+    self._receivers.append(receiver)
+  end function
+  
+  
+  function send(...)
+    results = []
+    for each receiver in self._receivers
+      result = receiver(_va_args)
+      results.append(result)
+    end for
+    return results
+  end function
+  
+  
+  function disconnect(int receiver)
+    if self._receivers.contains(receiver)
+      self._receivers.remove(receiver)
+    end if
+  end function
+  
+end object
+
+function main()
+  noop()
+  noop(1, 2, 3)
+  noop(1, 2)
+  print "noop: ok"
+  print cast("pass1(42):", string) + " " + cast(pass1(42), string)
+  print cast("pass1(42, 1, 2):", string) + " " + cast(pass1(42, 1, 2), string)
+  // nested function 'to_str' hoisted to file scope as 'main__to_str'
+  print cast("maybe(to_str, 99):", string) + " " + cast(maybe(main__to_str, 99), string)
+  print cast("maybe(to_str, None):", string) + " " + cast(maybe(main__to_str, empty), string)
+  int_items = [0, -1, 5, 10]
+  none_items = [empty, empty, "found", "second"]
+  print cast("first(None, none_items):", string) + " " + cast(first(empty, none_items), string)
+  // nested function 'is_positive' hoisted to file scope as 'main__is_positive'
+  print cast("first(is_positive, int_items):", string) + " " + cast(first(main__is_positive, int_items), string)
+  print cast("first(is_positive, []):", string) + " " + cast(first(main__is_positive, []), string)
+  dispatcher = firstmethod("get_val")
+  objs = [NoName(), HasName(""), HasName("celery"), HasName("kombu")]
+  print cast("firstmethod get_val:", string) + " " + cast(dispatcher(objs), string)
+  // nested function 'call_upper' hoisted to file scope as 'main__call_upper'
+  dispatcher2 = firstmethod("get_val", main__call_upper)
+  print cast("firstmethod with on_call:", string) + " " + cast(dispatcher2(objs), string)
+  print cast("padlist(['a','b','c'], 3):", string) + " " + cast(padlist(["a", "b", "c"], 3), string)
+  print cast("padlist(['a','b'], 4, 'X'):", string) + " " + cast(padlist(["a", "b"], 4, "X"), string)
+  print cast("padlist(['a','b','c','d'], 2):", string) + " " + cast(padlist(["a", "b", "c", "d"], 2), string)
+  print cast("uniq([1,2,1,3,2]):", string) + " " + cast(uniq([1, 2, 1, 3, 2]), string)
+  print cast("uniq([]):", string) + " " + cast(uniq([]), string)
+  print cast("uniq(['a','b','a']):", string) + " " + cast(uniq(["a", "b", "a"]), string)
+  print cast("chunks([0..9], 3):", string) + " " + cast(chunks([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 3), string)
+  print cast("chunks([1,2,3], 2):", string) + " " + cast(chunks([1, 2, 3], 2), string)
+  print cast("chunks([], 3):", string) + " " + cast(chunks([], 3), string)
+  with DummyContext() as ctx
+    print cast("DummyContext entered:", string) + " " + cast(ctx != empty, string)
+  end with
+  print "DummyContext exited: ok"
+  reg = Registry()
+  // nested function 'add' hoisted to file scope as 'main__add'
+  // nested function 'greet' hoisted to file scope as 'main__greet'
+  dec_add = reg.register("add")
+  dec_add(main__add)
+  dec_greet = reg.register("greet")
+  dec_greet(main__greet)
+  print cast("Registry names:", string) + " " + cast(reg.names(), string)
+  print cast("dispatch add(3,4):", string) + " " + cast(reg.dispatch("add", 3, 4), string)
+  print cast("dispatch greet:", string) + " " + cast(reg.dispatch("greet", "celery"), string)
+  print cast("dispatch unknown:", string) + " " + cast(reg.dispatch("missing", 1), string)
+  sig = Signal("task_success")
+  received = []
+  // nested function 'on_task_success' hoisted to file scope as 'main__on_task_success'
+  // nested function 'on_task_success2' hoisted to file scope as 'main__on_task_success2'
+  sig.connect(main__on_task_success)
+  sig.connect(main__on_task_success2)
+  results = sig.send("result_value", "worker1")
+  print cast("Signal send results count:", string) + " " + cast(results.len(), string)
+  print cast("Signal result[0]:", string) + " " + cast(results[0], string)
+  print cast("Signal result[1]:", string) + " " + cast(results[1], string)
+  print cast("Signal received args:", string) + " " + cast(received[0], string)
+  sig.disconnect(main__on_task_success)
+  results2 = sig.send("another")
+  print cast("After disconnect count:", string) + " " + cast(results2.len(), string)
+end function
+
+// UL runtime invokes main() automatically

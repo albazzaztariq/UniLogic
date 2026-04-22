@@ -1,0 +1,29 @@
+=== AES S-box (FSb) ===
+FSb[0]=0x63 PASS
+FSb[0xFF]=0x16 PASS
+
+=== AES Inverse S-box (RSb) ===
+RSb is inverse of FSb: PASS
+
+=== FSb is a permutation ===
+FSb bijective: PASS
+
+=== SubWord ===
+SubWord(0x00010203)=0x637C777B PASS
+
+=== AES-128 key schedule ===
+setkey_enc 128: ret=0 PASS
+RK[4]=0xFD74AAD6 PASS
+RK[7]=0xFE76ABD6 PASS
+
+=== Invalid key length ===
+setkey 64-bit: ret=-32 PASS
+
+=== AES XTS nested context ===
+XTS crypt/tweak setkey: r1=0 r2=0 PASS
+XTS crypt.nr=10 tweak.nr=10 PASS
+
+=== AES vtable dispatch ===
+vtable name=AES-SW
+vtable setkey_enc: ret=0 PASS
+vtable RK[4]=0x17FEFAA0 PASS
